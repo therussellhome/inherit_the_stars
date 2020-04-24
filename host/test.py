@@ -5,6 +5,5 @@ import player
 import race
 
 print('host tests - start')
-p = planet.Planet()
-p.test()
+planet._test()
 print('host tests - stop')
