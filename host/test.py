@@ -1,9 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
+import to_json
 import planet
 import player
 import race
 
-print('host tests - start')
+print('test.py - start')
+to_json._test()
 planet._test()
-print('host tests - stop')
+print('test.py - stop')
