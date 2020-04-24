@@ -12,6 +12,17 @@ class Planet(object):
     def grow_population(self):
         pass
 
+    """ runs the  """
+    def take_turn(self):
+        self.growPopulation()
+        self.calcEffort()
+        self.generateMoney()
+        self.payTaxes()
+        self.recvStimulus()
+        self.mineMinerals()
+        self.buildStuff()
+        self.donateSurplus()
+
 """ Test the Planet class """
 def _test():
     print('planet._test - begin')
