@@ -1,29 +1,46 @@
 import cargo
 
+""" List of gravity values for display (0..100) """
+__grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
+
 """ Planet class """
 class Planet:
-    """ Number of clicks of the planet's temperature """
-    """ Range of -15 to 115 """
-    __temp = 0
 
-    """ todo """
-    __on_surface = cargo.Cargo()
+    """ Create a full class """
+    def __init__(self, rad, temp, grav, pop, posx, posy, rate, maxpop, radrange, temprange, gravrange):
+        self.rad = int(rad)
+        self.temp = int(temp)
+        self.grav = int(grav)
+        self.pop = int(pop)
+        self.posx = int(posx)
+        self.posy = int(posy)
+        self.rate = float(rate)
+        self.maxpop = int(maxpop)
+        self.radr = sorted(radrange)
+        self.tempr = sorted(temprange)
+        self.gravr = sorted(gravrange)
+        """ todo """
+        self.__on_surface = cargo.Cargo()
+        self.__on_surface.people = self.pop
+        """ Number of clicks of the planet's temperature """
+        """ Range of -15 to 115 """
+        __temp = 0
 
-    """ List of gravity values for display (0..100) """
-    __grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
-    
+
+
     """ Restore class from a string """
-    def __init__(self, from_string):
-        pass
+    #def __init__(self, from_string):
+    #    pass
 
     """ Create an empty class """
-    def __init__(self):
-        pass
+    #def __init__(self):
+    #    pass
 
     """ Grow the current population """
     def grow_population(self):
-        planetvalue = float(self.calchab())
-        pop = self.__on_sirface.people
+        planetvalue = float(self.calc_planet_value())
+        #pop = self.__on_sirface.people
+        pop=self.pop
         rate = self.rate
         maxpop = self.maxpop
         try:
@@ -63,23 +80,10 @@ class Planet:
     def display_temp(self):
         return str(self.__temp * 4 - 200) + 'C'
 
-    """ Document me """
+    """ Return the planet gravity (0.20g to 5.00g) """
     def display_grav(self):
         return str(self._grav_values[self.grav]) + 'g'
     
-    def __init__(self, rad, temp, grav, pop, posx, posy, rate, maxpop, radrange, temprange, gravrange):
-        self.rad = int(rad)
-        self.temp = int(temp)
-        self.grav = int(grav)
-        self.pop = int(pop)
-        self.posx = int(posx)
-        self.posy = int(posy)
-        self.rate = float(rate)
-        self.maxpop = int(maxpop)
-        self.radr = sorted(radrange)
-        self.tempr = sorted(temprange)
-        self.gravr = sorted(gravrange)
-
     """ Calculate the planet's value for the current player (-60 to 100) """
     """ value = SQRT[(1-g)^2+(1-t)^2+(1-r)^2]*(1-x)*(1-y)*(1-z)/SQRT[3] """
     """ where x=g-1/2 for g>1/2 | x=0 for g<1/2 | y=t-1/2 for t>1/2 | y=0 for t<1/2 | z=r-1/2 for r>1/2 | z=0 for r<1/2 """
@@ -147,6 +151,6 @@ def _test():
 """ Test the Planet.grow_population method """
 def _test_grow_population():
     print('planet._test_grow_population - begin')
-    p = Planet()
+    p = Planet(50, 50, 50, 25000, 50, 50, 0.15, 1000000, [20, 80], [20, 80], [20, 80])
     p.grow_population()
     print('planet._test_grow_population - end')
