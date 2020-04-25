@@ -32,7 +32,7 @@ class Planet(to_json.Serializable):
         if self.player == None:
             return
         try:
-            pop = max(0, int(self.on_service.people) * 1,000)
+            pop = max(0, int(self.on_surface.people) * 1000)
         except ValueError:
             pop = 0
         try:
@@ -40,9 +40,9 @@ class Planet(to_json.Serializable):
         except ValueError:
             rate = 0.0
         try:
-            maxpop = int(self.player.get('maximum_population', 10,000,000))
+            maxpop = int(self.player.get('maximum_population', 10000000))
         except ValueError:
-            maxpop = 10,000,000
+            maxpop = 10000000
         planetvalue = self.calc_planet_value()
         maxpop *= planetvalue
         h = maxpop / 2.0
@@ -117,6 +117,7 @@ def _test():
 """ Test the Planet.grow_population method """
 def _test_grow_population():
     print('planet._test_grow_population - begin')
-    p = Planet(50, 50, 50, 25000, 50, 50, 0.15, 1000000, [20, 80], [20, 80], [20, 80])
+    p = Planet('test planet', 50, 50, 50)
+    p.colonize(25000, {'growth_rate': 0.15, 'maximum_population': 10000000, 'gravity_start': 20, 'gravity_stop': 80, 'temperature_start': 20, 'temperature_stop': 80, 'radiation_start': 20, 'radiation_stop': 80})
     p.grow_population()
     print('planet._test_grow_population - end')
