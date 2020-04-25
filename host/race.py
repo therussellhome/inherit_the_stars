@@ -1,7 +1,7 @@
 import to_json
 
 """ Default race values """
-__defaults = {
+_defaults = {
     'growth_rate': [10, 0, 20],
     'gravity_start': [0, 0, 100],
     'gravity_stop': [100, 0, 100],
@@ -26,16 +26,17 @@ class Race(to_json.Serializable):
             self.__dict__[key] = kwargs[key]
 
     def __getattribute__(self, name):
-        if name in __defaults:
-            default = __defaults[name]
+        if name in _defaults:
+            default = _defaults[name]
             try:
+                value = object.__getattribute__(self, name)
                 if type(defaults[name][0]) == type(int):
-                    return min([default[1], max([default[2], int(self.__dict__.get(name, default[0]))])])
+                    return min([default[1], max([default[2], int(value)])])
                 elif type(defaults[name][0]) == type(float):
-                    return min([default[1], max([default[2], float(self.__dict__.get(name, default[0]))])])
+                    return min([default[1], max([default[2], float(value)])])
                 elif type(defaults[name][0]) == type(bool):
-                    return bool(self.__dict__.get(name, default))
+                    return bool(value)
             except:
                 return default[0]
         else:
-            self.__dict__.get(name, None)
+            return object.__getattribute__(self, name)

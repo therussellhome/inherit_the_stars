@@ -1,8 +1,11 @@
 from cost import Cost
+from race import Race
+
 """ the class to build the player """
 class Player:
     """ the line is a string that contains all the player data """
-    def __init__(self, line):
+    def __init__(self):
+        """
         sets = line.strip().split(", ")
         self.name = sets[0]
         self._energy = int(sets[1])
@@ -23,6 +26,8 @@ class Player:
         s_set = sets[13].split(",")
         self._origanal_research_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
         self._research_queue = [[self._research_cost.energy, self._research_cost.effort], [self._origanal_research_cost.energy * (2+self.research_level/2), self._origanal_research_cost.effort * (2+self.research_level/2)]]
+        """
+        self.race = Race()
     
     """ takes the turn """
     def take_turn(self):
@@ -67,6 +72,7 @@ def _test():
     _testPlayer__init__()
     
 def _testPlayer__init__():
+    """
     test_player = Player("Uma, 100000, 0, 100, 100, 100, 7, 7, 100, 1, 50,50,0,0,0,0, 50,50,0,0,0,0, 500,500,0,0,0,0, 500,500,0,0,0,0")
     if test_player.name != "Uma":
         print("name Fail")
@@ -96,4 +102,5 @@ def _testPlayer__init__():
         print("research_cost Fail")
     if test_player._origanal_research_cost.energy != 500 and test_player._origanal_research_cost.effort != 500:
         print("origanal_research_cost Fail")
+    """
     print("tested Player __init__()")
