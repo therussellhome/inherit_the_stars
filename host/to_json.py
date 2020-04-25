@@ -1,5 +1,6 @@
 import json
 import os
+from zipfile import Zipfile
 
 """ Base class for all serializable classes """
 class Serializable:
@@ -30,6 +31,18 @@ def write(filename, obj):
 def read(filename):
     with open(filename) as f:
         return json.load(f, object_hook=__decode)
+
+""" Open zip file """
+def load_game(path):
+    with ZipFile(path, 'r') as zipfile:
+
+    pass
+
+""" Update zip file """
+def save_game(path):
+    with ZipFile(path, 'w') as zipfile:
+        zipfile.write()
+    pass
 
 """ Class used for testing """
 class _TestClass(Serializable):
