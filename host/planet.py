@@ -12,7 +12,7 @@ class Planet(object):
     def grow_population(self):
         pass
 
-    """ runs the  """
+    """ runs the turn """
     def take_turn(self):
         self.grow_population()
         self.calculate_effort()
@@ -24,40 +24,40 @@ class Planet(object):
         self.build_stuff()
         self.donate_surplus()
     
-    """  """
+    """ calculate how much effort is produced by the population """
     def calculate_effort(self):
         self.effort = round((self.population + 1) * (self.player.effort_efficency/100) / 2)
     
-    """  """
+    """ power plants make energy """
     def generate_energy(self):
         pass
     
-    """  """
+    """ payst the tax on effort for research """
     def pay_effort_tax(self):
         if not self.is_tax_haven:
             tax_effort = round(self.__effort * (self.player.research_rate/100))
             self.player.__effort += tax_effort
             self.__effort -= tax_effort
     
-    """  """
+    """ pays the tax in energy """
     def pay_energy_tax(self):
         if not self.is_tax_haven:
             tax_energy = round(self.__energy * (self.player.tax_rate/100))
             self.player.__energy += tax_energy
             self.__energy -= tax_energy
     
-    """  """
+    """ invests energy into planetary economy """
     def recv_stimulus(self):
         stimulus_package = round(self.__population * self.player.stimulus_package / 1000)
         self.energy += stimulus_package
         self.player.energy -= stimulus_package
     
-    """  """
+    """ mines mine the minerals """
     def mine_minerals(self):
         #self.minerals += round(10 * self.mines * self.mine_level * (self.player.mine_efficency/100))
         pass
     
-    """  """
+    """ build stuff in build queue """
     def build_stuff(self):
         for item in self.build_queue:
             s_item = item.split(":")
@@ -91,12 +91,12 @@ class Planet(object):
                     self.effort -= self.player.mine_cost.effort
                     self.mines += 1
     
-    """ give player extra and set energy and effort to 0 """
+    """ give player extra energy and effort and set planet energy and effort to 0 """
     def donate_surplus(self):
-        self.player.__energy += self.__energy
-        self.__energy = 0
-        self.player.__effort += self.__effort
-        self.__effort = 0
+        self.player._energy += self._energy
+        self._energy = 0
+        self.player._effort += self._effort
+        self._effort = 0
 
 
 """ Test the Planet class """
