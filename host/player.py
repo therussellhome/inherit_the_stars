@@ -1,10 +1,11 @@
+import game_engine
 from cost import Cost
 from race import Race
 
 """ the class to build the player """
 class Player:
     """ the line is a string that contains all the player data """
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         sets = line.strip().split(", ")
         self.name = sets[0]
@@ -28,6 +29,8 @@ class Player:
         self._research_queue = [[self._research_cost.energy, self._research_cost.effort], [self._origanal_research_cost.energy * (2+self.research_level/2), self._origanal_research_cost.effort * (2+self.research_level/2)]]
         """
         self.race = Race()
+        self.name = kwargs.get('name', 'Player_' + str(id(self)))
+        game_engine.register('Player/' + self.name, self)
     
     """ takes the turn """
     def take_turn(self):

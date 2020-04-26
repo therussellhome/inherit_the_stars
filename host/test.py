@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-import to_json
+import game_engine
 import planet
 import player
 import race
 
 print('test.py - start')
-to_json._test()
 planet._test()
 player._test()
+game_engine._test()
 print('test.py - stop')

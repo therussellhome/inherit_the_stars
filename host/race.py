@@ -1,4 +1,4 @@
-import to_json
+from serializable import Serializable
 
 """ Default race values """
 _defaults = {
@@ -20,7 +20,7 @@ _defaults = {
 }
 
 """ Storage class for race parameters """
-class Race(to_json.Serializable):
+class Race(Serializable):
     def __init__(self, **kwargs):
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
