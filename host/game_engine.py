@@ -60,7 +60,10 @@ def _test():
 """ Test method """
 def _test_load_save():
     print('game_engine._test_load_save - begin')
-    shutil.rmtree('test_output/')
+    try:
+        shutil.rmtree('test_output/')
+    except:
+        pass
     os.makedirs('test_output/', exist_ok=True)
     t = __TestClass()
     t1 = get('test/game_engine')
