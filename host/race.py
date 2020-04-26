@@ -1,4 +1,4 @@
-import to_json
+from serializable import Serializable
 
 """ Storage class for race parameters """
 """ growth_rate int(0..20) """
@@ -11,7 +11,7 @@ import to_json
 """ gravity_start int(0..100) """
 """ gravity_stop int(0..100) """
 """ gravity_immune bool """
-class Race(to_json.Serializable):
+class Race(Serializable):
     pass
 #    def __init__(self:q, **kwargs):
 #        self.

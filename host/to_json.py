@@ -1,10 +1,8 @@
 import json
 import os
-from zipfile import Zipfile
-
-""" Base class for all serializable classes """
-class Serializable:
-    pass
+from zipfile import ZipFile, ZipInfo
+from planet import Planet
+from serializable import Serializable
 
 """ Custom encoder to handle classes """
 def __encode(obj):
@@ -35,14 +33,18 @@ def read(filename):
 """ Open zip file """
 def load_game(path):
     with ZipFile(path, 'r') as zipfile:
-
+        for info in zipfile.infolist():
+            with zipfile.open(info.filename) as f:
+                json.load(f, object_hook=__decode)
     pass
 
 """ Update zip file """
 def save_game(path):
+    p1 = Planet(name='p1')
+    p2 = Planet(name='p2')
     with ZipFile(path, 'w') as zipfile:
-        zipfile.write()
-    pass
+        zipfile.writestr(ZipInfo('p1.json'), json.dumps(p1, default=__encode))
+        zipfile.writestr(ZipInfo('p2.json'), json.dumps(p2, default=__encode))
 
 """ Class used for testing """
 class _TestClass(Serializable):
@@ -52,6 +54,7 @@ class _TestClass(Serializable):
 """ Test method """
 def _test():
     print('to_json._test - begin')
+    save_game('to_json.zip')
     try:
         os.remove('to_json.test')
     except:
