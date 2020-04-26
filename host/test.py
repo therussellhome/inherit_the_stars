@@ -8,4 +8,5 @@ import race
 print('test.py - start')
 to_json._test()
 planet._test()
+player._test()
 print('test.py - stop')
