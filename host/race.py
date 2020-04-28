@@ -1,4 +1,4 @@
-from serializable import Serializable
+import game_engine
 
 """ Default race values """
 _defaults = {
@@ -20,7 +20,7 @@ _defaults = {
 }
 
 """ Storage class for race parameters """
-class Race(Serializable):
+class Race:
     def __init__(self, **kwargs):
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
@@ -40,3 +40,6 @@ class Race(Serializable):
                 return default[0]
         else:
             return object.__getattribute__(self, name)
+
+# Register the class with the game engine
+game_engine.register_class(Race)
