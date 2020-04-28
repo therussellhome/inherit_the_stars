@@ -8,7 +8,7 @@ import star_system
 
 print('test.py - start')
 planet._test()
-star_system.test()
+star_system._test()
 player._test()
 game_engine._test()
 print('test.py - stop')

@@ -40,7 +40,12 @@ class Planet:
             self.mineral_concentration.titanium += modifier
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
-        game_engine.register(self)
+
+    """ Handle planet renaming """
+    def __setattr__(self, name, value):
+        self.__dict__[name] = value
+        if name == 'name':
+            game_engine.register(self)
 
     """ Return the planet temperature (-260C to 260C) """
     def display_temp(self):
