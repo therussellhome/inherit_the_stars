@@ -152,8 +152,8 @@ class Planet(Serializable):
     
     """ mines mine the minerals """
     def mine_minerals(self):
-        minerals_per_mine = float(self.power_plant_tech.get('minerals_per_mine', 1.0))
-        effort_per_mine = int(self.power_plant_tech.get('effort_per_mine', 1000))
+        minerals_per_mine = float(self.mine_tech.get('minerals_per_mine', 1.0))
+        effort_per_mine = int(self.mine_tech.get('effort_per_mine', 1000))
         operate = self.mines
         if effort_per_mine > 0:
             max_effort = self.mines * effort_per_plant
