@@ -1,7 +1,6 @@
 import game_engine
 from cargo import Cargo
 from minerals import Minerals
-from player import Player
 
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
@@ -54,11 +53,8 @@ class Planet:
     """ Colonize the planet """
     """ where player is a game_engine.Reference to "Player/<player_name>" """
     def colonize(self, population, player):
-        try:
-            self.on_surface.people = max(0, int(population))
-            self.player = player
-        except ValueError:
-            pass
+        self.on_surface.people = int(population)
+        self.player = player
         #TODO self.power_plant_tech = self.player.max_tech('power_plant')
         #TODO self.factory_tech = self.player.max_tech('factory')
         #TODO self.mine_tech = self.player.max_tech('mine')
@@ -92,7 +88,7 @@ class Planet:
             maxpop = self.player.race.population_max
         except ValueError:
             maxpop = 10000000
-        planetvalue = self.calc_planet_value()/100
+        planetvalue = self.calc_planet_value()
         maxpop *= planetvalue
         h = maxpop / 2.0
         g = float(float(maxpop) / float(h + pop)) / 2.0
@@ -105,8 +101,8 @@ class Planet:
             pop *= (-rate + 1.0)
             if pop < maxpop:
                 pop = maxpop
-        self.on_surface.people = int(round(pop, -3)/1000)
-    
+        self.on_surface.people = int(round(pop, -3))
+
     """ calculate how much effort is produced by the population """
     def calculate_effort(self):
         if self.player != None:
@@ -213,7 +209,7 @@ class Planet:
     def __calc_range_from_center(self, planet, race_start, race_stop):
         race_radius = float(race_stop - race_start) / 2.0
         return min([2.0, abs(race_start + race_radius - planet) / race_radius])
-    
+
     """ Calculate the planet's value for the current player (-100 to 100) """
     """ where """
     """ Hab%=SQRT[(1-g)^2+(1-t)^2+(1-r)^2]*(1-x)*(1-y)*(1-z)/SQRT[3] """
@@ -240,7 +236,7 @@ class Planet:
         y = max(0.0, t - 0.5)
         z = max(0.0, r - 0.5)
         return 100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset
-    
+
     #def transferpop(self, otherplanet, amount):
     #    for i in range(amount):
     #        if self.pop == 0:
@@ -257,66 +253,6 @@ def _test():
     print('planet._test - begin')
     _test_grow_population()
     print('planet._test - end')
-
-def test_expect(actual, expect, test_id):
-    if expect != actual:
-        print('ERROR ', test_id, ' got ', actual, ' expected ', expect)
-
-def grow_test():
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(250, {'growth_rate': 10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 274, 'grow_test #1')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(0, {'growth_rate': 10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 0, 'grow_test #2')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(-10, {'growth_rate': 10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 0, 'grow_test #3')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(250, {'growth_rate': 0, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #4')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(250, {'growth_rate': -10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 226, 'grow_test #5')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize('me', {'growth_rate': -10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 0, 'grow_test #6')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(250, {'growth_rate': 'chicken', 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #7')
-    p = Planet('test planet', 100, 100, 100)
-    p.colonize(250, {'growth_rate': -10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 276, 'grow_test #8')
-    p = Planet('test planet', 100, 100, 100)
-    p.colonize(250, {'growth_rate': 10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 224, 'grow_test #9')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(250, {'growth_rate': -20, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 202, 'grow_test #10')
-    p = Planet('test planet', 25, 25, 25)
-    p.colonize(250, {'growth_rate': 10, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #11')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(100, {'growth_rate': 20, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 120, 'grow_test #12')
-    p = Planet('test planet', 50, 50, 50)
-    p.colonize(10000, {'growth_rate': 20, 'maximum_population': 10000000, 'gravity_start': 25, 'gravity_stop': 75, 'temperature_start': 25, 'temperature_stop': 75, 'radiation_start': 25, 'radiation_stop':75})
-    p.grow_population()
-    test_expect(p.on_surface.people, 10000, 'grow_test #13')
-    print('grow_test COMPL5ETE')
 
 """ Test the Planet.grow_population method """
 def _test_grow_population():
