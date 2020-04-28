@@ -1,5 +1,4 @@
 import game_engine
-from serializable import Serializable
 from cargo import Cargo
 from minerals import Minerals
 from player import Player
@@ -26,7 +25,8 @@ _defaults = {
     'player': None
 }
 
-class Planet(Serializable):
+""" Document me """
+class Planet:
 
     """ Initialize defaults """
     def __init__(self, **kwargs):
@@ -41,7 +41,7 @@ class Planet(Serializable):
             self.mineral_concentration.titanium += modifier
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
-        game_engine.register('Planet/' + self.name, self)
+        game_engine.register(self)
 
     """ Return the planet temperature (-260C to 260C) """
     def display_temp(self):
@@ -52,7 +52,7 @@ class Planet(Serializable):
         return str(_grav_values[self.gravity]) + 'g'
     
     """ Colonize the planet """
-    """ where player is "Player/<player_name>" """
+    """ where player is a game_engine.Reference to "Player/<player_name>" """
     def colonize(self, population, player):
         try:
             self.on_surface.people = max(0, int(population))
@@ -78,19 +78,18 @@ class Planet(Serializable):
     """ Grow the current population """
     def grow_population(self):
         # all population calculations are done using people but stored using kT (1000/kT)
-        player = game_engine.get(self.player)
-        if player == None:
+        if self.player == None:
             return
         try:
             pop = max(0, int(self.on_surface.people) * 1000)
         except ValueError:
             pop = 0
         try:
-            rate = player.race.growth_rate / 100.0
+            rate = self.player.race.growth_rate / 100.0
         except ValueError:
             rate = 0.0
         try:
-            maxpop = player.race.population_max
+            maxpop = self.player.race.population_max
         except ValueError:
             maxpop = 10000000
         planetvalue = self.calc_planet_value()/100
@@ -110,9 +109,8 @@ class Planet(Serializable):
     
     """ calculate how much effort is produced by the population """
     def calculate_effort(self):
-        player = game_engine.get(self.player)
-        if player != None:
-            self.effort = round(self.on_surface.people * 1000 * player.race.effort_efficency / 100)
+        if self.player != None:
+            self.effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency / 100)
     
     """ power plants make energy """
     def generate_energy(self):
@@ -128,29 +126,26 @@ class Planet(Serializable):
     
     """ pays the tax on effort for research """
     def pay_effort_tax(self):
-        player = game_engine.get(self.player)
-        if player != None:
+        if self.player != None:
             if not self.is_tax_haven:
-                tax_effort = round(self.effort * (player.research_rate / 100))
-                player.effort += tax_effort
+                tax_effort = round(self.effort * (self.player.research_rate / 100))
+                self.player.effort += tax_effort
                 self.effort -= tax_effort
     
     """ pays the tax in energy """
     def pay_energy_tax(self):
-        player = game_engine.get(self.player)
-        if player != None:
+        if self.player != None:
             if not self.is_tax_haven:
-                tax_energy = round(self.energy * (player.tax_rate / 100))
-                player.energy += tax_energy
+                tax_energy = round(self.energy * (self.player.tax_rate / 100))
+                self.player.energy += tax_energy
                 self.energy -= tax_energy
     
     """ invests energy into planetary economy """
     def recv_stimulus(self):
-        player = game_engine.get(self.player)
-        if player != None:
-            stimulus_package = round(self.on_surface.people * player.stimulus_package)
+        if self.player != None:
+            stimulus_package = min(self.player.energy, round(self.on_surface.people * self.player.stimulus_package))
             self.energy += stimulus_package
-            player.energy -= stimulus_package
+            self.player.energy -= stimulus_package
     
     """ mines mine the minerals """
     def mine_minerals(self):
@@ -169,9 +164,8 @@ class Planet(Serializable):
     
     """ build stuff in build queue """
     def build_stuff(self):
-        player = game_engine.get(self.player)
         #TODO fix method for player access
-        if player == None:
+        if self.player == None:
             return
         for item in self.build_queue:
             s_item = item.split(":")
@@ -207,12 +201,11 @@ class Planet(Serializable):
     
     """ give player extra energy and effort and set planet energy and effort to 0 """
     def donate_surplus(self):
-        player = game_engine.get(self.player)
-        if player != None:
-            player._energy += self._energy
-            self._energy = 0
-            player._effort += self._effort
-            self._effort = 0
+        if self.player != None:
+            self.player.energy += self.energy
+            self.energy = 0
+            self.player.effort += self.effort
+            self.effort = 0
 
     """ todo """
     """ if inside habitable range return (0..1) """
@@ -232,12 +225,11 @@ class Planet(Serializable):
     """ with g, t, and r = 0 if < 1 | g, t, r = value - 1 """
     """ and 100 subtracted from the result """
     def calc_planet_value(self):
-        player = game_engine.get(self.player)
-        if player == None:
+        if self.player == None:
             return 0.0
-        g = self.__calc_range_from_center(self.gravity, player.race.gravity_start, player.race.gravity_stop)
-        t = self.__calc_range_from_center(self.temperature, player.race.temperature_start, player.race.temperature_stop)
-        r = self.__calc_range_from_center(self.radiation, player.race.radiation_start, player.race.radiation_stop)
+        g = self.__calc_range_from_center(self.gravity, self.player.race.gravity_start, self.player.race.gravity_stop)
+        t = self.__calc_range_from_center(self.temperature, self.player.race.temperature_start, self.player.race.temperature_stop)
+        r = self.__calc_range_from_center(self.radiation, self.player.race.radiation_start, self.player.race.radiation_stop)
         negative_offset = 0
         if t > 1.0 or r > 1.0 or g > 1.0:
             negative_offset = -100.0
@@ -255,6 +247,10 @@ class Planet(Serializable):
     #            break
     #        self.pop -= 1
     #        otherplanet.pop += 1
+
+# Register the class with the game engine
+game_engine.register_class(Planet)
+
 
 """ Test the Planet class """
 def _test():
@@ -325,9 +321,8 @@ def grow_test():
 """ Test the Planet.grow_population method """
 def _test_grow_population():
     print('planet._test_grow_population - begin')
-    p = Planet()
-    player = Player(name='test_grow')
-    p.colonize(25000, 'Player/test_grow')
+    p = Planet(player=game_engine.Reference('Player', '_test_grow_population'))
+    p.on_surface.people = 25000
     p.grow_population()
-    grow_test()
+    #grow_test()
     print('planet._test_grow_population - end')

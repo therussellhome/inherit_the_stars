@@ -1,3 +1,4 @@
+import game_engine
 import minerals
 
 """ Represent 'cargo' that can be held """
@@ -7,3 +8,6 @@ class Cargo(minerals.Minerals):
         super().__init__(**kwargs)
         self.people = kwargs.get('people', 0)
         self.cargo_max = kwargs.get('cargo_max', -1)
+
+# Register the class with the game engine
+game_engine.register_class(Cargo)
