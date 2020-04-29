@@ -45,7 +45,7 @@ class StarSystem:
         
 
 # Register the class with the game engine
-game_engine.register_class(StarSystem)
+game_engine.register(StarSystem)
 
 
 def _test():
