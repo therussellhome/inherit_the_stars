@@ -124,7 +124,7 @@ class Reference:
         else:
             obj = self.__get_referenced_object()
             if name == 'is_valid':
-                return (obj == None)
+                return (obj != None)
             elif obj != None:
                 return obj.__getattribute__(name)
             else:
