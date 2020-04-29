@@ -1,3 +1,4 @@
+import sys
 import game_engine
 from cargo import Cargo
 from minerals import Minerals
@@ -5,49 +6,46 @@ from minerals import Minerals
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
 
-""" List of default values """
-_defaults = {
-    'temperature': 50,
-    'radiation': 50,
-    'gravity': 50,
-    'effort': 0,
-    'energy': 0,
-    'power_plants': 0,
-    'factories': 0,
-    'mines': 0,
-    'power_plant_tech': {},
-    'factory_tech': {},
-    'mine_tech': {},
-    'is_tax_haven': False,
-    'mineral_concentration': Minerals(titanium=100.0, lithium=100.0, silicon=100.0),
-    'on_surface': Cargo(),
-    'player': None,
-    'star_system': None,
-    'distance': 3
+""" Default values (default, min, max)  """
+__defaults = {
+    'distance': [50, 0, 100],
+    'temperature': [50, -15, 115],
+    'radiation': [50, 0, 100],
+    'gravity': [50, 0, 100],
+    'effort': [0, 0, sys.maxsize],
+    'energy': [0, 0, sys.maxsize],
+    'power_plants': [0, 0, sys.maxsize],
+    'factories': [0, 0, sys.maxsize],
+    'mines': [0, 0, sys.maxsize],
+    'power_plant_tech': [{}],
+    'factory_tech': [{}],
+    'mine_tech': [{}],
+    'is_tax_haven': [False],
+    'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
+    'on_surface': [Cargo()],
+    'player': [game_engine.Reference()],
+    'star_system': [game_engine.Reference()]
 }
 
-""" Document me """
-class Planet:
+""" TODO """
+class Planet(game_engine.Defaults):
 
     """ Initialize defaults """
     def __init__(self, **kwargs):
-        for key in kwargs:
-            self.__dict__[key] = kwargs[key]
-        for key in _defaults:
-            if key not in kwargs:
-                self.__dict__[key] = _defaults[key]
-        self.name = kwargs.get('name', 'Planet_' + str(id(self)))
+        super()._apply_defaults(**kwargs)
+        if 'name' not in kwargs:
+            self.name = 'Planet_' + str(id(self))
         if 'mineral_concentration' not in kwargs:
             modifier = self.gravity - 50
             self.mineral_concentration.titanium += modifier
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
 
-    """ Handle planet renaming """
-    def __setattr__(self, name, value):
-        self.__dict__[name] = value
-        if name == 'name':
-            game_engine.register(self)
+#    """ Handle planet renaming """
+#    def __setattr__(self, name, value):
+#        self.__dict__[name] = value
+#        if name == 'name':
+#            game_engine.register(self)
 
     """ Return the planet temperature (-260C to 260C) """
     def display_temp(self):
@@ -81,7 +79,7 @@ class Planet:
     """ Grow the current population """
     def grow_population(self):
         # all population calculations are done using people but stored using kT (1000/kT)
-        if self.player == None:
+        if not self.player.is_valid:
             return
         try:
             pop = max(0, int(self.on_surface.people) * 1000)
@@ -112,7 +110,7 @@ class Planet:
 
     """ calculate how much effort is produced by the population """
     def calculate_effort(self):
-        if self.player != None:
+        if self.player.is_valid:
             self.effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency / 100)
     
     """ power plants make energy """
@@ -129,7 +127,7 @@ class Planet:
     
     """ pays the tax on effort for research """
     def pay_effort_tax(self):
-        if self.player != None:
+        if self.player.is_valid:
             if not self.is_tax_haven:
                 tax_effort = round(self.effort * (self.player.research_rate / 100))
                 self.player.effort += tax_effort
@@ -137,7 +135,7 @@ class Planet:
     
     """ pays the tax in energy """
     def pay_energy_tax(self):
-        if self.player != None:
+        if self.player.is_valid:
             if not self.is_tax_haven:
                 tax_energy = round(self.energy * (self.player.tax_rate / 100))
                 self.player.energy += tax_energy
@@ -145,7 +143,7 @@ class Planet:
     
     """ invests energy into planetary economy """
     def recv_stimulus(self):
-        if self.player != None:
+        if self.player.is_valid:
             stimulus_package = min(self.player.energy, round(self.on_surface.people * self.player.stimulus_package))
             self.energy += stimulus_package
             self.player.energy -= stimulus_package
@@ -168,7 +166,7 @@ class Planet:
     """ build stuff in build queue """
     def build_stuff(self):
         #TODO fix method for player access
-        if self.player == None:
+        if not self.player.is_valid:
             return
         for item in self.build_queue:
             s_item = item.split(":")
@@ -204,7 +202,7 @@ class Planet:
     
     """ give player extra energy and effort and set planet energy and effort to 0 """
     def donate_surplus(self):
-        if self.player != None:
+        if self.player.is_valid:
             self.player.energy += self.energy
             self.energy = 0
             self.player.effort += self.effort
@@ -228,7 +226,7 @@ class Planet:
     """ with g, t, and r = 0 if < 1 | g, t, r = value - 1 """
     """ and 100 subtracted from the result """
     def calc_planet_value(self):
-        if self.player == None:
+        if not self.player.is_valid:
             return 0.0
         g = self.__calc_range_from_center(self.gravity, self.player.race.gravity_start, self.player.race.gravity_stop)
         t = self.__calc_range_from_center(self.temperature, self.player.race.temperature_start, self.player.race.temperature_stop)
@@ -252,7 +250,7 @@ class Planet:
     #        otherplanet.pop += 1
 
 # Register the class with the game engine
-game_engine.register_class(Planet)
+game_engine.register(Planet, defaults=__defaults)
 
 
 """ Test the Planet class """

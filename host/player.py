@@ -71,7 +71,7 @@ class Player:
                 break
 
 # Register the class with the game engine
-game_engine.register_class(Player)
+game_engine.register(Player)
 
 
 """ testing """

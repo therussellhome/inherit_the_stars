@@ -11,7 +11,7 @@ class Cost:
         self.effort = int(effort)
 
 # Register the class with the game engine
-game_engine.register_class(Cost)
+game_engine.register(Cost)
 
 
 def cost_test():
