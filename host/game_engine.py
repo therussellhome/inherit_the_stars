@@ -47,6 +47,8 @@ class Reference():
             self.reference = kwargs['reference']
         elif len(args) > 1:
             self.reference = args[0] + '/' + args[1]
+        elif len(args) == 1:
+            self.reference = args[0].__class__.__name__ + '/' + args[0].name
         else:
             self.reference = None
         _references.append(self)
@@ -175,7 +177,7 @@ def _test_unregister():
     if r.unreg:
         print('game_engine._test_unregister - ERROR: failed to unregister object')
     #shutil.rmtree('test_output/')
-    print('game_engine._test_load_save - end')
+    print('game_engine._test_unregister - end')
 
 """ Class used for testing """
 class __TestClass():
