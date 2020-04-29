@@ -3,6 +3,7 @@ from serializable import Serializable
 from cargo import Cargo
 from minerals import Minerals
 from player import Player
+from race import Race
 
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
@@ -217,7 +218,11 @@ class Planet(Serializable):
     """ if outside habitable range return (1..2) bounding at 2 """
     def __calc_range_from_center(self, planet, race_start, race_stop):
         race_radius = float(race_stop - race_start) / 2.0
-        return min([2.0, abs(race_start + race_radius - planet) / race_radius])
+        #print(planet)
+        #print(race_start)
+        #print(race_stop)
+        #print(race_radius)
+        return min([2.0, abs((race_start + race_radius) - planet) / race_radius])
 
     """ Calculate the planet's value for the current player (-100 to 100) """
     """ where """
@@ -245,7 +250,7 @@ class Planet(Serializable):
         x = max(0.0, g - 0.5)
         y = max(0.0, t - 0.5)
         z = max(0.0, r - 0.5)
-        return 100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset
+        return round(100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset)
 
     #def transferpop(self, otherplanet, amount):
     #    for i in range(amount):
@@ -258,7 +263,46 @@ class Planet(Serializable):
 def _test():
     print('planet._test - begin')
     _test_grow_population()
+    _test_calc_planet_value()
     print('planet._test - end')
+
+def test_expect(actual, expect, test_id):
+    if expect != actual:
+        print('ERROR ', test_id, ' got ', actual, ' expected ', expect)
+
+def _test_calc_planet_value_expect(planet, player, g, t, r, g_start, g_stop, t_start, t_stop, r_start, r_stop, expect, test_id):
+    planet.gravity = g
+    planet.temperature = t
+    planet.radiation = r
+    player.race.gravity_start = g_start
+    player.race.gravity_stop = g_stop
+    player.race.temperature_start = t_start
+    player.race.temperature_stop = t_stop
+    player.race.radiation_start = r_start
+    player.race.radiation_stop = r_stop
+    test_expect(planet.calc_planet_value(), expect, test_id)
+
+""" Test the Planet.calc_planet_value method """
+def _test_calc_planet_value():
+    print('planet._test_calc_planet_value - begin')
+    planet = Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+    player = Player(name='test_planet_value')
+    planet.colonize(25000, 'Player/test_planet_value')
+    _test_calc_planet_value_expect(planet, player, 50, 50, 50, 0, 100, 0, 100, 0, 100, 100, "test 1")
+    _test_calc_planet_value_expect(planet, player, 0, 50, 50, 0, 100, 0, 100, 0, 100, 41, "test 2")
+    _test_calc_planet_value_expect(planet, player, 0, -15, 50, 0, 100, 0, 100, 0, 100, 35, "test 3") #bug
+    _test_calc_planet_value_expect(planet, player, 4, 114, 12, 0, 100, 0, 100, 0, 100, 19, "test 4") #bug
+    _test_calc_planet_value_expect(planet, player, 100, -12, 0, 0, 100, 110, 114, 0, 100, 0, "test 5") #bug
+    _test_calc_planet_value_expect(planet, player, 0, 115, 100, 99, 100, -15, -1, 0, 12, -100, "test 6") 
+    _test_calc_planet_value_expect(planet, player, 99, -8, 6, 98, 100, -15, -1, 0, 12, 100, "test 7") 
+    _test_calc_planet_value_expect(planet, player, 30, 30, 30, 0, 100, 0, 100, 0, 100, 60, "test 8")
+    _test_calc_planet_value_expect(planet, player, 30, 90, 60, 0, 100, 0, 100, 0, 100, 41, "test 9")
+    _test_calc_planet_value_expect(planet, player, 18, -1, 40, 0, 100, 0, 100, 0, 100, 23, "test 10") #bug
+    #_test_calc_planet_value_expect(planet, player, 300, 2000, 'me', 0, 100, 0, 100, 0, 100, 100, "test 11")   
+    #_test_calc_planet_value_expect(planet, player, 150, 304, 30, -900, 100, 0, -8000, 0, 100, 89, "test 12")
+    #_test_calc_planet_value_expect(planet, player, -30, 30, -0, 0, 10, 0, 00, 0, 360, 89, "test 13")
+    #_test_calc_planet_value_expect(planet, player, 950, 3300, -430, 0, 100, 0, 1010, 'break', 100, 60, "test 14")
+    print('planet._test_calc_planet_value - end')    
 
 """ Test the Planet.grow_population method """
 def _test_grow_population():
@@ -266,5 +310,5 @@ def _test_grow_population():
     p = Planet()
     player = Player(name='test_grow')
     p.colonize(25000, 'Player/test_grow')
-    p.grow_population()
+    #p.grow_population()
     print('planet._test_grow_population - end')
