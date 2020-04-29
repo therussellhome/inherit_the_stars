@@ -66,9 +66,9 @@ class Defaults:
                 try:
                     value = object.__getattribute__(self, name)
                     if type(default[0]) == int:
-                        return min([default[1], max([default[2], int(value)])])
+                        return max([default[1], min([default[2], int(value)])])
                     elif type(default[0]) == float:
-                        return min([default[1], max([default[2], float(value)])])
+                        return max([default[1], min([default[2], float(value)])])
                     elif type(default[0]) == bool:
                         return bool(value)
                     elif type(default[0]) == type(value):
@@ -240,6 +240,9 @@ def _test_defaults():
     t = __TestClass(name='defaults 1')
     if t.defaulted != 12345:
         print('game_engine._test_defaults - ERROR: failed to get defaults value')
+    t.defaulted = 54321
+    if t.defaulted != 54321:
+        print('game_engine._test_defaults - ERROR: failed to set value')
     t.defaulted = -1
     if t.defaulted != 0:
         print('game_engine._test_defaults - ERROR: failed to enforce range')
