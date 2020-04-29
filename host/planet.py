@@ -21,7 +21,9 @@ _defaults = {
     'is_tax_haven': False,
     'mineral_concentration': Minerals(titanium=100.0, lithium=100.0, silicon=100.0),
     'on_surface': Cargo(),
-    'player': None
+    'player': None,
+    'star_system': None,
+    'distance': 3
 }
 
 """ Document me """
