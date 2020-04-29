@@ -31,7 +31,6 @@ class StarSystem(game_engine.Defaults):
             }
         sun = game_engine.Reference(**planet_args)
         self.planets.append(sun)
-        
         segment = 100.0 / self.num_planets
         for i in range(self.num_planets):
             planet_args['reference'] = 'Planet/' + str(self.name) + ' ' + _roman[i]
