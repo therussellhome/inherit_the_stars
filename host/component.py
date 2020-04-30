@@ -8,6 +8,7 @@ from weapon import Weapon
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'hp': [1, 0, sys.maxsize],
     'mass': [0, 0, sys.maxsize],
     'cargo': [Cargo('cargo_max'=0)],
     'fuel': [0, 0, sys.maxsize],
