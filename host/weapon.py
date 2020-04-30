@@ -13,8 +13,8 @@ __defaults = {
     'accuracy': [100, 0, 100]
 }
 
-""" Represent 'minerals' """
-class Weapon:
+""" Represent 'a weapon' """
+class Weapon(game_engine.Defaults):
     def __init__(self, **kwargs):
         super()._apply_defaults(**kwargs)
 
