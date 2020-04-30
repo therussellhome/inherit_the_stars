@@ -2,6 +2,7 @@ import sys
 import game_engine
 from cargo import Cargo
 from minerals import Minerals
+from facility import Facility
 
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
@@ -18,8 +19,8 @@ __defaults = {
     'factories': [0, 0, sys.maxsize],
     'mines': [0, 0, sys.maxsize],
     'power_plant_tech': [{}],
-    'factory_tech': [{}],
-    'mine_tech': [{}],
+    'factory_tech': [Facility()],
+    'mine_tech': [Facility()],
     'is_tax_haven': [False],
     'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
     'on_surface': [Cargo()],
@@ -41,6 +42,7 @@ class Planet(game_engine.Defaults):
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
 
+#TODO
 #    """ Handle planet renaming """
 #    def __setattr__(self, name, value):
 #        self.__dict__[name] = value
@@ -115,8 +117,8 @@ class Planet(game_engine.Defaults):
     
     """ power plants make energy """
     def generate_energy(self):
-        energy_per_plant = int(self.power_plant_tech.get('energy_per_plant', 100))
-        effort_per_plant = int(self.power_plant_tech.get('effort_per_plant', 1000))
+        energy_per_plant = self.power_plant_tech['output_per_facility']
+        effort_per_plant = self.power_plant_tech['effort_per_facility']
         operate = self.power_plants
         if effort_per_plant > 0:
             max_effort = self.power_plants * effort_per_plant
@@ -150,8 +152,8 @@ class Planet(game_engine.Defaults):
     
     """ mines mine the minerals """
     def mine_minerals(self):
-        minerals_per_mine = float(self.mine_tech.get('minerals_per_mine', 1.0))
-        effort_per_mine = int(self.mine_tech.get('effort_per_mine', 1000))
+        minerals_per_mine = self.mine_tech['output_per_facility']
+        effort_per_mine = self.mine_tech['effort_per_facility']
         operate = self.mines
         if effort_per_mine > 0:
             max_effort = self.mines * effort_per_plant
