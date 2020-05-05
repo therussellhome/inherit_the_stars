@@ -10,11 +10,9 @@ from weapon import Weapon
 __defaults = {
     'mass': [0, 0, sys.maxsize],
     'cargo': [Cargo()],
-    'fuel': [0, 0, sys.maxsize],
+    'fuel_max': [0, 0, sys.maxsize],
     'shield': [0, 0, sys.maxsize],
-    'shield_damage': [0, 0, sys.maxsize],
     'armor': [0, 0, sys.maxsize],
-    'armor_damage': [0, 0, sys.maxsize],
     'weapon': [Weapon()],
     'engine': [Engine()],
     'initiative': [0, 0, sys.maxsize],
