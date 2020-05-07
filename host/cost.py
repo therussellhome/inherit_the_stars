@@ -1,3 +1,6 @@
+import game_engine
+
+""" TODO """
 class Cost:
     def __init__(self, energy, effort, silicon, lithium, titanium, production_capacity):
         self.production_capacity = int(production_capacity)
@@ -6,6 +9,10 @@ class Cost:
         self.silicon = int(silicon)
         self.energy = int(energy)
         self.effort = int(effort)
+
+# Register the class with the game engine
+game_engine.register(Cost)
+
 
 def cost_test():
     test_cost = Cost(234, 249, 78, 27, 823, 100)

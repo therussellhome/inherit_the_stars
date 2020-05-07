@@ -30,7 +30,7 @@ class Player:
         """
         self.race = Race()
         self.name = kwargs.get('name', 'Player_' + str(id(self)))
-        game_engine.register('Player/' + self.name, self)
+        game_engine.register(self)
     
     """ takes the turn """
     def take_turn(self):
@@ -69,6 +69,10 @@ class Player:
             else:
                 self._research_queue[0] = [int(self._research_cost.energy), int(self._research_cost.effort)]
                 break
+
+# Register the class with the game engine
+game_engine.register(Player)
+
 
 """ testing """
 def _test():

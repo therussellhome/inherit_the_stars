@@ -1,8 +1,17 @@
-from serializable import Serializable
+import sys
+import game_engine
+
+""" Default values (default, min, max)  """
+__defaults = {
+    'titanium': [0, 0, sys.maxsize],
+    'lithium': [0, 0, sys.maxsize],
+    'silicon': [0, 0, sys.maxsize]
+}
 
 """ Represent 'minerals' """
-class Minerals(Serializable):
+class Minerals(game_engine.Defaults):
     def __init__(self, **kwargs):
-        self.titanium = kwargs.get('titanium', 0)
-        self.lithium = kwargs.get('lithium', 0)
-        self.silicon = kwargs.get('silicon', 0)
+        super()._apply_defaults(**kwargs)
+
+# Register the class with the game engine
+game_engine.register(Minerals, defaults=__defaults)

@@ -1,7 +1,7 @@
-from serializable import Serializable
+import game_engine
 
-""" Default race values """
-_defaults = {
+""" Default values (default, min, max)  """
+__defaults = {
     'growth_rate': [10, 0, 20],
     'gravity_start': [0, 0, 100],
     'gravity_stop': [100, 0, 100],
@@ -20,23 +20,11 @@ _defaults = {
 }
 
 """ Storage class for race parameters """
-class Race(Serializable):
+class Race(game_engine.Defaults):
+    """ Store values but do not load defaults """
     def __init__(self, **kwargs):
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
 
-    def __getattribute__(self, name):
-        if name in _defaults:
-            default = _defaults[name]
-            try:
-                value = object.__getattribute__(self, name)
-                if type(defaults[name][0]) == type(int):
-                    return min([default[1], max([default[2], int(value)])])
-                elif type(defaults[name][0]) == type(float):
-                    return min([default[1], max([default[2], float(value)])])
-                elif type(defaults[name][0]) == type(bool):
-                    return bool(value)
-            except:
-                return default[0]
-        else:
-            return object.__getattribute__(self, name)
+# Register the class with the game engine
+game_engine.register(Race, defaults=__defaults)
