@@ -128,7 +128,7 @@ class Reference:
             elif obj != None:
                 return obj.__getattribute__(name)
             else:
-                raise AttributeError('"' + str(reference) + '" is not registered')
+                raise AttributeError('"' + str(object.__getattribute__(self, 'reference')) + '" is not registered')
 
     """ Set the attribute in the encapsulated class """
     def __setattr__(self, name, value):
@@ -140,7 +140,7 @@ class Reference:
             if obj != None:
                 obj.__setattr__(name, value)
             else:
-                raise AttributeError('"' + str(reference) + '" is not registered')
+                raise AttributeError('"' + str(object.__getattribute__(self, 'reference')) + '" is not registered')
 
 # Register the class with the game engine
 register(Reference)
