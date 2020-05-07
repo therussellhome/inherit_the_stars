@@ -106,7 +106,7 @@ class Planet(game_engine.Defaults):
             pop *= (-rate + 1.0)
             if pop < maxpop:
                 pop = maxpop
-        self.on_surface.people = int(round(pop, -3))
+        self.on_surface.people = int(round(pop, -3)/1000)
 
     """ calculate how much effort is produced by the population """
     def calculate_effort(self):
@@ -261,7 +261,7 @@ game_engine.register(Planet, defaults=__defaults)
 def _test():
     print('planet._test - begin')
     _test_grow_population()
-    _test_calc_planet_value()
+    #_test_calc_planet_value()
     print('planet._test - end')
 
 def test_expect(actual, expect, test_id):
@@ -272,10 +272,10 @@ def test_expect(actual, expect, test_id):
 def _test_grow_population():
     print('planet._test_grow_population - begin')
     p = Planet()
-    player = Player(name='test_grow')
-    p.colonize(25000, 'Player/test_grow')
+    #player = Player(name='test_grow')
+    p.colonize(250, game_engine.Reference('Player', 'test_grow'))
+    player = p.player
     p.grow_population()
-    p = Planet()
     player.race.growth_rate = 10
     player.race.maximum_population = 10000000
     player.race.gravity_start = 25
@@ -284,7 +284,7 @@ def _test_grow_population():
     player.race.temperature_stop = 75
     player.race.radiation_start = 25
     player.race.radiation_stop = 75
-    p.colonize(250, 'Player/test_grow')
+    planet.on_surface.people = 250
     p.grow_population()
     test_expect(p.on_surface.people, 274, 'grow_test #1')
     p.on_surface.people = 0
@@ -294,56 +294,43 @@ def _test_grow_population():
     p.grow_population()
     test_expect(p.on_surface.people, 0, 'grow_test #3')
     player.race.growth_rate = 0
-    p = Planet()
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     test_expect(p.on_surface.people, 250, 'grow_test #4')
     player.race.growth_rate = -10
-    p = Planet()
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     test_expect(p.on_surface.people, 226, 'grow_test #5')
     p.on_surface.people = 'me'
     p.grow_population()
     test_expect(p.on_surface.people, 0, 'grow_test #6')
     player.race.growth_rate = 'chicken'
-    p = Planet()
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     test_expect(p.on_surface.people, 250, 'grow_test #7')
-    p = Planet()
     p.temperature = 100
     p.gravity = 100
     p.radiation = 100
     player.race.growth_rate = -10
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     test_expect(p.on_surface.people, 276, 'grow_test #8')
     player.race.growth_rate = 10
-    p = Planet()
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     test_expect(p.on_surface.people, 224, 'grow_test #9')
-    #p.temperature = 50
-    #p.gravity = 50
-    #p.radiation = 50
+    p.temperature = 50
+    p.gravity = 50
+    p.radiation = 50
     player.race.growth_rate = -20
-    p = Planet()
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     test_expect(p.on_surface.people, 202, 'grow_test #10')
-    p = Planet()
     p.temperature = 100/4
     p.gravity = 100/4
     p.radiation = 100/4
     player.race.growth_rate = 10
-    p.colonize(250, 'Player/test_grow')
     p.grow_population()
     p.grow_population()
     test_expect(p.on_surface.people, 250, 'grow_test #11')
     player.race.growth_rate = 20
-    p = Planet()
-    p.colonize(100, 'Player/test_grow')
+    p.temperature = 50
+    p.gravity = 50
+    p.radiation = 50
     p.grow_population()
     test_expect(p.on_surface.people, 120, 'grow_test #12')
     p.grow_population()
@@ -351,6 +338,7 @@ def _test_grow_population():
     p.on_surface.population = 10000
     p.grow_population()
     test_expect(p.on_surface.people, 10000, 'grow_test #14')
+    print('planet._test_grow_population - end')
 
 def _test_calc_planet_value_expect(planet, g, t, r, g_start, g_stop, t_start, t_stop, r_start, r_stop, expect, test_id):
     planet.gravity = g
