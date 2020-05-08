@@ -2,6 +2,12 @@ import game_engine
 from cost import Cost
 from race import Race
 
+""" Default values (default, min, max)  """
+__defaults = {
+    'race': [Race()],
+    'ministers': [[Minister()]]
+}
+
 """ the class to build the player """
 class Player:
     """ the line is a string that contains all the player data """
@@ -28,7 +34,6 @@ class Player:
         self._origanal_research_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
         self._research_queue = [[self._research_cost.energy, self._research_cost.effort], [self._origanal_research_cost.energy * (2+self.research_level/2), self._origanal_research_cost.effort * (2+self.research_level/2)]]
         """
-        self.race = Race()
         self.name = kwargs.get('name', 'Player_' + str(id(self)))
         game_engine.register(self)
     
@@ -36,6 +41,15 @@ class Player:
     def take_turn(self):
         self.doResearch()
         self.__effort = 0
+
+    """ Get the requested minister """
+    def get_minister(self, name):
+        for minister in self.ministers:
+            if minister.name == name:
+                return minister
+        minister = Minister(name=name)
+        self.ministers.append(minister)
+        return minister
     
     """ research """
     def do_research(self):
@@ -71,7 +85,7 @@ class Player:
                 break
 
 # Register the class with the game engine
-game_engine.register(Player)
+game_engine.register(Player, defaults=__defaults)
 
 
 """ testing """
