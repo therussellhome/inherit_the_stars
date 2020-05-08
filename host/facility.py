@@ -1,7 +1,7 @@
 import sys
-import game_engine
-from tech import Tech
-from scanner import Scanner
+from . import game_engine
+from .tech import Tech
+from .scanner import Scanner
 
 
 """ Default values (default, min, max)  """

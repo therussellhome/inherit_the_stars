@@ -1,6 +1,6 @@
-import game_engine
-from cost import Cost
-from tech_level import TechLevel
+from . import game_engine
+from .cost import Cost
+from .tech_level import TechLevel
 
 
 """ Default values (default, min, max)  """

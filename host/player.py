@@ -1,6 +1,6 @@
-import game_engine
-from cost import Cost
-from race import Race
+from . import game_engine
+from .cost import Cost
+from .race import Race
 
 """ the class to build the player """
 class Player:

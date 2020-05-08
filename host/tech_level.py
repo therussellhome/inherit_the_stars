@@ -1,5 +1,5 @@
 import sys
-import game_engine
+from . import game_engine
 
 """ Default values (default, min, max)  """
 __defaults = {
