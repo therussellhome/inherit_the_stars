@@ -2,6 +2,7 @@ import sys
 import game_engine
 from cargo import Cargo
 from minerals import Minerals
+from facility import Facility
 from random import randint
 
 """ List of gravity values for display (0..100) """
@@ -19,8 +20,8 @@ __defaults = {
     'factories': [0, 0, sys.maxsize],
     'mines': [0, 0, sys.maxsize],
     'power_plant_tech': [{}],
-    'factory_tech': [{}],
-    'mine_tech': [{}],
+    'factory_tech': [Facility()],
+    'mine_tech': [Facility()],
     'is_tax_haven': [False],
     'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
     'on_surface': [Cargo()],
@@ -48,8 +49,7 @@ class Planet(game_engine.Defaults):
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
 
-                
-
+#TODO
 #    """ Handle planet renaming """
 #    def __setattr__(self, name, value):
 #        self.__dict__[name] = value
@@ -124,8 +124,8 @@ class Planet(game_engine.Defaults):
     
     """ power plants make energy """
     def generate_energy(self):
-        energy_per_plant = int(self.power_plant_tech.get('energy_per_plant', 100))
-        effort_per_plant = int(self.power_plant_tech.get('effort_per_plant', 1000))
+        energy_per_plant = self.power_plant_tech['output_per_facility']
+        effort_per_plant = self.power_plant_tech['effort_per_facility']
         operate = self.power_plants
         if effort_per_plant > 0:
             max_effort = self.power_plants * effort_per_plant
@@ -159,8 +159,8 @@ class Planet(game_engine.Defaults):
     
     """ mines mine the minerals """
     def mine_minerals(self):
-        minerals_per_mine = float(self.mine_tech.get('minerals_per_mine', 1.0))
-        effort_per_mine = int(self.mine_tech.get('effort_per_mine', 1000))
+        minerals_per_mine = self.mine_tech['output_per_facility']
+        effort_per_mine = self.mine_tech['effort_per_facility']
         operate = self.mines
         if effort_per_mine > 0:
             max_effort = self.mines * effort_per_plant
