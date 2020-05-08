@@ -3,6 +3,7 @@ import game_engine
 from cargo import Cargo
 from minerals import Minerals
 from facility import Facility
+from random import randint
 
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
@@ -36,6 +37,12 @@ class Planet(game_engine.Defaults):
         super()._apply_defaults(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Planet_' + str(id(self))
+        if 'temperature' not in kwargs and 'sun' in kwargs and 'distance' in kwargs:
+            self.temperature = round(self.distance * 0.35 + self.sun.temperature * 0.65 + randint(-15, 15))
+        if 'sun' in kwargs:
+            self.radiation = self.sun.radiation
+        if 'gravity' not in kwargs:
+            self.gravity = randint(0, 100)
         if 'mineral_concentration' not in kwargs:
             modifier = self.gravity - 50
             self.mineral_concentration.titanium += modifier
@@ -270,6 +277,82 @@ def test_expect(actual, expect, test_id):
     if expect != actual:
         print('ERROR ', test_id, ' got ', actual, ' expected ', expect)
 
+""" Test the Planet.grow_population method """
+def _test_grow_population():
+    print('planet._test_grow_population - begin')
+    p = Planet()
+    player = Player(name='test_grow')
+    p.colonize(25000, 'Player/test_grow')
+    p.grow_population()
+    p = Planet()
+    player.race.growth_rate = 10
+    player.race.maximum_population = 10000000
+    player.race.gravity_start = 25
+    player.race.gravity_stop = 75
+    player.race.temperature_start = 25
+    player.race.temperature_stop = 75
+    player.race.radiation_start = 25
+    player.race.radiation_stop = 75
+    p.colonize(250, 'Player/test_grow')
+    p.grow_population()
+    test_expect(p.on_surface.people, 274, 'grow_test #1')
+    p.on_surface.people = 0
+    p.grow_population()
+    test_expect(p.on_surface.people, 0, 'grow_test #2')
+    p.on_surface.people = -10
+    p.grow_population()
+    test_expect(p.on_surface.people, 0, 'grow_test #3')
+    p.on_surface.people = 250
+    player.race.growth_rate = 0
+    p.grow_population()
+    test_expect(p.on_surface.people, 250, 'grow_test #4')
+    p.on_surface.people = 250
+    player.race.growth_rate = -10
+    p.grow_population()
+    test_expect(p.on_surface.people, 226, 'grow_test #5')
+    p.on_surface.people = 'me'
+    p.grow_population()
+    test_expect(p.on_surface.people, 0, 'grow_test #6')
+    p.on_surface.people = 250
+    player.race.growth_rate = 'chicken'
+    p.grow_population()
+    test_expect(p.on_surface.people, 250, 'grow_test #7')
+    p.temperature = 100
+    p.gravity = 100
+    p.radiation = 100
+    p.on_surface.people = 250
+    player.race.growth_rate = -10
+    p.grow_population()
+    test_expect(p.on_surface.people, 276, 'grow_test #8')
+    p.on_surface.people = 250
+    player.race.growth_rate = 10
+    p.grow_population()
+    test_expect(p.on_surface.people, 224, 'grow_test #9')
+    p.temperature = 50
+    p.gravity = 50
+    p.radiation = 50
+    p.on_surface.people = 250
+    player.race.growth_rate = -20
+    p.grow_population()
+    test_expect(p.on_surface.people, 202, 'grow_test #10')
+    p.temperature = 100/4
+    p.gravity = 100/4
+    p.radiation = 100/4
+    p.on_surface.people = 250
+    player.race.growth_rate = 10
+    p.grow_population()
+    p.grow_population()
+    test_expect(p.on_surface.people, 250, 'grow_test #11')
+    p.on_surface.people = 100
+    player.race.growth_rate = 20
+    p.grow_population()
+    test_expect(p.on_surface.people, 120, 'grow_test #12')
+    p.grow_population()
+    test_expect(p.on_surface.people, 144, 'grow_test #13')
+    p.on_surface.population = 10000
+    p.grow_population()
+    test_expect(p.on_surface.people, 10000, 'grow_test #14')
+
 def _test_calc_planet_value_expect(planet, g, t, r, g_start, g_stop, t_start, t_stop, r_start, r_stop, expect, test_id):
     planet.gravity = g
     planet.temperature = t
@@ -303,12 +386,3 @@ def _test_calc_planet_value():
     #_test_calc_planet_value_expect(planet, -30, 30, -0, 0, 10, 0, 00, 0, 360, 89, "test 13")
     #_test_calc_planet_value_expect(planet, 950, 3300, -430, 0, 100, 0, 1010, 'break', 100, 60, "test 14")
     print('planet._test_calc_planet_value - end')    
-
-""" Test the Planet.grow_population method """
-def _test_grow_population():
-    print('planet._test_grow_population - begin')
-    #p = Planet()
-    #player = Player(name='test_grow')
-    #p.colonize(25000, 'Player/test_grow')
-    #p.grow_population()
-    print('planet._test_grow_population - end')
