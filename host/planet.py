@@ -94,6 +94,7 @@ class Planet(game_engine.Defaults):
             pop = max(0, int(self.on_surface.people) * 1000)
         except ValueError:
             pop = 0
+        #print(pop)
         try:
             rate = self.player.race.growth_rate / 100.0
         except ValueError:
@@ -103,7 +104,7 @@ class Planet(game_engine.Defaults):
         except ValueError:
             maxpop = 10000000
         planetvalue = self.calc_planet_value()
-        maxpop *= planetvalue
+        maxpop *= planetvalue/100
         h = maxpop / 2.0
         g = float(float(maxpop) / float(h + pop)) / 2.0
         rate = (g * rate)
@@ -115,7 +116,8 @@ class Planet(game_engine.Defaults):
             pop *= (-rate + 1.0)
             if pop < maxpop:
                 pop = maxpop
-        self.on_surface.people = int(round(pop, -3))
+        #print(pop)
+        self.on_surface.people = int(round(pop, -3)/1000)
 
     """ calculate how much effort is produced by the population """
     def calculate_effort(self):
@@ -282,10 +284,10 @@ def test_expect(actual, expect, test_id):
 def _test_grow_population():
     print('planet._test_grow_population - begin')
     p = Planet()
-    player = Player(name='test_grow')
-    p.colonize(25000, 'Player/test_grow')
+    #player = Player(name='test_grow')
+    p.colonize(250, game_engine.Reference('Player', 'test_grow'))
+    player = p.player
     p.grow_population()
-    p = Planet()
     player.race.growth_rate = 10
     player.race.maximum_population = 10000000
     player.race.gravity_start = 25
@@ -294,65 +296,73 @@ def _test_grow_population():
     player.race.temperature_stop = 75
     player.race.radiation_start = 25
     player.race.radiation_stop = 75
-    p.colonize(250, 'Player/test_grow')
+    p.on_surface.people = 250
     p.grow_population()
     test_expect(p.on_surface.people, 274, 'grow_test #1')
+    player.race.growth_rate = 10
     p.on_surface.people = 0
     p.grow_population()
     test_expect(p.on_surface.people, 0, 'grow_test #2')
+    player.race.growth_rate = 10
     p.on_surface.people = -10
     p.grow_population()
     test_expect(p.on_surface.people, 0, 'grow_test #3')
-    p.on_surface.people = 250
     player.race.growth_rate = 0
+    p.on_surface.people = 250
     p.grow_population()
     test_expect(p.on_surface.people, 250, 'grow_test #4')
-    p.on_surface.people = 250
     player.race.growth_rate = -10
+    p.on_surface.people = 250
     p.grow_population()
-    test_expect(p.on_surface.people, 226, 'grow_test #5')
+    test_expect(p.on_surface.people, 226, 'grow_test #5') #ERROR negitive grouth rates not aloud.  
+    player.race.growth_rate = -10
     p.on_surface.people = 'me'
     p.grow_population()
     test_expect(p.on_surface.people, 0, 'grow_test #6')
-    p.on_surface.people = 250
     player.race.growth_rate = 'chicken'
+    p.on_surface.people = 250
     p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #7')
+    test_expect(p.on_surface.people, 250, 'grow_test #7') #ERROR sets growth rates that are strings to 10 not 0.  
     p.temperature = 100
     p.gravity = 100
     p.radiation = 100
-    p.on_surface.people = 250
     player.race.growth_rate = -10
-    p.grow_population()
-    test_expect(p.on_surface.people, 276, 'grow_test #8')
     p.on_surface.people = 250
+    p.grow_population()
+    test_expect(p.on_surface.people, 276, 'grow_test #8') #ERROR negitive grouth rates not aloud.  
     player.race.growth_rate = 10
+    p.on_surface.people = 250
     p.grow_population()
     test_expect(p.on_surface.people, 224, 'grow_test #9')
     p.temperature = 50
     p.gravity = 50
     p.radiation = 50
-    p.on_surface.people = 250
     player.race.growth_rate = -20
+    p.on_surface.people = 220
     p.grow_population()
-    test_expect(p.on_surface.people, 202, 'grow_test #10')
+    test_expect(p.on_surface.people, 202, 'grow_test #10') #ERROR negitive grouth rates not aloud.  
     p.temperature = 100/4
     p.gravity = 100/4
     p.radiation = 100/4
-    p.on_surface.people = 250
     player.race.growth_rate = 10
+    p.on_surface.people = 250
     p.grow_population()
     p.grow_population()
     test_expect(p.on_surface.people, 250, 'grow_test #11')
-    p.on_surface.people = 100
     player.race.growth_rate = 20
+    p.temperature = 50
+    p.gravity = 50
+    p.radiation = 50
+    p.on_surface.people = 100
     p.grow_population()
     test_expect(p.on_surface.people, 120, 'grow_test #12')
     p.grow_population()
-    test_expect(p.on_surface.people, 144, 'grow_test #13')
-    p.on_surface.population = 10000
+    test_expect(p.on_surface.people, 144, 'grow_test #13') #ERROR rounding down not up. 
+    player.race.growth_rate = 20
+    p.on_surface.people = 10000
     p.grow_population()
     test_expect(p.on_surface.people, 10000, 'grow_test #14')
+    print('planet._test_grow_population - end')
 
 def _test_calc_planet_value_expect(planet, g, t, r, g_start, g_stop, t_start, t_stop, r_start, r_stop, expect, test_id):
     planet.gravity = g
