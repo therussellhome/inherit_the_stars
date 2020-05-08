@@ -7,6 +7,7 @@ from tech_level import TechLevel
 __defaults = {
     'cost': [Cost()],
     'level': [TechLevel()],
+    'race_requirements': ['']
 }
 
 """ Represent 'minerals' """
