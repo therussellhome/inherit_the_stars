@@ -15,7 +15,6 @@ __defaults = {
     'radiation': [50, 0, 100],
     'gravity': [50, 0, 100],
     'effort': [0, 0, sys.maxsize],
-    'energy': [0, 0, sys.maxsize],
     'power_plants': [0, 0, sys.maxsize],
     'factories': [0, 0, sys.maxsize],
     'mines': [0, 0, sys.maxsize],
@@ -82,7 +81,7 @@ class Planet(game_engine.Defaults):
         self.pay_energy_tax()
         self.recv_stimulus()
         self.mine_minerals()
-        self.build_stuff()
+        #self.build_stuff()
         self.donate_surplus()
     
     """ Grow the current population """
@@ -134,7 +133,7 @@ class Planet(game_engine.Defaults):
             effort = min([self.effort, max_effort])
             self.effort -= effort
             operate = operate * effort / max_effort
-        self.energy = operate * energy_per_plant
+        self.player.energy = operate * energy_per_plant
     
     """ pays the tax on effort for research """
     def pay_effort_tax(self):
@@ -143,21 +142,6 @@ class Planet(game_engine.Defaults):
                 tax_effort = round(self.effort * (self.player.research_rate / 100))
                 self.player.effort += tax_effort
                 self.effort -= tax_effort
-    
-    """ pays the tax in energy """
-    def pay_energy_tax(self):
-        if self.player.is_valid:
-            if not self.is_tax_haven:
-                tax_energy = round(self.energy * (self.player.tax_rate / 100))
-                self.player.energy += tax_energy
-                self.energy -= tax_energy
-    
-    """ invests energy into planetary economy """
-    def recv_stimulus(self):
-        if self.player.is_valid:
-            stimulus_package = min(self.player.energy, round(self.on_surface.people * self.player.stimulus_package))
-            self.energy += stimulus_package
-            self.player.energy -= stimulus_package
     
     """ mines mine the minerals """
     def mine_minerals(self):
@@ -174,48 +158,48 @@ class Planet(game_engine.Defaults):
         self.on_surface.silicon += round(operate * minerals_per_mine)
         #TODO reduce mineral concentration
     
-    """ build stuff in build queue """
-    def build_stuff(self):
-        #TODO fix method for player access
-        if not self.player.is_valid:
-            return
-        for item in self.build_queue:
-            s_item = item.split(":")
-            for i in range(int(s_item[1])):
-                if s_item[0] == "uf" and self.player.research_level > self.factory_level:
-                    factory_upgrade_cost_minerals = round(0.01 * self.factory_level * self.player.factory_cost.minerals * (self.factories))
-                    factory_upgrade_cost_money = round(0.01 * self.factory_level * self.player.factory_cost.money * (self.factories))
-                    factory_upgrade_cost_effort = round(0.01 * self.factory_level * self.player.factory_cost.effort * (self.factories))
-                    if self.minerals >= factory_upgrade_cost_minerals and self.money >= factory_upgrade_cost_money and self.effort >= factory_upgrade_cost_effort:
-                        self.minerals -= factory_upgrade_cost_minerals
-                        self.money -= factory_upgrade_cost_money
-                        self.effort -= factory_upgrade_cost_effort
-                        self.factory_level += 1
-                if s_item[0] == "um" and self.player.research_level > self.mine_level:
-                    mine_upgrade_cost_minerals = round(0.01 * self.mine_level * self.player.mine_cost.minerals * (self.mines))
-                    mine_upgrade_cost_money = round(0.01 * self.mine_level * self.player.mine_cost.money * (self.mines + 1))
-                    mine_upgrade_cost_effort = round(0.01 * self.mine_level * self.player.mine_cost.effort * (self.mines + 1))
-                    if self.minerals >= mine_upgrade_cost_minerals and self.money >= mine_upgrade_cost_money and self.effort >= mine_upgrade_cost_effort:
-                        self.minerals -= mine_upgrade_cost_minerals
-                        self.money -= mine_upgrade_cost_money
-                        self.effort -= mine_upgrade_cost_effort
-                        self.mine_level += 1
-                if s_item[0] == "f" and self.minerals >= self.player.factory_cost.minerals and self.money >= self.player.factory_cost.money and self.effort >= self.player.factory_cost.effort:
-                    self.minerals -= self.player.factory_cost.minerals
-                    self.money -= self.player.factory_cost.money
-                    self.effort -= self.player.factory_cost.effort
-                    self.factories += 1
-                if s_item[0] == "m" and self.minerals >= self.player.mine_cost.minerals and self.money >= self.player.mine_cost.money and self.effort >= self.player.mine_cost.effort:
-                    self.minerals -= self.player.mine_cost.minerals
-                    self.money -= self.player.mine_cost.money
-                    self.effort -= self.player.mine_cost.effort
-                    self.mines += 1
+#TODO    
+#    """ FIX THIS IN ECONOMY OR MINISTER """
+#    """ build stuff in build queue """
+#    def build_stuff(self):
+#        TODO fix method for player access
+#        if not self.player.is_valid:
+#            return
+#        for item in self.build_queue:
+#            s_item = item.split(":")
+#            for i in range(int(s_item[1])):
+#                if s_item[0] == "uf" and self.player.research_level > self.factory_level:
+#                    factory_upgrade_cost_minerals = round(0.01 * self.factory_level * self.player.factory_cost.minerals * (self.factories))
+#                    factory_upgrade_cost_money = round(0.01 * self.factory_level * self.player.factory_cost.money * (self.factories))
+#                    factory_upgrade_cost_effort = round(0.01 * self.factory_level * self.player.factory_cost.effort * (self.factories))
+#                    if self.minerals >= factory_upgrade_cost_minerals and self.money >= factory_upgrade_cost_money and self.effort >= factory_upgrade_cost_effort:
+#                        self.minerals -= factory_upgrade_cost_minerals
+#                        self.money -= factory_upgrade_cost_money
+#                        self.effort -= factory_upgrade_cost_effort
+#                        self.factory_level += 1
+#                if s_item[0] == "um" and self.player.research_level > self.mine_level:
+#                    mine_upgrade_cost_minerals = round(0.01 * self.mine_level * self.player.mine_cost.minerals * (self.mines))
+#                    mine_upgrade_cost_money = round(0.01 * self.mine_level * self.player.mine_cost.money * (self.mines + 1))
+#                    mine_upgrade_cost_effort = round(0.01 * self.mine_level * self.player.mine_cost.effort * (self.mines + 1))
+#                    if self.minerals >= mine_upgrade_cost_minerals and self.money >= mine_upgrade_cost_money and self.effort >= mine_upgrade_cost_effort:
+#                        self.minerals -= mine_upgrade_cost_minerals
+#                        self.money -= mine_upgrade_cost_money
+#                        self.effort -= mine_upgrade_cost_effort
+#                        self.mine_level += 1
+#                if s_item[0] == "f" and self.minerals >= self.player.factory_cost.minerals and self.money >= self.player.factory_cost.money and self.effort >= self.player.factory_cost.effort:
+#                    self.minerals -= self.player.factory_cost.minerals
+#                    self.money -= self.player.factory_cost.money
+#                    self.effort -= self.player.factory_cost.effort
+#                    self.factories += 1
+#                if s_item[0] == "m" and self.minerals >= self.player.mine_cost.minerals and self.money >= self.player.mine_cost.money and self.effort >= self.player.mine_cost.effort:
+#                    self.minerals -= self.player.mine_cost.minerals
+#                    self.money -= self.player.mine_cost.money
+#                    self.effort -= self.player.mine_cost.effort
+#                    self.mines += 1
     
-    """ give player extra energy and effort and set planet energy and effort to 0 """
+    """ give player extra effort and set planet effort to 0 """
     def donate_surplus(self):
         if self.player.is_valid:
-            self.player.energy += self.energy
-            self.energy = 0
             self.player.effort += self.effort
             self.effort = 0
 
