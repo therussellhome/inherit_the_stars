@@ -8,6 +8,6 @@ class StarSystemTestCase(unittest.TestCase):
     def _test_name_planet():
         self.assertEqual(self.test_system.name, 'Tribond')
         self.assertEqual(self.test_system.planets[0].name, "Tribond's Star")
-        self.assertEqualself.test_system.planets[1].name, 'Tribond I')
+        self.assertEqual(self.test_system.planets[1].name, 'Tribond I')
         self.assertEqual(self.test_system.planets[2].name, 'Tribond II')
 
