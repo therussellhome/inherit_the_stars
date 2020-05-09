@@ -1,5 +1,6 @@
 import json
 import os
+import os.path
 import shutil
 import inspect
 from zipfile import ZipFile, ZipInfo
@@ -154,6 +155,7 @@ def load_game(path):
 
 """ Save game to zip file """
 def save_game(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with ZipFile(path, 'w') as zipfile:
         for name in _registry:
             zipfile.writestr(ZipInfo(name), json.dumps(_registry[name], default=__encode))
@@ -173,94 +175,3 @@ def __decode(values):
             del values['__class__']
             return _classes[classname](**values)
     return values
-
-
-""" Test method """
-def _test():
-    print('game_engine._test - begin')
-    _test_reference()
-    _test_load_save()
-    _test_unregister()
-    _test_defaults()
-    print('game_engine._test - end')
-
-""" Test the reference class """
-def _test_reference():
-    print('game_engine._test_reference - begin')
-    register(__TestClass)
-    t = __TestClass(name='ref 1')
-    r = Reference('__TestClass', 'ref 1')
-    if r.name != 'ref 1':
-        print('game_engine._test_reference - ERROR: attribute access does not work')
-    if r.get_name() != 'ref 1':
-        print('game_engine._test_reference - ERROR: method access does not work')
-    t.name = 'ref 2'
-    if r.get_name() != 'ref 2':
-        print('game_engine._test_reference - ERROR: reference did not refer back to original object')
-    r2 = Reference('__TestClass', 'ref 3')
-    if r2.get_name() != 'ref 3':
-        print('game_engine._test_reference - ERROR: reference did not properly create a new object')
-    print('game_engine._test_reference - end')
-
-""" Test load and save """
-def _test_load_save():
-    print('game_engine._test_load_save - begin')
-    register(__TestClass)
-    try:
-        shutil.rmtree('test_output/')
-    except:
-        pass
-    os.makedirs('test_output/', exist_ok=True)
-    t = __TestClass(name='load 1')
-    save_game('test_output/game_engine_test.zip')
-    t.name = 'load 2'
-    load_game('test_output/game_engine_test.zip')
-    r = Reference('__TestClass', 'load 1')
-    if r.name == None:
-        print('game_engine._test_load_save - ERROR: save_game/load_game did not preserve object')
-    #shutil.rmtree('test_output/')
-    print('game_engine._test_load_save - end')
-
-""" Test unregister """
-def _test_unregister():
-    print('game_engine._test_unregister - begin')
-    register(__TestClass)
-    t = __TestClass(name='unreg 1')
-    t.unreg = True
-    r = Reference('__TestClass', 'unreg 1')
-    unregister(t)
-    if r.unreg:
-        print('game_engine._test_unregister - ERROR: failed to unregister object')
-    print('game_engine._test_unregister - end')
-
-""" Test unregister """
-def _test_defaults():
-    print('game_engine._test_defaults - begin')
-    register(__TestClass, defaults=__TestClass.defaults)
-    t = __TestClass(name='defaults 1')
-    if t.defaulted != 12345:
-        print('game_engine._test_defaults - ERROR: failed to get defaults value')
-    t.defaulted = 54321
-    if t.defaulted != 54321:
-        print('game_engine._test_defaults - ERROR: failed to set value')
-    t.defaulted = -1
-    if t.defaulted != 0:
-        print('game_engine._test_defaults - ERROR: failed to enforce range')
-    print('game_engine._test_defaults - end')
-
-""" Class used for testing """
-class __TestClass(Defaults):
-    defaults = {'defaulted': [12345, 0, 99999]}
-
-    def __init__(self, **kwargs):
-        self.name = 'unnamed'
-        self.unreg = False
-        for k in kwargs:
-            self.__dict__[k] = kwargs[k]
-        register(self)
-    def get_name(self):
-        return self.name
-    def __setattr__(self, name, value):
-        self.__dict__[name] = value
-        if name == 'name':
-            register(self)

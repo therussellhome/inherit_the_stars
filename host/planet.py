@@ -1,9 +1,10 @@
 import sys
-import game_engine
-from cargo import Cargo
-from minerals import Minerals
-from facility import Facility
 from random import randint
+from . import game_engine
+from .cargo import Cargo
+from .minerals import Minerals
+from .minister import Minister
+from .facility import Facility
 
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
@@ -25,6 +26,7 @@ __defaults = {
     'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
     'on_surface': [Cargo()],
     'player': [game_engine.Reference()],
+    'minister': [''],
     'star_system': [game_engine.Reference()]
 }
 
@@ -48,13 +50,6 @@ class Planet(game_engine.Defaults):
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
 
-#TODO
-#    """ Handle planet renaming """
-#    def __setattr__(self, name, value):
-#        self.__dict__[name] = value
-#        if name == 'name':
-#            game_engine.register(self)
-
     """ Return the planet temperature (-260C to 260C) """
     def display_temp(self):
         return str(self.temperature * 4 - 200) + 'C'
@@ -65,27 +60,24 @@ class Planet(game_engine.Defaults):
     
     """ Colonize the planet """
     """ where player is a game_engine.Reference to "Player/<player_name>" """
-    def colonize(self, population, player):
+    def colonize(self, population, player, minister='default'):
         self.on_surface.people = int(population)
         self.player = player
-        #TODO self.power_plant_tech = self.player.max_tech('power_plant')
-        #TODO self.factory_tech = self.player.max_tech('factory')
-        #TODO self.mine_tech = self.player.max_tech('mine')
+        #TODO self.power_plant_tech = self.player.max_tech('Power')
+        #TODO self.factory_tech = self.player.max_tech('Factory')
+        #TODO self.mine_tech = self.player.max_tech('Mine')
 
     """ runs the turn """
     def take_turn(self):
-        self.grow_population()
-        self.calculate_effort()
-        self.pay_effort_tax()
-        self.generate_energy()
-        self.pay_energy_tax()
-        self.recv_stimulus()
-        self.mine_minerals()
+        self._grow_population()
+        self._calculate_effort()
+        self._generate_energy()
+        self._mine_minerals()
         #self.build_stuff()
-        self.donate_surplus()
+        self._donate_surplus()
     
     """ Grow the current population """
-    def grow_population(self):
+    def _grow_population(self):
         # all population calculations are done using people but stored using kT (1000/kT)
         if not self.player.is_valid:
             return
@@ -105,44 +97,44 @@ class Planet(game_engine.Defaults):
         self.on_surface.people = int(round(pop, -3)/1000)
 
     """ calculate how much effort is produced by the population """
-    def calculate_effort(self):
+    def _calculate_effort(self):
         if self.player.is_valid:
             self.effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency / 100)
     
-    """ power plants make energy """
-    def generate_energy(self):
-        energy_per_plant = self.power_plant_tech['output_per_facility']
-        effort_per_plant = self.power_plant_tech['effort_per_facility']
-        operate = self.power_plants
-        if effort_per_plant > 0:
-            max_effort = self.power_plants * effort_per_plant
-            effort = min([self.effort, max_effort])
-            self.effort -= effort
-            operate = operate * effort / max_effort
-        self.player.energy = operate * energy_per_plant
-    
-    """ pays the tax on effort for research """
-    def pay_effort_tax(self):
+    """ Get the requested minister """
+    def _get_minister(self):
         if self.player.is_valid:
-            if not self.is_tax_haven:
-                tax_effort = round(self.effort * (self.player.research_rate / 100))
-                self.player.effort += tax_effort
-                self.effort -= tax_effort
+            for minister in self.player.ministers:
+                if minister.name == self.minister:
+                    return minister
+            minister = Minister(name=self.minister)
+            self.player.ministers.append(minister)
+            return minister
+        return Minister(name=self.minister)
+
+    """ power plants make energy """
+    def _generate_energy(self):
+        if self.player.is_valid:
+            allocation = self._get_minister().power_plants
+            energy_per_plant = self.power_plant_tech['output_per_facility']
+            effort_per_plant = self.power_plant_tech['effort_per_facility']
+            operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
+            self.effort -= operate * effort_per_plant
+            self.player.energy += operate * energy_per_plant
     
     """ mines mine the minerals """
-    def mine_minerals(self):
-        minerals_per_mine = self.mine_tech['output_per_facility']
-        effort_per_mine = self.mine_tech['effort_per_facility']
-        operate = self.mines
-        if effort_per_mine > 0:
-            max_effort = self.mines * effort_per_plant
-            effort = min([self.effort, max_effort])
-            self.effort -= effort
-            operate = operate * effort / max_effort
-        self.on_surface.titanium += round(operate * minerals_per_mine)
-        self.on_surface.lithium += round(operate * minerals_per_mine)
-        self.on_surface.silicon += round(operate * minerals_per_mine)
-        #TODO reduce mineral concentration
+    def _mine_minerals(self):
+        if self.player.is_valid:
+            allocation = self._get_minister().mines
+            minerals_per_mine = self.mine_tech['output_per_facility']
+            effort_per_mine = self.mine_tech['effort_per_facility']
+            operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
+            self.effort -= operate * effort_per_plant
+            #TODO apply mineral concentration
+            self.on_surface.titanium += round(operate * minerals_per_mine)
+            self.on_surface.lithium += round(operate * minerals_per_mine)
+            self.on_surface.silicon += round(operate * minerals_per_mine)
+            #TODO reduce mineral concentration
     
 #TODO    
 #    """ FIX THIS IN ECONOMY OR MINISTER """
@@ -184,7 +176,7 @@ class Planet(game_engine.Defaults):
 #                    self.mines += 1
     
     """ give player extra effort and set planet effort to 0 """
-    def donate_surplus(self):
+    def _donate_surplus(self):
         if self.player.is_valid:
             self.player.effort += self.effort
             self.effort = 0
@@ -192,7 +184,7 @@ class Planet(game_engine.Defaults):
     """ todo """
     """ if inside habitable range return (0..1) """
     """ if outside habitable range return (1..2) bounding at 2 """
-    def __calc_range_from_center(self, planet, race_start, race_stop):
+    def _calc_range_from_center(self, planet, race_start, race_stop):
         race_radius = float(race_stop - race_start) / 2.0
         if race_radius == 0 and planet == race_start:
             return 0.0
@@ -211,12 +203,12 @@ class Planet(game_engine.Defaults):
     """ negative planet value is calculated using the same equasion """
     """ with g, t, and r = 0 if < 1 | g, t, r = value - 1 """
     """ and 100 subtracted from the result """
-    def calc_planet_value(self):
+    def _calc_planet_value(self):
         if not self.player.is_valid:
             return 0.0
-        g = self.__calc_range_from_center(self.gravity, self.player.race.gravity_start, self.player.race.gravity_stop)
-        t = self.__calc_range_from_center(self.temperature, self.player.race.temperature_start, self.player.race.temperature_stop)
-        r = self.__calc_range_from_center(self.radiation, self.player.race.radiation_start, self.player.race.radiation_stop)
+        g = self._calc_range_from_center(self.gravity, self.player.race.gravity_start, self.player.race.gravity_stop)
+        t = self._calc_range_from_center(self.temperature, self.player.race.temperature_start, self.player.race.temperature_stop)
+        r = self._calc_range_from_center(self.radiation, self.player.race.radiation_start, self.player.race.radiation_stop)
         negative_offset = 0
         if t > 1.0 or r > 1.0 or g > 1.0:
             negative_offset = -100.0
@@ -237,127 +229,3 @@ class Planet(game_engine.Defaults):
 
 # Register the class with the game engine
 game_engine.register(Planet, defaults=__defaults)
-
-
-""" Test the Planet class """
-def _test():
-    print('planet._test - begin')
-    _test_grow_population()
-    _test_calc_planet_value()
-    print('planet._test - end')
-
-def test_expect(actual, expect, test_id):
-    if expect != actual:
-        print('ERROR ', test_id, ' got ', actual, ' expected ', expect)
-
-""" Test the Planet.grow_population method """
-def _test_grow_population():
-    print('planet._test_grow_population - begin')
-    p = Planet()
-    p.planet_value = 100
-    #player = Player(name='test_grow')
-    p.colonize(250, game_engine.Reference('Player', 'test_grow'))
-    player = p.player
-    p.grow_population()
-    player.race.growth_rate = 10
-    player.race.maximum_population = 10000000
-    p.on_surface.people = 250
-    p.grow_population()
-    test_expect(p.on_surface.people, 275, 'grow_test #1')
-    player.race.growth_rate = 10
-    p.on_surface.people = 0
-    p.grow_population()
-    test_expect(p.on_surface.people, 0, 'grow_test #2')
-    player.race.growth_rate = 10
-    p.on_surface.people = -10
-    p.grow_population()
-    test_expect(p.on_surface.people, 0, 'grow_test #3')
-    player.race.growth_rate = 0
-    p.on_surface.people = 250
-    p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #4')
-    player.race.growth_rate = -10
-    p.on_surface.people = 250
-    p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #5')
-    player.race.growth_rate = -10
-    p.on_surface.people = 'me'
-    p.grow_population()
-    test_expect(p.on_surface.people, 0, 'grow_test #6')
-    player.race.growth_rate = 'chicken'
-    p.on_surface.people = 250
-    p.grow_population()
-    test_expect(p.on_surface.people, 275, 'grow_test #7')
-    p.planet_value = -100
-    player.race.growth_rate = -10
-    p.on_surface.people = 250
-    p.grow_population()
-    test_expect(p.on_surface.people, 250, 'grow_test #8')
-    player.race.growth_rate = 10
-    p.on_surface.people = 250
-    p.grow_population()
-    test_expect(p.on_surface.people, 225, 'grow_test #9')
-    p.planet_value = 100
-    player.race.growth_rate = -20
-    p.on_surface.people = 220
-    p.grow_population()
-    test_expect(p.on_surface.people, 220, 'grow_test #10')
-    p.planet_value = 0
-    player.race.growth_rate = 10
-    p.on_surface.people = 250
-    p.grow_population()
-    p.grow_population()
-    test_expect(p.on_surface.people, 202, 'grow_test #11')
-    player.race.growth_rate = 20
-    p.planet_value = 100
-    p.on_surface.people = 100
-    p.grow_population()
-    test_expect(p.on_surface.people, 120, 'grow_test #12')
-    p.grow_population()
-    test_expect(p.on_surface.people, 144, 'grow_test #13') #ERROR rounding down not up. 
-    player.race.growth_rate = 20
-    p.on_surface.people = 10000
-    p.grow_population()
-    test_expect(p.on_surface.people, 10000, 'grow_test #14')
-    p.on_surface.people = 9999
-    p.grow_population()
-    test_expect(p.on_surface.people, 10000, 'grow_test #15')
-    print('planet._test_grow_population - end')
-
-def _test_calc_planet_value_expect(planet, g, t, r, g_start, g_stop, t_start, t_stop, r_start, r_stop, expect, test_id):
-    planet.gravity = g
-    planet.temperature = t
-    planet.radiation = r
-    planet.player.race.gravity_start = g_start
-    planet.player.race.gravity_stop = g_stop
-    planet.player.race.temperature_start = t_start
-    planet.player.race.temperature_stop = t_stop
-    planet.player.race.radiation_start = r_start
-    planet.player.race.radiation_stop = r_stop
-    try:
-        test_expect(planet.calc_planet_value(), expect, test_id)
-    except BaseException as e:
-        print('ERROR ', test_id, e)
-
-""" Test the Planet.calc_planet_value method """
-def _test_calc_planet_value():
-    print('planet._test_calc_planet_value - begin')
-    planet = Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-    planet.colonize(25000, game_engine.Reference('Player', 'test_planet_value'))
-    _test_calc_planet_value_expect(planet, 50, 50, 50, 0, 100, 0, 100, 0, 100, 100, "test 1")
-    _test_calc_planet_value_expect(planet, 0, 50, 50, 0, 100, 0, 100, 0, 100, 41, "test 2")
-    _test_calc_planet_value_expect(planet, 0, -15, 50, 0, 100, 0, 100, 0, 100, -9, "test 3") 
-    _test_calc_planet_value_expect(planet, 4, 114, 12, 0, 100, 0, 100, 0, 100, -8, "test 4") 
-    _test_calc_planet_value_expect(planet, 100, -12, 0, 0, 100, 110, 114, 0, 100, -59, "test 5")
-    _test_calc_planet_value_expect(planet, 0, 115, 100, 99, 100, -1, -15, 0, 12, -100, "test 6")
-    _test_calc_planet_value_expect(planet, 99, 1, 6, 98, 100, -1, -15, 0, 12, -59, "test 7")
-    _test_calc_planet_value_expect(planet, 30, 30, 30, 0, 100, 0, 100, 0, 100, 60, "test 8")
-    _test_calc_planet_value_expect(planet, 30, 90, 60, 0, 100, 0, 100, 0, 100, 41, "test 9")
-    _test_calc_planet_value_expect(planet, 18, 1, 40, 0, 100, 0, 100, 0, 100, 23, "test 10") 
-    _test_calc_planet_value_expect(planet, 300, 2000, 'me', 0, 100, 0, 100, 0, 100, -9, "test 11")
-    _test_calc_planet_value_expect(planet, 150, 304, 30, -900, 100, 0, -8000, 0, 100, -59, "test 12")
-    _test_calc_planet_value_expect(planet, -30, 30, -0, 0, 10, 0, 00, 0, 360, -59, "test 13")
-    _test_calc_planet_value_expect(planet, 950, 3300, -430, 0, 100, 0, 1010, 'break', 100, -9, "test 14")
-    _test_calc_planet_value_expect(planet, 70, 33, -430, 0, 100, 0, 68, 90, 100, -59, "test 15")
-    _test_calc_planet_value_expect(planet, 950, 60, 70, 70, 100, 70, 100, 70, 100, -30, "test 16")
-    print('planet._test_calc_planet_value - end')    
