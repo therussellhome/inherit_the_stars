@@ -3,9 +3,9 @@ from .. import *
 
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
-        self.minister = Minister(name='Test_Minister')
+        self.minister = minister.Minister(name='Test_Minister')
 
-    def test_edit():
+    def test_equalization(self):
         self.minister.power_plants = 30
         self.minister.factories = 50
         self.minister.mines = 260
