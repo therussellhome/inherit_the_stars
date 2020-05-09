@@ -41,7 +41,7 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.player.race.maximum_population = 10000000
         self.planet.on_surface.people = 250
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 274)
+        self.assertEqual(self.planet.on_surface.people, 225)
         self.planet.player.race.growth_rate = 10
         self.planet.on_surface.people = 0
         self.planet._grow_population()
@@ -57,7 +57,7 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.player.race.growth_rate = -10
         self.planet.on_surface.people = 250
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 226)
+        self.assertEqual(self.planet.on_surface.people, 250)
         self.planet.player.race.growth_rate = -10
         self.planet.on_surface.people = 'me'
         self.planet._grow_population()
@@ -65,27 +65,27 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.player.race.growth_rate = 'chicken'
         self.planet.on_surface.people = 250
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 250)
+        self.assertEqual(self.planet.on_surface.people, 225)
         self.planet.planet_value = -100
         self.planet.player.race.growth_rate = -10
         self.planet.on_surface.people = 250
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 276)
+        self.assertEqual(self.planet.on_surface.people, 250)
         self.planet.player.race.growth_rate = 10
         self.planet.on_surface.people = 250
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 224)
+        self.assertEqual(self.planet.on_surface.people, 225)
         self.planet.planet_value = 100
         self.planet.player.race.growth_rate = -20
         self.planet.on_surface.people = 220
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 202)
+        self.assertEqual(self.planet.on_surface.people, 220)
         self.planet.planet_value = 0
         self.planet.player.race.growth_rate = 10
         self.planet.on_surface.people = 250
         self.planet._grow_population()
         self.planet._grow_population()
-        self.assertEqual(self.planet.on_surface.people, 250)
+        self.assertEqual(self.planet.on_surface.people, 202)
         self.planet.player.race.growth_rate = 20
         self.planet.planet_value = 100
         self.planet.on_surface.people = 100

@@ -27,6 +27,7 @@ __defaults = {
     'on_surface': [Cargo()],
     'player': [game_engine.Reference()],
     'minister': [''],
+    'planet_value': [0, -100, 100],
     'star_system': [game_engine.Reference()]
 }
 
@@ -84,7 +85,7 @@ class Planet(game_engine.Defaults):
         pop = self.on_surface.people * 1000
         rate = self.player.race.growth_rate / 100.0
         maxpop = self.player.race.population_max
-        maxpop *= self.planet_value / 100 #calc_planet_value()
+        maxpop *= self.planet_value / 100
         if pop < maxpop:
             p = pop/maxpop
             rate -= rate*(p**4)
