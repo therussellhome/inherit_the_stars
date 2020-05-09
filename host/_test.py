@@ -4,6 +4,8 @@ import planet
 import sun
 import star_system
 import player
+import race
+import sun
 import game_engine
 import minister
 
