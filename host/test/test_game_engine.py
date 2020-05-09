@@ -1,3 +1,4 @@
+import os
 import unittest
 from .. import *
 
@@ -22,11 +23,7 @@ class _TestClass(game_engine.Defaults):
 class GameEngineTestCase(unittest.TestCase):
     def onSetup():
         game_engine.register(_TestClass)
-        try:
-            shutil.rmtree('test_output/')
-        except:
-            pass
-        os.makedirs('test_output/', exist_ok=True)
+        os.remove('games/unittest.zip')
 
     def test_reference(self):
         t = _TestClass(name='ref 1')
@@ -61,4 +58,3 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertEqual(t.defaulted, 54321)
         t.defaulted = -1
         self.assertEqual(t.defaulted, 0)
-    

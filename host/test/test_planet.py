@@ -4,7 +4,7 @@ from .. import *
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(25000, game_engine.Reference('Player', 'test_planet_value'))
+        self.planet.colonize(25000, game_engine.Reference('Player', 'test_planet'))
 
     def test_calc_planet_value(self):
         self._test_calc_planet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)
@@ -35,3 +35,68 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.player.race.radiation_start = r_start
         self.planet.player.race.radiation_stop = r_stop
         self.assertEqual(self.planet.calc_planet_value(), expect)
+
+    def _test_grow_population():
+        self.planet.player.race.growth_rate = 10
+        self.planet.player.race.maximum_population = 10000000
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 275)
+        self.planet.player.race.growth_rate = 10
+        self.planet.on_surface.people = 0
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 0)
+        self.planet.player.race.growth_rate = 10
+        self.planet.on_surface.people = -10
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 0)
+        self.planet.player.race.growth_rate = 0
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 250)
+        self.planet.player.race.growth_rate = -10
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 250)
+        self.planet.player.race.growth_rate = -10
+        self.planet.on_surface.people = 'me'
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 0)
+        self.planet.player.race.growth_rate = 'chicken'
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 275)
+        self.planet.planet_value = -100
+        self.planet.player.race.growth_rate = -10
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 250)
+        self.planet.player.race.growth_rate = 10
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 225)
+        self.planet.planet_value = 100
+        self.planet.player.race.growth_rate = -20
+        self.planet.on_surface.people = 220
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 220)
+        self.planet.planet_value = 0
+        self.planet.player.race.growth_rate = 10
+        self.planet.on_surface.people = 250
+        self.planet.grow_population()
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 202)
+        self.planet.player.race.growth_rate = 20
+        self.planet.planet_value = 100
+        self.planet.on_surface.people = 100
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 120)
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 144)
+        self.planet.player.race.growth_rate = 20
+        self.planet.on_surface.people = 10000
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 10000)
+        self.planet.on_surface.people = 9999
+        self.planet.grow_population()
+        self.assertEqual(self.planet.on_surface.people, 10000)

@@ -40,28 +40,3 @@ class Minister(game_engine.Defaults):
             self.research = self.research * 100/total
 
 game_engine.register(Minister, defaults=__defaults)
-
-""" TODO """
-def _test():
-    print('minister._test - begin')
-    _test_init()
-    _test_edit()
-    print('minister._test - end')
-
-""" Tests the .edit function """
-def _test_edit():
-    print('minister._test_edit - begin')
-    minister = Minister(name='Test_Minister')
-    minister.edit(power_plants=30, factories=50, mines=200, defences=30, research=30)
-    if round(minister.power_plants, 1) != 12.5 or round(minister.factories, 1) != 20.8 or round(minister.mines, 1) != 41.7 or round(minister.defences, 1) != 12.5 or round(minister.research, 1) != 12.5:
-        print('edit fail', round(minister.power_plants, 1), round(minister.factories, 1), round(minister.mines, 1), round(minister.defences, 1), round(minister.research, 1))
-        print('edit fail', minister.power_plants, minister.factories, minister.mines, minister.defences, minister.research)
-    print('minister._test_edit - end')
-
-""" tests the starting and defalts """
-def _test_init():
-    print('minister._test_init - begin')
-    minister = Minister(name='Test_Mineister')
-    if minister.power_plants != 20 and minister.factories != 20 and minister.mines != 20 and minister.defences != 20 and minister.research != 20:
-        print('init fail')
-    print('minister._test___init__ - end')
