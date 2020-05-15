@@ -1,16 +1,18 @@
 import sys
 from . import game_engine
-from .minerals import Minerals
+from .cost import Cost
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'energy': [0, 0, sys.maxsize]
+    'cost': [Cost()],
+    'cost_complete': [Cost()],
+    'is_end_item': [False]
 }
 
 """ Represent 'cost' """
-class Cost(Minerals):
+class Buildable(game_engine.Defaults):
     def __init__(self, **kwargs):
         super()._apply_defaults(**kwargs)
 
 # Register the class with the game engine
-game_engine.register(Cost, defaults=__defaults)
+game_engine.register(Buildable, defaults=__defaults)

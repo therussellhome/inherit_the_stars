@@ -19,7 +19,7 @@ __defaults = {
     'power_plants': [0, 0, sys.maxsize],
     'factories': [0, 0, sys.maxsize],
     'mines': [0, 0, sys.maxsize],
-    'power_plant_tech': [{}],
+    'power_plant_tech': [Facility()],
     'factory_tech': [Facility()],
     'mine_tech': [Facility()],
     'is_tax_haven': [False],
@@ -74,7 +74,7 @@ class Planet(game_engine.Defaults):
         self._calculate_effort()
         self._generate_energy()
         self._mine_minerals()
-        #self.build_stuff()
+        #self.auto_build()
         self._donate_surplus()
     
     """ Grow the current population """
@@ -116,17 +116,36 @@ class Planet(game_engine.Defaults):
     """ power plants make energy """
     def _generate_energy(self):
         if self.player.is_valid:
-            allocation = self._get_minister().power_plants
+            allocation = self._get_minister().power_plants / 100
             energy_per_plant = self.power_plant_tech['output_per_facility']
             effort_per_plant = self.power_plant_tech['effort_per_facility']
             operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
             self.effort -= operate * effort_per_plant
             self.player.energy += operate * energy_per_plant
     
+    """ calculates max production capasity """
+    def _calc_max_production_capacity(self):
+        if self.player.is_valid:
+            allocation = self._get_minister().factories / 100
+            production_capacity_per_factory = self.factory_tech['output_per_facility']
+            effort_per_factory = self.factory_tech['effort_per_facility']
+            operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
+            effort = operate * effort_per_plant
+            max_production_capacity = operate * production_capacity_per_plant
+            return max_production_capacity
+        
+    """ calculates effort cost of spending production capasity  """
+    def _spend_production_capacity(self, used=1):
+        if self.player.is_valid:
+            allocation = self._get_minister().factories / 100 * used
+            effort_per_factory = self.factory_tech['effort_per_facility']
+            operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
+            self.effort -= operate * effort_per_plant
+    
     """ mines mine the minerals """
     def _mine_minerals(self):
         if self.player.is_valid:
-            allocation = self._get_minister().mines
+            allocation = self._get_minister().mines / 100
             minerals_per_mine = self.mine_tech['output_per_facility']
             effort_per_mine = self.mine_tech['effort_per_facility']
             operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
@@ -137,44 +156,58 @@ class Planet(game_engine.Defaults):
             self.on_surface.silicon += round(operate * minerals_per_mine)
             #TODO reduce mineral concentration
     
+    """ """
+    def check_should_build_facility(self):
+        if not self.player.is_valid:
+            return
+        minister = self._get_minister()
+        scanner_tech = self.player.max_tech('planetary_scanner')
+        penetrating_tech = self.player.max_tech('planetary_penetrating')
+        if minister.build_scanner_after_num_facilitys <= self.on_surface.people and self.scanner_tech != scanner_tech:
+            self.scanner_tech = scanner_tech
+            self.build_queue.append(self.scanner_tech)
+        if minister.build_penetrating_after_num_facilitys <= self.on_surface.people and self.penetrating_tech != penetrating_tech:
+            self.penetrating_tech = penetrating_tech
+            self.build_queue.append(self.penetrating_tech)
+        remaining_production = _calc_max_production_capacity()
+        
+    
 #TODO    
-#    """ FIX THIS IN ECONOMY OR MINISTER """
-#    """ build stuff in build queue """
-#    def build_stuff(self):
-#        TODO fix method for player access
-#        if not self.player.is_valid:
-#            return
-#        for item in self.build_queue:
-#            s_item = item.split(":")
-#            for i in range(int(s_item[1])):
-#                if s_item[0] == "uf" and self.player.research_level > self.factory_level:
-#                    factory_upgrade_cost_minerals = round(0.01 * self.factory_level * self.player.factory_cost.minerals * (self.factories))
-#                    factory_upgrade_cost_money = round(0.01 * self.factory_level * self.player.factory_cost.money * (self.factories))
-#                    factory_upgrade_cost_effort = round(0.01 * self.factory_level * self.player.factory_cost.effort * (self.factories))
-#                    if self.minerals >= factory_upgrade_cost_minerals and self.money >= factory_upgrade_cost_money and self.effort >= factory_upgrade_cost_effort:
-#                        self.minerals -= factory_upgrade_cost_minerals
-#                        self.money -= factory_upgrade_cost_money
-#                        self.effort -= factory_upgrade_cost_effort
-#                        self.factory_level += 1
-#                if s_item[0] == "um" and self.player.research_level > self.mine_level:
-#                    mine_upgrade_cost_minerals = round(0.01 * self.mine_level * self.player.mine_cost.minerals * (self.mines))
-#                    mine_upgrade_cost_money = round(0.01 * self.mine_level * self.player.mine_cost.money * (self.mines + 1))
-#                    mine_upgrade_cost_effort = round(0.01 * self.mine_level * self.player.mine_cost.effort * (self.mines + 1))
-#                    if self.minerals >= mine_upgrade_cost_minerals and self.money >= mine_upgrade_cost_money and self.effort >= mine_upgrade_cost_effort:
-#                        self.minerals -= mine_upgrade_cost_minerals
-#                        self.money -= mine_upgrade_cost_money
-#                        self.effort -= mine_upgrade_cost_effort
-#                        self.mine_level += 1
-#                if s_item[0] == "f" and self.minerals >= self.player.factory_cost.minerals and self.money >= self.player.factory_cost.money and self.effort >= self.player.factory_cost.effort:
-#                    self.minerals -= self.player.factory_cost.minerals
-#                    self.money -= self.player.factory_cost.money
-#                    self.effort -= self.player.factory_cost.effort
-#                    self.factories += 1
-#                if s_item[0] == "m" and self.minerals >= self.player.mine_cost.minerals and self.money >= self.player.mine_cost.money and self.effort >= self.player.mine_cost.effort:
-#                    self.minerals -= self.player.mine_cost.minerals
-#                    self.money -= self.player.mine_cost.money
-#                    self.effort -= self.player.mine_cost.effort
-#                    self.mines += 1
+    """ FIX THIS IN ECONOMY OR MINISTER """
+    """ build stuff in build queue """
+    def auto_build(self):
+        if not self.player.is_valid:
+            return
+        keep_going = True
+        while keep_going:
+            item = self.build_queue[0]
+            percent_t = math.ceil(item.cost.titanium /100)
+            percent_l = math.ceil(item.cost.lithium /100)
+            percent_s = math.ceil(item.cost.silicon /100)
+            percent_e = math.ceil(item.cost.energy /100)
+            while item.cost.titanium != item.cost_complete.titanium or item.cost.lithium != item.cost_complete.lithium or item.cost.silicon != item.cost_complete.silicon or item.cost.energy != item.cost_complete.energy:
+                spend_t = min([percent_t, item.cost.titanium - item.cost_complete.titanium])
+                spend_l = min([percent_l, item.cost.lithium - item.cost_complete.lithium])
+                spend_s = min([percent_s, item.cost.silicon - item.cost_complete.silicon])
+                spend_e = min([percent_e, item.cost.energy - item.cost_complete.energy])
+                if spend_t <= self.minerals.titanium and spend_l <= self.minerals.lithium and spend_s <= self.minerals.silicon and spend_e <= self.player.energy and (spend_t + spend_l + spend_s) <= remaining_production:
+                    self.minerals.titanium -= spend_t
+                    self.minerals.lithium -= spend_l
+                    self.minerals.silicon -= spend_s
+                    self.player.energy -= spend_e
+                    item.cost_complete.titanium += spend_t
+                    item.cost_complete.lithium += spend_l
+                    item.cost_complete.silicon += spend_s
+                    item.cost_complete.energy += spend_e
+                    remaining_production -= spend_t + spend_l + spend_s
+                else:
+                    keep_going = False
+        max_cap = self._calc_max_production_capacity()
+        self._spend_production_capacity((max_cap-remaining_production)/max_cap)
+        
+        
+        
+    #
     
     """ give player extra effort and set planet effort to 0 """
     def _donate_surplus(self):
