@@ -1,4 +1,4 @@
-import game_engine
+from . import game_engine
 from random import randint
 
 _defaults = {
