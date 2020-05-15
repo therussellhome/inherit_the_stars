@@ -18,6 +18,8 @@ class StarSystem(game_engine.Defaults):
         super()._apply_defaults(**kwargs)
         if 'name' not in kwargs:
             self.name = 'System_' + str(id(self))
+        if 'num_planets' not in kwargs:
+            self.num_planets = round(random() * 5)
         if len(self.planets) == 0:
             self._create_system()
         game_engine.register(self)
