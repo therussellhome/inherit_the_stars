@@ -13,7 +13,3 @@ class Sun(Planet):
 
 # Register the class with the game engine
 game_engine.register(Sun, defaults=__defaults)
-
-""" TODO """
-def _test():
-    pass

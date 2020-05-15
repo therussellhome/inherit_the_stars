@@ -44,23 +44,3 @@ class StarSystem(game_engine.Defaults):
 
 # Register the class with the game engine
 game_engine.register(StarSystem, defaults=_defaults)
-
-
-def _test():
-    print('star_system._test - begin')
-    _test_name_planet()
-    print('star_system._test - end')
-
-def _test_name_planet():
-    print('star_system._test_name_planet - begin')
-    test_system = StarSystem(name='Tribond', num_planets=6)
-    if test_system.name != 'Tribond':
-        print('name fail', test_system.name)
-    if test_system.planets[0].name != "Tribond's Star":
-        print('planet name fail', test_system.planets[0].name)
-    if test_system.planets[1].name != 'Tribond I':
-        print('planet name fail', test_system.planets[1].name)
-    if test_system.planets[2].name != 'Tribond II':
-        print('planet name fail', test_system.planets[2].name)
-    print('star_system._test_name_planet - end')
-    

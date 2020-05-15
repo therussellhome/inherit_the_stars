@@ -1,6 +1,6 @@
 import sys
-import game_engine
-from minerals import Minerals
+from . import game_engine
+from .minerals import Minerals
 
 """ Default values (default, min, max)  """
 __defaults = {

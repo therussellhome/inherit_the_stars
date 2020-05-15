@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html style="height: 100%"><head>
+<meta charset="utf-8"/>
+<title>Inherit the Stars!</title>
+<style>
+body { 
+	background-color: #000044;
+    background-image: url("background.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: white; 
+    text-shadow: 0 0 3px black;
+    height: 100%;
+    margin: 0;
+}
+div.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+div.title1 {
+    color: silver;
+    font-size: 600%;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 0 10px black, 0 0 15px white;
+}
+div.title2 {
+    color: silver;
+    font-size: 1050%;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 0 10px black, 0 0 15px white;
+}
+div.title_left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: silver;
+    font-size: 180%;
+    text-shadow: 0 0 10px black, 0 0 15px white;
+}
+div.title_right {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+a.home {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    text-align: center;
+    text-decoration: none;
+    display: none;
+}
+button {
+    font-size: 100%;
+    font-weight: bold;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: Transparent;
+    color: white; 
+    text-shadow: 0 0 3px black;
+    border: 2px solid white;
+}
+button:hover {
+    background-color: white;
+    color: black;
+    text-shadow: 0 0 3px silver;
+}
+button.screen_button {
+    padding: 16px 32px;
+    margin: 4px 2px;
+}
+button.tab_button {
+}
+button.circle {
+    width: 27px;
+    height: 27px;
+    padding: 0;
+    margin-left: 10px;
+    border-radius: 50%;
+}
+table {
+    border: 0;
+}
+td {
+    padding-right: 1em;
+    font-weight: bold;
+}
+</style>
+<script>
+function show_screen(show) {
+    for(screen of document.getElementsByClassName('screen')) {
+        screen.style.display = 'none';
+    }
+    show_tab('new_game_galaxy');
+    document.getElementById(show + '_screen').style.display = 'block';
+}
+
+function show_tab(show) {
+    for(tab of document.getElementsByClassName('tab')) {
+        tab.style.display = 'none';
+    }
+    document.getElementById(show + '_tab').style.display = 'block';
+    for(button of document.getElementsByClassName('tab_button')) {
+        button.style.backgroundColor = 'Transparent';
+        button.style.color = 'white';
+    }
+    document.getElementById(show + '_tab_button').style.backgroundColor = 'white';
+    document.getElementById(show + '_tab_button').style.color = 'black';
+}
+
+function submit(form, save) {
+    var values = {};
+    for(input of document.getElementsByClassName(form + '_input')) {
+        values[input.id] = input.value;
+    }
+    fetch('/' + form, { method: 'post', body: JSON.stringify(values) }).then(function(response) {
+        return response.json();
+    }).then(function(json) {
+        for(key in json) {
+            document.getElementById(key).value = json[key];
+        }
+    })
+}
+
+function shutdown() {
+    if(confirm('Shutdown?')) {
+        show_screen('shutdown');
+        fetch('/shutdown', { method: 'post' });
+    }
+}
+</script>
+</head><body>
+<div class="center">
+
+<div class="screen" id="title_screen">
+    <div class="title1">INHERIT THE</div>
+    <div class="title2">STARS!</div>
+    <table width="100%"><tr>
+        <td style="text-align: left"><button class="screen_button" onclick="show_screen('new_game')">New Game</button></td>
+        <td style="text-align: center"><button class="screen_button" onclick="show_screen('open_game')">Open Game</button></td>
+        <td style="text-align: right"><button class="screen_button" onclick="show_screen('race_editor')">Race Editor</button></td>
+    </tr></table>
+</div>
+
+<div class="screen" id="help_screen" style="display: none">
+    <table width="100%"><tr>
+        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
+    </tr></table>
+</div>
+
+<div class="screen" id="shutdown_screen" style="display: none; font-size: 300%">
+    Thank you for playing
+</div>
+
+<div class="screen" id="new_game_screen" style="display: none">
+    <button class="tab_button" id="new_game_galaxy_tab_button" onclick="show_tab('new_game_galaxy')">Galaxy</button>
+    <button class="tab_button" id="new_game_players_tab_button" onclick="show_tab('new_game_players')">Players</button>
+    <button class="tab_button" id="new_game_victory_tab_button" onclick="show_tab('new_game_victory')">Victory Conditions</button>
+    <div style="border: 3px solid white; padding: 6px; padding-right: 12px">
+        <div class="tab" id="new_game_galaxy_tab">
+            Game Name<br/>
+            <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Diameter of the galaxy (in ly): X axis<br/>
+            <input class="new_game_input" type="number" min="0" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+        </div>
+        <div class="tab" id="new_game_players_tab" style="display: none">
+            players
+        </div>
+        <div class="tab" id="new_game_victory_tab" style="display: none">
+            victory
+        </div>
+    </div>
+    <br/>
+    <table width="100%"><tr>
+        <td style="text-align: left"><button class="screen_button" onclick="submit('new_game', true)">Create</button></td>
+        <td style="text-align: center"><button class="screen_button" onclick="reset_new_game()">Reset</button></td>
+        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
+    </tr></table>
+</div>
+
+<div class="screen" id="open_game_screen" style="display: none">
+    <table width="100%"><tr>
+        <td style="text-align: left"><button class="screen_button" onclick="open_game()">Open</button></td>
+        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
+    </tr></table>
+</div>
+
+<div class="screen" id="race_editor_screen" style="display: none">
+    <table width="100%"><tr>
+        <td style="text-align: left"><button class="screen_button" onclick="save_race()">Save</button></td>
+        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
+    </tr></table>
+</div>
+
+</div>
+<div class="title_left">INHERIT THE STARS!</div>
+<div class="title_right">
+    <button class="circle" onclick="show_screen('help')">?</button>
+    <button class="circle" onclick="shutdown()">X</button>
+</div>
+</body></html>
