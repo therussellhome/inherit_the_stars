@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-import json
 import http.server
 import socketserver
+from host import *
 
 class Httpd(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
@@ -10,14 +10,17 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.server._BaseServer__shutdown_request = True
         else:
             length = int(self.headers['content-length'])
-            form = json.loads(self.rfile.read(length).decode('utf-8'))
+            form = game_engine.from_json(self.rfile.read(length).decode('utf-8'))
             print(form)
+            response = None
             if self.path == '/new_game':
                 response = self.new_game(form)
+            elif self.path == '/open_game':
+                response = open_game.OpenGame(**form)
             self.send_response(200)
             self.end_headers()
             if response:
-                self.wfile.write(json.dumps(response).encode())
+                self.wfile.write(game_engine.to_json(response).encode())
 
     def do_GET(self):
         if self.path not in ['/background.jpg']:

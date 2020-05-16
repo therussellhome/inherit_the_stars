@@ -1,8 +1,8 @@
+import copy
 import json
-import os
-import os.path
 import shutil
 import inspect
+from pathlib import Path
 from zipfile import ZipFile, ZipInfo
 
 """ Private registry of all creatable classes """
@@ -76,7 +76,7 @@ class Defaults:
                         return value
                 except:
                     pass
-                return default[0]
+                return copy.copy(default[0])
         return object.__getattribute__(self, name)
 
     """ Load all defaults into the object """
@@ -147,18 +147,30 @@ class Reference:
 register(Reference)
 
 
+""" Decode an object """
+def from_json(obj):
+	return json.loads(obj, object_hook=__decode)
+
+
+""" Encode an object """
+def to_json(obj):
+	return json.dumps(obj, default=__encode)
+
+
 """ Load game from zip file """
-def load_game(path):
-    with ZipFile(path, 'r') as zipfile:
+def load_game(game_name):
+    game_file = Path.home() / 'stars' / 'games' / (game_name + '.zip')
+    with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
-            register(json.loads(zipfile.read(info), object_hook=__decode))
+            register(from_json(zipfile.read(info)))
 
 """ Save game to zip file """
-def save_game(path):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with ZipFile(path, 'w') as zipfile:
+def save_game(game_name):
+    game_file = Path.home() / 'stars' / 'games' / (game_name + '.zip')
+    game_file.parent.mkdir(parents=True, exist_ok=True)
+    with ZipFile(game_file, 'w') as zipfile:
         for name in _registry:
-            zipfile.writestr(ZipInfo(name), json.dumps(_registry[name], default=__encode))
+            zipfile.writestr(ZipInfo(name), to_json(_registry[name]))
 
 
 """ Custom encoder to handle classes """

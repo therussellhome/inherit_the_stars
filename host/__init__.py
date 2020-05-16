@@ -1,1 +1,1 @@
-__all__ = ['game_engine', 'planet', 'player', 'minister']
+__all__ = ['game_engine', 'planet', 'player', 'minister', 'open_game']

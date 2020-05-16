@@ -4,7 +4,7 @@
 <title>Inherit the Stars!</title>
 <style>
 body { 
-	background-color: #000044;
+    background-color: #000044;
     background-image: url("background.jpg");
     background-attachment: fixed;
     background-size: cover;
@@ -15,46 +15,33 @@ body {
     height: 100%;
     margin: 0;
 }
-div.center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.vfill {
     height: 100%;
 }
-div.title1 {
-    color: silver;
-    font-size: 600%;
-    font-weight: bold;
-    text-align: center;
-    text-shadow: 0 0 10px black, 0 0 15px white;
-}
-div.title2 {
-    color: silver;
-    font-size: 1050%;
-    font-weight: bold;
-    text-align: center;
-    text-shadow: 0 0 10px black, 0 0 15px white;
-}
-div.title_left {
+div.center_middle {
+    margin: 0;
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+div.title_screen {
+    color: silver;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 0 10px black, 0 0 15px white;
+}
+div.title_small {
+    padding: 14px;
+    text-align: right;
     color: silver;
     font-size: 180%;
     text-shadow: 0 0 10px black, 0 0 15px white;
-}
-div.title_right {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-a.home {
-    position: absolute;
-    top: 1em;
-    left: 1em;
-    text-align: center;
-    text-decoration: none;
     display: none;
+}
+div.input {
+    width: 600px;
+    margin: auto;
 }
 button {
     font-size: 100%;
@@ -70,16 +57,27 @@ button {
     text-shadow: 0 0 3px black;
     border: 2px solid white;
 }
-button:hover {
+button:hover, button:focus, button:active {
+    background-color: silver;
+    color: black;
+    text-shadow: 0 0 3px white;
+}
+button.selected {
     background-color: white;
     color: black;
     text-shadow: 0 0 3px silver;
 }
-button.screen_button {
+button.sidebar {
     padding: 16px 32px;
-    margin: 4px 2px;
+    width: 100%;
+    white-space: nowrap;
+}
+button.screen_button {
+    margin-top: 20px;
+    padding: 8px 16px;
 }
 button.tab_button {
+    padding-right: 1em;
 }
 button.circle {
     width: 27px;
@@ -91,18 +89,38 @@ button.circle {
 table {
     border: 0;
 }
-td {
-    padding-right: 1em;
-    font-weight: bold;
+input.label {
+    color: white;
+    background-color: Transparent;
+    border: 0;
 }
 </style>
 <script>
 function show_screen(show) {
+    // Hide all screens
     for(screen of document.getElementsByClassName('screen')) {
         screen.style.display = 'none';
     }
-    show_tab('new_game_galaxy');
+    // Show selected screen
     document.getElementById(show + '_screen').style.display = 'block';
+    // Show/hide small title
+    if(show == 'title') {
+        document.getElementById('title_small').style.display = 'none';
+    } else {
+        document.getElementById('title_small').style.display = 'block';
+        // Reset tabs and load defaults
+        if(show == 'new_game') {
+            submit(show, false, true);
+            show_tab('new_game_galaxy');
+        } else if(show == 'open_game') {
+            submit(show, false, true);
+            show_tab('open_game');
+        }
+    }
+    for(button of document.getElementsByClassName('sidebar')) {
+        button.classList.remove('selected');
+    }
+    document.getElementById(show + '_sidebar').classList.add('selected');
 }
 
 function show_tab(show) {
@@ -111,23 +129,67 @@ function show_tab(show) {
     }
     document.getElementById(show + '_tab').style.display = 'block';
     for(button of document.getElementsByClassName('tab_button')) {
-        button.style.backgroundColor = 'Transparent';
-        button.style.color = 'white';
+        button.classList.remove('selected');
     }
-    document.getElementById(show + '_tab_button').style.backgroundColor = 'white';
-    document.getElementById(show + '_tab_button').style.color = 'black';
+    document.getElementById(show + '_tab_button').classList.add('selected');
+}
+
+function submit(form) {
+    submit(form, false, false);
 }
 
 function submit(form, save) {
+    submit(form, save, false);
+}
+
+function submit(form, save, load) {
     var values = {};
-    for(input of document.getElementsByClassName(form + '_input')) {
-        values[input.id] = input.value;
+    if(!load) {
+        for(input of document.getElementsByClassName(form + '_input')) {
+            if(input.matches('[type="checkbox"]')) {
+                values[input.id] = input.checked;
+            } else {
+                values[input.id] = input.value;
+            }
+        }
+        if(save) {
+            values['submit'] = true;
+        }
     }
     fetch('/' + form, { method: 'post', body: JSON.stringify(values) }).then(function(response) {
         return response.json();
     }).then(function(json) {
         for(key in json) {
-            document.getElementById(key).value = json[key];
+            input = document.getElementById(key);
+            if(input != null) {
+                if(input.nodeName == 'SELECT') {
+                    var options = []
+                    for(var i = 0; i < input.length; i++) {
+                        options.push(input.options[i].text);
+                    }
+                    for(opt_text of json['options_' + key]) {
+                        if(!options.includes(opt_text)) {
+                            var new_option = document.createElement("option");
+                            new_option.text = opt_text;
+                            input.add(new_option); 
+                        }
+                        options.splice(options.indexOf(opt_text), 1);
+                    }
+                    for(opt_text in options) {
+                        for(var i = 0; i < input.length; i++) {
+                            if(input.options[i].text == opt_text) {
+                                input.remove(i);
+                                break;
+                            }
+                        }
+                    }
+                    input.value = json[key];
+                } else if(input.matches('[type="checkbox"]')) {
+                    input.checked = json[key];
+                } else {
+                    input.value = json[key];
+                }
+            }
         }
     })
 }
@@ -140,72 +202,144 @@ function shutdown() {
 }
 </script>
 </head><body>
-<div class="center">
+<table class="vfill"><tr><td><table class="vfill">
+    <tr><td><button class="sidebar" id="new_game_sidebar" onclick="show_screen('new_game')">New Game</button></td></tr>
+    <tr><td><button class="sidebar" id="open_game_sidebar" onclick="show_screen('open_game')">Open Game</button></td></tr>
+    <tr><td><button class="sidebar" id="race_editor_sidebar" onclick="show_screen('race_editor')">Race Editor</button></td></tr>
+    <tr><td class="vfill"></td></tr>
+    <tr><td><button class="sidebar" id="help_sidebar" onclick="show_screen('help')">Help</button></td></tr>
+    <tr><td><button class="sidebar" id="shutdown_sidebar" onclick="shutdown()">Shutdown</button></td></tr>
+</table></td><td style="width: 100%; vertical-align: top">
+    <div class="title_small" id="title_small">INHERIT THE STARS!</div>
 
-<div class="screen" id="title_screen">
-    <div class="title1">INHERIT THE</div>
-    <div class="title2">STARS!</div>
-    <table width="100%"><tr>
-        <td style="text-align: left"><button class="screen_button" onclick="show_screen('new_game')">New Game</button></td>
-        <td style="text-align: center"><button class="screen_button" onclick="show_screen('open_game')">Open Game</button></td>
-        <td style="text-align: right"><button class="screen_button" onclick="show_screen('race_editor')">Race Editor</button></td>
-    </tr></table>
+    <div class="screen" id="help_screen" style="display: none">
+        Put stuff here
+    </div>
+
+    <div class="screen input" id="new_game_screen" style="display: none">
+        <button class="tab_button" id="new_game_galaxy_tab_button" onclick="show_tab('new_game_galaxy')">Galaxy</button>
+        <button class="tab_button" id="new_game_players_tab_button" onclick="show_tab('new_game_players')">Players</button>
+        <button class="tab_button" id="new_game_victory_tab_button" onclick="show_tab('new_game_victory')">Victory Conditions</button>
+        <div style="border: 2px solid white; padding: 6px; padding-right: 12px">
+            <div class="tab" id="new_game_galaxy_tab">
+                Game Name<br/>
+                <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="submit('new_game')"></input><br/><br/>
+                Diameter of the galaxy (in ly): X axis<br/>
+                <input class="new_game_input" type="number" min="0" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game')"></input><br/><br/>
+            </div>
+            <div class="tab" id="new_game_players_tab" style="display: none">
+                players
+            </div>
+            <div class="tab" id="new_game_victory_tab" style="display: none">
+                victory
+            </div>
+        </div>
+        <div style="text-align: right">
+            <button class="screen_button" onclick="submit('new_game', true)">Create</button>
+            <button class="screen_button" onclick="reset_new_game()">Reset</button>
+        </div>
+    </div>
+
+    <div class="screen input" id="open_game_screen" style="display: none">
+        <button class="tab_button" id="open_game_tab_button" onclick="show_tab('open_game_tab')">Game</button>
+        <div style="border: 2px solid white; padding: 6px; padding-right: 12px">
+            <div class="tab" id="open_game_tab">
+                Game Name<br/>
+                <select class="open_game_input" id="open_game_list" style="width: 100%" onchange="submit('open_game')"></select><br/><br/>
+                <input class="open_game_input" type="checkbox" id="open_game_auto" onchange="submit('open_game')"></input> Auto Generate<br/><br/>
+                <table style="padding-left: 15px">
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player01" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player01_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player02" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player02_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player03" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player03_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player04" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player04_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player05" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player05_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player06" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player06_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player07" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player07_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player08" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player08_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player09" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player09_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player10" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player10_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player11" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player11_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player12" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player12_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player13" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player13_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player14" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player14_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player15" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player15_status" disabled="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player16" disabled="true"></input></td>
+                        <td><input class="open_game_input label" type="text" id="open_game_player16_status" disabled="true"></input></td>
+                    </tr>
+                </table><br/>
+                Launch Player<br/>
+                <select class="open_game_input" id="open_game_player" style="width: 100%" onchange="submit('open_game')"></select>
+            </div>
+        </div>
+        <div style="text-align: right">
+            <button class="screen_button" onclick="submit('open_game', true)">Load Game</button>
+            <button class="screen_button" onclick="alert('launch')">Launch Player</button>
+        </div>
+    </div>
+
+    <div class="screen input" id="race_editor_screen" style="display: none">
+        TODO<br/>
+        <div style="text-align: right">
+            <button class="screen_button" onclick="submit('race_editor', true)">Save</button>
+            <button class="screen_button" onclick="reset_race_editor()">Reset</button>
+        </div>
+    </div>
+
+</td></tr></table>
+
+<div class="screen center_middle title_screen" id="title_screen">
+    <div style="font-size: 600%">INHERIT THE</div>
+    <div style="font-size: 1050%">STARS!</div>
 </div>
 
-<div class="screen" id="help_screen" style="display: none">
-    <table width="100%"><tr>
-        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
-    </tr></table>
-</div>
-
-<div class="screen" id="shutdown_screen" style="display: none; font-size: 300%">
+<div class="screen center_middle" id="shutdown_screen" style="display: none; font-size: 300%">
     Thank you for playing
 </div>
 
-<div class="screen" id="new_game_screen" style="display: none">
-    <button class="tab_button" id="new_game_galaxy_tab_button" onclick="show_tab('new_game_galaxy')">Galaxy</button>
-    <button class="tab_button" id="new_game_players_tab_button" onclick="show_tab('new_game_players')">Players</button>
-    <button class="tab_button" id="new_game_victory_tab_button" onclick="show_tab('new_game_victory')">Victory Conditions</button>
-    <div style="border: 3px solid white; padding: 6px; padding-right: 12px">
-        <div class="tab" id="new_game_galaxy_tab">
-            Game Name<br/>
-            <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
-            Diameter of the galaxy (in ly): X axis<br/>
-            <input class="new_game_input" type="number" min="0" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
-        </div>
-        <div class="tab" id="new_game_players_tab" style="display: none">
-            players
-        </div>
-        <div class="tab" id="new_game_victory_tab" style="display: none">
-            victory
-        </div>
-    </div>
-    <br/>
-    <table width="100%"><tr>
-        <td style="text-align: left"><button class="screen_button" onclick="submit('new_game', true)">Create</button></td>
-        <td style="text-align: center"><button class="screen_button" onclick="reset_new_game()">Reset</button></td>
-        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
-    </tr></table>
-</div>
-
-<div class="screen" id="open_game_screen" style="display: none">
-    <table width="100%"><tr>
-        <td style="text-align: left"><button class="screen_button" onclick="open_game()">Open</button></td>
-        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
-    </tr></table>
-</div>
-
-<div class="screen" id="race_editor_screen" style="display: none">
-    <table width="100%"><tr>
-        <td style="text-align: left"><button class="screen_button" onclick="save_race()">Save</button></td>
-        <td style="text-align: right"><button class="screen_button" onclick="show_screen('title')">Home</button></td>
-    </tr></table>
-</div>
-
-</div>
-<div class="title_left">INHERIT THE STARS!</div>
-<div class="title_right">
-    <button class="circle" onclick="show_screen('help')">?</button>
-    <button class="circle" onclick="shutdown()">X</button>
-</div>
 </body></html>

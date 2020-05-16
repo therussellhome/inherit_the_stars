@@ -1,5 +1,5 @@
-import os
 import unittest
+from pathlib import Path
 from .. import *
 
 """ Test class for unit testing """
@@ -23,7 +23,8 @@ class _TestClass(game_engine.Defaults):
 class GameEngineTestCase(unittest.TestCase):
     def onSetup():
         game_engine.register(_TestClass)
-        os.remove('games/unittest.zip')
+        p = Path.home() / 'stars' / 'games' / 'unittest.zip'
+        p.unlink(missing_ok=True)
 
     def test_reference(self):
         t = _TestClass(name='ref 1')
@@ -37,9 +38,9 @@ class GameEngineTestCase(unittest.TestCase):
     
     def test_load_save(self):
         t = _TestClass(name='load 1')
-        game_engine.save_game('games/unittest.zip')
+        game_engine.save_game('unittest')
         t.name = 'load 2'
-        game_engine.load_game('games/unittest.zip')
+        game_engine.load_game('unittest')
         r = game_engine.Reference('_TestClass', 'load 1')
         self.assertEqual(r.name, 'load 1')
     
