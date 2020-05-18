@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 from . import game_engine
 
 """ Default values (default, min, max)  """
@@ -45,11 +44,20 @@ __defaults = {
 class OpenGame(game_engine.Defaults):
     def __init__(self, **kwargs):
         super()._apply_defaults(**kwargs)
-        game_dir = Path.home() / 'stars' / 'games'
-        for p in game_dir.iterdir():
+        for p in game_engine.game_dir.iterdir():
             self.options_open_game_list.append(p.name[0:-4])
         if 'submit' in kwargs:
             game_engine.load_game(self.open_game_list)
+        players =  game_engine.get_registered('Player')
+        for i in range(1, 17):
+            key = 'open_game_player{:02d}'.format(i)
+            if i <= len(players):
+                self.__dict__[key] = players[i - 1].name
+                self.__dict__[key + '_status'] = ''
+            else:
+                self.__dict__[key] = 'No Player'
+                self.__dict__[key + '_status'] = ''
+            
 
 # Register the class with the game engine
 game_engine.register(OpenGame, defaults=__defaults)

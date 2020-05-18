@@ -5,6 +5,12 @@ import inspect
 from pathlib import Path
 from zipfile import ZipFile, ZipInfo
 
+""" Directory for save games """
+game_dir = Path.home() / 'inherit the stars' / 'games'
+
+""" Directory from race files """
+race_dir = Path.home() / 'inherit the stars' / 'races'
+
 """ Private registry of all creatable classes """
 _classes = {}
 
@@ -27,15 +33,16 @@ def register(obj, **kwargs):
         if 'defaults' in kwargs:
             _defaults[obj.__name__].update(kwargs['defaults'])
     else:
-        name = obj.__class__.__name__ + '/' + obj.name
-        for key, value in _registry.items():
-            if value == obj:
-                del _registry[key]
-                for reference in _references:
-                    if reference.reference == key:
-                        reference.reference = name
-                break
-        _registry[name] = obj
+        if hasattr(obj, 'name'):
+            name = obj.__class__.__name__ + '/' + obj.name
+            for key, value in _registry.items():
+                if value == obj:
+                    del _registry[key]
+                    for reference in _references:
+                        if reference.reference == key:
+                            reference.reference = name
+                    break
+            _registry[name] = obj
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj):
@@ -43,6 +50,15 @@ def unregister(obj):
         if value == obj:
             del _registry[key]
             break
+
+""" Get list of all registered X """
+def get_registered(classname):
+    objs = []
+    classname = classname + '/'
+    for key, value in _registry.items():
+        if key.startswith(classname):
+            objs.append(value)
+    return objs
 
 """ Recursively merge class defaults """
 def __merge_defaults(cls):
@@ -159,14 +175,14 @@ def to_json(obj):
 
 """ Load game from zip file """
 def load_game(game_name):
-    game_file = Path.home() / 'stars' / 'games' / (game_name + '.zip')
+    game_file = game_dir / (game_name + '.zip')
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
             register(from_json(zipfile.read(info)))
 
 """ Save game to zip file """
 def save_game(game_name):
-    game_file = Path.home() / 'stars' / 'games' / (game_name + '.zip')
+    game_file = game_dir / (game_name + '.zip')
     game_file.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(game_file, 'w') as zipfile:
         for name in _registry:
