@@ -112,9 +112,9 @@ function show_screen(show) {
         if(show == 'new_game') {
             submit(show, false, true);
             show_tab('new_game_galaxy');
-        } else if(show == 'open_game') {
+        } else if(show == 'load_game') {
             submit(show, false, true);
-            show_tab('open_game');
+            show_tab('load_game');
         }
     }
     for(button of document.getElementsByClassName('sidebar')) {
@@ -204,7 +204,8 @@ function shutdown() {
 </head><body>
 <table class="vfill"><tr><td><table class="vfill">
     <tr><td><button class="sidebar" id="new_game_sidebar" onclick="show_screen('new_game')">New Game</button></td></tr>
-    <tr><td><button class="sidebar" id="open_game_sidebar" onclick="show_screen('open_game')">Open Game</button></td></tr>
+    <tr><td><button class="sidebar" id="load_game_sidebar" onclick="show_screen('load_game')">Load Game</button></td></tr>
+    <tr><td><button class="sidebar" id="launch_sidebar" onclick="show_screen('launch_player')">Launch</button></td></tr>
     <tr><td><button class="sidebar" id="race_editor_sidebar" onclick="show_screen('race_editor')">Race Editor</button></td></tr>
     <tr><td class="vfill"></td></tr>
     <tr><td><button class="sidebar" id="help_sidebar" onclick="show_screen('help')">Help</button></td></tr>
@@ -240,85 +241,85 @@ function shutdown() {
         </div>
     </div>
 
-    <div class="screen input" id="open_game_screen" style="display: none">
-        <button class="tab_button" id="open_game_tab_button" onclick="show_tab('open_game_tab')">Game</button>
+    <div class="screen input" id="load_game_screen" style="display: none">
+        <button class="tab_button" id="load_game_tab_button" onclick="show_tab('load_game_tab')">Game</button>
         <div style="border: 2px solid white; padding: 6px; padding-right: 12px">
-            <div class="tab" id="open_game_tab">
+            <div class="tab" id="load_game_tab">
                 Game Name<br/>
-                <select class="open_game_input" id="open_game_list" style="width: 100%" onchange="submit('open_game')"></select><br/><br/>
-                <input class="open_game_input" type="checkbox" id="open_game_auto" onchange="submit('open_game')"></input> Auto Generate<br/><br/>
+                <select class="load_game_input" id="load_game_list" style="width: 100%" onchange="submit('load_game')"></select><br/><br/>
+                <input class="load_game_input" type="checkbox" id="load_game_auto" onchange="submit('load_game')"></input> Auto Generate<br/><br/>
                 <table style="padding-left: 15px">
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player01" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player01_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player01" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player01_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player02" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player02_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player02" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player02_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player03" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player03_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player03" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player03_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player04" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player04_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player04" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player04_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player05" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player05_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player05" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player05_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player06" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player06_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player06" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player06_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player07" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player07_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player07" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player07_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player08" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player08_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player08" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player08_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player09" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player09_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player09" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player09_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player10" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player10_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player10" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player10_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player11" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player11_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player11" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player11_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player12" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player12_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player12" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player12_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player13" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player13_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player13" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player13_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player14" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player14_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player14" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player14_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player15" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player15_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player15" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player15_status" disabled="true"></input></td>
                     </tr>
                     <tr>
-                        <td style="width: 100%"><input class="open_game_input label" type="text" id="open_game_player16" disabled="true"></input></td>
-                        <td><input class="open_game_input label" type="text" id="open_game_player16_status" disabled="true"></input></td>
+                        <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player16" disabled="true"></input></td>
+                        <td><input class="load_game_input label" type="text" id="load_game_player16_status" disabled="true"></input></td>
                     </tr>
                 </table><br/>
                 Launch Player<br/>
-                <select class="open_game_input" id="open_game_player" style="width: 100%" onchange="submit('open_game')"></select>
+                <select class="load_game_input" id="load_game_player" style="width: 100%" onchange="submit('load_game')"></select>
             </div>
         </div>
         <div style="text-align: right">
-            <button class="screen_button" onclick="submit('open_game', true)">Load Game</button>
+            <button class="screen_button" onclick="submit('load_game', true)">Load Game</button>
             <button class="screen_button" onclick="alert('launch')">Launch Player</button>
         </div>
     </div>

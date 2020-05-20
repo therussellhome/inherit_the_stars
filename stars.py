@@ -4,6 +4,13 @@ import http.server
 import socketserver
 from src import *
 
+
+""" Map of post handlers """
+_handlers = {
+    '/load_game': load_game.LoadGame()
+}
+
+
 class Httpd(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/shutdown':
@@ -11,19 +18,16 @@ class Httpd(http.server.BaseHTTPRequestHandler):
         else:
             length = int(self.headers['content-length'])
             form = game_engine.from_json(self.rfile.read(length).decode('utf-8'))
-            print('')
             print('-----------------------------------')
             print(form)
-            response = None
-            if self.path == '/new_game':
-                response = self.new_game(form)
-            elif self.path == '/open_game':
-                response = open_game.OpenGame(**form)
+            response = _handlers.get(self.path, None)
             self.send_response(200)
             self.end_headers()
             if response:
-                print(response)
-                self.wfile.write(game_engine.to_json(response).encode())
+                _handlers[self.path].post(**form)
+                response_str = game_engine.to_json(response)
+                print(response_str)
+                self.wfile.write(response_str.encode())
             print('-----------------------------------')
 
     def do_GET(self):
@@ -33,10 +37,6 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(f.read())
-
-    def new_game(self, form):
-        form['new_game_name'] = 'got it ' + str(id(form))
-        return form
 
 PORT = 8080
 

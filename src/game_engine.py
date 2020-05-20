@@ -18,7 +18,10 @@ def register(obj):
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj):
-    __registry.remove(obj)
+    if obj:
+        __registry.remove(obj)
+    else:
+        __registry = []
 
 
 """ Base class for use in creating classes by name """
@@ -28,6 +31,13 @@ class BaseClass:
 
 """ Get a referenced class by name """
 def get(reference):
+    # get all of a type
+    if reference[-1:] == '/':
+        objs = []
+        for obj in __registry:
+            if obj.__class__.__name__ + '/' == reference:
+                objs.append(obj)
+        return objs
     # get object from registry
     for obj in __registry:
         if hasattr(obj, 'name'):
