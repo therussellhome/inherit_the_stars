@@ -1,5 +1,6 @@
 from . import game_engine
 from random import randint
+from random import random
 
 _defaults = {
     'planets': [[]],
@@ -33,11 +34,11 @@ class StarSystem(game_engine.Defaults):
             }
         sun = game_engine.Reference(**planet_args)
         self.planets.append(sun)
-        segment = 100.0 / self.num_planets
         for i in range(self.num_planets):
+            segment = 100.0 / self.num_planets
             planet_args['reference'] = 'Planet/' + str(self.name) + ' ' + _roman[i]
             planet_args['sun'] = self.planets[0]
-            planet_args['distance'] = round(segment * i + randint(5, segment))
+            planet_args['distance'] = round(segment * i + randint(5, round(segment)))
             self.planets.append(game_engine.Reference(**planet_args))
     
         

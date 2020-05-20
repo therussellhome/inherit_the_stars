@@ -12,9 +12,6 @@ with open('host/star_system.names') as file:
     names = []
     for name in file:
         names.append(name.strip())
-#for i in range(0, 100):
-    #system_name = names.pop(randint(0, len(names) - 1))
-    #s = star_system.StarSystem(name=system_name)
 game_engine.save_game('games/new_game.zip')
 
 """ Set the game name and the density """
@@ -89,12 +86,11 @@ elif dimension == 2:
     print('this universe is a 2-dimensional', x, 'by', y, shape, 'with', num_systems, 'systems and an area of', round(volume * (100**dimension)), 'square lightyears')
 elif dimension == 3:
     print('this universe is a 3-dimensional', x, 'by', y, 'by', z, shape, 'with', num_systems, 'systems and a volume of', round(volume * (100**dimension)), 'cubic lightyears')
-#for an 100 by 100 by 100 sphere the density should be between 5 and 8284
 
 """ Create the systems """
-""" rx = x coordanite """
-""" ry = y coordanite """
-""" rz = z coordanite """
+""" rx = x coordinate """
+""" ry = y coordinate """
+""" rz = z coordinate """
 systems = []
 while len(systems) < num_systems:
     rx = (random() * 2) -1
@@ -106,9 +102,15 @@ while len(systems) < num_systems:
         ry = round(ry * (y/2))
         rz = round(rz * (z/2))
         for s in systems:
+            counter = 0
             if s.x == rx and s.y == ry and s.z == rz:
+                counter += 1
+                break
+            if counter == 100:
+                print('too many systems')
                 break
         else:
+            counter = 0
             system_name = names.pop(randint(0, len(names) - 1))
             s = star_system.StarSystem(name=system_name, x=rx, y=ry, z=rz)
             systems.append(s)
@@ -116,12 +118,12 @@ game_engine.save_game('games/new_game.zip')
 
 """ Set the number of players """
 while True:
-    num_players = input('number of players (1...20):')
+    num_players = input('number of players (1...16):')
     try:
         num_players = int(num_players)
     except:
         pass
-    if num_players in range(1, 31):
+    if num_players in range(1, 17):
         break
     print('invalid input')
 
@@ -134,24 +136,54 @@ while True:
         player_distance = int(player_distance)
     except:
         pass
-    if player_distance in range(5, 20):
+    if player_distance in range(1, 51):
         break
     print('invalid input')
 
 """ Generate the home systems """
 home_systems = []
-n = systems.pop(randint(0, len(systems) - 1))
-home_systems.append(n)
+home_systems.append(systems[0])
 if num_players == 1:
    pass 
 
 else:
-    for i in range(0, len(systems)):
-        m = systems[i]
-        for system in home_systems:
-            if round((((system.x - m.x)**2) + ((system.y - m.y)**2) + ((system.z - m.z)**2))**.5) == player_distance:
-                home_systems.append(m)
-                systems.remove(i)  
+    for i in systems:
+        p = ''
+        for k in home_systems:
+                if round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) < player_distance:    
+                    p += 'fail'
+                elif round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) >= player_distance:
+                    p += 'pass'
+        if 'fail' not in p:
+            home_systems.append(i)
         if len(home_systems) == num_players:
             break
-print(len(home_systems))
+        if i == systems[len(systems) - 1] and len(home_systems) < num_players:
+            player_distance *= .9
+# Discuss on Friday:
+# clearing home_systems when making player_distance smaller
+# checking counter
+# player races format
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

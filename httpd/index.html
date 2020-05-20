@@ -162,7 +162,7 @@ function shutdown() {
     Thank you for playing
 </div>
 
-<div class="screen" id="new_game_screen" style="display: none">
+<div class="screen" id="new_game_screen" style="display: none;">
     <button class="tab_button" id="new_game_galaxy_tab_button" onclick="show_tab('new_game_galaxy')">Galaxy</button>
     <button class="tab_button" id="new_game_players_tab_button" onclick="show_tab('new_game_players')">Players</button>
     <button class="tab_button" id="new_game_victory_tab_button" onclick="show_tab('new_game_victory')">Victory Conditions</button>
@@ -171,13 +171,84 @@ function shutdown() {
             Game Name<br/>
             <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
             Diameter of the galaxy (in ly): X axis<br/>
-            <input class="new_game_input" type="number" min="0" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Diameter of the galaxy (in ly): Y axis<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_y" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Diameter of the galaxy (in ly): Z axis<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_z" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Density of the galaxy (in systems per cubic lightcentury)
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_density" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
         </div>
         <div class="tab" id="new_game_players_tab" style="display: none">
-            players
+            Number of players<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_number_of_players" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Distance between players home systems (in ly)<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_player_distance" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player races<br/>
+            Player 1
+            <input class="new_game_input" type="text" id="new_game_player_races_one" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 2
+            <input class="new_game_input" type="text" id="new_game_player_races_two" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 3
+            <input class="new_game_input" type="text" id="new_game_player_races_three" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 4
+            <input class="new_game_input" type="text" id="new_game_player_races_four" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 5
+            <input class="new_game_input" type="text" id="new_game_player_races_five" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 6
+            <input class="new_game_input" type="text" id="new_game_player_races_six" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 7
+            <input class="new_game_input" type="text" id="new_game_player_races_seven" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 8
+            <input class="new_game_input" type="text" id="new_game_player_races_eight" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 9
+            <input class="new_game_input" type="text" id="new_game_player_races_nine" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 10
+            <input class="new_game_input" type="text" id="new_game_player_races_ten" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 11
+            <input class="new_game_input" type="text" id="new_game_player_races_eleven" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 12
+            <input class="new_game_input" type="text" id="new_game_player_races_twelve" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 13
+            <input class="new_game_input" type="text" id="new_game_player_races_thirteen" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 14
+            <input class="new_game_input" type="text" id="new_game_player_races_fourteen" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 15
+            <input class="new_game_input" type="text" id="new_game_player_races_fifteen" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Player 16
+            <input class="new_game_input" type="text" id="new_game_player_races_sixteen" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Public player scores (yes or no)<br/>
+            <input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
         </div>
         <div class="tab" id="new_game_victory_tab" style="display: none">
-            victory
+            <input class="new_game_input" type="checkbox" id="new_game_victory_tech" onchange="submit('new_game', false)"></input>
+            Reach tech level 
+            <input class="new_game_input" type="number" min="1" max="50" id="new_game_victory_tech_level" onchange="submit('new_game', false)"></input>
+            in 
+            <input class="new_game_input" type="number" min="1" max="6" id="new_game_victory_tech_level_in_fields" onchange="submit('new_game', false)"></input>
+            fields<br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_ships" onchange="submit('new_game', false)"></input>
+            Ships (how many) <br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_ships" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_planets" onchange="submit('new_game', false)"></input>
+            Planets (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="200" id="new_game_number_of_planets" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_factories" onchange="submit('new_game', false)"></input>
+            Factories (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_factories" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_power_plants" onchange="submit('new_game', false)"></input>
+            Power plants (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_power_plants" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_mines" onchange="submit('new_game', false)"></input>
+            Mines (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_mines" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_other_players_left" onchange="submit('new_game', false)"></input>
+            Other players left (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_number_of_other_players_left" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Conditions (meet how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="10" id="new_game_number_of_conditions_met" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+            Years till (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_years_till" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
         </div>
     </div>
     <br/>
