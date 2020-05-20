@@ -1,1 +1,12 @@
-__all__ = ['game_engine', 'defaults', 'reference', 'planet', 'player', 'load_game', 'star_system', 'sun', 'minister']
+__all__ = [
+    'defaults', 
+    'game_engine', 
+    'launch', 
+    'load_game', 
+    'minister',
+    'planet', 
+    'player', 
+    'reference', 
+    'star_system', 
+    'sun', 
+]

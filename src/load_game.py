@@ -44,9 +44,7 @@ __defaults = {
 
 """ Represent Open Game action """
 class LoadGame(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
+    """ Interact with UI """
     def post(self, **kwargs):
         # Always refresh the list of games
         self.options_load_game_list = game_engine.load_list('games')

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
+<link rel='icon' href='/favicon.ico' type='image/x-icon'/>
 <title>Inherit the Stars!</title>
 <style>
 body { 
-    background-color: #000044;
+    background-color: rgb(0, 0, 44);
     background-image: url("background.jpg");
     background-attachment: fixed;
     background-size: cover;
@@ -52,7 +53,7 @@ button {
     display: inline-block;
     transition-duration: 0.4s;
     cursor: pointer;
-    background-color: Transparent;
+    background-color: rgba(0, 0, 44, 0.5);
     color: white; 
     text-shadow: 0 0 3px black;
     border: 2px solid white;
@@ -115,6 +116,9 @@ function show_screen(show) {
         } else if(show == 'load_game') {
             submit(show, false, true);
             show_tab('load_game');
+        } else if(show == 'launch') {
+            submit(show, false, true);
+            show_tab('launch');
         }
     }
     for(button of document.getElementsByClassName('sidebar')) {
@@ -142,9 +146,11 @@ function submit(form, save) {
     submit(form, save, false);
 }
 
-function submit(form, save, load) {
+function submit(form, save, reset) {
     var values = {};
-    if(!load) {
+    if(reset) {
+        values['reset'] = true;
+    } else {
         for(input of document.getElementsByClassName(form + '_input')) {
             if(input.matches('[type="checkbox"]')) {
                 values[input.id] = input.checked;
@@ -205,7 +211,7 @@ function shutdown() {
 <table class="vfill"><tr><td><table class="vfill">
     <tr><td><button class="sidebar" id="new_game_sidebar" onclick="show_screen('new_game')">New Game</button></td></tr>
     <tr><td><button class="sidebar" id="load_game_sidebar" onclick="show_screen('load_game')">Load Game</button></td></tr>
-    <tr><td><button class="sidebar" id="launch_sidebar" onclick="show_screen('launch_player')">Launch</button></td></tr>
+    <tr><td><button class="sidebar" id="launch_sidebar" onclick="show_screen('launch')">Launch</button></td></tr>
     <tr><td><button class="sidebar" id="race_editor_sidebar" onclick="show_screen('race_editor')">Race Editor</button></td></tr>
     <tr><td class="vfill"></td></tr>
     <tr><td><button class="sidebar" id="help_sidebar" onclick="show_screen('help')">Help</button></td></tr>
@@ -313,14 +319,27 @@ function shutdown() {
                         <td style="width: 100%"><input class="load_game_input label" type="text" id="load_game_player16" disabled="true"></input></td>
                         <td><input class="load_game_input label" type="text" id="load_game_player16_status" disabled="true"></input></td>
                     </tr>
-                </table><br/>
-                Launch Player<br/>
-                <select class="load_game_input" id="load_game_player" style="width: 100%" onchange="submit('load_game')"></select>
+                </table>
             </div>
         </div>
         <div style="text-align: right">
             <button class="screen_button" onclick="submit('load_game', true)">Load Game</button>
-            <button class="screen_button" onclick="alert('launch')">Launch Player</button>
+            <button class="screen_button" onclick="alert('generate')">Generate Now</button>
+        </div>
+    </div>
+
+    <div class="screen input" id="launch_screen" style="display: none">
+        <button class="tab_button" id="launch_tab_button" onclick="show_tab('launch_tab')">Game</button>
+        <div style="border: 2px solid white; padding: 6px; padding-right: 12px">
+            <div class="tab" id="launch_tab">
+                Game Name<br/>
+                <input class="launch_input label" type="text" id="launch_game" disabled="true"></input><br/><br/>
+                <select class="launch_input" id="launch_player" style="width: 100%" onchange="submit('launch')"></select><br/>
+                <input class="launch_input label" type="text" id="launch_player_status" disabled="true"></input><br/><br/>
+            </div>
+        </div>
+        <div style="text-align: right">
+            <button class="screen_button" onclick="submit('launch', true)">Launch Player</button>
         </div>
     </div>
 
