@@ -230,20 +230,122 @@ function shutdown() {
         <div style="border: 2px solid white; padding: 6px; padding-right: 12px">
             <div class="tab" id="new_game_galaxy_tab">
                 Game Name<br/>
-                <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="submit('new_game')"></input><br/><br/>
+                <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
                 Diameter of the galaxy (in ly): X axis<br/>
-                <input class="new_game_input" type="number" min="0" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game')"></input><br/><br/>
+                <input class="new_game_input" type="number" min="1" max="100" id="new_game_x" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Diameter of the galaxy (in ly): Y axis<br/>
+                <input class="new_game_input" type="number" min="1" max="100" id="new_game_y" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Diameter of the galaxy (in ly): Z axis<br/>
+                <input class="new_game_input" type="number" min="1" max="100" id="new_game_z" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Density of the galaxy (in systems per cubic lightcentury)
+                <input class="new_game_input" type="number" min="1" max="100" id="new_game_density" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Public player scores (yes or no)<br/>
+                <input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Distance between players home systems (in ly)<br/>
+                <input class="new_game_input" type="number" min="1" max="100" id="new_game_player_distance" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
             </div>
             <div class="tab" id="new_game_players_tab" style="display: none">
-                players
+                <table>
+                    <tr>
+                        <td style="white-space: nowrap">Player 1</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player01" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 2</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player02" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 3</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player03" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 4</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player04" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 5</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player05" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 6</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player06" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 7</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player07" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 8</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player08" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 9</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player09" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 10</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player10" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 11</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player11" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 12</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player12" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 13</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player13" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 14</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player14" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 15</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player15" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                    <tr>
+                        <td style="white-space: nowrap">Player 16</td>
+                        <td style="width: 100%"><select class="new_game_input" id="new_game_player16" style="width: 100%" onchange="submit('new_game', false)"></select></td>
+                    </tr>
+                </table>
             </div>
             <div class="tab" id="new_game_victory_tab" style="display: none">
-                victory
+                <input class="new_game_input" type="checkbox" id="new_game_victory_tech" onchange="submit('new_game', false)"></input>
+                Reach tech level 
+                <input class="new_game_input" type="number" min="1" max="50" id="new_game_victory_tech_level" onchange="submit('new_game', false)"></input>
+                in 
+                <input class="new_game_input" type="number" min="1" max="6" id="new_game_victory_tech_level_in_fields" onchange="submit('new_game', false)"></input>
+                fields<br/><br/>
+                <input class="new_game_input" type="checkbox" id="new_game_number_of_ships" onchange="submit('new_game', false)"></input>
+                Ships (how many) <br/>
+                <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_ships" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                <input class="new_game_input" type="checkbox" id="new_game_number_of_planets" onchange="submit('new_game', false)"></input>
+                Planets (how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="200" id="new_game_number_of_planets" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                <input class="new_game_input" type="checkbox" id="new_game_number_of_factories" onchange="submit('new_game', false)"></input>
+                Factories (how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_factories" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                <input class="new_game_input" type="checkbox" id="new_game_number_of_power_plants" onchange="submit('new_game', false)"></input>
+                Power plants (how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_power_plants" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                <input class="new_game_input" type="checkbox" id="new_game_number_of_mines" onchange="submit('new_game', false)"></input>
+                Mines (how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_mines" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                <input class="new_game_input" type="checkbox" id="new_game_number_of_other_players_left" onchange="submit('new_game', false)"></input>
+                Other players left (how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="100" id="new_game_number_of_other_players_left" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Conditions (meet how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="10" id="new_game_number_of_conditions_met" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
+                Years till (how many)<br/>
+                <input class="new_game_input" type="number" min="1" max="500" id="new_game_years_till" style="width: 100%" onchange="submit('new_game', false)"></input><br/><br/>
             </div>
         </div>
         <div style="text-align: right">
             <button class="screen_button" onclick="submit('new_game', true)">Create</button>
-            <button class="screen_button" onclick="reset_new_game()">Reset</button>
+            <button class="screen_button" onclick="submit('new_game', false, true)">Reset</button>
         </div>
     </div>
 

@@ -4,6 +4,7 @@ __all__ = [
     'launch', 
     'load_game', 
     'minister',
+    'new_game',
     'planet', 
     'player', 
     'reference', 

@@ -1,4 +1,4 @@
-from random import randint
+from random import random, randint
 from . import game_engine
 from .defaults import Defaults
 from .reference import Reference
@@ -20,6 +20,8 @@ class StarSystem(Defaults):
         super()._apply_defaults(**kwargs)
         if 'name' not in kwargs:
             self.name = 'System_' + str(id(self))
+        if 'num_planets' not in kwargs:
+            self.num_planets = round(random() * 5)
         if len(self.planets) == 0:
             self._create_system()
         game_engine.register(self)
@@ -33,11 +35,11 @@ class StarSystem(Defaults):
             }
         sun = Reference(**planet_args)
         self.planets.append(sun)
-        segment = 100.0 / self.num_planets
         for i in range(self.num_planets):
+            segment = 100.0 / self.num_planets
             planet_args['reference'] = 'Planet/' + str(self.name) + ' ' + _roman[i]
             planet_args['sun'] = self.planets[0]
-            planet_args['distance'] = round(segment * i + randint(5, segment))
+            planet_args['distance'] = round(segment * i + randint(5, round(segment)))
             self.planets.append(Reference(**planet_args))
     
         

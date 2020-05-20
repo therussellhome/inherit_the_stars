@@ -11,10 +11,32 @@ from src import *
 
 """ Map of post handlers """
 _handlers = {
+    '/new_game': new_game.NewGame(),
     '/load_game': load_game.LoadGame(),
     '/launch': launch.Launch()
 }
 
+
+def range_check(form, ranges):
+    values = {}
+    for name in ranges:
+        default = ranges[name]
+        try:
+            value = form[name]
+            if type(default[0]) == int:
+                value = max([default[1], min([default[2], int(value)])])
+            elif type(default[0]) == float:
+                value = max([default[1], min([default[2], float(value)])])
+            elif type(default[0]) == bool:
+                value = bool(value)
+            elif type(default[0]) == type(value):
+                pass
+            else:
+                value = default[0]
+        except:
+            value = default[0]
+        values[name] = value
+    return values
 
 class Httpd(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
