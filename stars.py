@@ -2,7 +2,7 @@
 
 import http.server
 import socketserver
-from host import *
+from src import *
 
 class Httpd(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
