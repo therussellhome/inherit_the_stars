@@ -1,5 +1,5 @@
-from . import game_engine
 from .cost import Cost
+from .defaults import Defaults
 from .tech_level import TechLevel
 
 
@@ -10,10 +10,11 @@ __defaults = {
     'race_requirements': ['']
 }
 
-""" Represent 'minerals' """
-class Tech(game_engine.Defaults):
-    def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Tech, defaults=__defaults)
+""" Represent 'minerals' """
+class Tech(Defaults):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+Tech.set_defaults(Tech, __defaults)

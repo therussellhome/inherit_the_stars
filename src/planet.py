@@ -1,10 +1,11 @@
 import sys
 from random import randint
-from . import game_engine
 from .cargo import Cargo
+from .defaults import Defaults
 from .minerals import Minerals
 from .minister import Minister
 from .facility import Facility
+from .reference import Reference
 
 """ List of gravity values for display (0..100) """
 _grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
@@ -25,18 +26,18 @@ __defaults = {
     'is_tax_haven': [False],
     'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
     'on_surface': [Cargo()],
-    'player': [game_engine.Reference()],
+    'player': [Reference()],
     'minister': [''],
     'planet_value': [0, -100, 100],
-    'star_system': [game_engine.Reference()]
+    'star_system': [Reference()]
 }
 
 """ TODO """
-class Planet(game_engine.Defaults):
+class Planet(Defaults):
 
     """ Initialize defaults """
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Planet_' + str(id(self))
         if 'temperature' not in kwargs and 'sun' in kwargs and 'distance' in kwargs:
@@ -60,7 +61,7 @@ class Planet(game_engine.Defaults):
         return str(_grav_values[self.gravity]) + 'g'
     
     """ Colonize the planet """
-    """ where player is a game_engine.Reference to "Player/<player_name>" """
+    """ where player is a Reference to "Player/<player_name>" """
     def colonize(self, population, player, minister='default'):
         self.on_surface.people = int(population)
         self.player = player
@@ -228,5 +229,5 @@ class Planet(game_engine.Defaults):
     #        self.pop -= 1
     #        otherplanet.pop += 1
 
-# Register the class with the game engine
-game_engine.register(Planet, defaults=__defaults)
+
+Planet.set_defaults(Planet, __defaults)

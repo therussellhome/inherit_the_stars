@@ -1,6 +1,6 @@
 import sys
-from . import game_engine
-from . import minerals
+from .minerals import Minerals
+
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -8,11 +8,12 @@ __defaults = {
     'cargo_max': [0, 0, sys.maxsize]
 }
 
+
 """ Represent 'cargo' that can be held """
 """ A cargo_max of -1 is used to indicate no maximum """
-class Cargo(minerals.Minerals):
+class Cargo(Minerals):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Cargo, defaults=__defaults)
+
+Cargo.set_defaults(Cargo, __defaults)

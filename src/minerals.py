@@ -1,5 +1,6 @@
 import sys
-from . import game_engine
+from .defaults import Defaults
+
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -8,10 +9,11 @@ __defaults = {
     'silicon': [0, 0, sys.maxsize]
 }
 
-""" Represent 'minerals' """
-class Minerals(game_engine.Defaults):
-    def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Minerals, defaults=__defaults)
+""" Represent 'minerals' """
+class Minerals(Defaults):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+Minerals.set_defaults(Minerals, __defaults)

@@ -1,5 +1,5 @@
 import sys
-import game_engine
+from .defaults import Defaults
 
 
 """ Default values (default, min, max)  """
@@ -8,10 +8,11 @@ __defaults = {
     'kT': [0, 0, sys.maxsize]
 }
 
-""" Represent 'cloaking' """
-class Scanner(game_engine.Defaults):
-    def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Cloak, defaults=__defaults)
+""" Represent 'cloaking' """
+class Scanner(Defaults):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+Scanner.set_defaults(Scanner, __defaults)

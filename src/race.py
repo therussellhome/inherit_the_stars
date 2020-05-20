@@ -1,4 +1,4 @@
-from . import game_engine
+from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -20,11 +20,11 @@ __defaults = {
 }
 
 """ Storage class for race parameters """
-class Race(game_engine.Defaults):
+class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
 
-# Register the class with the game engine
-game_engine.register(Race, defaults=__defaults)
+
+Race.set_defaults(Race, __defaults)

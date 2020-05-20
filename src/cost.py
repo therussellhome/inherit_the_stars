@@ -1,6 +1,6 @@
 import sys
-from . import game_engine
 from .minerals import Minerals
+
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -9,10 +9,11 @@ __defaults = {
     'effort': [0, 0, sys.maxsize]
 }
 
+
 """ Represent 'cost' """
 class Cost(Minerals):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Cost, defaults=__defaults)
+
+Cost.set_defaults(Cost, __defaults)

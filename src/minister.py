@@ -1,4 +1,5 @@
-from . import game_engine
+from .defaults import Defaults
+
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -14,10 +15,11 @@ __defaults = {
     'build_max_terraform': [100, 0, 100]
 }
 
+
 """ TODO """
-class Minister(game_engine.Defaults):
+class Minister(Defaults):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'minister_' + str(id(self))
         # do not register the object as it is stored by the player object
@@ -43,4 +45,5 @@ class Minister(game_engine.Defaults):
         self.research = 100 - power_plants - factories - mines - defenses
         return super().__getattribute__(name)
 
-game_engine.register(Minister, defaults=__defaults)
+        
+Minister.set_defaults(Minister, __defaults)

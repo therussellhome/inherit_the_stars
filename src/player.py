@@ -1,7 +1,9 @@
 from . import game_engine
 from .cost import Cost
+from .defaults import Defaults
 from .minister import Minister
 from .race import Race
+from .reference import Reference
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -10,7 +12,7 @@ __defaults = {
 }
 
 """ the class to build the player """
-class Player(game_engine.Defaults):
+class Player(Defaults):
     """ the line is a string that contains all the player data """
     def __init__(self, **kwargs):
         """
@@ -35,7 +37,7 @@ class Player(game_engine.Defaults):
         self._origanal_research_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
         self._research_queue = [[self._research_cost.energy, self._research_cost.effort], [self._origanal_research_cost.energy * (2+self.research_level/2), self._origanal_research_cost.effort * (2+self.research_level/2)]]
         """
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Player_' + str(id(self))
         game_engine.register(self)
@@ -78,5 +80,5 @@ class Player(game_engine.Defaults):
                 self._research_queue[0] = [int(self._research_cost.energy), int(self._research_cost.effort)]
                 break
 
-# Register the class with the game engine
-game_engine.register(Player, defaults=__defaults)
+
+Player.set_defaults(Player, __defaults)

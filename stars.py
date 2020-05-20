@@ -11,6 +11,8 @@ class Httpd(http.server.BaseHTTPRequestHandler):
         else:
             length = int(self.headers['content-length'])
             form = game_engine.from_json(self.rfile.read(length).decode('utf-8'))
+            print('')
+            print('-----------------------------------')
             print(form)
             response = None
             if self.path == '/new_game':
@@ -20,12 +22,14 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             if response:
+                print(response)
                 self.wfile.write(game_engine.to_json(response).encode())
+            print('-----------------------------------')
 
     def do_GET(self):
         if self.path not in ['/background.jpg']:
             self.path = '/index.html'
-        with open('httpd' + self.path, 'rb') as f:
+        with open('www' + self.path, 'rb') as f:
             self.send_response(200)
             self.end_headers()
             self.wfile.write(f.read())

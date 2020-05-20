@@ -1,5 +1,4 @@
 import sys
-from . import game_engine
 from .tech import Tech
 from .scanner import Scanner
 
@@ -16,10 +15,11 @@ __defaults = {
     'mat_trans_energy': [0, 0, sys.maxsize]
 }
 
+
 """ Represent 'minerals' """
 class Facility(Tech):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Facility, defaults=__defaults)
+
+Facility.set_defaults(Facility, __defaults)

@@ -4,7 +4,7 @@ from .. import *
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(25000, game_engine.Reference('Player', 'test_planet'))
+        self.planet.colonize(25000, reference.Reference('Player', 'test_planet'))
 
     def test_calc_planet_value(self):
         self._test_calc_planet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)

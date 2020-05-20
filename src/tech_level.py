@@ -1,5 +1,6 @@
 import sys
-from . import game_engine
+from .defaults import Defaults
+
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -12,9 +13,9 @@ __defaults = {
 }
 
 """ Represent 'cost' """
-class TechLevel(game_engine.Defaults):
+class TechLevel(Defaults):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(TechLevel, defaults=__defaults)
+
+TechLevel.set_defaults(TechLevel, __defaults)

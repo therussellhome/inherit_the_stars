@@ -1,5 +1,5 @@
 import sys
-import game_engine
+from .defaults import Defaults
 
 
 """ Default values (default, min, max)  """
@@ -14,9 +14,9 @@ __defaults = {
 }
 
 """ Represent 'a weapon' """
-class Weapon(game_engine.Defaults):
+class Weapon(Defaults):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Weapon, defaults=__defaults)
+
+Weapon.set_defaults(Weapon, __defaults)

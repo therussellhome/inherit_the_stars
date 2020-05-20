@@ -1,11 +1,10 @@
 import sys
-import game_engine
-from tech import Tech
-from cargo import Cargo
-from cloak import Cloak
-from engine import Engine
-from scanner import Scanner
-from weapon import Weapon
+from .tech import Tech
+from .cargo import Cargo
+from .cloak import Cloak
+from .engine import Engine
+from .scanner import Scanner
+from .weapon import Weapon
 
 
 """ Default values (default, min, max)  """
@@ -28,10 +27,11 @@ __defaults = {
     'colonizer': [False]
 }
 
+
 """ Represent 'minerals' """
 class Component(Tech):
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
 
-# Register the class with the game engine
-game_engine.register(Component, defaults=__defaults)
+
+Component.set_defaults(Component, __defaults)
