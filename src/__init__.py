@@ -1,8 +1,8 @@
 __all__ = [
     'defaults', 
     'game_engine', 
+    'host', 
     'launch', 
-    'load_game', 
     'minister',
     'new_game',
     'planet', 

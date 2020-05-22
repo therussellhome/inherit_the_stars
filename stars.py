@@ -11,56 +11,40 @@ from src import *
 
 """ Map of post handlers """
 _handlers = {
+    '/host': host.Host(),
     '/new_game': new_game.NewGame(),
-    '/load_game': load_game.LoadGame(),
     '/launch': launch.Launch()
 }
 
-
-def range_check(form, ranges):
-    values = {}
-    for name in ranges:
-        default = ranges[name]
-        try:
-            value = form[name]
-            if type(default[0]) == int:
-                value = max([default[1], min([default[2], int(value)])])
-            elif type(default[0]) == float:
-                value = max([default[1], min([default[2], float(value)])])
-            elif type(default[0]) == bool:
-                value = bool(value)
-            elif type(default[0]) == type(value):
-                pass
-            else:
-                value = default[0]
-        except:
-            value = default[0]
-        values[name] = value
-    return values
 
 class Httpd(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/shutdown':
             self.server._BaseServer__shutdown_request = True
         else:
+            form, action = [self.path, '']
+            if '?' in self.path:
+                form, action = self.path.split('?')
             length = int(self.headers['content-length'])
-            form = game_engine.from_json(self.rfile.read(length).decode('utf-8'))
+            json = game_engine.from_json(self.rfile.read(length).decode('utf-8'))
             print('-----------------------------------')
-            print('    post = ', form)
-            response = _handlers.get(self.path, None)
+            print('    post = ', json)
+            response = _handlers.get(form, None)
             self.send_response(200)
             self.end_headers()
             if response:
-                _handlers[self.path].post(**form)
+                _handlers[form].post(action, **json)
                 response_str = game_engine.to_json(response)
                 print('    resp = ', response_str)
                 self.wfile.write(response_str.encode())
             print('-----------------------------------')
 
     def do_GET(self):
-        if self.path not in ['/background.jpg', '/favicon.ico']:
-            self.path = '/index.html'
-        with open('www' + self.path, 'rb') as f:
+        get = Path('.') / 'www' / self.path.split('/')[-1]
+        print(get)
+        if not get.exists() or get.is_dir():
+            get = Path('.') / 'www' / 'index.html'
+        with open(get, 'rb') as f:
             self.send_response(200)
             self.end_headers()
             self.wfile.write(f.read())

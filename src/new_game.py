@@ -60,7 +60,11 @@ __defaults = {
 """ Represent Open Game action """
 class NewGame(Defaults):
     """ Interact with UI """
-    def post(self, **kwargs):
+    def post(self, action, **kwargs):
+        if action == 'reset':
+            super().__init__();
+        else:
+            pass
         # Always refresh the list of games
         races = game_engine.load_list('races')
         races.insert(0, 'No Player')
@@ -68,7 +72,7 @@ class NewGame(Defaults):
             key = 'options_new_game_player{:02d}'.format(i)
             self.__dict__[key] = races
         # Create the game
-        if 'submit' in kwargs:
+        if action == 'submit':
             pass
             
 
