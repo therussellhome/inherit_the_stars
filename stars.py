@@ -6,7 +6,7 @@ import socketserver
 import tempfile
 import webbrowser
 from pathlib import Path
-from src import *
+from stars import *
 
 
 """ Map of post handlers """
@@ -49,9 +49,9 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(f.read())
 
-stars_port = Path(tempfile.gettempdir()) / 'stars.port'
-if stars_port.exists():
-    with open(stars_port) as f:
+stars_url = Path(tempfile.gettempdir()) / 'stars.url'
+if stars_url.exists():
+    with open(stars_url) as f:
         address = f.read().strip()
     print('Connecting to', address)
     webbrowser.open(address)
@@ -59,10 +59,10 @@ else:
     with socketserver.TCPServer(("", 0), Httpd) as httpd:
         address = 'http://' + socket.gethostname() + ':' + str(httpd.server_address[1])
         try:
-            with open(stars_port, 'w') as f:
+            with open(stars_url, 'w') as f:
                 f.write(address)
             print('Connecting to', address)
             webbrowser.open(address)
             httpd.serve_forever()
         finally:
-            stars_port.unlink(missing_ok=True)
+            stars_url.unlink(missing_ok=True)
