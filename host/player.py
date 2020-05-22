@@ -13,28 +13,6 @@ __defaults = {
 class Player(game_engine.Defaults):
     """ the line is a string that contains all the player data """
     def __init__(self, **kwargs):
-        """
-        sets = line.strip().split(", ")
-        self.name = sets[0]
-        self._energy = int(sets[1])
-        self._effort = int(sets[2])
-        self.factory_efficency = int(sets[3])
-        self.mine_efficency = int(sets[4])
-        self.effort_efficency = int(sets[5])
-        self.tax_rate = int(sets[6])
-        self.research_rate = int(sets[7])
-        self.stimulus_package = int(sets[8])
-        self.research_level = int(sets[9])
-        s_set = sets[10].split(",")
-        self.factory_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
-        s_set = sets[11].split(",")
-        self.mine_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
-        s_set = sets[12].split(",")
-        self._research_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
-        s_set = sets[13].split(",")
-        self._origanal_research_cost = Cost(int(s_set[0]), int(s_set[1]), int(s_set[2]), int(s_set[3]), int(s_set[4]), int(s_set[5]))
-        self._research_queue = [[self._research_cost.energy, self._research_cost.effort], [self._origanal_research_cost.energy * (2+self.research_level/2), self._origanal_research_cost.effort * (2+self.research_level/2)]]
-        """
         super()._apply_defaults(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Player_' + str(id(self))
@@ -43,7 +21,6 @@ class Player(game_engine.Defaults):
     """ takes the turn """
     def take_turn(self):
         self.doResearch()
-        self.__effort = 0
 
     """ research """
     def do_research(self):
