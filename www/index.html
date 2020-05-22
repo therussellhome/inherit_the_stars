@@ -115,7 +115,7 @@ function parse_json(url, json) {
 
 // Confirm shutdown before executing
 function shutdown(clicked) {
-    if(confirm('Shutdown?')) {
+    if(confirm('Shutdown INHERIT THE STARS! server?')) {
         show_screen(clicked, 'shutdown');
         fetch('/shutdown', { method: 'post' });
     }
