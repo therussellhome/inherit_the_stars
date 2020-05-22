@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html style="height: 100%"><head>
+<meta charset="utf-8"/>
+<link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<title>Inherit the Stars!</title>
+<script>
+
+// Store values from python as they give us what fields should be sent back
+let json_map = {};
+
+// Initialize the fields from python
+function init() {
+    post('host', '?reset');
+    post('new_game', '?reset');
+}
+
+// Apply/remove a class to all children
+// force = null => toggle
+// force = true => add
+// force = false => remove
+function toggle(start, css_class, force = null) {
+    var children = [start];
+    while(children.length > 0) {
+        element = children.pop();
+        for(child of element.children) {
+            children.push(child);
+            if(force == null) {
+                child.classList.toggle(css_class);
+            } else {
+                child.classList.toggle(css_class, force);
+            }
+        }
+    }
+}
+
+// Show a given screen, hide all others, highlight the clicked button
+function show_screen(clicked, show) {
+    // Hide all screens
+    for(screen of document.getElementsByClassName('screen')) {
+        screen.style.display = 'none';
+    }
+    // Show selected screen
+    document.getElementById(show + '_screen').style.display = 'block';
+    // Unselect all buttons
+    toggle(clicked.parentElement.parentElement.parentElement.parentElement, 'selected', false);
+    // Select button
+    clicked.classList.add('selected');
+}
+
+// Submit data for actioning
+function post(form, action = '') {
+    // Default the json
+    if(!json_map.hasOwnProperty(form)) {
+        json_map[form] = {};
+    }
+    // Update the json
+    for(key in json_map[form]) {
+        element = document.getElementById(key);
+        if(element != null) {
+            if(element.matches('[type="checkbox"]')) {
+                json_map[form][key] = element.checked;
+            } else {
+                json_map[form][key] = element.value;
+            }
+        }
+    }
+    // Fetch and process the response
+    fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_map[form]) }).then(response => 
+        response.json().then(json => ({
+            json: json,
+            url: response.url
+        })
+    ).then(res => {
+        parse_json(res.url, res.json);
+    }));
+}
+
+// Update the fields and the cache
+function parse_json(url, json) {
+    var form = url.replace(/.*\//, '').replace(/\?.*/, '');
+    for(key in json) {
+        element = document.getElementById(key);
+        if(element != null) {
+            json_map[form][key] = json[key];
+            if(element.nodeName == 'SELECT') {
+                var options = []
+                for(var i = 0; i < element.length; i++) {
+                    options.push(element.options[i].text);
+                }
+                for(opt_text of json['options_' + key]) {
+                    if(!options.includes(opt_text)) {
+                        var new_option = document.createElement("option");
+                        new_option.text = opt_text;
+                        element.add(new_option); 
+                    }
+                    options.splice(options.indexOf(opt_text), 1);
+                }
+                for(opt_text in options) {
+                    for(var i = 0; i < element.length; i++) {
+                        if(element.options[i].text == opt_text) {
+                            element.remove(i);
+                            break;
+                        }
+                    }
+                }
+                element.value = json[key];
+            } else if(element.matches('[type="checkbox"]')) {
+                element.checked = json[key];
+            } else {
+                element.value = json[key];
+            }
+        }
+    }
+}
+
+// Confirm shutdown before executing
+function shutdown(clicked) {
+    if(confirm('Shutdown?')) {
+        show_screen(clicked, 'shutdown');
+        fetch('/shutdown', { method: 'post' });
+    }
+}
+</script>
+<style>
+body { 
+    background-color: rgb(0, 0, 44);
+    background-image: url("background.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: white; 
+    text-shadow: 0 0 3px black;
+    height: 100%;
+    margin: 0;
+}
+div.screen {
+    z-index: 1;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    background-color: rgba(0, 0, 44, 0.5);
+}
+div.overlay_message {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: silver; 
+    background-color: transparent;
+    font-weight: bold; 
+    text-shadow: 0 0 10px black, 0 0 15px white
+}
+button {
+    padding: 8px 16px;
+    font-size: 100%;
+    font-weight: bold;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    background-color: rgba(0, 0, 44, 0.5);
+    color: white; 
+    text-shadow: 0 0 3px black;
+    border: 2px solid white;
+}
+button:hover {
+    background-color: silver;
+    color: black;
+    text-shadow: 0 0 3px white;
+}
+button.selected {
+    background-color: white;
+    color: black;
+    text-shadow: 0 0 3px silver;
+}
+button.circle {
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+    padding: 0 0 5px 1px;
+    border: 2px solid silver;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 200%;
+}
+table {
+    border: 0;
+}
+table.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    height: 100%;
+    background-color: rgba(0, 0, 44, 0.5);
+    transition: 0.5s;
+}
+table.topbar {
+    border: 2px solid silver;
+    padding-left: 10px;
+}
+caption {
+    margin-top: 20px;
+    border: 2px solid silver;
+    padding-left: 5px;
+    cursor: pointer;
+    text-align: left;
+    color: black;
+    background-color: silver;
+}
+input:disabled {
+    color: white;
+    background-color: transparent;
+    border: 0;
+}
+tr.collapse {
+    display: none;
+}
+.hfill {
+    width: 100%;
+    white-space: nowrap;
+}
+.hide {
+    display: none;
+}
+</style>
+</head><body onload="init()">
+
+
+<table class="sidebar">
+    <tr><td><button class="circle selected" onclick="show_screen(this, 'title')">S!</button></td></tr>
+    <tr><td><button class="circle" onclick="show_screen(this, 'host')">🌌</button></td></tr>
+    <tr><td><button class="circle" onclick="show_screen(this, 'new_game')">+</button></td></tr>
+    <tr><td><button class="circle" onclick="show_screen(this, 'race_editor')">👽</button></td></tr>
+    <tr><td><button class="circle" onclick="show_screen(this, 'help')">❔</button></td></tr>
+    <tr><td><button class="circle" onclick="shutdown(this)">❌</button></td></tr>
+</table>
+
+
+<table class="sidebar" style="display: none">
+    <tr><td><button class="circle" onclick="">S!</button></td></tr>
+    <tr><td><button class="circle" onclick="empire">♔</button></td></tr>
+    <tr><td><button class="circle" onclick="planet">🪐</button></td></tr>
+    <tr><td><button class="circle" onclick="rocket">🛸</button></td></tr>
+    <tr><td><button class="circle" onclick="search">🔍</button></td></tr>
+    <tr><td><button class="circle" onclick="submit">✔️</button></td></tr>
+    <tr><td><button class="circle" onclick="gear">⛭</button></td></tr>
+    <tr><td><button class="circle" onclick="help">❔</button></td></tr>
+</table>
+
+
+<div class="screen overlay_message" id="title_screen">
+    <div style="font-size: 600%">INHERIT THE</div>
+    <div style="font-size: 1050%">STARS!</div>
+</div>
+
+
+<div class="screen hide" id="host_screen" style="width: 600px">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Launch</td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td>Game:</td>
+            <td class="hfill"><select id="host_game" style="width: 100%" onchange="post('host')"></select></td>
+            <td><button style="width: 100%" onclick="load()">Load</button></td>
+        </tr><tr>
+            <td>Player:</td>
+            <td class="hfill"><select id="launch_player" style="width: 100%" onchange="post('launch')"></select></td>
+            <td><button style="width: 100%" onclick="launch()">Launch</button></td>
+        </tr><tr>
+            <td>Auto Generate:</td>
+            <td style="width: 100%"><input id="host_autogen" type="checkbox" onchange="post('host')"></input></td>
+            <td><button onclick="generate()">Generate Now</button></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Player Status</caption>
+        <tr>
+            <td style="width: 100%"><input id="host_player01" disabled="true"></input></td>
+            <td><input id="host_player01_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player02" disabled="true"></input></td>
+            <td><input id="host_player02_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player03" disabled="true"></input></td>
+            <td><input id="host_player03_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player04" disabled="true"></input></td>
+            <td><input id="host_player04_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player05" disabled="true"></input></td>
+            <td><input id="host_player05_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player06" disabled="true"></input></td>
+            <td><input id="host_player06_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player07" disabled="true"></input></td>
+            <td><input id="host_player07_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player08" disabled="true"></input></td>
+            <td><input id="host_player08_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player09" disabled="true"></input></td>
+            <td><input id="host_player09_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player10" disabled="true"></input></td>
+            <td><input id="host_player10_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player11" disabled="true"></input></td>
+            <td><input id="host_player11_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player12" disabled="true"></input></td>
+            <td><input id="host_player12_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player13" disabled="true"></input></td>
+            <td><input id="host_player13_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player14" disabled="true"></input></td>
+            <td><input id="host_player14_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player15" disabled="true"></input></td>
+            <td><input id="host_player15_status" disabled="true"></input></td>
+        </tr>
+        <tr>
+            <td style="width: 100%"><input id="host_player16" disabled="true"></input></td>
+            <td><input id="host_player16_status" disabled="true"></input></td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="screen hide" id="new_game_screen" style="width: 600px">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">New Game</td>
+        <td style="width: 100%"></td>
+        <td><button class="circle" onclick="post('new_game', true)">+</button></td>
+        <td><button class="circle" onclick="post('new_game', false, true)">↻</button></td>
+    </tr></table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Galaxy</caption>
+        <tr><td>
+            Game Name<br/>
+            <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Diameter of the galaxy (in ly): X axis<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_x" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Diameter of the galaxy (in ly): Y axis<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_y" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Diameter of the galaxy (in ly): Z axis<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_z" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Density of the galaxy (in systems per cubic lightcentury)<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_density" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Public player scores (yes or no)<br/>
+            <input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Distance between players home systems (in ly)<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_player_distance" style="width: 100%" onchange="post('new_game', false)"></input>
+        </td></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Players</caption>
+        <tr>
+            <td style="white-space: nowrap">Player 1</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player01" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 2</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player02" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 3</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player03" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 4</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player04" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 5</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player05" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 6</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player06" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 7</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player07" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 8</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player08" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 9</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player09" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 10</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player10" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 11</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player11" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 12</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player12" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 13</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player13" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 14</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player14" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 15</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player15" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">Player 16</td>
+            <td style="width: 100%"><select class="new_game_input" id="new_game_player16" style="width: 100%" onchange="post('new_game', false)"></select></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Victory Conditions</caption>
+        <tr><td>
+            <input class="new_game_input" type="checkbox" id="new_game_victory_tech" onchange="post('new_game', false)"></input>
+            Reach tech level 
+            <input class="new_game_input" type="number" min="1" max="50" id="new_game_victory_tech_level" onchange="post('new_game', false)"></input>
+            in 
+            <input class="new_game_input" type="number" min="1" max="6" id="new_game_victory_tech_level_in_fields" onchange="post('new_game', false)"></input>
+            fields<br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_ships" onchange="post('new_game', false)"></input>
+            Ships (how many) <br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_ships" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_planets" onchange="post('new_game', false)"></input>
+            Planets (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="200" id="new_game_number_of_planets" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_factories" onchange="post('new_game', false)"></input>
+            Factories (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_factories" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_power_plants" onchange="post('new_game', false)"></input>
+            Power plants (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_power_plants" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_mines" onchange="post('new_game', false)"></input>
+            Mines (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_number_of_mines" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            <input class="new_game_input" type="checkbox" id="new_game_number_of_other_players_left" onchange="post('new_game', false)"></input>
+            Other players left (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="100" id="new_game_number_of_other_players_left" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Conditions (meet how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="10" id="new_game_number_of_conditions_met" style="width: 100%" onchange="post('new_game', false)"></input><br/><br/>
+            Years till (how many)<br/>
+            <input class="new_game_input" type="number" min="1" max="500" id="new_game_years_till" style="width: 100%" onchange="post('new_game', false)"></input>
+        </td></tr>
+    </table>
+</div>
+
+
+<div class="screen hide" id="race_editor_screen">
+    TODO
+</div>
+
+</td></tr></table>
+
+
+<div class="screen hide" id="help_screen" style="width: 100%"><div style="margin-left: 66px;">
+    Put stuff here
+</div></div>
+
+
+<div class="screen overlay_message hide" id="shutdown_screen" style="font-size: 300%">
+    Thank you for playing
+</div>
+<!--
+S!
++ (fas fa-plus) New Game
+Load Game
+Launch
+Race
+Shutdown
+Help
+
+S!
+Empire: score, research, race, energy minister, player relations
+Systems: system report, planet report, anomalies report
+Ships: ship designer, battle plans, ship report, enemy ship report
+Search
+Submit
+View Config
+Help: help, tech
+<button class="circle" onclick="">S!</button><br/>
+<button class="circle" onclick="empire">♔</button><br/>
+<button class="circle" onclick="planet">🪐</button><br/>
+<button class="circle" onclick="rocket">🛸</button><br/>
+<button class="circle" onclick="search">🔍</button><br/>
+<button class="circle" onclick="submit">✔️</button><br/>
+<button class="circle" onclick="gear">⛭</button><br/>
+<button class="circle" onclick="help">❔</button><br/>
+
+<div class="menu_button" onclick="menu(this)">
+    <div class="bar1"></div>
+    <div class="bar2"></div>
+    <div class="bar3"></div>
+</div>
+
+<button class="circle" onclick="document.getElementById('sidebar').style.display = 'block'">S!</button>
+<button class="circle" onclick="document.getElementById('sidebar').style.display = 'block'">x</button>
+
+<table class="vfill sidebar" id="sidebar">
+    <tr><td><button class="sidebar" id="new_game_sidebar" onclick="show_screen('new_game')">New Game</button></td></tr>
+    <tr><td><button class="sidebar" id="host_sidebar" onclick="show_screen('host')">Host</button></td></tr>
+    <tr><td><button class="sidebar" id="player_sidebar" onclick="show_screen('player')">Player</button></td></tr>
+    <tr><td><button class="sidebar" id="race_editor_sidebar" onclick="show_screen('race_editor')">Race Editor</button></td></tr>
+    <tr><td class="vfill"></td></tr>
+    <tr><td><button class="sidebar" id="help_sidebar" onclick="show_screen('help')">Help</button></td></tr>
+    <tr><td><button class="sidebar" id="shutdown_sidebar" onclick="shutdown()">Shutdown</button></td></tr>
+</table>
+
+
+<div class="title_small" id="title_small">INHERIT THE STARS!</div>
+
+
+
+
+
+-->
+
+</body></html>
