@@ -61,10 +61,9 @@ __defaults = {
 class NewGame(Defaults):
     """ Interact with UI """
     def post(self, action, **kwargs):
+        self.__dict__.update(kwargs)
         if action == 'reset':
-            super().__init__();
-        else:
-            pass
+            self.reset_to_default()
         # Always refresh the list of games
         races = game_engine.load_list('races')
         races.insert(0, 'No Player')

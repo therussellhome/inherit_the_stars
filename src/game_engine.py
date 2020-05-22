@@ -4,7 +4,7 @@ from zipfile import ZipFile, ZipInfo
 
 
 """ Base directory for saved games, races, etc """
-__game_dir = Path.home() / 'stars'
+__game_dir = Path.home() / 'stars' / 'inherit'
 
 
 """ Registry of all game objects """
@@ -13,11 +13,13 @@ __registry = []
 
 """ Receive registration of classes and objects as they self-register """
 def register(obj):
+    global __registry
     __registry.append(obj)
 
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj):
+    global __registry
     if obj:
         __registry.remove(obj)
     else:
@@ -31,6 +33,7 @@ class BaseClass:
 
 """ Get a referenced class by name """
 def get(reference):
+    global __registry
     # get all of a type
     if reference[-1:] == '/':
         objs = []
@@ -77,8 +80,11 @@ def load(save_type, name):
 
 
 """ Save game to zip file """
-def save(save_type, name, objs=__registry):
-    game_file = __game_dir / (name + '.zip')
+def save(save_type, name, objs=None):
+    global __registry
+    if not objs:
+        objs = __registry
+    game_file = __game_dir / save_type / (name + '.zip')
     game_file.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(game_file, 'w') as zipfile:
         for obj in objs:

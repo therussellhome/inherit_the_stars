@@ -35,6 +35,13 @@ class Defaults(game_engine.BaseClass):
             return copy.copy(default[0])
         return object.__getattribute__(self, name)
 
+    """ Reset values to default """
+    def reset_to_default(self):
+        cls = object.__getattribute__(self, '__class__')
+        defaults = cls.get_defaults(cls)
+        for name in defaults:
+            object.__setattr__(self, name, defaults[name][0])
+
 
 """ Store defaults on the class """
 def __set_defaults(cls, defaults):
