@@ -12,7 +12,7 @@ __defaults = {
     'biotechnology': [0, 0, sys.maxsize]
 }
 
-""" Represent 'cost' """
+""" Represent 'tech level' """
 class TechLevel(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

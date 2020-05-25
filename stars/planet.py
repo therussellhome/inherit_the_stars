@@ -75,17 +75,14 @@ class Planet(Defaults):
         #TODO self.factory_tech = self.player.max_tech('Factory')
         #TODO self.mine_tech = self.player.max_tech('Mine')
 
-    """ runs the turn """
-    def take_turn(self):
-        self._grow_population()
+    """ Operate facilities """
+    def generate_resources(self):
         self._calculate_effort()
         self._generate_energy()
         self._mine_minerals()
-        self.auto_build()
-        self._donate_surplus()
     
     """ Grow the current population """
-    def _grow_population(self):
+    def have_babies(self):
         # all population calculations are done using people but stored using kT (1000/kT)
         if not self.player.is_valid:
             return
