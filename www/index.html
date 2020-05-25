@@ -12,6 +12,7 @@ let json_map = {};
 function init() {
     post('host', '?reset');
     post('new_game', '?reset');
+    post('race_editor', '?reset');
 }
 
 // Apply/remove a class to all children
@@ -474,8 +475,122 @@ tr.collapse {
 </div>
 
 
-<div class="screen hide" id="race_editor_screen">
-    TODO
+<div class="screen hide" id="race_editor_screen" style="width: 600px">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Race Editor</td>
+        <td style="width: 100%"></td>
+        <td style="white-space: nowrap"> advantage points left: </td>
+        <td><input disabled="true" id="race_etitor_primary_race_trait"></select></td>
+        <!--<td><button class="circle" disabled="true" onclick="post('new_game', '?submit')">+</button></td>-->
+    </tr></table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ race traits</caption>
+        <tr>
+            <td style="white-space: nowrap">primary race trait</td>
+            <td style="width: 100%"><select class="race_editor_input" id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_etitor')"></select></td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_trader" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Trader</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_total_taraforming" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Total Taraforming</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_advanced_depot" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Advaced Depot</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_ultemet_recycling" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Ultemet Recycling</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_improved_fuel_efficiency" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Improved Fuel Efficiency</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_improved_starbases" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Improved Starbases</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_generalized_reserch" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Generalized Reserch</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Bleeding Edge Technology</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>No Antimatter Collecting Engines</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_low_starting_population" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Low Starting Population</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>No Advanced Scanners</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>Cheap Engines</td>
+        </tr>
+        <tr>
+            <td style="width: 10%"><input id="race_editor_lesser_racial" type="checkbox" onchange="post('race_editor')"></input></td>
+            <td>lesser racial trait</td>
+        </tr>
+    </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ research</caption>
+        <tr>
+            <td></td>
+            <td>research cost</td>
+            <td>starting level</td>
+        </tr>
+        <tr>
+            <td>energy</td>
+            <td><input id="race_editor_energy_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_energy" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>weapons</td>
+            <td><input id="race_editor_weapons_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
+        </tr>
+        <tr>
+            <td>propulsion</td>
+            <td><input id="race_editor_propulsion_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>construction</td>
+            <td><input id="race_editor_construction_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_construction" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>electronics</td>
+            <td><input id="race_editor_electronics_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_electronics" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>biotechnology</td>
+            <td><input id="race_editor_biotechnology_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ economy</caption>
+        <tr>
+            <td>effort per kt</td>
+            <td><input id="race_editor_effort_per_kt" type="range" min="100" max="9900" step="100" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_display_effort_per_kt" disabled="true" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>energy per kt</td>
+            <td><input id="race_editor_energy_per_kt" type="number" min="1" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+    </table>
 </div>
 
 </td></tr></table>
@@ -544,3 +659,4 @@ Help: help, tech
 -->
 
 </body></html>
+

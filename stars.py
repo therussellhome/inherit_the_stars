@@ -13,7 +13,8 @@ from stars import *
 _handlers = {
     '/host': host.Host(),
     '/new_game': new_game.NewGame(),
-    '/launch': launch.Launch()
+    '/launch': launch.Launch(),
+    '/race_editor': race_editor.RaceEditor()
 }
 
 
