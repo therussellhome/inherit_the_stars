@@ -2,21 +2,23 @@ import sys
 from . import game_engine
 from .cost import Cost
 from .defaults import Defaults
+from .energy_minister import EnergyMinister
+from .intel import Intel
 from .minister import Minister
 from .race import Race
 from .reference import Reference
 from .score import Score
 from .tech_level import TechLevel
-from .energy_minister import EnergyMinister
 
 """ Default values (default, min, max)  """
 __defaults = {
     'race': [Race()],
-    'ministers': [[Minister(name='default')]],
+    'intel': [[]], # array of intel objects
+    'ministers': [[Minister(name='default')]], # modifiable by the player
     'score': [Score()],
     'tech_level': [TechLevel()],
     'next_tech_cost': [TechLevel()],
-    'research_field': [''],
+    'research_field': [''], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
 }
@@ -44,8 +46,9 @@ class Player(Defaults):
             if planet.player.eq(self):
                 planets.append(planet)
         planets.sort(key=lambda x: x.on_planet.people)
-        # Population growth
+        # Population growth, recalculate planet value
         for planet in planets:
+            planet.planet_value = planet.calc_planet_value(self.race)
             planet.have_babies()
         # Generate resources
         for planet in planets:
@@ -84,7 +87,7 @@ class Player(Defaults):
                     self.research_field = self._calc_next_research_field()
             else:
                 print('TODO')
-        return budget
+        # TODO unlock tech items?
 
     """ Calculate the cost of the next tech level in that field """
     def _calc_research_cost(self, field, level):
