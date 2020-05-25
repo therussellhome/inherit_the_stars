@@ -77,12 +77,17 @@ class Planet(Defaults):
 
     """ runs the turn """
     def take_turn(self):
+        self.remaining_production = _calc_max_production_capacity()
         self._grow_population()
         self._calculate_effort()
         self._generate_energy()
         self._mine_minerals()
-        self.auto_build()
+        self._auto_build()
         self._donate_surplus()
+        
+    
+    def _do_bariogenisis():
+        pass
     
     """ Grow the current population """
     def _grow_population(self):
@@ -200,7 +205,6 @@ class Planet(Defaults):
     def auto_build(self):
         if not self.player.is_valid:
             return
-        remaining_production = _calc_max_production_capacity()
         keep_going = True
         while keep_going:
             item = self.build_queue[0]
@@ -228,7 +232,7 @@ class Planet(Defaults):
             if len(build_queue) == 0:
                 build_queue.push(self._check_should_build_facility())
         max_cap = self._calc_max_production_capacity()
-        self._spend_production_capacity((max_cap-remaining_production)/max_cap)
+        self._spend_production_capacity((max_cap-self.remaining_production)/max_cap)
         
         
         
