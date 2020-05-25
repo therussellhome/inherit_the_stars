@@ -100,3 +100,39 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.on_surface.people = 9999
         self.planet.have_babies()
         self.assertEqual(self.planet.on_surface.people, 10000)
+    
+    def test_auto_build(self):
+        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet.colonize(25, reference.Reference('Player', 'test_planet'))
+        self.planet.minister = reference.Reference('Minister', 'test_Minister')
+        self.planet.mines = 25
+        self.planet.power_plants = 3
+        self.planet.factories = 2
+        self.planet.defenses = 4
+        self.assertEqual(self.planet._check_should_build_facility(), 'self.factory_tech')
+        self.planet.mines = 25
+        self.planet.power_plants = 50
+        self.planet.factories = 2
+        self.planet.defenses = 4
+        self.assertEqual(self.planet._check_should_build_facility(), 'self.scanner_tech')
+        self.planet.mines = 25
+        self.planet.power_plants = 47
+        self.planet.factories = 25
+        self.planet.defenses = 4
+        self.assertEqual(self.planet._check_should_build_facility(), 'self.penetrating_tech')
+        self.planet.mines = 2
+        self.planet.power_plants = 5
+        self.planet.factories = 2
+        self.planet.defenses = 1
+        self.assertEqual(self.planet._check_should_build_facility(), 'self.defense_tech')
+        self.planet.mines = 5
+        self.planet.power_plants = 3
+        self.planet.factories = 22
+        self.planet.defenses = 4
+        self.assertEqual(self.planet._check_should_build_facility(), 'self.power_plant_tech')
+        self.planet.mines = 2
+        self.planet.power_plants = 3
+        self.planet.factories = 26
+        self.planet.defenses = 4
+        self.assertEqual(self.planet._check_should_build_facility(), 'self.mine_tech')
+        

@@ -1,18 +1,16 @@
-from .cost import Cost
-from .defaults import Defaults
+from .buildable import Buildable
 from .tech_level import TechLevel
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'cost': [Cost()],
     'level': [TechLevel()],
     'race_requirements': ['']
 }
 
 
 """ Represent 'minerals' """
-class Tech(Defaults):
+class Tech(Buildable):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
