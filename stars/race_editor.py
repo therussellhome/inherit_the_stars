@@ -40,11 +40,26 @@ __defaults = {
     'race_editor_energy_per_kt': [5, 1, 250],
     'race_editor_gravity': [0, 0, 100],
     'race_editor_gravity_stop': [100, 0, 100],
+    'race_editor_gravity_immune': [False],
+    'race_editor_temperature': [0, 0, 100],
+    'race_editor_temperature_stop': [100, 0, 100],
+    'race_editor_temperature_immune': [False],
+    'race_editor_radiation': [0, 0, 100],
+    'race_editor_radiation_stop': [100, 0, 100],
+    'race_editor_radiation_immune': [False],
 }
 
 class RaceEditor(Defaults):
     def post(self, action):
-        pass
+        if self.race_editor_gravity_immune:
+            self.race_editor_gravity = 0
+            self.race_editor_gravity_stop = 100
+        if self.race_editor_temperature_immune:
+            self.race_editor_temperature = 0
+            self.race_editor_temperature_stop = 100
+        if self.race_editor_radiation_immune:
+            self.race_editor_radiation = 0
+            self.race_editor_radiation_stop = 100
 
 
 RaceEditor.set_defaults(RaceEditor, __defaults)

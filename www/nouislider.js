@@ -2395,7 +2395,8 @@
 
         // Get the slider value.
         function valueGet() {
-            var values = scope_Values.map(options.format.to);
+            //var values = scope_Values.map(options.format.to);
+            var values = scope_Values;
 
             // If only one handle is used, return a single value.
             if (values.length === 1) {

@@ -15,9 +15,11 @@ function init() {
     post('host', '?reset');
     post('new_game', '?reset');
     post('race_editor', '?reset');
-    slider1('race_editor', 'race_editor_energy_research_cost_modifier', 50, 200, 1, ' %');
-    slider1('race_editor', 'race_editor_weapons_research_cost_modifier', 50, 200, 1, ' %');
-    slider2('race_editor', 'race_editor_gravity', 0, 100, 1, ' Gs');
+    slider1('race_editor', 'race_editor_energy_research_cost_modifier', 50, 200, 5, ' %');
+    slider1('race_editor', 'race_editor_weapons_research_cost_modifier', 50, 200, 5, ' %');
+    slider2('race_editor', 'race_editor_gravity', 0, 100, 2, format_gravity);
+    slider2('race_editor', 'race_editor_temperature', 0, 100, 2, format_temperature);
+    slider2('race_editor', 'race_editor_radiation', 0, 100, 2, format_radiation);
 }
 
 // Apply/remove a class to all children
@@ -99,8 +101,8 @@ function parse_json(url, json) {
             if(element.nodeName == 'DIV') {
                 value = [json[key]];
                 if(json.hasOwnProperty(key + '_stop')) {
-                    json_map[form][key] = json[key + '_stop'];
-                    value.push(json[key]);
+                    json_map[form][key + '_stop'] = json[key + '_stop'];
+                    value.push(json[key + '_stop']);
                 }
                 element.noUiSlider.set(value);
             } else if(element.nodeName == 'SELECT') {
@@ -151,11 +153,11 @@ function slider1(form, slider_id, min, max, step, label) {
         step: step,
         tooltips: [true],
         format: {
-            to: function(v) {
-                return v.toString() + label;
+            to: function(value) {
+                return Math.round(value).toString() + label;
             },
-            from: function(v) {
-                return Number(v.replace(label, ''));
+            from: function(value) {
+                return Number(value);
             }
         },
         range: {
@@ -167,19 +169,40 @@ function slider1(form, slider_id, min, max, step, label) {
 }
 
 // Create a slider
-function slider2(form, slider_id, min, max, step, label) {
+function slider2(form, slider_id, min, max, step, formatter) {
     element = document.getElementById(slider_id);
     noUiSlider.create(element, {
         start: [min, max],
         connect: true,
         step: step,
         tooltips: [true, true],
+        format: {
+            to: formatter,
+            from: function(value) {
+                return Number(value);
+            }
+        },
         range: {
             'min': min,
             'max': max
         }
     });
     element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Format gravity
+function format_gravity(value) {
+    return (Math.ceil((Math.pow(2.0, (value / 25.0) - 1.0) * 3.0 / 4.0) * 100) / 100).toString() + ' G';
+}
+
+// Format temperature
+function format_temperature(value) {
+    return (value * 4 - 200).toString() + ' °C';
+}
+
+// Format radiation
+function format_radiation(value) {
+    return value.toString() + ' mR';
 }
 </script>
 <style>
@@ -266,6 +289,7 @@ table.topbar {
 }
 caption {
     margin-top: 20px;
+    margin-bottom: 5px;
     border: 2px solid silver;
     padding-left: 5px;
     cursor: pointer;
@@ -294,10 +318,13 @@ tr.slider_padding {
 #race_editor_gravity .noUi-connect {
     background: blue;
 }
-#temperature .noUi-connect {
+#race_editor_gravity, #race_editor_temperature, #race_editor_radiation .noUi-connects {
+    background: black;
+}
+#race_editor_temperature .noUi-connect {
     background: red;
 }
-#radiation .noUi-connect {
+#race_editor_radiation .noUi-connect {
     background: green;
 }
 </style>
@@ -556,7 +583,7 @@ tr.slider_padding {
         <!--<td><button class="circle" disabled="true" onclick="post('new_game', '?submit')">+</button></td>-->
     </tr></table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ race traits</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Race Traits</caption>
         <tr>
             <td style="white-space: nowrap">primary race trait</td>
             <td style="width: 100%"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
@@ -613,8 +640,33 @@ tr.slider_padding {
             <td style="width: 10%"><input id="race_editor_lesser_racial" type="checkbox" onchange="post('race_editor')"></input></td>
             <td>lesser racial trait</td>
         </tr>
-    </table>
-    <table class="hfill">
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Habitability</caption>
+        <tr>
+            <td>Gravity</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#gravity" id="race_editor_gravity"></div></td>
+            <td>Immune <input id="race_editor_gravity_immune" type="checkbox" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Temperature</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#temperature" id="race_editor_temperature"></div></td>
+            <td>Immune <input id="race_editor_temperature_immune" type="checkbox" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Radiation</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#radiation" id="race_editor_radiation"></div></td>
+            <td>Immune <input id="race_editor_radiation_immune" type="checkbox" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ economy</caption>
+        <tr>
+            <td>effort per kt</td>
+            <td><input id="race_editor_effort_per_kt" type="range" min="100" max="9900" step="100" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_display_effort_per_kt" disabled="true" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>energy per kt</td>
+            <td><input id="race_editor_energy_per_kt" type="number" min="1" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+    </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ research</caption>
         <tr>
             <td></td>
@@ -648,25 +700,6 @@ tr.slider_padding {
             <td>biotechnology</td>
             <td><input id="race_editor_biotechnology_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
             <td><input id="race_editor_starting_tech_level_in_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
-        </tr>
-    </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ economy</caption>
-        <tr>
-            <td>effort per kt</td>
-            <td><input id="race_editor_effort_per_kt" type="range" min="100" max="9900" step="100" onchange="post('race_editor')"></input></td>
-            <td><input id="race_editor_display_effort_per_kt" disabled="true" onchange="post('race_editor')"></input></td>
-        </tr>
-        <tr>
-            <td>energy per kt</td>
-            <td><input id="race_editor_energy_per_kt" type="number" min="1" max="25" onchange="post('race_editor')"></input></td>
-        </tr>
-    </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Habitability</caption>
-        <tr class="slider">
-            <td>Gravity</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#gravity" id="race_editor_gravity"></div></td>
-            <td>Immune <input id="race_editor_gravity_immune" type="checkbox" onchange="post('race_editor')"></input></td>
-        </tr><tr class="slider_padding"></tr><tr>
         </tr>
     </table>
 </div>
