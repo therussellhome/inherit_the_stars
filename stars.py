@@ -34,7 +34,8 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             if response:
-                _handlers[form].post(action, **json)
+                _handlers[form].update(**json)
+                _handlers[form].post(action)
                 response_str = game_engine.to_json(response)
                 print('    resp = ', response_str)
                 self.wfile.write(response_str.encode())
