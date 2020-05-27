@@ -581,64 +581,42 @@ tr.slider_padding {
         <td style="white-space: nowrap"> advantage points left: </td>
         <td><input disabled="true" id="race_editor_points_left"></input></td>
         <!--<td><button class="circle" disabled="true" onclick="post('new_game', '?submit')">+</button></td>-->
-    </tr></table>
-    <table class="hfill">
+    </tr></table><table class="hfill">
+        <tr>
+            <td style="white-space: nowrap">Name</td>
+            <td class="hfill"><input id="race_editor_name" style="width: 100%" onchange="post('race_editor')"></input></td>
+        </tr>
+    </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Race Traits</caption>
         <tr>
-            <td style="white-space: nowrap">primary race trait</td>
-            <td style="width: 100%"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_trader" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Trader</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_total_taraforming" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Total Taraforming</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_advanced_depot" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Advaced Depot</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_ultemet_recycling" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Ultemet Recycling</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_improved_fuel_efficiency" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Improved Fuel Efficiency</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_improved_starbases" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Improved Starbases</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_generalized_reserch" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Generalized Reserch</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Bleeding Edge Technology</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>No Antimatter Collecting Engines</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_low_starting_population" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Low Starting Population</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>No Advanced Scanners</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>Cheap Engines</td>
-        </tr>
-        <tr>
-            <td style="width: 10%"><input id="race_editor_lesser_racial" type="checkbox" onchange="post('race_editor')"></input></td>
-            <td>lesser racial trait</td>
+            <td style="white-space: nowrap">Primary Racial Trait</td>
+            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="2" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Lesser Racial Traits</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_trader" type="checkbox" onchange="post('race_editor')"></input> Trader</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_total_taraforming" type="checkbox" onchange="post('race_editor')"></input> Total Taraforming</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_advanced_depot" type="checkbox" onchange="post('race_editor')"></input> Advaced Depot</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_ultemet_recycling" type="checkbox" onchange="post('race_editor')"></input> Ultemet Recycling</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_improved_fuel_efficiency" type="checkbox" onchange="post('race_editor')"></input> Improved Fuel Efficiency</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_improved_starbases" type="checkbox" onchange="post('race_editor')"></input> Improved Starbases</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_generalized_reserch" type="checkbox" onchange="post('race_editor')"></input> Generalized Reserch</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"></input> Bleeding Edge Technology</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"></input> No Antimatter Collecting Engines</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_low_starting_population" type="checkbox" onchange="post('race_editor')"></input> Low Starting Population</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"></input> No Advanced Scanners</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"></input> Cheap Engines</td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Habitability</caption>
