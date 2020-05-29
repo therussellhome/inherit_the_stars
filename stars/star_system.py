@@ -17,7 +17,7 @@ class StarSystem(Defaults):
     
     """ Initialize defaults """
     def __init__(self, **kwargs):
-        super()._apply_defaults(**kwargs)
+        super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'System_' + str(id(self))
         if 'num_planets' not in kwargs:
