@@ -8,12 +8,18 @@ __defaults = {
 }
 
 
-""" Class defining fleets """
+""" Class defining fleets - directly modifiable by the player """
 class Fleet(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
+
+""" Ordered list of fleet preactions for use by the Game.generate_turn """
+Fleet.preactions = [
+    'pre_load',
+    'pre_unload',
+]
 
 """ Ordered list of fleet actions for use by the Game.generate_turn """
 Fleet.actions = [
@@ -32,5 +38,5 @@ Fleet.actions = [
     'scrap',
     'transfer',
     'patrol',
-    'route'
+    'route',
 ]

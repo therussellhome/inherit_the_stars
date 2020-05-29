@@ -4,7 +4,7 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    # User controls
+    # User controls - these are modifiable by the player
     'energy_minister_construction_percent': [90, 0, 100],
     'energy_minister_mattrans_percent': [0, 0, 100],
     'energy_minister_mattrans_use_surplus': [False],

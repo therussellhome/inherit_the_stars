@@ -29,3 +29,17 @@ class GameEngineTestCase(unittest.TestCase):
         r = reference.Reference('_TestGameEngine', 'unreg 1')
         game_engine.unregister(t)
         self.assertFalse(r.unreg)
+
+    def test_json(self):
+        t1 = _TestGameEngine(name='test_json')
+        game_engine.unregister(t1)
+        json = game_engine.to_json(t1)
+        t2 = game_engine.from_json(json)
+        self.assertEqual(t1.name, t2.name)
+
+    def test_get(self):
+        t1 = _TestGameEngine(name='test_get1')
+        t2 = _TestGameEngine(name='test_get2')
+        ts = game_engine.get('_TestGameEngine/')
+        self.assertEqual(ts[0].name, t1.name)
+        self.assertEqual(ts[1].name, t2.name)

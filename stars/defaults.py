@@ -6,7 +6,7 @@ from . import game_engine
 class Defaults(game_engine.BaseClass):
     """ Load all defaults into the object """
     def __init__(self, **kwargs):
-        object.__getattribute__(self, '__dict__').update(kwargs)
+        self.update(**kwargs)
         cls = object.__getattribute__(self, '__class__')
         defaults = cls.get_defaults(cls)
         for name in defaults:
@@ -34,6 +34,27 @@ class Defaults(game_engine.BaseClass):
                 pass
             return copy.copy(default[0])
         return object.__getattribute__(self, name)
+
+    """ Bulk update values """
+    def update(self, **kwargs):
+        cls = object.__getattribute__(self, '__class__')
+        defaults = cls.get_defaults(cls)
+        for name in kwargs:
+            value = kwargs[name]
+            if name in defaults:
+                default = defaults[name]
+                try:
+                    if type(default[0]) == int:
+                        value = max([default[1], min([default[2], int(value)])])
+                    elif type(default[0]) == float:
+                        value = max([default[1], min([default[2], float(value)])])
+                    elif type(default[0]) == bool:
+                        value = bool(value)
+                    elif type(default[0]) == type(value):
+                        pass
+                except:
+                    return copy.copy(default[0])
+            object.__setattr__(self, name, value)
 
     """ Reset values to default """
     def reset_to_default(self):
