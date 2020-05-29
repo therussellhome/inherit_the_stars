@@ -12,10 +12,16 @@ __defaults = {
     'biotechnology': [0, 0, sys.maxsize]
 }
 
-""" Represent 'cost' """
+""" Represent 'tech level' """
 class TechLevel(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    """ Determine if the item is available for a player's tech level """
+    def is_available(self, player_level):
+        if player_level.energy <= self.energy and player_level.weapons <= self.weapons and player_level.propulsion <= self.propulsion and player_level.construction <= self.construction and player_level.electronics <= self.electronics and player_level.biotechnology <= self.biotechnology:
+            return True
+        return False
 
 
 TechLevel.set_defaults(TechLevel, __defaults)
