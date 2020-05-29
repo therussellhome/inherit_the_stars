@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from host import game_engine
-from host import star_system
+from . import game_engine
+from . import star_system
 from random import randint
 from random import random
 from math import pi
@@ -14,11 +14,8 @@ with open('host/star_system.names') as file:
         names.append(name.strip())
 game_engine.save_game('games/new_game.zip')
 
-""" Set the game name and the density """
+""" Set the game name and the density x"""
 game_name = str(input('game name:'))
-if len(game_name) == 0:
-    game_name = 'game ' + str(randint(0, 99)) + ' ' + str(randint(100, 1000000))
-
 
 while True:
     density = input('density (1..100):')
@@ -30,7 +27,7 @@ while True:
         break
     print('invalid input')
 
-""" Set the dimensions """
+""" Set the dimensions x"""
 x = -1
 y = -1
 z = -1
@@ -61,12 +58,12 @@ if z == 0 or z == 1:
     z = 2
 volume = ((4/3)*pi)*(x/2)*(y/2)*(z/2)/(100**dimension)
 
-""" Calculate the number of systems """
+""" Calculate the number of systems x"""
 num_systems = round(volume * density)
 min_systems = 3
 default_systems = 100
 if num_systems not in range(min_systems, len(names)):
-    print('invalid input:', num_systems, 'is not between', min_systems, 'and', len(names) + 1)
+    print('invalid input:', num_systems, 'is not between', min_systems, 'and', len(names))
     num_systems = default_systems
 
 """ Print the universe information """
@@ -87,7 +84,7 @@ elif dimension == 2:
 elif dimension == 3:
     print('this universe is a 3-dimensional', x, 'by', y, 'by', z, shape, 'with', num_systems, 'systems and a volume of', round(volume * (100**dimension)), 'cubic lightyears')
 
-""" Create the systems """
+"""Create the systems x"""
 """ rx = x coordinate """
 """ ry = y coordinate """
 """ rz = z coordinate """
@@ -116,7 +113,7 @@ while len(systems) < num_systems:
             systems.append(s)
 game_engine.save_game('games/new_game.zip')
 
-""" Set the number of players """
+""" Set the number of players x"""
 while True:
     num_players = input('number of players (1...16):')
     try:
@@ -127,7 +124,7 @@ while True:
         break
     print('invalid input')
 
-""" Set the distance between players """
+""" Set the distance between players x """
 while True:
     if num_players == 1:
         break
@@ -140,50 +137,41 @@ while True:
         break
     print('invalid input')
 
-""" Generate the home systems """
+""" Generate the home systems x"""
 home_systems = []
 home_systems.append(systems[0])
 if num_players == 1:
-   pass 
+    pass 
 
-else:
-    for i in systems:
-        p = ''
-        for k in home_systems:
-                if round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) < player_distance:    
-                    p += 'fail'
-                elif round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) >= player_distance:
-                    p += 'pass'
-        if 'fail' not in p:
-            home_systems.append(i)
-        if len(home_systems) == num_players:
-            break
-        if i == systems[len(systems) - 1] and len(home_systems) < num_players:
-            player_distance *= .9
-# Discuss on Friday:
-# clearing home_systems when making player_distance smaller
-# checking counter
-# player races format
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+"""    else:
+        for i in systems:
+            p = ''
+            for k in home_systems:
+                    if round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) < player_distance:    
+                        p += 'fail'
+                    elif round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) >= player_distance:
+                        p += 'pass'
+            if 'fail' not in p:
+                home_systems.append(i)
+            if len(home_systems) == num_players:
+                break
+            if i == systems[len(systems) - 1] and len(home_systems) < num_players:
+                player_distance *= .9
+        # Output:
+        #if dimension == 3:
+            #if x == y and y == z:
+                #shape = 'sphere'
+            #else:
+                #shape = 'elipsoid'
+        #elif dimension == 2:
+            #if x == y:
+                #shape = 'circle'
+            #else:
+                #shape = 'elipse'
+        #if dimension == 1:
+            #print('this universe is a 1-dimensional', x, 'lightyear long line with', num_systems, 'systems')
+        #elif dimension == 2:
+            #print('this universe is a 2-dimensional', x, 'by', y, shape, 'with', num_systems, 'systems and an area of', round(volume * (100**dimension)), 'square lightyears')
+        #elif dimension == 3:
+            #print('this universe is a 3-dimensional', x, 'by', y, 'by', z, shape, 'with', num_systems, 'systems and a volume of', round(volume * (100**dimension)), 'cubic lightyears')
+"""
