@@ -81,7 +81,7 @@ class Planet(Defaults):
 
     """ Operate facilities """
     def generate_resources(self):
-        self._calculate_effort()
+        self.effort = self._calc_effort()
         self._generate_energy()
         self._mine_minerals()
     
@@ -105,9 +105,9 @@ class Planet(Defaults):
         self.on_surface.people = int(round(pop, -3)/1000)
 
     """ calculate how much effort is produced by the population """
-    def _calculate_effort(self):
+    def _calc_effort(self):
         if self.player.is_valid:
-            self.effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency)
+            return round(self.on_surface.people * self.player.race.effort_per_kt)
     
     """ Get the requested minister """
     def _get_minister(self):
@@ -178,7 +178,7 @@ class Planet(Defaults):
         #    self.scanner_tech = scanner_tech
             return 'self.scanner_tech'
         else:
-            total_effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency)
+            total_effort = self._calc_effort()
             factory_percent = ((self.factory_tech.effort_per_facility * self.factories) / total_effort) - (minister.factories / 100)
             power_plant_percent = ((self.power_plant_tech.effort_per_facility * self.power_plants) / total_effort) - (minister.power_plants / 100)
             mine_percent = ((self.mine_tech.effort_per_facility * self.mines) / total_effort) - (minister.mines / 100)

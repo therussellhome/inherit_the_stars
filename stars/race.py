@@ -2,6 +2,8 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'prt': [''],
+    'lrt_generalized_research': [False],
     'growth_rate': [10, 0, 20],
     'gravity_start': [0, 0, 100],
     'gravity_stop': [100, 0, 100],
@@ -13,7 +15,7 @@ __defaults = {
     'temperature_stop': [100, 0, 100],
     'temperature_immune': [False],
     'population_max': [10000000, 0, 1000000000],
-    'effort_efficency': [100, 0, 200],
+    'effort_per_kt': [1000, 500, 2000],
     'energy_efficency': [100, 0, 200],
     'mine_efficency': [100, 0, 200],
     'factory_efficency': [100, 0, 200],

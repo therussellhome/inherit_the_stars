@@ -70,24 +70,34 @@ class Player(Defaults):
         for planet in planets:
             planet.do_mattrans()
         # Research
-        self.do_research()
+        self._do_research()
 
     """ Research """
-    def do_research(self):
-        while True:
-            if not self.race.generalized_research:
-                field_cost = self.next_tech_cost[self.research_field]
-                request = self.spend_budget('research', field_cost)
-                if request < field_cost:
-                    self.next_tech_cost[self.research_field] -= request
-                    break
-                else:
-                    self.tech_level[self.research_field] += 1
-                    self.next_tech_cost[self.research_field] = self._calc_research_cost(self.research_field, self.tech_level[self.research_field] + 1)
+    def _do_research(self):
+        budget = self.energy_minister.check_budget('research', self.energy)
+        if not self.race.lrt_generalized_research:
+            while budget > 0:
+                budget = self._research_in_field(self.research_field, budget)
+                if budget > 0:
                     self.research_field = self._calc_next_research_field()
-            else:
-                print('TODO')
+        else:
+            # TODO
+            print('TODO')
         # TODO unlock tech items?
+
+    """ Apply energy to a specific research field """
+    def _research_in_field(self, field, budget):
+        field_level = getattr(self.tech_level, field)
+        field_cost = getattr(self.next_tech_cost, field)
+        request = self.energy_minister.spend_budget('research', field_cost)
+        field_cost -= request
+        budget -= request
+        if field_cost == 0:
+            field_level += 1
+            field_cost = self._calc_research_cost(field, field_level)
+        setattr(self.tech_level, field, field_level)
+        setattr(self.next_tech_cost, field, field_cost)
+        return budget
 
     """ Calculate the cost of the next tech level in that field """
     def _calc_research_cost(self, field, level):

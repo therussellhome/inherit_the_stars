@@ -6,6 +6,33 @@ class PlanetTestCase(unittest.TestCase):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25000, 1)
 
+    def test_colonize(self):
+        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', 25000, 1)
+        self.assertEqual(self.planet.on_surface.people, 25000)
+        self.assertEqual(self.planet.factories, 2)
+
+    def test_calculate_effort(self):
+        self.planet.on_surface.people = 1000
+        self.assertEqual(self.planet._calc_effort(), 1000000)
+        self.planet.on_surface.people = 500
+        self.assertEqual(self.planet._calc_effort(), 500000)
+        self.planet.on_surface.people = 1000
+        self.planet.player.race.effort_per_kt = 800
+        self.assertEqual(self.planet._calc_effort(), 800000)
+
+    def test_generate_energy(self):
+        # TODO
+        pass
+
+    def test_calc_max_production_capacity(self):
+        # TODO
+        pass
+
+    def test_mine_minerals(self):
+        # TODO
+        pass
+
+
     def test_calc_planet_value(self):
         self.__calcplanet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)
         self.__calcplanet_value_expect(0, 50, 50, 0, 100, 0, 100, 0, 100, 41)
