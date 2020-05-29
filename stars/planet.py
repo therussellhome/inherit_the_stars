@@ -165,14 +165,14 @@ class Planet(Defaults):
         if not self.player.is_valid:
             return
         minister = self._get_minister()
-        #scanner_tech = self.player.max_tech('planetary_scanner')
-        #penetrating_tech = self.player.max_tech('planetary_penetrating')
+    #TODO    scanner_tech = self.player.max_tech('planetary_scanner')
+    #TODO    penetrating_tech = self.player.max_tech('planetary_penetrating')
         num_facilities = (self.factories + self.power_plants + self.mines + self.defenses)
         if minister.build_penetrating_after_num_facilitys <= num_facilities: # and self.penetrating_tech != penetrating_tech:
-        #    self.penetrating_tech = penetrating_tech
+    #TODO        self.penetrating_tech = penetrating_tech
             return self.penetrating_tech
         elif minister.build_scanner_after_num_facilitys <= num_facilities: # and self.scanner_tech != scanner_tech:
-        #    self.scanner_tech = scanner_tech
+    #TODO        self.scanner_tech = scanner_tech
             return self.scanner_tech
         else:
             total_effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency)
@@ -181,7 +181,7 @@ class Planet(Defaults):
             mine_percent = ((self.mine_tech.effort_per_facility * self.mines) / total_effort) - (minister.mines / 100)
             defense_percent = ((self.defense_tech.effort_per_facility * self.defenses) / total_effort) - (minister.defenses / 100)
             check = [[factory_percent, self.factory_tech], [power_plant_percent, self.power_plant_tech], [mine_percent, self.mine_tech], [defense_percent, self.defense_tech]]
-            print(check)
+            #print(check)
             least = 1
             lest = 0
             for i in range(len(check)):
@@ -191,12 +191,11 @@ class Planet(Defaults):
             return check[lest][1]
         
     
-#TODO    
-    """ FIX THIS IN ECONOMY OR MINISTER """
     """ build stuff in build queue """
     def do_construction(self, unblock):
         if not self.player.is_valid:
             return
+        minister = self._get_minister()
         keep_going = True
         while keep_going:
             item = self.build_queue[0]
@@ -226,7 +225,7 @@ class Planet(Defaults):
                     remaining_production -= spend_t + spend_l + spend_s
                 else:
                     b_spend_e = self.player.energy_minister.check_budget('baryogenesis', 100)
-                    if remaining_production >= (10 + spend_t + spend_l + spend_s) and spend_e == o_spend_e and b_spend_e == 100 and unblock:
+                    if remaining_production >= (10 + spend_t + spend_l + spend_s) and spend_e == o_spend_e and b_spend_e == 100 and minister.unblock:
                         if spend_t  > 0 or spend_l > 0 or spend_s > 0:
                             remaining_production - 10
                             self.minerals.titanium += 1
