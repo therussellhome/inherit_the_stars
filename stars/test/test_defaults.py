@@ -68,3 +68,14 @@ class DefaultsTestCase(unittest.TestCase):
         t.default_float = 1.0
         self.assertEqual(t.default_int, 999)
         self.assertEqual(t.default_float, 0.9)
+
+    def test_update(self):
+        t = _TestDefaults()
+        t.update(default_int = 5);
+        self.assertEqual(t.default_int, 5)
+
+    def test_reset(self):
+        t = _TestDefaults()
+        t.default_int = 9;
+        t.reset_to_default()
+        self.assertEqual(t.default_int, 123)

@@ -7,8 +7,6 @@ from .minister import Minister
 from .facility import Facility
 from .reference import Reference
 
-""" List of gravity values for display (0..100) """
-_grav_values = [0.20, 0.22, 0.23, 0.24, 0.26, 0.28, 0.29, 0.30, 0.32, 0.34, 0.35, 0.36, 0.38, 0.40, 0.41, 0.42, 0.44, 0.46, 0.47, 0.48, 0.50, 0.52, 0.53, 0.54, 0.56, 0.57, 0.59, 0.60, 0.62, 0.64, 0.65, 0.67, 0.68, 0.70, 0.71, 0.73, 0.74, 0.75, 0.77, 0.78, 0.80, 0.82, 0.84, 0.86, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.00, 1.04, 1.08, 1.12, 1.16, 1.20, 1.24, 1.28, 1.32, 1.36, 1.40, 1.44, 1.48, 1.52, 1.56, 1.60, 1.64, 1.68, 1.72, 1.76, 1.80, 1.84, 1.88, 1.92, 1.96, 2.00, 2.11, 2.22, 2.33, 2.44, 2.55, 2.66, 2.77, 2.88, 3.00, 3.12, 3.24, 3.36, 3.48, 3.60, 3.72, 3.84, 3.96, 4.09, 4.22, 4.35, 4.48, 4.61, 4.74, 4.87, 5.00]
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -36,7 +34,7 @@ __defaults = {
 }
 
 
-""" Planets are colonizable by only one planet, have minerals, etc """
+""" Planets are colonizable by only one player, have minerals, etc """
 class Planet(Defaults):
 
     """ Initialize defaults """
@@ -57,14 +55,6 @@ class Planet(Defaults):
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
 
-    """ Return the planet temperature (-260C to 260C) """
-    def display_temp(self):
-        return str(self.temperature * 4 - 200) + 'C'
-
-    """ Return the planet gravity (0.20g to 5.00g) """
-    def display_grav(self):
-        return str(_grav_values[self.gravity]) + 'g'
-    
     """ Colonize the planet """
     # player is a Reference to Player
     # because minister names can change, minister is a string
@@ -91,7 +81,7 @@ class Planet(Defaults):
 
     """ Operate facilities """
     def generate_resources(self):
-        self._calculate_effort()
+        self.effort = self._calc_effort()
         self._generate_energy()
         self._mine_minerals()
     
@@ -115,9 +105,9 @@ class Planet(Defaults):
         self.on_surface.people = int(round(pop, -3)/1000)
 
     """ calculate how much effort is produced by the population """
-    def _calculate_effort(self):
+    def _calc_effort(self):
         if self.player.is_valid:
-            self.effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency)
+            return round(self.on_surface.people * self.player.race.effort_per_kt)
     
     """ Get the requested minister """
     def _get_minister(self):
@@ -188,7 +178,7 @@ class Planet(Defaults):
         #    self.scanner_tech = scanner_tech
             return 'self.scanner_tech'
         else:
-            total_effort = round(self.on_surface.people * 1000 * self.player.race.effort_efficency)
+            total_effort = self._calc_effort()
             factory_percent = ((self.factory_tech.effort_per_facility * self.factories) / total_effort) - (minister.factories / 100)
             power_plant_percent = ((self.power_plant_tech.effort_per_facility * self.power_plants) / total_effort) - (minister.power_plants / 100)
             mine_percent = ((self.mine_tech.effort_per_facility * self.mines) / total_effort) - (minister.mines / 100)
