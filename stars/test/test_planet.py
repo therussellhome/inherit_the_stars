@@ -32,7 +32,6 @@ class PlanetTestCase(unittest.TestCase):
         # TODO
         pass
 
-
     def test_calc_planet_value(self):
         self.__calcplanet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)
         self.__calcplanet_value_expect(0, 50, 50, 0, 100, 0, 100, 0, 100, 41)
