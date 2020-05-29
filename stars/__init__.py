@@ -10,5 +10,6 @@ __all__ = [
     'player', 
     'reference', 
     'star_system', 
-    'sun', 
+    'sun',
+    'race_editor'
 ]

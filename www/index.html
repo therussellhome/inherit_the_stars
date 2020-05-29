@@ -2,6 +2,8 @@
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<link href="nouislider.css" rel="stylesheet">
+<script src="nouislider.js"></script>
 <title>Inherit the Stars!</title>
 <script>
 
@@ -12,6 +14,12 @@ let json_map = {};
 function init() {
     post('host', '?reset');
     post('new_game', '?reset');
+    post('race_editor', '?reset');
+    slider1('race_editor', 'race_editor_energy_research_cost_modifier', 50, 200, 5, ' %');
+    slider1('race_editor', 'race_editor_weapons_research_cost_modifier', 50, 200, 5, ' %');
+    slider2('race_editor', 'race_editor_gravity', 0, 100, 2, format_gravity);
+    slider2('race_editor', 'race_editor_temperature', 0, 100, 2, format_temperature);
+    slider2('race_editor', 'race_editor_radiation', 0, 100, 2, format_radiation);
 }
 
 // Apply/remove a class to all children
@@ -57,7 +65,15 @@ function post(form, action = '') {
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {
-            if(element.matches('[type="checkbox"]')) {
+            if(element.nodeName == 'DIV') {
+                value = element.noUiSlider.get();
+                if(Array.isArray(value)) {
+                    json_map[form][key] = parseInt(value[0]);
+                    json_map[form][key + '_stop'] = parseInt(value[1]);
+                } else {
+                    json_map[form][key] = parseInt(value);
+                }
+            } else if(element.matches('[type="checkbox"]')) {
                 json_map[form][key] = element.checked;
             } else {
                 json_map[form][key] = element.value;
@@ -82,7 +98,14 @@ function parse_json(url, json) {
         element = document.getElementById(key);
         if(element != null) {
             json_map[form][key] = json[key];
-            if(element.nodeName == 'SELECT') {
+            if(element.nodeName == 'DIV') {
+                value = [json[key]];
+                if(json.hasOwnProperty(key + '_stop')) {
+                    json_map[form][key + '_stop'] = json[key + '_stop'];
+                    value.push(json[key + '_stop']);
+                }
+                element.noUiSlider.set(value);
+            } else if(element.nodeName == 'SELECT') {
                 var options = []
                 for(var i = 0; i < element.length; i++) {
                     options.push(element.options[i].text);
@@ -119,6 +142,67 @@ function shutdown(clicked) {
         show_screen(clicked, 'shutdown');
         fetch('/shutdown', { method: 'post' });
     }
+}
+
+// Create a slider
+function slider1(form, slider_id, min, max, step, label) {
+    element = document.getElementById(slider_id);
+    noUiSlider.create(element, {
+        start: [min],
+        connect: true,
+        step: step,
+        tooltips: [true],
+        format: {
+            to: function(value) {
+                return Math.round(value).toString() + label;
+            },
+            from: function(value) {
+                return Number(value);
+            }
+        },
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function slider2(form, slider_id, min, max, step, formatter) {
+    element = document.getElementById(slider_id);
+    noUiSlider.create(element, {
+        start: [min, max],
+        connect: true,
+        step: step,
+        tooltips: [true, true],
+        format: {
+            to: formatter,
+            from: function(value) {
+                return Number(value);
+            }
+        },
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Format gravity
+function format_gravity(value) {
+    return (Math.ceil((Math.pow(2.0, (value / 25.0) - 1.0) * 3.0 / 4.0) * 100) / 100).toString() + ' G';
+}
+
+// Format temperature
+function format_temperature(value) {
+    return (value * 4 - 200).toString() + ' °C';
+}
+
+// Format radiation
+function format_radiation(value) {
+    return value.toString() + ' mR';
 }
 </script>
 <style>
@@ -205,6 +289,7 @@ table.topbar {
 }
 caption {
     margin-top: 20px;
+    margin-bottom: 5px;
     border: 2px solid silver;
     padding-left: 5px;
     cursor: pointer;
@@ -220,12 +305,27 @@ input:disabled {
 tr.collapse {
     display: none;
 }
+tr.slider_padding {
+    height: 2em;
+}
 .hfill {
     width: 100%;
     white-space: nowrap;
 }
 .hide {
     display: none;
+}
+#race_editor_gravity .noUi-connect {
+    background: blue;
+}
+#race_editor_gravity, #race_editor_temperature, #race_editor_radiation .noUi-connects {
+    background: black;
+}
+#race_editor_temperature .noUi-connect {
+    background: red;
+}
+#race_editor_radiation .noUi-connect {
+    background: green;
 }
 </style>
 </head><body onload="init()">
@@ -474,8 +574,112 @@ tr.collapse {
 </div>
 
 
-<div class="screen hide" id="race_editor_screen">
-    TODO
+<div class="screen hide" id="race_editor_screen" style="width: 600px">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Race Editor</td>
+        <td style="width: 100%"></td>
+        <td style="white-space: nowrap"> advantage points left: </td>
+        <td><input disabled="true" id="race_editor_points_left"></input></td>
+        <!--<td><button class="circle" disabled="true" onclick="post('new_game', '?submit')">+</button></td>-->
+    </tr></table><table class="hfill">
+        <tr>
+            <td style="white-space: nowrap">Name</td>
+            <td class="hfill"><input id="race_editor_name" style="width: 100%" onchange="post('race_editor')"></input></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Race Traits</caption>
+        <tr>
+            <td style="white-space: nowrap">Primary Racial Trait</td>
+            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="2" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Lesser Racial Traits</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_trader" type="checkbox" onchange="post('race_editor')"></input> Trader</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_total_taraforming" type="checkbox" onchange="post('race_editor')"></input> Total Taraforming</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_advanced_depot" type="checkbox" onchange="post('race_editor')"></input> Advaced Depot</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_ultemet_recycling" type="checkbox" onchange="post('race_editor')"></input> Ultemet Recycling</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_improved_fuel_efficiency" type="checkbox" onchange="post('race_editor')"></input> Improved Fuel Efficiency</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_improved_starbases" type="checkbox" onchange="post('race_editor')"></input> Improved Starbases</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_generalized_reserch" type="checkbox" onchange="post('race_editor')"></input> Generalized Reserch</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"></input> Bleeding Edge Technology</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"></input> No Antimatter Collecting Engines</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_low_starting_population" type="checkbox" onchange="post('race_editor')"></input> Low Starting Population</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"></input> No Advanced Scanners</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"></input> Cheap Engines</td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Habitability</caption>
+        <tr>
+            <td>Gravity</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#gravity" id="race_editor_gravity"></div></td>
+            <td>Immune <input id="race_editor_gravity_immune" type="checkbox" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Temperature</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#temperature" id="race_editor_temperature"></div></td>
+            <td>Immune <input id="race_editor_temperature_immune" type="checkbox" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Radiation</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#radiation" id="race_editor_radiation"></div></td>
+            <td>Immune <input id="race_editor_radiation_immune" type="checkbox" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ economy</caption>
+        <tr>
+            <td>effort per kt</td>
+            <td><input id="race_editor_effort_per_kt" type="range" min="100" max="9900" step="100" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_display_effort_per_kt" disabled="true" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>energy per kt</td>
+            <td><input id="race_editor_energy_per_kt" type="number" min="1" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ research</caption>
+        <tr>
+            <td></td>
+            <td>research cost</td>
+            <td>starting level</td>
+        </tr>
+        <tr>
+            <td>energy</td>
+            <td><div id="race_editor_energy_research_cost_modifier"></div></td>
+            <td><input id="race_editor_starting_tech_level_in_energy" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>weapons</td>
+            <td><div id="race_editor_weapons_research_cost_modifier"></div></td>
+            <td><input id="race_editor_starting_tech_level_in_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>propulsion</td>
+            <td><input id="race_editor_propulsion_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>construction</td>
+            <td><input id="race_editor_construction_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_construction" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>electronics</td>
+            <td><input id="race_editor_electronics_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_electronics" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td>biotechnology</td>
+            <td><input id="race_editor_biotechnology_research_cost_modifier" type="range" min="-1" max="1" step="0.1" onchange="post('race_editor')"></input></td>
+            <td><input id="race_editor_starting_tech_level_in_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
+        </tr>
+    </table>
 </div>
 
 </td></tr></table>
@@ -544,3 +748,4 @@ Help: help, tech
 -->
 
 </body></html>
+

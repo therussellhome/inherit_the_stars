@@ -64,8 +64,7 @@ __defaults = {
 """ Represent Open Game action """
 class NewGame(Defaults):
     """ Interact with UI """
-    def post(self, action, **kwargs):
-        self.__dict__.update(kwargs)
+    def post(self, action):
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of games
