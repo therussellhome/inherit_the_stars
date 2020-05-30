@@ -4,206 +4,10 @@
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
+<script src="chart.js"></script>
+<script src="stars.js"></script>
 <title>Inherit the Stars!</title>
 <script>
-
-// Store values from python as they give us what fields should be sent back
-let json_map = {};
-
-// Initialize the fields from python
-function init() {
-    post('host', '?reset');
-    post('new_game', '?reset');
-    post('race_editor', '?reset');
-    slider1('race_editor', 'race_editor_energy_research_cost_modifier', 50, 200, 5, ' %');
-    slider1('race_editor', 'race_editor_weapons_research_cost_modifier', 50, 200, 5, ' %');
-    slider2('race_editor', 'race_editor_gravity', 0, 100, 2, format_gravity);
-    slider2('race_editor', 'race_editor_temperature', 0, 100, 2, format_temperature);
-    slider2('race_editor', 'race_editor_radiation', 0, 100, 2, format_radiation);
-}
-
-// Apply/remove a class to all children
-// force = null => toggle
-// force = true => add
-// force = false => remove
-function toggle(start, css_class, force = null) {
-    var children = [start];
-    while(children.length > 0) {
-        element = children.pop();
-        for(child of element.children) {
-            children.push(child);
-            if(force == null) {
-                child.classList.toggle(css_class);
-            } else {
-                child.classList.toggle(css_class, force);
-            }
-        }
-    }
-}
-
-// Show a given screen, hide all others, highlight the clicked button
-function show_screen(clicked, show) {
-    // Hide all screens
-    for(screen of document.getElementsByClassName('screen')) {
-        screen.style.display = 'none';
-    }
-    // Show selected screen
-    document.getElementById(show + '_screen').style.display = 'block';
-    // Unselect all buttons
-    toggle(clicked.parentElement.parentElement.parentElement.parentElement, 'selected', false);
-    // Select button
-    clicked.classList.add('selected');
-}
-
-// Submit data for actioning
-function post(form, action = '') {
-    // Default the json
-    if(!json_map.hasOwnProperty(form)) {
-        json_map[form] = {};
-    }
-    // Update the json
-    for(key in json_map[form]) {
-        element = document.getElementById(key);
-        if(element != null) {
-            if(element.nodeName == 'DIV') {
-                value = element.noUiSlider.get();
-                if(Array.isArray(value)) {
-                    json_map[form][key] = parseInt(value[0]);
-                    json_map[form][key + '_stop'] = parseInt(value[1]);
-                } else {
-                    json_map[form][key] = parseInt(value);
-                }
-            } else if(element.matches('[type="checkbox"]')) {
-                json_map[form][key] = element.checked;
-            } else {
-                json_map[form][key] = element.value;
-            }
-        }
-    }
-    // Fetch and process the response
-    fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_map[form]) }).then(response => 
-        response.json().then(json => ({
-            json: json,
-            url: response.url
-        })
-    ).then(res => {
-        parse_json(res.url, res.json);
-    }));
-}
-
-// Update the fields and the cache
-function parse_json(url, json) {
-    var form = url.replace(/.*\//, '').replace(/\?.*/, '');
-    for(key in json) {
-        element = document.getElementById(key);
-        if(element != null) {
-            json_map[form][key] = json[key];
-            if(element.nodeName == 'DIV') {
-                value = [json[key]];
-                if(json.hasOwnProperty(key + '_stop')) {
-                    json_map[form][key + '_stop'] = json[key + '_stop'];
-                    value.push(json[key + '_stop']);
-                }
-                element.noUiSlider.set(value);
-            } else if(element.nodeName == 'SELECT') {
-                var options = []
-                for(var i = 0; i < element.length; i++) {
-                    options.push(element.options[i].text);
-                }
-                for(opt_text of json['options_' + key]) {
-                    if(!options.includes(opt_text)) {
-                        var new_option = document.createElement("option");
-                        new_option.text = opt_text;
-                        element.add(new_option); 
-                    }
-                    options.splice(options.indexOf(opt_text), 1);
-                }
-                for(opt_text in options) {
-                    for(var i = 0; i < element.length; i++) {
-                        if(element.options[i].text == opt_text) {
-                            element.remove(i);
-                            break;
-                        }
-                    }
-                }
-                element.value = json[key];
-            } else if(element.matches('[type="checkbox"]')) {
-                element.checked = json[key];
-            } else {
-                element.value = json[key];
-            }
-        }
-    }
-}
-
-// Confirm shutdown before executing
-function shutdown(clicked) {
-    if(confirm('Shutdown INHERIT THE STARS! server?')) {
-        show_screen(clicked, 'shutdown');
-        fetch('/shutdown', { method: 'post' });
-    }
-}
-
-// Create a slider
-function slider1(form, slider_id, min, max, step, label) {
-    element = document.getElementById(slider_id);
-    noUiSlider.create(element, {
-        start: [min],
-        connect: true,
-        step: step,
-        tooltips: [true],
-        format: {
-            to: function(value) {
-                return Math.round(value).toString() + label;
-            },
-            from: function(value) {
-                return Number(value);
-            }
-        },
-        range: {
-            'min': min,
-            'max': max
-        }
-    });
-    element.noUiSlider.on('change', function() { post(form) });
-}
-
-// Create a slider
-function slider2(form, slider_id, min, max, step, formatter) {
-    element = document.getElementById(slider_id);
-    noUiSlider.create(element, {
-        start: [min, max],
-        connect: true,
-        step: step,
-        tooltips: [true, true],
-        format: {
-            to: formatter,
-            from: function(value) {
-                return Number(value);
-            }
-        },
-        range: {
-            'min': min,
-            'max': max
-        }
-    });
-    element.noUiSlider.on('change', function() { post(form) });
-}
-
-// Format gravity
-function format_gravity(value) {
-    return (Math.ceil((Math.pow(2.0, (value / 25.0) - 1.0) * 3.0 / 4.0) * 100) / 100).toString() + ' G';
-}
-
-// Format temperature
-function format_temperature(value) {
-    return (value * 4 - 200).toString() + ' °C';
-}
-
-// Format radiation
-function format_radiation(value) {
-    return value.toString() + ' mR';
-}
 </script>
 <style>
 body { 
@@ -318,14 +122,14 @@ tr.slider_padding {
 #race_editor_gravity .noUi-connect {
     background: blue;
 }
-#race_editor_gravity, #race_editor_temperature, #race_editor_radiation .noUi-connects {
-    background: black;
-}
 #race_editor_temperature .noUi-connect {
     background: red;
 }
 #race_editor_radiation .noUi-connect {
     background: green;
+}
+#race_editor_gravity, #race_editor_temperature, #race_editor_radiation .noUi-connects {
+    background: black;
 }
 </style>
 </head><body onload="init()">
@@ -622,17 +426,31 @@ tr.slider_padding {
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Habitability</caption>
         <tr>
             <td>Gravity</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#gravity" id="race_editor_gravity"></div></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"></div></td>
             <td>Immune <input id="race_editor_gravity_immune" type="checkbox" onchange="post('race_editor')"></input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Temperature</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#temperature" id="race_editor_temperature"></div></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_temperature" onload="slider2(this, 'race_editor', 0, 100, 2, format_temperature)"></div></td>
             <td>Immune <input id="race_editor_temperature_immune" type="checkbox" onchange="post('race_editor')"></input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Radiation</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="#radiation" id="race_editor_radiation"></div></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"></div></td>
             <td>Immune <input id="race_editor_radiation_immune" type="checkbox" onchange="post('race_editor')"></input></td>
         </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
+        <caption onclick="toggle(this.parentElement, 'collapse', null); 
+                gravity_chart('race_editor_gravity_chart', 'race_editor_gravity'); 
+                temperature_chart('race_editor_temperature_chart', 'race_editor_temperature'); 
+                radiation_chart('race_editor_radiation_chart', 'race_editor_radiation')">+ Habitability Charts</caption>
+        <tr>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_gravity')"></canvas></td>
+        </tr>
+        <tr>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_temperature')"></canvas></td>
+        </tr>
+        <tr>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_radiation')"></canvas></td>
+        </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ economy</caption>
         <tr>
@@ -653,11 +471,11 @@ tr.slider_padding {
         </tr>
         <tr>
             <td>energy</td>
-            <td><div id="race_editor_energy_research_cost_modifier"></div></td>
+            <td><div class="onload" id="race_editor_energy_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, ' %')"></div></td>
             <td><input id="race_editor_starting_tech_level_in_energy" type="number" min="0" max="25" onchange="post('race_editor')"></input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>weapons</td>
-            <td><div id="race_editor_weapons_research_cost_modifier"></div></td>
+            <td><div class="onload" id="race_editor_weapons_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, ' %')"></div></td>
             <td><input id="race_editor_starting_tech_level_in_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>propulsion</td>
