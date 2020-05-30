@@ -64,10 +64,10 @@ function post(form, action = '') {
             if(element.nodeName == 'DIV') {
                 value = element.noUiSlider.get();
                 if(Array.isArray(value)) {
-                    json_map[form][key] = parseInt(value[0]);
-                    json_map[form][key + '_stop'] = parseInt(value[1]);
+                    json_map[form][key] = parseFloat(value[0]);
+                    json_map[form][key + '_stop'] = parseFloat(value[1]);
                 } else {
-                    json_map[form][key] = parseInt(value);
+                    json_map[form][key] = parseFloat(value);
                 }
             } else if(element.matches('[type="checkbox"]')) {
                 json_map[form][key] = element.checked;
@@ -147,7 +147,7 @@ function shutdown(clicked) {
 }
 
 // Create a slider
-function slider(element, form, min, max, step, label) {
+function slider(element, form, min, max, step, formatter, units) {
     noUiSlider.create(element, {
         start: [min],
         connect: true,
@@ -155,31 +155,7 @@ function slider(element, form, min, max, step, label) {
         tooltips: [true],
         format: {
             to: function(value) {
-                return Math.round(value).toString() + label;
-            },
-            from: function(value) {
-                return Number(value);
-            }
-        },
-        range: {
-            'min': min,
-            'max': max
-        }
-    });
-    element.noUiSlider.on('change', function() { post(form) });
-}
-
-// Create a slider
-function slider1(form, slider_id, min, max, step, label) {
-    element = document.getElementById(slider_id);
-    noUiSlider.create(element, {
-        start: [min],
-        connect: true,
-        step: step,
-        tooltips: [true],
-        format: {
-            to: function(value) {
-                return Math.round(value).toString() + label;
+                return formatter.format(value) + units;
             },
             from: function(value) {
                 return Number(value);
