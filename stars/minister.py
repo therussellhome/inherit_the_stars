@@ -11,7 +11,8 @@ __defaults = {
     'build_penetrating_after_num_facilitys': [100, 0, sys.maxsize],
     'build_mattrans_after_num_facilitys': [100, 0, sys.maxsize],
     'build_min_terraform': [1, 0, 100],
-    'build_max_terraform': [100, 0, 100]
+    'build_max_terraform': [100, 0, 100],
+    'unblock': [True]
 }
 
 
