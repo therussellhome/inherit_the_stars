@@ -1,4 +1,4 @@
-from math import log
+from math import log, exp
 from .race import Race
 from .defaults import Defaults
 #s = SUM(FILTER(C2:C80,E2:E80=Y1)) #total
@@ -47,6 +47,7 @@ __defaults = {
     'race_editor_radiation': [0, 0, 100],
     'race_editor_radiation_stop': [100, 0, 100],
     'race_editor_radiation_immune': [False],
+    'race_editor_habitability_message': [''],
 }
 def calc_hab_cost(start, stop): #not temperature
     size = stop - start + 1
@@ -119,10 +120,33 @@ class RaceEditor(Defaults):
             lrts += 1
         aps += (lrts+1) * lrts
         return aps
+
+    """ TODO """
+    def _calc_habitability_message(self):
+        overall_hab = 1.0
+        if not self.race_editor_gravity_immune:
+            hab = 0.0
+            for i in range(self.race_editor_gravity, self.race_editor_gravity_stop + 1):
+                hab += (100.0 - i) * 2.0 / 101.0
+            overall_hab *= hab / 100.0
+        if not self.race_editor_temperature_immune:
+            hab = 0.0
+            for i in range(self.race_editor_temperature, self.race_editor_temperature_stop + 1):
+                hab += 1.7 * exp(-1.0 * (((i - 50.0) * (i - 50.0)) / (2.0 * 27.0 * 27.0))) - 0.1
+            overall_hab *= hab / 100.0
+        if not self.race_editor_radiation_immune:
+            hab = 0.0
+            for i in range(self.race_editor_radiation, self.race_editor_radiation_stop + 1):
+                hab += 100.0/101.0
+            overall_hab *= hab / 100.0
+        overall_hab = 100.0 * max(overall_hab, 0.001)
+        self.race_editor_habitability_message = str(round(overall_hab, 1)) + '% of planets should be habitable for you'
+
     def post(self, action):
         """ aply the cost of race traits """
         ap = 1000 - self.calc_race_trait_cost()
         """ calculate and aply the cost of habitablilaty """
+        self._calc_habitability_message()
         immunitys = 0
         if self.race_editor_gravity_immune:
             self.race_editor_gravity = 0

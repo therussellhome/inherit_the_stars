@@ -414,7 +414,7 @@ tr.slider_padding {
         </tr><tr>
             <td colspan="2"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"></input> Bleeding Edge Technology</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"></input> No Antimatter Collecting Engines</td>
+            <td colspan="2"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"> No Antimatter Collecting Engines</input></td>
         </tr><!--<tr>
             <td colspan="2"><input id="race_editor_low_starting_population" type="checkbox" onchange="post('race_editor')"></input> Low Starting Population</td>
         </tr>--><tr>
@@ -423,7 +423,10 @@ tr.slider_padding {
             <td colspan="2"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"></input> Cheap Engines</td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Habitability</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">
+            + Habitability
+            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="race_editor_habitability_message"></input>
+        </caption>
         <tr>
             <td>Gravity</td>
             <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"></div></td>
