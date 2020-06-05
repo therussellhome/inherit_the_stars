@@ -13,7 +13,7 @@ __defaults = {
     'new_game_y': [100, 1, 100], 
     'new_game_z': [100, 1, 100], 
     'new_game_density': [95, 1, 100],
-    'new_game_player_distance': [15, 1, 50],
+    'new_game_player_distance': [25, 1, 50],
     'new_game_public_player_scores': [True], 
     'new_game_player01': ['No Player'],
     'new_game_player02': ['No Player'],
