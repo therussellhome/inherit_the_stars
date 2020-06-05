@@ -13,7 +13,7 @@ __defaults = {
     'new_game_y': [100, 1, 100], 
     'new_game_z': [100, 1, 100], 
     'new_game_density': [95, 1, 100],
-    'new_game_player_distance': [15, 1, 50],
+    'new_game_player_distance': [25, 1, 50],
     'new_game_public_player_scores': [True], 
     'new_game_player01': ['No Player'],
     'new_game_player02': ['No Player'],
@@ -70,12 +70,17 @@ class NewGame(Defaults):
         # Always refresh the list of games
         races = game_engine.load_list('races')
         races.insert(0, 'No Player')
+        num_players = 0
         for i in range(1, 17):
-            key = 'options_new_game_player{:02d}'.format(i)
-            self.__dict__[key] = races
+            key = 'new_game_player{:02d}'.format(i)
+            self.__dict__['options_' + key] = races
+            if self.__dict__[key] != 'No Player':
+                num_players += 1
         # Create the game
         if action == 'submit':
-            self.create_systems(self.calc_num_systems())
+            systems = self.create_systems(self.calc_num_systems())
+            homes = self.generate_home_systems(num_players, systems, self.new_game_player_distance)
+            game_engine.save('Games', self.new_game_name)
     def calc_num_systems(self):
         vx = self.new_game_x
         vy = self.new_game_y

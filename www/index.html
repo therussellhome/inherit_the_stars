@@ -277,22 +277,35 @@ tr.slider_padding {
     </tr></table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Galaxy</caption>
-        <tr><td>
-            Game Name<br/>
-            <input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="post('new_game')"></input><br/><br/>
-            Diameter of the galaxy (in ly): X axis<br/>
-            <input class="new_game_input" type="number" min="1" max="100" id="new_game_x" style="width: 100%" onchange="post('new_game')"></input><br/><br/>
-            Diameter of the galaxy (in ly): Y axis<br/>
-            <input class="new_game_input" type="number" min="1" max="100" id="new_game_y" style="width: 100%" onchange="post('new_game')"></input><br/><br/>
-            Diameter of the galaxy (in ly): Z axis<br/>
-            <input class="new_game_input" type="number" min="1" max="100" id="new_game_z" style="width: 100%" onchange="post('new_game')"></input><br/><br/>
-            Density of the galaxy (in systems per cubic lightcentury)<br/>
-            <input class="new_game_input" type="number" min="1" max="100" id="new_game_density" style="width: 100%" onchange="post('new_game')"></input><br/><br/>
-            Public player scores (yes or no)<br/>
-            <input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="post('new_game')"></input><br/><br/>
-            Distance between players home systems (in ly)<br/>
-            <input class="new_game_input" type="number" min="1" max="100" id="new_game_player_distance" style="width: 100%" onchange="post('new_game')"></input>
-        </td></tr>
+        <tr>
+            <td>Game Name</td>
+        </tr><tr>
+            <td><input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="post('new_game')"></input></td>
+        </tr><tr>
+            <td>Diameter of the galaxy (in ly): X axis</td>
+        </tr><tr>
+            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Diameter of the galaxy (in ly): Y axis</td>
+        </tr><tr>
+            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Diameter of the galaxy (in ly): Z axis</td>
+        </tr><tr>
+            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Density of the galaxy (in systems per cubic lightcentury)</td>
+        </tr><tr>
+            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems per cubic light century')"></div></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Public player scores (yes or no)</td>
+        </tr><tr>
+            <td><input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="post('new_game')"></input></td>
+        </tr><tr>
+            <td>Distance between player home systems (in ly)</td>
+        </tr><tr>
+            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 5, 95, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+        </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Players</caption>
         <tr>
