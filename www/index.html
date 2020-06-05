@@ -38,6 +38,25 @@ div.overlay_message {
     font-weight: bold; 
     text-shadow: 0 0 10px black, 0 0 15px white
 }
+img.button {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    padding: 0;
+    border: 2px solid silver;
+    border-radius: 50%;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    opacity: 0.6;
+}
+img.button:hover {
+    background-color: silver;
+    opacity: 1.0;
+}
+img.selected {
+    background-color: white;
+    opacity: 1.0;
+}
 button {
     padding: 8px 16px;
     font-size: 100%;
@@ -134,24 +153,24 @@ tr.slider_padding {
 
 
 <table class="sidebar">
-    <tr><td><button class="circle selected" onclick="show_screen(this, 'title')">S!</button></td></tr>
-    <tr><td><button class="circle" onclick="show_screen(this, 'host')">🌌</button></td></tr>
-    <tr><td><button class="circle" onclick="show_screen(this, 'new_game')">+</button></td></tr>
-    <tr><td><button class="circle" onclick="show_screen(this, 'race_editor')">👽</button></td></tr>
-    <tr><td><button class="circle" onclick="show_screen(this, 'help')">❔</button></td></tr>
-    <tr><td><button class="circle" onclick="shutdown(this)">❌</button></td></tr>
+    <tr><td><img class="button selected" src="/S!.png" onclick="show_screen(this, 'title')"/></td></tr>
+    <tr><td><img class="button" src="/launch.gif" onclick="show_screen(this, 'host')"/></td></tr>
+    <tr><td><img class="button" src="/new_game.png" onclick="show_screen(this, 'new_game')"/></td></tr>
+    <tr><td><img class="button" src="/race_editor.png" onclick="show_screen(this, 'race_editor')"/></td></tr>
+    <tr><td><img class="button" src="/help.png" onclick="show_screen(this, 'help')"/></td></tr>
+    <tr><td><img class="button" src="/shutdown.png" onclick="shutdown(this)"/></td></tr>
 </table>
 
 
 <table class="sidebar" style="display: none">
-    <tr><td><button class="circle" onclick="">S!</button></td></tr>
-    <tr><td><button class="circle" onclick="empire">♔</button></td></tr>
-    <tr><td><button class="circle" onclick="planet">🪐</button></td></tr>
-    <tr><td><button class="circle" onclick="rocket">🛸</button></td></tr>
-    <tr><td><button class="circle" onclick="search">🔍</button></td></tr>
-    <tr><td><button class="circle" onclick="submit">✔️</button></td></tr>
-    <tr><td><button class="circle" onclick="gear">⛭</button></td></tr>
-    <tr><td><button class="circle" onclick="help">❔</button></td></tr>
+    <tr><td><img class="button" src="/S!.png" onclick="show_screen(this, 'title')"/></td></tr>
+    <tr><td><img class="button" src="/empire.png" onclick="show_screen(this, 'empire')"/></td></tr>
+    <tr><td><img class="button" src="/planets.png" onclick="show_screen(this, 'planets')"/></td></tr>
+    <tr><td><img class="button" src="/ships.png" onclick="show_screen(this, 'ships')"/></td></tr>
+    <tr><td><img class="button" src="/search.png" onclick="show_screen(this, 'search')"/></td></tr>
+    <tr><td><img class="button" src="/generate.gif" onclick="show_screen(this, 'generate')"/></td></tr>
+    <tr><td><img class="button" src="/settings.png" onclick="show_screen(this, 'settings')"/></td></tr>
+    <tr><td><img class="button" src="/help.png" onclick="show_screen(this, 'help')"/></td></tr>
 </table>
 
 
@@ -503,6 +522,19 @@ tr.slider_padding {
 
 <div class="screen hide" id="help_screen" style="width: 100%"><div style="margin-left: 66px;">
     Put stuff here
+    Attribution:
+        Slider Widget: 
+        Chart Widget: 
+        Background Image: <a href="https://pixabay.com/users/StockSnap-894430/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2616989">StockSnap</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2616989">Pixabay</a>
+        Launch Icon: <a href="https://konczakowski.tumblr.com/">konczakowski</a> from <a href="https://konczakowski.tumblr.com/post/137991354160/messier-106-ngc-4258-image-credit-nasa">Messier 106 / NGC 4258 (Image credit: NASA)</a>
+        New Game Icon: <a href="https://pixabay.com/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4372144">Gerd Altmann</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4372144">Pixabay</a>
+        Race Editor Icon: <a href="https://pixabay.com/users/OpenClipart-Vectors-30363/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1295828">OpenClipart-Vectors</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1295828">Pixabay</a>
+        Help Icon: <a href="https://pixabay.com/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2153514">Gerd Altmann</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2153514">Pixabay</a>
+        Shutdown Icon: <a href="https://pixabay.com/users/Clker-Free-Vector-Images-3736/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=23346">Clker-Free-Vector-Images</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=23346">Pixabay</a>
+        Empire Icon: <a href="https://pixabay.com/users/GG125FR-8315858/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3215554">Gaëtan GUINÉ</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3215554">Pixabay</a>
+        Search Icon: <a href="https://pixabay.com/users/OpenClipart-Vectors-30363/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1294337">OpenClipart-Vectors</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1294337">Pixabay</a> 
+        Ship Icon: <a href="https://pixabay.com/users/Nahid_Nhd-16341334/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5177929">Nahid Hossain NHD</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5177929">Pixabay</a>
+        Settings Icon: <a href="https://pixabay.com/users/padrinan-1694659/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4868497">Miguel Á. Padriñán</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4868497">Pixabay</a>
 </div></div>
 
 
