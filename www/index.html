@@ -376,17 +376,26 @@ tr.slider_padding {
 </div>
 
 
-<div class="screen hide" id="race_editor_screen" style="width: 600px">
+<div class="screen hide" id="race_editor_screen" style="width: 620px">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Race Editor</td>
         <td style="width: 100%"></td>
         <td style="white-space: nowrap"> advantage points left: </td>
-        <td><input disabled="true" id="race_editor_advantage_points_left"></input></td>
-        <!--<td><button class="circle" disabled="true" onclick="post('new_game', '?submit')">+</button></td>-->
+        <td><input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"></input></td>
+        <td style="font-size: 50%"><button class="circle" onclick="post('race_editor', '?load')">load</button></td>
+        <td style="font-size: 50%"><button class="circle" onclick="post('race_editor', '?save')">save</button></td>
     </tr></table><table class="hfill">
         <tr>
+            <td style="white-space: nowrap">file to load</td>
+            <td class="hfill"><select id="race_editor_file_to_load" style="width: 100%" onchange="post('race_editor')"></select></td>
+        </tr>
+        <tr>
             <td style="white-space: nowrap">Name</td>
-            <td class="hfill"><input id="race_editor_name" style="width: 100%" onchange="post('race_editor')"></input></td>
+            <td class="hfill"><input id="race_editor_name" style="width: 96%" onchange="post('race_editor')"></input></td>
+        </tr>
+        <tr>
+            <td style="white-space: nowrap">file name</td>
+            <td class="hfill"><input id="race_editor_file_name" style="width: 96%" onchange="post('race_editor')"></input></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Race Traits</caption>
@@ -415,9 +424,7 @@ tr.slider_padding {
             <td colspan="2"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"></input> Bleeding Edge Technology</td>
         </tr><tr>
             <td colspan="2"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"> No Antimatter Collecting Engines</input></td>
-        </tr><!--<tr>
-            <td colspan="2"><input id="race_editor_low_starting_population" type="checkbox" onchange="post('race_editor')"></input> Low Starting Population</td>
-        </tr>--><tr>
+        </tr><tr>
             <td colspan="2"><input id="race_editor_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"></input> No Advanced Scanners</td>
         </tr><tr>
             <td colspan="2"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"></input> Cheap Engines</td>
@@ -439,7 +446,9 @@ tr.slider_padding {
             <td>Radiation</td>
             <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"></div></td>
             <td>Immune <input id="race_editor_radiation_immune" type="checkbox" onchange="post('race_editor')"></input></td>
-        </tr><tr class="slider_padding"></tr>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="3">growthrate: <input id="race_editor_growthrate" type="number" min="1" max="20" onchange="post('race_editor')"> percent</td>
+        </tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse', null); 
                 gravity_chart('race_editor_gravity_chart', 'race_editor_gravity'); 
@@ -458,11 +467,17 @@ tr.slider_padding {
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Economy</caption>
         <tr>
             <td>Effort per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.2, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Energy per colonist</td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.2, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' ZJ')"></div></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>minerals per mine</td>
+            <td class="hfill"><div class="onload" disabled="true" id="race_editor_minerals_per_mine" onload="slider(this, 'race_editor', 1, 9, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' KT')"></div></td>
+        </tr><tr class="slider_padding"></tr><!--<tr>
+            <td>Energy per colonist</td>
             <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' ZJ')"></div></td>
-        </tr><tr class="slider_padding"></tr>
+        </tr><tr class="slider_padding"></tr>-->
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Research</caption>
         <tr>
