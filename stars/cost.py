@@ -4,9 +4,7 @@ from .minerals import Minerals
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'production_capacity': [0, 0, sys.maxsize],
-    'energy': [0, 0, sys.maxsize],
-    'effort': [0, 0, sys.maxsize]
+    'energy': [0, 0, sys.maxsize]
 }
 
 

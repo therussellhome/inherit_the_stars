@@ -1,5 +1,6 @@
 __all__ = [
     'defaults', 
+    'energy_minister', 
     'game_engine', 
     'host', 
     'launch', 
@@ -9,5 +10,6 @@ __all__ = [
     'player', 
     'reference', 
     'star_system', 
-    'sun', 
+    'sun',
+    'race_editor'
 ]

@@ -47,8 +47,7 @@ __defaults = {
 """ Represent Open Game action """
 class Host(Defaults):
     """ Interact with UI """
-    def post(self, action, **kwargs):
-        self.__dict__.update(kwargs)
+    def post(self, action):
         # Always refresh the list of games
         self.options_host_game = game_engine.load_list('games')
         # Load the selected game
