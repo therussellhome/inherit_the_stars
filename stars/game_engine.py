@@ -72,6 +72,17 @@ def load_list(save_type):
 
 
 """ Load game from zip file """
+def load_inspect(save_type, name, class_type):
+    game_file = __game_dir / save_type / (name + '.zip')
+    internals = []
+    with ZipFile(game_file, 'r') as zipfile:
+        for info in zipfile.infolist():
+            if info.filename.startswith(class_type):
+                internals.append(info.filename[len(class_type):])
+    return internals
+
+
+""" Load game from zip file """
 def load(save_type, name):
     game_file = __game_dir / save_type / (name + '.zip')
     with ZipFile(game_file, 'r') as zipfile:
@@ -88,7 +99,7 @@ def save(save_type, name, objs=None):
     game_file.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(game_file, 'w') as zipfile:
         for obj in objs:
-            name = getattr(obj, 'name', str(id(obj)))
+            name = obj.__class__.__name__ + '/' + getattr(obj, 'name', str(id(obj)))
             zipfile.writestr(ZipInfo(name), to_json(obj))
 
 

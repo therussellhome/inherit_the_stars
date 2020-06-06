@@ -95,7 +95,7 @@ button.circle {
 table {
     border: 0;
 }
-table.sidebar {
+div.sidebar {
     position: fixed;
     top: 0;
     left: 0;
@@ -152,158 +152,151 @@ tr.slider_padding {
 </head><body onload="init()">
 
 
-<table class="sidebar">
-    <tr><td><img class="button selected" src="/S!.png" onclick="show_screen(this, 'title')"/></td></tr>
-    <tr><td><img class="button" src="/launch.gif" onclick="show_screen(this, 'host')"/></td></tr>
-    <tr><td><img class="button" src="/new_game.png" onclick="show_screen(this, 'new_game')"/></td></tr>
-    <tr><td><img class="button" src="/race_editor.png" onclick="show_screen(this, 'race_editor')"/></td></tr>
-    <tr><td><img class="button" src="/help.png" onclick="show_screen(this, 'help')"/></td></tr>
-    <tr><td><img class="button" src="/shutdown.png" onclick="shutdown(this)"/></td></tr>
-</table>
+<div class="sidebar" id="sidebar_launch"><table style="height: 100%">
+    <tr><td><img class="button selected" id="button_home" title="Splash Screen" src="/S!.png" onclick="show_home()"/></td></tr>
+    <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
+    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race_editor.png" onclick="show_screen('race_editor')"/></td></tr>
+    <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
+    <tr><td><img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/></td></tr>
+</table></div>
 
 
-<table class="sidebar" style="display: none">
-    <tr><td><img class="button" src="/S!.png" onclick="show_screen(this, 'title')"/></td></tr>
-    <tr><td><img class="button" src="/empire.png" onclick="show_screen(this, 'empire')"/></td></tr>
-    <tr><td><img class="button" src="/planets.png" onclick="show_screen(this, 'planets')"/></td></tr>
-    <tr><td><img class="button" src="/ships.png" onclick="show_screen(this, 'ships')"/></td></tr>
-    <tr><td><img class="button" src="/search.png" onclick="show_screen(this, 'search')"/></td></tr>
-    <tr><td><img class="button" src="/generate.gif" onclick="show_screen(this, 'generate')"/></td></tr>
-    <tr><td><img class="button" src="/settings.png" onclick="show_screen(this, 'settings')"/></td></tr>
-    <tr><td><img class="button" src="/help.png" onclick="show_screen(this, 'help')"/></td></tr>
-</table>
+<div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
+    <tr><td><img class="button" id="button_home_play" title="Home" src="/S!.png" onclick="show_home()"/></td></tr>
+    <tr><td><img class="button" id="button_empire" title="Empire" src="/empire.png" onclick="show_screen('empire')"/></td></tr>
+    <tr><td><img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/></td></tr>
+    <tr><td><img class="button" id="button_ships" title="Ships" src="/ships.png" onclick="show_screen('ships')"/></td></tr>
+    <tr><td><img class="button" id="button_search" title="Search" src="/search.png" onclick="show_screen('search')"/></td></tr>
+    <tr><td><img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="show_screen('generate')"/></td></tr>
+    <tr><td><img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/></td></tr>
+    <tr><td><img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/></td></tr>
+</table></div>
 
 
-<div class="screen overlay_message" id="title_screen" style="white-space: nowrap">
+<div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
     <div style="font-size: 600%">INHERIT THE</div>
     <div style="font-size: 1050%">STARS!</div>
 </div>
 
 
-<div class="screen hide" id="host_screen" style="width: 600px">
+<div class="screen hide" id="screen_launch" style="width: 600px">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Launch</td>
     </tr></table>
     <table class="hfill">
         <tr>
             <td>Game:</td>
-            <td class="hfill"><select id="host_game" style="width: 100%" onchange="post('host')"></select></td>
-            <td><button style="width: 100%" onclick="load()">Load</button></td>
+            <td class="hfill" colspan="2"><select id="launch_game" style="width: 100%" onchange="post('launch')"></select></td>
+            <td rowspan="2"><img class="button" id="button_launch" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
         </tr><tr>
             <td>Player:</td>
             <td class="hfill"><select id="launch_player" style="width: 100%" onchange="post('launch')"></select></td>
-            <td><button style="width: 100%" onclick="launch()">Launch</button></td>
-        </tr><tr>
-            <td>Auto Generate:</td>
-            <td style="width: 100%"><input id="host_autogen" type="checkbox" onchange="post('host')"></input></td>
-            <td><button onclick="generate()">Generate Now</button></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Player Status</caption>
         <tr>
-            <td style="width: 100%"><input id="host_player01" disabled="true"></input></td>
-            <td><input id="host_player01_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player01" disabled="true"></input></td>
+            <td><input id="launch_player01_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player02" disabled="true"></input></td>
-            <td><input id="host_player02_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player02" disabled="true"></input></td>
+            <td><input id="launch_player02_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player03" disabled="true"></input></td>
-            <td><input id="host_player03_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player03" disabled="true"></input></td>
+            <td><input id="launch_player03_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player04" disabled="true"></input></td>
-            <td><input id="host_player04_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player04" disabled="true"></input></td>
+            <td><input id="launch_player04_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player05" disabled="true"></input></td>
-            <td><input id="host_player05_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player05" disabled="true"></input></td>
+            <td><input id="launch_player05_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player06" disabled="true"></input></td>
-            <td><input id="host_player06_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player06" disabled="true"></input></td>
+            <td><input id="launch_player06_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player07" disabled="true"></input></td>
-            <td><input id="host_player07_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player07" disabled="true"></input></td>
+            <td><input id="launch_player07_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player08" disabled="true"></input></td>
-            <td><input id="host_player08_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player08" disabled="true"></input></td>
+            <td><input id="launch_player08_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player09" disabled="true"></input></td>
-            <td><input id="host_player09_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player09" disabled="true"></input></td>
+            <td><input id="launch_player09_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player10" disabled="true"></input></td>
-            <td><input id="host_player10_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player10" disabled="true"></input></td>
+            <td><input id="launch_player10_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player11" disabled="true"></input></td>
-            <td><input id="host_player11_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player11" disabled="true"></input></td>
+            <td><input id="launch_player11_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player12" disabled="true"></input></td>
-            <td><input id="host_player12_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player12" disabled="true"></input></td>
+            <td><input id="launch_player12_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player13" disabled="true"></input></td>
-            <td><input id="host_player13_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player13" disabled="true"></input></td>
+            <td><input id="launch_player13_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player14" disabled="true"></input></td>
-            <td><input id="host_player14_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player14" disabled="true"></input></td>
+            <td><input id="launch_player14_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player15" disabled="true"></input></td>
-            <td><input id="host_player15_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player15" disabled="true"></input></td>
+            <td><input id="launch_player15_status" disabled="true"></input></td>
         </tr>
         <tr>
-            <td style="width: 100%"><input id="host_player16" disabled="true"></input></td>
-            <td><input id="host_player16_status" disabled="true"></input></td>
+            <td style="width: 100%"><input id="launch_player16" disabled="true"></input></td>
+            <td><input id="launch_player16_status" disabled="true"></input></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Turn Generation</caption>
+        <tr>
+            <td>Auto Generate:</td>
+            <td style="width: 100%"><input id="launch_autogen" type="checkbox" onchange="post('host')"></input></td>
+            <td>Generate Now</td>
+            <td><img class="button" id="button_generate_now" title="Generate Now" src="/generate.gif" onclick=""/></td>
         </tr>
     </table>
 </div>
 
 
-<div class="screen hide" id="new_game_screen" style="width: 600px">
+<div class="screen hide" id="screen_new_game" style="width: 600px">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">New Game</td>
-        <td style="width: 100%"></td>
-        <td><button class="circle" onclick="post('new_game', '?submit')">+</button></td>
-        <td><button class="circle" onclick="post('new_game', '?reset')">↻</button></td>
     </tr></table>
     <table class="hfill">
+        <tr>
+            <td style="white-space: nowrap">Game Name</td>
+            <td style="width: 100%"><input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="post('new_game')"></input></td>
+            <td><img class="button" id="button_new_game_create" title="Create" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
+        </tr>
+    </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Galaxy</caption>
         <tr>
-            <td>Game Name</td>
-        </tr><tr>
-            <td><input class="new_game_input" type="text" id="new_game_name" style="width: 100%" onchange="post('new_game')"></input></td>
-        </tr><tr>
-            <td>Diameter of the galaxy (in ly): X axis</td>
-        </tr><tr>
+            <td style="white-space: nowrap">Diameter: X axis</td>
             <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Diameter of the galaxy (in ly): Y axis</td>
-        </tr><tr>
+            <td style="white-space: nowrap">Diameter: Y axis</td>
             <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Diameter of the galaxy (in ly): Z axis</td>
-        </tr><tr>
+            <td style="white-space: nowrap">Diameter: Z axis</td>
             <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Density of the galaxy (in systems per cubic lightcentury)</td>
-        </tr><tr>
-            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems per cubic light century')"></div></td>
+            <td style="white-space: nowrap">System Density</td>
+            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Public player scores (yes or no)</td>
-        </tr><tr>
-            <td><input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="post('new_game')"></input></td>
-        </tr><tr>
-            <td>Distance between player home systems (in ly)</td>
-        </tr><tr>
+            <td style="white-space: nowrap">Player Separation</td>
             <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 5, 95, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
@@ -374,7 +367,12 @@ tr.slider_padding {
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Victory Conditions</caption>
-        <tr><td>
+        <tr>
+            <td>Public player scores (yes or no)</td>
+        </tr><tr>
+            <td><input class="new_game_input" type="text" id="new_game_public_player_scores" style="width: 100%" onchange="post('new_game')"></input></td>
+        </tr><tr>
+            <td>
             <input class="new_game_input" type="checkbox" id="new_game_victory_tech" onchange="post('new_game')"></input>
             Reach tech level 
             <input class="new_game_input" type="number" min="1" max="50" id="new_game_victory_tech_level" onchange="post('new_game')"></input>
@@ -408,7 +406,7 @@ tr.slider_padding {
 </div>
 
 
-<div class="screen hide" id="race_editor_screen" style="width: 620px">
+<div class="screen hide" id="screen_race_editor" style="width: 620px">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Race Editor</td>
         <td style="width: 100%"></td>
@@ -502,13 +500,13 @@ tr.slider_padding {
             <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.2, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' ZJ')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.2, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"></div></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>minerals per mine</td>
             <td class="hfill"><div class="onload" disabled="true" id="race_editor_minerals_per_mine" onload="slider(this, 'race_editor', 1, 9, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' KT')"></div></td>
         </tr><tr class="slider_padding"></tr><!--<tr>
             <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' ZJ')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"></div></td>
         </tr><tr class="slider_padding"></tr>-->
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Research</caption>
@@ -548,7 +546,7 @@ tr.slider_padding {
 </td></tr></table>
 
 
-<div class="screen hide" id="help_screen" style="width: 100%"><div style="margin-left: 66px;">
+<div class="screen hide" id="screen_help" style="width: 100%"><div style="margin-left: 66px;">
     Put stuff here
     Attribution:
         Slider Widget: 
@@ -566,7 +564,7 @@ tr.slider_padding {
 </div></div>
 
 
-<div class="screen overlay_message hide" id="shutdown_screen" style="font-size: 300%">
+<div class="screen overlay_message hide" id="screen_shutdown" style="font-size: 300%">
     Thank you for playing
 </div>
 <!--
@@ -606,7 +604,7 @@ Help: help, tech
 
 <table class="vfill sidebar" id="sidebar">
     <tr><td><button class="sidebar" id="new_game_sidebar" onclick="show_screen('new_game')">New Game</button></td></tr>
-    <tr><td><button class="sidebar" id="host_sidebar" onclick="show_screen('host')">Host</button></td></tr>
+    <tr><td><button class="sidebar" id="launch_sidebar" onclick="show_screen('host')">Host</button></td></tr>
     <tr><td><button class="sidebar" id="player_sidebar" onclick="show_screen('player')">Player</button></td></tr>
     <tr><td><button class="sidebar" id="race_editor_sidebar" onclick="show_screen('race_editor')">Race Editor</button></td></tr>
     <tr><td class="vfill"></td></tr>

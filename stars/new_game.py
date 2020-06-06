@@ -1,9 +1,11 @@
 from . import game_engine
 from .defaults import Defaults
-from . import star_system
+from .game import Game
+from .player import Player
+from .star_system import StarSystem
+from math import pi
 from random import randint
 from random import random
-from math import pi
 
 
 """ Default values (default, min, max)  """
@@ -67,7 +69,7 @@ class NewGame(Defaults):
     def post(self, action):
         if action == 'reset':
             self.reset_to_default()
-        # Always refresh the list of games
+        # Always refresh the list of races
         races = game_engine.load_list('races')
         races.insert(0, 'No Player')
         num_players = 0
@@ -77,10 +79,17 @@ class NewGame(Defaults):
             if self.__dict__[key] != 'No Player':
                 num_players += 1
         # Create the game
-        if action == 'submit':
+        if action == 'create':
             systems = self.create_systems(self.calc_num_systems())
             homes = self.generate_home_systems(num_players, systems, self.new_game_player_distance)
-            game_engine.save('Games', self.new_game_name)
+            players = []
+            for i in range(1, 17):
+                key = 'new_game_player{:02d}'.format(i)
+                if self.__dict__[key] != 'No Player':
+                    players.append(Player(name=self.__dict__[key]))
+            game = Game(name=self.new_game_name, players=players)
+            game_engine.save('games', self.new_game_name)
+
     def calc_num_systems(self):
         vx = self.new_game_x
         vy = self.new_game_y
@@ -125,7 +134,7 @@ class NewGame(Defaults):
                 else:
                     counter = 0
                     system_name = names.pop(randint(0, len(names) - 1))
-                    s = star_system.StarSystem(name=system_name, x=rx, y=ry, z=rz)
+                    s = StarSystem(name=system_name, x=rx, y=ry, z=rz)
                     systems.append(s)
         return systems
 
@@ -149,7 +158,6 @@ class NewGame(Defaults):
                 if i == systems[len(systems) - 1] and len(home_systems) < num_players:
                     player_distance *= .9
         return home_systems
-
             
 
 NewGame.set_defaults(NewGame, __defaults)
