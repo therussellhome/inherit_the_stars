@@ -2,7 +2,6 @@ __all__ = [
     'defaults', 
     'energy_minister', 
     'game_engine', 
-    'host', 
     'launch', 
     'minister',
     'new_game',

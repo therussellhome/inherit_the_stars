@@ -3,7 +3,6 @@
 import http.server
 import socket
 import socketserver
-import tempfile
 import webbrowser
 from pathlib import Path
 from stars import *
@@ -11,7 +10,7 @@ from stars import *
 
 """ Map of post handlers """
 _handlers = {
-    '/host': host.Host(),
+    '/launch': launch.Launch(),
     '/new_game': new_game.NewGame(),
     '/launch': launch.Launch(),
     '/race_editor': race_editor.RaceEditor()
@@ -51,20 +50,8 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(f.read())
 
-stars_url = Path(tempfile.gettempdir()) / 'stars.url'
-if stars_url.exists():
-    with open(stars_url) as f:
-        address = f.read().strip()
+with socketserver.TCPServer(("", 0), Httpd) as httpd:
+    address = 'http://' + socket.gethostname() + ':' + str(httpd.server_address[1])
     print('Connecting to', address)
     webbrowser.open(address)
-else:
-    with socketserver.TCPServer(("", 0), Httpd) as httpd:
-        address = 'http://' + socket.gethostname() + ':' + str(httpd.server_address[1])
-        try:
-            with open(stars_url, 'w') as f:
-                f.write(address)
-            print('Connecting to', address)
-            webbrowser.open(address)
-            httpd.serve_forever()
-        finally:
-            stars_url.unlink(missing_ok=True)
+    httpd.serve_forever()
