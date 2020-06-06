@@ -48,7 +48,7 @@ __defaults = {
     'options_new_game_player14': [[]],
     'options_new_game_player15': [[]],
     'options_new_game_player16': [[]],
-    'new_game_public_player_scores': [100, 0, 200], 
+    'new_game_public_player_scores': [30, 0, 200], 
     'new_game_victory_after': [50, 10, 200], 
     'new_game_victory_conditions': [1, 1, 10], 
     'new_game_victory_enemies': [True],
@@ -58,7 +58,7 @@ __defaults = {
     'new_game_victory_tech': [True],
     'new_game_victory_tech_levels': [100, 10, 300], 
     'new_game_victory_planets': [True],
-    'new_game_victory_planets_number': [250, 50, 1000], 
+    'new_game_victory_planets_number': [200, 50, 1000], 
     'new_game_victory_energy': [True],
     'new_game_victory_energy_number': [10000, 1000, 100000], 
     'new_game_victory_minerals': [True],
@@ -68,9 +68,9 @@ __defaults = {
     'new_game_victory_ships': [True],
     'new_game_victory_ships_number': [1000, 100, 10000], 
     'new_game_victory_shipsofthewall': [True],
-    'new_game_victory_shipsofthewall_number': [200, 50, 1000], 
+    'new_game_victory_shipsofthewall_number': [150, 50, 1000], 
     'new_game_victory_starbases': [True],
-    'new_game_victory_starbases_number': [50, 10, 100], 
+    'new_game_victory_starbases_number': [25, 10, 100], 
 }
 
 

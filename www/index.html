@@ -20,6 +20,9 @@ body {
     height: 100%;
     margin: 0;
 }
+iframe {
+    border: 0;
+}
 div.screen {
     z-index: 1;
     position: absolute;
@@ -57,43 +60,11 @@ img.selected {
     background-color: white;
     opacity: 1.0;
 }
-button {
-    padding: 8px 16px;
-    font-size: 100%;
-    font-weight: bold;
-    border: none;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    background-color: rgba(0, 0, 44, 0.5);
-    color: white; 
-    text-shadow: 0 0 3px black;
-    border: 2px solid white;
+a {
+    color: cyan;
 }
-button:hover {
-    background-color: silver;
-    color: black;
-    text-shadow: 0 0 3px white;
-}
-button.selected {
-    background-color: white;
-    color: black;
-    text-shadow: 0 0 3px silver;
-}
-button.circle {
-    margin: 5px;
-    width: 50px;
-    height: 50px;
-    padding: 0 0 5px 1px;
-    border: 2px solid silver;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 200%;
-}
-table {
-    border: 0;
+a:visited {
+    color: magenta;
 }
 div.sidebar {
     position: fixed;
@@ -103,6 +74,9 @@ div.sidebar {
     height: 100%;
     background-color: rgba(0, 0, 44, 0.5);
     transition: 0.5s;
+}
+table {
+    border: 0;
 }
 table.topbar {
     border: 2px solid silver;
@@ -118,11 +92,6 @@ caption {
     color: black;
     background-color: silver;
 }
-input:disabled {
-    color: white;
-    background-color: transparent;
-    border: 0;
-}
 tr.collapse {
     display: none;
 }
@@ -131,6 +100,11 @@ tr.slider_padding {
 }
 td {
     white-space: nowrap;
+}
+input:disabled {
+    color: white;
+    background-color: transparent;
+    border: 0;
 }
 .hfill {
     width: 100%;
@@ -193,10 +167,10 @@ td {
             <td class="hfill" colspan="2"><select id="launch_game" class="hfill" onchange="post('launch')"/></td>
             <td rowspan="3"><img class="button" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
         </tr><tr>
+            <td class="hfill" colspan="2">Auto Generate: <input id="launch_autogen" type="checkbox" onchange="post('launch')"/></td>
+        </tr><tr>
             <td>Player:</td>
             <td class="hfill"><select id="launch_player" class="hfill" onchange="post('launch')"/></td>
-        </tr><tr>
-            <td class="hfill" colspan="2">Auto Generate: <input id="launch_autogen" type="checkbox" onchange="post('launch')"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
@@ -286,19 +260,19 @@ td {
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
-            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Y axis</td>
-            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Z axis</td>
-            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>System Density</td>
-            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"></div></td>
+            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Player Separation</td>
-            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 5, 95, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"></div></td>
+            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 5, 95, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Players</caption>
@@ -435,7 +409,7 @@ td {
             <td rowspan="2"><img class="button" title="Save" src="/race_editor.png" onclick="post('race_editor', '?save')"/></td>
         </tr><tr>
             <td>Race Name</td>
-            <td class="hfill"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+            <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Race Traits</caption>
@@ -476,19 +450,20 @@ td {
         </caption>
         <tr>
             <td>Gravity</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"></div></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"/></td>
             <td>Immune <input id="race_editor_gravity_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Temperature</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_temperature" onload="slider2(this, 'race_editor', 0, 100, 2, format_temperature)"></div></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_temperature" onload="slider2(this, 'race_editor', 0, 100, 2, format_temperature)"/></td>
             <td>Immune <input id="race_editor_temperature_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Radiation</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"></div></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"/></td>
             <td>Immune <input id="race_editor_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td colspan="3">growthrate: <input id="race_editor_growthrate" type="number" min="1" max="20" onchange="post('race_editor')"> percent</td>
-        </tr>
+            <td>Growth Rate</td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growthrate" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+        </tr><tr class="slider_padding"></tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse', null); 
                 gravity_chart('race_editor_gravity_chart', 'race_editor_gravity'); 
@@ -507,16 +482,16 @@ td {
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Economy</caption>
         <tr>
             <td>Effort per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.2, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.2, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>minerals per mine</td>
-            <td class="hfill"><div class="onload" disabled="true" id="race_editor_minerals_per_mine" onload="slider(this, 'race_editor', 1, 9, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' KT')"></div></td>
+            <td class="hfill"><div class="onload" disabled="true" id="race_editor_minerals_per_mine" onload="slider(this, 'race_editor', 1, 9, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><!--<tr>
             <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr>-->
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Research</caption>
@@ -527,27 +502,27 @@ td {
         </tr>
         <tr>
             <td>Energy Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_level_in_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Weapons Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_weapons_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_weapons_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_level_in_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Propulsion Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_propulsion_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_propulsion_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_level_in_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Construction Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_construction_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_construction_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_level_in_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Electronics Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_electronics_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_electronics_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_level_in_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Biotechnology Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_biotechnology_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"></div></td>
+            <td class="hfill"><div class="onload" id="race_editor_biotechnology_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_level_in_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table>
@@ -556,21 +531,8 @@ td {
 </td></tr></table>
 
 
-<div class="screen hide" id="screen_help" style="width: 100%"><div style="margin-left: 66px;">
-    Put stuff here
-    Attribution:
-        Slider Widget: 
-        Chart Widget: 
-        Background Image: <a href="https://pixabay.com/users/StockSnap-894430/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2616989">StockSnap</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2616989">Pixabay</a>
-        Launch Icon: <a href="https://konczakowski.tumblr.com/">konczakowski</a> from <a href="https://konczakowski.tumblr.com/post/137991354160/messier-106-ngc-4258-image-credit-nasa">Messier 106 / NGC 4258 (Image credit: NASA)</a>
-        New Game Icon: <a href="https://pixabay.com/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4372144">Gerd Altmann</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4372144">Pixabay</a>
-        Race Editor Icon: <a href="https://pixabay.com/users/OpenClipart-Vectors-30363/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1295828">OpenClipart-Vectors</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1295828">Pixabay</a>
-        Help Icon: <a href="https://pixabay.com/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2153514">Gerd Altmann</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=2153514">Pixabay</a>
-        Shutdown Icon: <a href="https://pixabay.com/users/Clker-Free-Vector-Images-3736/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=23346">Clker-Free-Vector-Images</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=23346">Pixabay</a>
-        Empire Icon: <a href="https://pixabay.com/users/GG125FR-8315858/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3215554">Gaëtan GUINÉ</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3215554">Pixabay</a>
-        Search Icon: <a href="https://pixabay.com/users/OpenClipart-Vectors-30363/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1294337">OpenClipart-Vectors</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1294337">Pixabay</a> 
-        Ship Icon: <a href="https://pixabay.com/users/Nahid_Nhd-16341334/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5177929">Nahid Hossain NHD</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5177929">Pixabay</a>
-        Settings Icon: <a href="https://pixabay.com/users/padrinan-1694659/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4868497">Miguel Á. Padriñán</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4868497">Pixabay</a>
+<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 66px; height: 100%">
+    <iframe src="/help.html" style="width: 100%; height: 99%"/>
 </div></div>
 
 
@@ -632,4 +594,3 @@ Help: help, tech
 -->
 
 </body></html>
-
