@@ -153,6 +153,16 @@ function parse_json(url, json) {
     }
 }
 
+// Confirm if everyone is submitted before generating
+function host_generate() {
+    alert('TODO');
+}
+
+// Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
+function play_generate() {
+    alert('TODO');
+}
+
 // Confirm shutdown before executing
 function shutdown() {
     if(confirm('Shutdown INHERIT THE STARS! server?')) {

@@ -89,6 +89,8 @@
  */
 .noUi-horizontal {
   height: 18px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 .noUi-horizontal .noUi-handle {
   background: black;

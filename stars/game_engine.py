@@ -113,7 +113,9 @@ def __encode(obj):
 """ Custom decoder to handle classes """
 def __decode(values):
     if '__class__' in values:
-        return __new(values['__class__'], values, **values)
+        classname = values['__class__']
+        del values['__class__']
+        return __new(classname, values, **values)
     return values
 
 

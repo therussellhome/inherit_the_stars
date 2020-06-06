@@ -50,7 +50,6 @@ __defaults = {
     'race_editor_radiation_immune': [False],
     'race_editor_growthrate': [15, 1, 20],
     'race_editor_habitability_message': [''],
-    'race_editor_file_name': [''],
     'race_editor_file_to_load': [''],
     'options_race_editor_file_to_load': [[]],
 }
@@ -250,6 +249,14 @@ class RaceEditor(Defaults):
         self.race_editor_habitability_message = str(round(overall_hab, 1)) + '% of planets should be habitable for you'
 
     def post(self, action):
+        # List races for loading
+        self.options_race_editor_file_to_load = game_engine.load_list('races')
+        self.options_race_editor_file_to_load.insert(0, '')
+        if self.race_editor_file_to_load != '':
+            game_engine.load('races', self.race_editor_file_to_load)
+            race = game_engine.get('Races/' + self.race_editor_file_to_load)
+            # populate self
+            self.race_editor_file_to_load = ''
         """ aply the cost of race traits """
         ap = 1000 - self.calc_race_trait_cost()
         """ calculate and aply the cost of habitablilaty """
@@ -269,11 +276,8 @@ class RaceEditor(Defaults):
         """ caululate and aply the cost of reaserch stats """
         ap -= self.calc_reseach_cost()
         self.race_editor_advantage_points_left = int(ap)
-        if action == 'load':
-            self.options_race_editor_file_to_load = game_engine.load_list('races')
-            game_engine.load('race', options_race_editor_file_to_load)
         if action == 'save':
-            game_engine.save('race', self.race_editor_file_name)
+            game_engine.save('races', self.race_editor_name)
             print('SAVED !!')
 
 
