@@ -83,6 +83,8 @@ class Launch(Defaults):
             self.launch_loaded_game = games[0].name
             if games[0].autogen_turn:
                 self.launch_loaded_autogen = 'Auto Generate: ENABLED'
+            else:
+                self.launch_loaded_autogen = 'Auto Generate: DISABLED'
         # Load the players
         for i in range(1, 17):
             key = 'launch_player{:02d}'.format(i)
