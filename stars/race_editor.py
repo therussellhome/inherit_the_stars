@@ -9,46 +9,7 @@ from . import game_engine
 cost_of_growthrate = [-7091, -5673, -4256, -2839, -1422, -838, -403, -119, 40, 150, 201, 252, 303, 355, 406, 457, 509, 560, 611, 664]
 
 __defaults = {
-    'race_editor_primary_race_trait': ['Melconians'],
     'options_race_editor_primary_race_trait': [['Aku\'Ultani', 'Cushgars', 'Formics', 'Gaerhules', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']],
-    'race_editor_trader': [False],
-    'race_editor_total_terraforming': [False],
-    'race_editor_advanced_depot': [False],
-    'race_editor_ultemet_recycling': [False],
-    'race_editor_improved_fuel_efficiency': [False],
-    'race_editor_improved_starbases': [False],
-    'race_editor_generalized_research': [False],
-    'race_editor_regenerating_shields': [False],
-    'race_editor_bleeding_edge_technology': [False],
-    'race_editor_no_antimatter_collecting_engines': [False],
-    'race_editor_low_starting_popultion': [False],
-    'race_editor_no_advanced_scanners': [False],
-    'race_editor_cheap_engines': [False],
-    'race_editor_energy_research_cost_modifier': [100, 50, 200],
-    'race_editor_starting_tech_level_in_energy': [0, 0, 25],
-    'race_editor_weapons_research_cost_modifier': [100, 50, 200],
-    'race_editor_starting_tech_level_in_weapons': [0, 0, 25],
-    'race_editor_propulsion_research_cost_modifier': [100, 50, 200],
-    'race_editor_starting_tech_level_in_propulsion': [0, 0, 25],
-    'race_editor_construction_research_cost_modifier': [100, 50, 200],
-    'race_editor_starting_tech_level_in_construction': [0, 0, 25],
-    'race_editor_electronics_research_cost_modifier': [100, 50, 200],
-    'race_editor_starting_tech_level_in_electronics': [0, 0, 25],
-    'race_editor_biotechnology_research_cost_modifier': [100, 50, 200],
-    'race_editor_starting_tech_level_in_biotechnology': [0, 0, 25],
-    'race_editor_effort_per_colonist': [1.0, 0.2, 5.0],
-    'race_editor_energy_per_colonist': [0.05, 0.01, 0.2],
-    'race_editor_minerals_per_mine': [3, 1, 9],
-    'race_editor_gravity': [0, 0, 100],
-    'race_editor_gravity_stop': [100, 0, 100],
-    'race_editor_gravity_immune': [False],
-    'race_editor_temperature': [0, 0, 100],
-    'race_editor_temperature_stop': [100, 0, 100],
-    'race_editor_temperature_immune': [False],
-    'race_editor_radiation': [0, 0, 100],
-    'race_editor_radiation_stop': [100, 0, 100],
-    'race_editor_radiation_immune': [False],
-    'race_editor_growthrate': [15, 1, 20],
     'race_editor_habitability_message': [''],
     'race_editor_file_name': [''],
     'race_editor_file_to_load': [''],
@@ -84,54 +45,54 @@ class RaceEditor(Defaults):
             aps += 354
         elif self.race_editor_primary_race_trait == 'Aku\'Ultani':
             aps += 347
-        if self.race_editor_trader:
+        if self.race_editor_lrt_trader:
             aps += 126
             lrts += 1
             #print("T")
-        if self.race_editor_total_terraforming:
+        if self.race_editor_lrt_total_terraforming:
             aps += 122
             lrts += 1
             #print("TT")
-        if self.race_editor_advanced_depot:
+        if self.race_editor_lrt_advanced_depot:
             aps += 81
             lrts += 1
             #print("AD")
-        if self.race_editor_ultemet_recycling:
+        if self.race_editor_lrt_ultimate_recycling:
             aps += 76
             lrts += 1
             #print("UR")
-        if self.race_editor_improved_fuel_efficiency:
+        if self.race_editor_lrt_improved_fuel_efficiency:
             aps += 66
             lrts += 1
             #print("IFE")
-        if self.race_editor_improved_starbases:
+        if self.race_editor_lrt_improved_starbases:
             aps += 55
             lrts += 1
             #print("ISB")
-        if self.race_editor_generalized_research:
+        if self.race_editor_lrt_generalized_research:
             aps += -10
             lrts += 1
             #print("GR")
-        if self.race_editor_regenerating_shields:
+        if self.race_editor_lrt_regenerating_shields:
             aps += -14
             lrts += 1
             #print("RS")
-        if self.race_editor_bleeding_edge_technology:
+        if self.race_editor_lrt_bleeding_edge_technology:
             aps += -28
             lrts += 1
             #print("BET")
-        if self.race_editor_no_antimatter_collecting_engines:
+        if self.race_editor_lrt_no_antimatter_collecting_engines:
             aps += -56
             lrts += 1
             #print("NACE")
         #if self.race_editor_low_starting_popultion:
         #    aps += -62
         #    lrts += 1
-        if self.race_editor_no_advanced_scanners:
+        if self.race_editor_lrt_no_advanced_scanners:
             aps += -99
             lrts += 1
             #print("NAS")
-        if self.race_editor_cheap_engines:
+        if self.race_editor_lrt_cheap_engines:
             aps += -109
             lrts += 1
             #print("CE")
@@ -141,42 +102,42 @@ class RaceEditor(Defaults):
         return aps
     def calc_reseach_cost(self):
         ap = 0
-        ap -= self.race_editor_starting_tech_level_in_energy**3*2 + self.race_editor_starting_tech_level_in_energy*3
-        ap -= self.race_editor_starting_tech_level_in_weapons**3*2 + self.race_editor_starting_tech_level_in_weapons*3
-        ap -= self.race_editor_starting_tech_level_in_propulsion**3*2 + self.race_editor_starting_tech_level_in_propulsion*3
-        ap -= self.race_editor_starting_tech_level_in_construction**3*2 + self.race_editor_starting_tech_level_in_construction*3
-        ap -= self.race_editor_starting_tech_level_in_electronics**3*2 + self.race_editor_starting_tech_level_in_electronics*3
-        ap -= self.race_editor_starting_tech_level_in_biotechnology**3*2 + self.race_editor_starting_tech_level_in_biotechnology*3
+        ap -= self.race_editor_starting_tech_energy**3*2 + self.race_editor_starting_tech_energy*3
+        ap -= self.race_editor_starting_tech_weapons**3*2 + self.race_editor_starting_tech_weapons*3
+        ap -= self.race_editor_starting_tech_propulsion**3*2 + self.race_editor_starting_tech_propulsion*3
+        ap -= self.race_editor_starting_tech_construction**3*2 + self.race_editor_starting_tech_construction*3
+        ap -= self.race_editor_starting_tech_electronics**3*2 + self.race_editor_starting_tech_electronics*3
+        ap -= self.race_editor_starting_tech_biotechnology**3*2 + self.race_editor_starting_tech_biotechnology*3
         m = 0
-        if self.race_editor_energy_research_cost_modifier > 100:
-            m += self.race_editor_energy_research_cost_modifier/100 - 1
-        elif self.race_editor_energy_research_cost_modifier < 100:
-            m += self.race_editor_energy_research_cost_modifier/50 - 2
+        if self.race_editor_research_modifier_energy > 100:
+            m += self.race_editor_research_modifier_energy/100 - 1
+        elif self.race_editor_research_modifier_energy < 100:
+            m += self.race_editor_research_modifier_energy/50 - 2
         #print(m)
-        if self.race_editor_weapons_research_cost_modifier > 100:
-            m += self.race_editor_weapons_research_cost_modifier/100 - 1
-        elif self.race_editor_weapons_research_cost_modifier < 100:
-            m += self.race_editor_weapons_research_cost_modifier/50 - 2
+        if self.race_editor_research_modifier_weapons > 100:
+            m += self.race_editor_research_modifier_weapons/100 - 1
+        elif self.race_editor_research_modifier_weapons < 100:
+            m += self.race_editor_research_modifier_weapons/50 - 2
         #print(m)
-        if self.race_editor_propulsion_research_cost_modifier > 100:
-            m += self.race_editor_propulsion_research_cost_modifier/100 - 1
-        elif self.race_editor_propulsion_research_cost_modifier < 100:
-            m += self.race_editor_propulsion_research_cost_modifier/50 - 2
+        if self.race_editor_research_modifier_propulsion > 100:
+            m += self.race_editor_research_modifier_propulsion/100 - 1
+        elif self.race_editor_research_modifier_propulsion < 100:
+            m += self.race_editor_research_modifier_propulsion/50 - 2
         #print(m)
-        if self.race_editor_construction_research_cost_modifier > 100:
-            m += self.race_editor_construction_research_cost_modifier/100 - 1
-        elif self.race_editor_construction_research_cost_modifier < 100:
-            m += self.race_editor_construction_research_cost_modifier/50 - 2
+        if self.race_editor_research_modifier_construction > 100:
+            m += self.race_research_modifier_construction/100 - 1
+        elif self.race_editor_research_modifier_construction < 100:
+            m += self.race_editor_research_modifier_construction/50 - 2
         #print(m)
-        if self.race_editor_electronics_research_cost_modifier > 100:
-            m += self.race_editor_electronics_research_cost_modifier/100 - 1
-        elif self.race_editor_electronics_research_cost_modifier < 100:
-            m += self.race_editor_electronics_research_cost_modifier/50 - 2
+        if self.race_editor_research_modifier_electronics > 100:
+            m += self.race_research_modifier_electronics/100 - 1
+        elif self.race_editor_research_modifier_electronics < 100:
+            m += self.race_editor_research_modifier_electronics/50 - 2
         #print(m)
-        if self.race_editor_biotechnology_research_cost_modifier > 100:
-            m += self.race_editor_biotechnology_research_cost_modifier/100 - 1
-        elif self.race_editor_biotechnology_research_cost_modifier < 100:
-            m += self.race_editor_biotechnology_research_cost_modifier/50 - 2
+        if self.race_editor_research_modifier_biotechnology > 100:
+            m += self.race_editor_research_modifier_biotechnology/100 - 1
+        elif self.race_editor_research_modifier_biotechnology < 100:
+            m += self.race_editor_research_modifier_biotechnology/50 - 2
         #print(m)
         try:
             ap -= -(((m*2+(m/abs(m)))*m*10) + abs(20*m))*(m/abs(m))
@@ -201,31 +162,31 @@ class RaceEditor(Defaults):
     def calc_hab_cost(self):
         ap = 0
         immunitys = 0
-        if self.race_editor_gravity_immune:
+        if self.race_editor_hab_gravity_immune:
             immunitys += 1
             ap -= 400
         else:
-            ap -= calc_hab_cost(self.race_editor_gravity, self.race_editor_gravity_stop)
+            ap -= calc_hab_cost(self.race_editor_hab_gravity, self.race_editor_hab_gravity_stop)
         #print(ap)
-        if self.race_editor_temperature_immune:
+        if self.race_editor_hab_temperature_immune:
             immunitys += 1
             ap -= 450
         else:
-            size = self.race_editor_temperature_stop - self.race_editor_temperature + 1
-            dis = abs((self.race_editor_temperature + self.race_editor_temperature_stop)/2 - 50)
+            size = self.race_editor_hab_temperature_stop - self.race_editor_hab_temperature + 1
+            dis = abs((self.race_editor_hab_temperature + self.race_editor_hab_temperature_stop)/2 - 50)
             ap -= (size*5 - 300) - dis*4
         #print(ap)
         if self.race_editor_radiation_immune:
             immunitys += 1
             ap -= 405
         else:
-            ap -= calc_hab_cost(self.race_editor_radiation, self.race_editor_radiation_stop)
+            ap -= calc_hab_cost(self.race_editor_hab_radiation, self.race_editor_hab_radiation_stop)
         #print(ap)
         #print(immunitys)
         #print(self.race_editor_growthrate)
         ap -= (immunitys*10+1) * (immunitys*5)
         #print(ap)
-        ap -= cost_of_growthrate[self.race_editor_growthrate-1]
+        ap -= cost_of_growthrate[self.race_editor_growth_rate-1]
         return -ap
 
     """ TODO """
@@ -269,13 +230,20 @@ class RaceEditor(Defaults):
         """ caululate and aply the cost of reaserch stats """
         ap -= self.calc_reseach_cost()
         self.race_editor_advantage_points_left = int(ap)
+        self.options_race_editor_file_to_load = game_engine.load_list('races')
         if action == 'load':
-            self.options_race_editor_file_to_load = game_engine.load_list('races')
-            game_engine.load('race', options_race_editor_file_to_load)
+            game_engine.load('races', options_race_editor_file_to_load)
         if action == 'save':
-            game_engine.save('race', self.race_editor_file_name)
+            r = Race()
+            for key in Race.defaults:
+                if hasattr(self, 'race_editor_' + key):
+                    setattr(r, key, getattr(self, 'race_editor_' + key))
+            game_engine.save('races', self.race_editor_file_name, [r])
             print('SAVED !!')
 
+
+for key in Race.defaults:
+    __defaults['race_editor_' + key] = Race.defaults[key]
 
 RaceEditor.set_defaults(RaceEditor, __defaults)
 #self.race_editor_advantege_points
