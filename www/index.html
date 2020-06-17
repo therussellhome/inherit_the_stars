@@ -113,16 +113,16 @@ input:disabled {
 .hide {
     display: none;
 }
-#race_editor_gravity .noUi-connect {
+#race_editor_hab_gravity .noUi-connect {
     background: blue;
 }
-#race_editor_temperature .noUi-connect {
+#race_editor_hab_temperature .noUi-connect {
     background: red;
 }
-#race_editor_radiation .noUi-connect {
+#race_editor_hab_radiation .noUi-connect {
     background: green;
 }
-#race_editor_gravity, #race_editor_temperature, #race_editor_radiation .noUi-connects {
+#race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
     background: black;
 }
 </style>
@@ -419,29 +419,29 @@ input:disabled {
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Lesser Racial Traits</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_trader" type="checkbox" onchange="post('race_editor')"/> Trader</td>
+            <td colspan="2"><input id="race_editor_lrt_trader" type="checkbox" onchange="post('race_editor')"/> Trader</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_total_terraforming" type="checkbox" onchange="post('race_editor')"/> Total Taraforming</td>
+            <td colspan="2"><input id="race_editor_lrt_total_terraforming" type="checkbox" onchange="post('race_editor')"/> Total Taraforming</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_advanced_depot" type="checkbox" onchange="post('race_editor')"/> Advaced Depot</td>
+            <td colspan="2"><input id="race_editor_lrt_advanced_depot" type="checkbox" onchange="post('race_editor')"/> Advaced Depot</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_ultemet_recycling" type="checkbox" onchange="post('race_editor')"/> Ultemet Recycling</td>
+            <td colspan="2"><input id="race_editor_lrt_ultimate_recycling" type="checkbox" onchange="post('race_editor')"/> Ultimate Recycling</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_improved_fuel_efficiency" type="checkbox" onchange="post('race_editor')"/> Improved Fuel Efficiency</td>
+            <td colspan="2"><input id="race_editor_lrt_improved_fuel_efficiency" type="checkbox" onchange="post('race_editor')"/> Improved Fuel Efficiency</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_improved_starbases" type="checkbox" onchange="post('race_editor')"/> Improved Starbases</td>
+            <td colspan="2"><input id="race_editor_lrt_improved_starbases" type="checkbox" onchange="post('race_editor')"/> Improved Starbases</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_generalized_research" type="checkbox" onchange="post('race_editor')"/> Generalized Reserch</td>
+            <td colspan="2"><input id="race_editor_lrt_generalized_research" type="checkbox" onchange="post('race_editor')"/> Generalized Reserch</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_regenerating_shields" type="checkbox" onchange="post('race_editor')"/> Regenerating Shields</td>
+            <td colspan="2"><input id="race_editor_lrt_regenerating_shields" type="checkbox" onchange="post('race_editor')"/> Regenerating Shields</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"/> Bleeding Edge Technology</td>
+            <td colspan="2"><input id="race_editor_lrt_bleeding_edge_technology" type="checkbox" onchange="post('race_editor')"/> Bleeding Edge Technology</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"> No Antimatter Collecting Engines</input></td>
+            <td colspan="2"><input id="race_editor_lrt_no_antimatter_collecting_engines" type="checkbox" onchange="post('race_editor')"> No Antimatter Collecting Engines</input></td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"/> No Advanced Scanners</td>
+            <td colspan="2"><input id="race_editor_lrt_no_advanced_scanners" type="checkbox" onchange="post('race_editor')"/> No Advanced Scanners</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_cheap_engines" type="checkbox" onchange="post('race_editor')"/> Cheap Engines</td>
+            <td colspan="2"><input id="race_editor_lrt_cheap_engines" type="checkbox" onchange="post('race_editor')"/> Cheap Engines</td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">
@@ -450,33 +450,33 @@ input:disabled {
         </caption>
         <tr>
             <td>Gravity</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"/></td>
-            <td>Immune <input id="race_editor_gravity_immune" type="checkbox" onchange="post('race_editor')"/></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"/></td>
+            <td>Immune <input id="race_editor_hab_gravity_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Temperature</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_temperature" onload="slider2(this, 'race_editor', 0, 100, 2, format_temperature)"/></td>
-            <td>Immune <input id="race_editor_temperature_immune" type="checkbox" onchange="post('race_editor')"/></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_temperature" onload="slider2(this, 'race_editor', 0, 100, 2, format_temperature)"/></td>
+            <td>Immune <input id="race_editor_hab_temperature_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Radiation</td>
-            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"/></td>
-            <td>Immune <input id="race_editor_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"/></td>
+            <td>Immune <input id="race_editor_hab_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Growth Rate</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growthrate" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse', null); 
-                gravity_chart('race_editor_gravity_chart', 'race_editor_gravity'); 
-                temperature_chart('race_editor_temperature_chart', 'race_editor_temperature'); 
-                radiation_chart('race_editor_radiation_chart', 'race_editor_radiation')">+ Habitability Charts</caption>
+                gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
+                temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
+                radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">+ Habitability Charts</caption>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_gravity')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_temperature')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_radiation')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Economy</caption>
@@ -502,28 +502,28 @@ input:disabled {
         </tr>
         <tr>
             <td>Energy Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
-            <td><input id="race_editor_starting_tech_level_in_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Weapons Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_weapons_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
-            <td><input id="race_editor_starting_tech_level_in_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Propulsion Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_propulsion_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
-            <td><input id="race_editor_starting_tech_level_in_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Construction Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_construction_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
-            <td><input id="race_editor_starting_tech_level_in_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Electronics Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_electronics_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
-            <td><input id="race_editor_starting_tech_level_in_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Biotechnology Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_biotechnology_research_cost_modifier" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
-            <td><input id="race_editor_starting_tech_level_in_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table>
 </div>

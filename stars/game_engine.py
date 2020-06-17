@@ -83,11 +83,18 @@ def load_inspect(save_type, name, class_type):
 
 
 """ Load game from zip file """
-def load(save_type, name):
+def load(save_type, name, register_objects=True):
     game_file = __game_dir / save_type / (name + '.zip')
+    objs = []
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
-            register(from_json(zipfile.read(info)))
+            obj = from_json(zipfile.read(info))
+            objs.append(obj)
+            print(obj)
+            if register_objects:
+                register(obj)
+    print(len(objs))
+    return objs
 
 
 """ Save game to zip file """

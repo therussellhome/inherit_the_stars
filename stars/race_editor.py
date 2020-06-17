@@ -1,4 +1,5 @@
 from math import log, exp
+import sys
 from .race import Race
 from .defaults import Defaults
 from . import game_engine
@@ -13,6 +14,7 @@ __defaults = {
     'race_editor_habitability_message': [''],
     'race_editor_file_to_load': [''],
     'options_race_editor_file_to_load': [[]],
+    'race_editor_advantage_points_left': [0, -sys.maxsize, sys.maxsize],
 }
 def calc_hab_cost(start, stop): #not temperature
     size = stop - start + 1
@@ -99,6 +101,7 @@ class RaceEditor(Defaults):
         #print(aps)
         aps += (lrts+1) * lrts
         return aps
+
     def calc_reseach_cost(self):
         ap = 0
         ap -= self.race_editor_starting_tech_energy**3*2 + self.race_editor_starting_tech_energy*3
@@ -124,12 +127,12 @@ class RaceEditor(Defaults):
             m += self.race_editor_research_modifier_propulsion/50 - 2
         #print(m)
         if self.race_editor_research_modifier_construction > 100:
-            m += self.race_research_modifier_construction/100 - 1
+            m += self.race_editor_research_modifier_construction/100 - 1
         elif self.race_editor_research_modifier_construction < 100:
             m += self.race_editor_research_modifier_construction/50 - 2
         #print(m)
         if self.race_editor_research_modifier_electronics > 100:
-            m += self.race_research_modifier_electronics/100 - 1
+            m += self.race_editor_research_modifier_electronics/100 - 1
         elif self.race_editor_research_modifier_electronics < 100:
             m += self.race_editor_research_modifier_electronics/50 - 2
         #print(m)
@@ -144,6 +147,7 @@ class RaceEditor(Defaults):
             pass
         #print(ap)
         return -ap
+
     def calc_economy_cost(self):
         ap = 0
         c = (self.race_editor_effort_per_colonist-1)*1000
@@ -158,6 +162,7 @@ class RaceEditor(Defaults):
         ap -= c+500
         #print(ap)
         return -ap
+
     def calc_hab_cost(self):
         ap = 0
         immunitys = 0
@@ -175,7 +180,7 @@ class RaceEditor(Defaults):
             dis = abs((self.race_editor_hab_temperature + self.race_editor_hab_temperature_stop)/2 - 50)
             ap -= (size*5 - 300) - dis*4
         #print(ap)
-        if self.race_editor_radiation_immune:
+        if self.race_editor_hab_radiation_immune:
             immunitys += 1
             ap -= 405
         else:
@@ -191,46 +196,51 @@ class RaceEditor(Defaults):
     """ TODO """
     def _calc_habitability_message(self):
         overall_hab = 1.0
-        if not self.race_editor_gravity_immune:
+        if not self.race_editor_hab_gravity_immune:
             hab = 0.0
-            for i in range(self.race_editor_gravity, self.race_editor_gravity_stop + 1):
+            for i in range(self.race_editor_hab_gravity, self.race_editor_hab_gravity_stop + 1):
                 hab += (100.0 - i) * 2.0 / 101.0
             overall_hab *= hab / 100.0
-        if not self.race_editor_temperature_immune:
+        if not self.race_editor_hab_temperature_immune:
             hab = 0.0
-            for i in range(self.race_editor_temperature, self.race_editor_temperature_stop + 1):
+            for i in range(self.race_editor_hab_temperature, self.race_editor_hab_temperature_stop + 1):
                 hab += 1.7 * exp(-1.0 * (((i - 50.0) * (i - 50.0)) / (2.0 * 27.0 * 27.0))) - 0.1
             overall_hab *= hab / 100.0
-        if not self.race_editor_radiation_immune:
+        if not self.race_editor_hab_radiation_immune:
             hab = 0.0
-            for i in range(self.race_editor_radiation, self.race_editor_radiation_stop + 1):
+            for i in range(self.race_editor_hab_radiation, self.race_editor_hab_radiation_stop + 1):
                 hab += 100.0/101.0
             overall_hab *= hab / 100.0
         overall_hab = 100.0 * max(overall_hab, 0.001)
         self.race_editor_habitability_message = str(round(overall_hab, 1)) + '% of planets should be habitable for you'
 
     def post(self, action):
+        if action == 'reset':
+            self.reset_to_default()
         # List races for loading
         self.options_race_editor_file_to_load = game_engine.load_list('races')
         self.options_race_editor_file_to_load.insert(0, '')
         if self.race_editor_file_to_load != '':
-            game_engine.load('races', self.race_editor_file_to_load)
-            race = game_engine.get('Races/' + self.race_editor_file_to_load)
+            objs = game_engine.load('races', self.race_editor_file_to_load, False)
             # populate self
+            for r in objs:
+                if r.__class__.__name__ == 'Race' and r.name == self.race_editor_file_to_load:
+                    for key in Race.defaults:
+                        setattr(self, 'race_editor_' + key, getattr(r, key))
             self.race_editor_file_to_load = ''
         """ aply the cost of race traits """
         ap = 1000 - self.calc_race_trait_cost()
         """ calculate and aply the cost of habitablilaty """
         self._calc_habitability_message()
-        if self.race_editor_gravity_immune:
-            self.race_editor_gravity = 0
-            self.race_editor_gravity_stop = 100
-        if self.race_editor_temperature_immune:
-            self.race_editor_temperature = 0
-            self.race_editor_temperature_stop = 100
-        if self.race_editor_radiation_immune:
-            self.race_editor_radiation = 0
-            self.race_editor_radiation_stop = 100
+        if self.race_editor_hab_gravity_immune:
+            self.race_editor_hab_gravity = 0
+            self.race_editor_hab_gravity_stop = 100
+        if self.race_editor_hab_temperature_immune:
+            self.race_editor_hab_temperature = 0
+            self.race_editor_hab_temperature_stop = 100
+        if self.race_editor_hab_radiation_immune:
+            self.race_editor_hab_radiation = 0
+            self.race_editor_hab_radiation_stop = 100
         ap -= self.calc_hab_cost()
         """ calulate and aply the cost of the econimy """
         ap -= self.calc_economy_cost()
@@ -238,20 +248,14 @@ class RaceEditor(Defaults):
         ap -= self.calc_reseach_cost()
         self.race_editor_advantage_points_left = int(ap)
         self.options_race_editor_file_to_load = game_engine.load_list('races')
-        if action == 'load':
-            game_engine.load('races', options_race_editor_file_to_load)
         if action == 'save':
             r = Race()
             for key in Race.defaults:
-                if hasattr(self, 'race_editor_' + key):
-                    setattr(r, key, getattr(self, 'race_editor_' + key))
-            game_engine.save('races', self.race_editor_file_name, [r])
-            print('SAVED !!')
+                setattr(r, key, getattr(self, 'race_editor_' + key))
+            game_engine.save('races', self.race_editor_name, [r])
 
 
 for key in Race.defaults:
     __defaults['race_editor_' + key] = Race.defaults[key]
 
 RaceEditor.set_defaults(RaceEditor, __defaults)
-#self.race_editor_advantege_points
-
