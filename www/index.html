@@ -254,7 +254,7 @@ input:disabled {
         <tr>
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
-            <td><img class="button" id="button_new_game_create" title="Create" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
+            <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Galaxy</caption>
@@ -394,6 +394,12 @@ input:disabled {
             <td colspan="2">Winner Must Meet</td>
             <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' victory conditions')"/></td>
         </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
+        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Customizations</caption>
+        <tr>
+            <td>Technology Tree</td>
+            <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
     </table>
 </div>
 

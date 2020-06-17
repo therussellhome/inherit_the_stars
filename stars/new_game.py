@@ -71,6 +71,8 @@ __defaults = {
     'new_game_victory_shipsofthewall_number': [150, 50, 1000], 
     'new_game_victory_starbases': [True],
     'new_game_victory_starbases_number': [25, 10, 100], 
+    'new_game_tech_tree': ['Inherit The Stars'],
+    'options_new_game_tech_tree': [[]],
 }
 
 
@@ -89,16 +91,22 @@ class NewGame(Defaults):
             self.__dict__['options_' + key] = races
             if self.__dict__[key] != 'No Player':
                 num_players += 1
+        self.options_new_game_tech_tree = game_engine.load_list('tech_tree')
         # Create the game
         if action == 'create':
             systems = self.create_systems(self.calc_num_systems())
             homes = self.generate_home_systems(num_players, systems, self.new_game_player_distance)
             players = []
             for i in range(1, 17):
-                key = 'new_game_player{:02d}'.format(i)
-                if self.__dict__[key] != 'No Player':
-                    players.append(Player(name=self.__dict__[key]))
+                race_name = self.__dict__['new_game_player{:02d}'.format(i)]
+                if race_name != 'No Player':
+                    # Protect against other objects in a race file
+                    objs = game_engine.load('races', race_name, False)
+                    for r in objs:
+                        if r.__class__.__name__ == 'Race' and r.name == race_name:
+                            players.append(Player(name=race_name, race=r))
             game = Game(name=self.new_game_name, players=players)
+            game_engine.load('tech_tree', self.new_game_tech_tree)
             game_engine.save('games', self.new_game_name)
 
     def calc_num_systems(self):
