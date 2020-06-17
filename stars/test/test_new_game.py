@@ -51,5 +51,18 @@ class NewGameTestCase(unittest.TestCase):
         self.ng.new_game_z = 1
         self.assertEqual(len(self.ng.create_systems(round(((4/3)*3.14159)*(self.ng.new_game_x/2)*(self.ng.new_game_y/2)*(self.ng.new_game_z/2)/(100**3) * self.ng.new_game_density))), round(((4/3)*3.14159)*(self.ng.new_game_x/2)*(self.ng.new_game_y/2)*(self.ng.new_game_z/2)/(100**3) * self.ng.new_game_density))
     def test_generate_home_systems(self):
-        pass
-        
+        system = []
+        system.append(star_system.StarSystem(name='antheu 0', x=0, y=0, z=0))
+        system.append(star_system.StarSystem(name='antheu 1', x=0, y=0, z=0))
+        system.append(star_system.StarSystem(name='antheu 2', x=0, y=0, z=0))
+        system.append(star_system.StarSystem(name='antheu 3', x=0, y=0, z=0))
+        system.append(star_system.StarSystem(name='antheu 4', x=0, y=0, z=0))
+        s = star_system.StarSystem(name='antheu 5', x=100, y=50, z=100)
+        system.append(s)
+        homes = self.ng.generate_home_systems(2, system, 50)
+        self.assertIn(s, homes)
+        t = star_system.StarSystem(name='rc,g 0', x=-100, y=-50, z=-100)
+        system.append(t)
+        homes = self.ng.generate_home_systems(3, system, 50)
+        self.assertIn(t, homes)
+        self.assertIn(s, homes)

@@ -11,7 +11,6 @@ cost_of_growthrate = [-7091, -5673, -4256, -2839, -1422, -838, -403, -119, 40, 1
 __defaults = {
     'options_race_editor_primary_race_trait': [['Aku\'Ultani', 'Cushgars', 'Formics', 'Gaerhules', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']],
     'race_editor_habitability_message': [''],
-    'race_editor_file_name': [''],
     'race_editor_file_to_load': [''],
     'options_race_editor_file_to_load': [[]],
 }
@@ -211,6 +210,14 @@ class RaceEditor(Defaults):
         self.race_editor_habitability_message = str(round(overall_hab, 1)) + '% of planets should be habitable for you'
 
     def post(self, action):
+        # List races for loading
+        self.options_race_editor_file_to_load = game_engine.load_list('races')
+        self.options_race_editor_file_to_load.insert(0, '')
+        if self.race_editor_file_to_load != '':
+            game_engine.load('races', self.race_editor_file_to_load)
+            race = game_engine.get('Races/' + self.race_editor_file_to_load)
+            # populate self
+            self.race_editor_file_to_load = ''
         """ aply the cost of race traits """
         ap = 1000 - self.calc_race_trait_cost()
         """ calculate and aply the cost of habitablilaty """

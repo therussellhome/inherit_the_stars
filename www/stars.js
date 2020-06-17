@@ -1,6 +1,7 @@
 // Store values from python as they give us what fields should be sent back
 let json_map = {};
 let charts = {};
+let game_mode = 'host';
 
 // Initialize the fields from python
 function init() {
@@ -13,7 +14,7 @@ function init() {
     for(element of document.getElementsByClassName('onload')) {
         element.dispatchEvent(load_event);
     }
-    post('host', '?reset');
+    post('launch', '?reset');
     post('new_game', '?reset');
     post('race_editor', '?reset');
 }
@@ -26,29 +27,43 @@ function toggle(start, css_class, force = null) {
     var children = [start];
     while(children.length > 0) {
         element = children.pop();
+        if(force == null) {
+            element.classList.toggle(css_class);
+        } else {
+            element.classList.toggle(css_class, force);
+        }
         for(child of element.children) {
             children.push(child);
-            if(force == null) {
-                child.classList.toggle(css_class);
-            } else {
-                child.classList.toggle(css_class, force);
-            }
         }
     }
 }
 
 // Show a given screen, hide all others, highlight the clicked button
-function show_screen(clicked, show) {
+function show_screen(show) {
+    if(json_map.hasOwnProperty(show)) {
+        post(show, '?reset');
+    }
     // Hide all screens
     for(screen of document.getElementsByClassName('screen')) {
-        screen.style.display = 'none';
+        toggle(screen, 'hide', true);
+    }
+    // Unselect all buttons
+    for(button of document.getElementsByClassName('button')) {
+        toggle(button, 'selected', false);
     }
     // Show selected screen
-    document.getElementById(show + '_screen').style.display = 'block';
-    // Unselect all buttons
-    toggle(clicked.parentElement.parentElement.parentElement.parentElement, 'selected', false);
-    // Select button
-    clicked.classList.add('selected');
+    if(show) {
+        toggle(document.getElementById('screen_' + show), 'hide', false);
+        toggle(document.getElementById('button_' + show), 'selected', true);
+    }
+}
+
+// Show the home screen
+function show_home() {
+    game_mode = 'host';
+    toggle(document.getElementById('sidebar_host'), 'hide', false);
+    toggle(document.getElementById('sidebar_play'), 'hide', true);
+    show_screen('home');
 }
 
 // Submit data for actioning
@@ -138,10 +153,20 @@ function parse_json(url, json) {
     }
 }
 
+// Confirm if everyone is submitted before generating
+function host_generate() {
+    alert('TODO');
+}
+
+// Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
+function play_generate() {
+    alert('TODO');
+}
+
 // Confirm shutdown before executing
-function shutdown(clicked) {
+function shutdown() {
     if(confirm('Shutdown INHERIT THE STARS! server?')) {
-        show_screen(clicked, 'shutdown');
+        show_screen('shutdown');
         fetch('/shutdown', { method: 'post' });
     }
 }

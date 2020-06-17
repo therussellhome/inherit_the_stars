@@ -7,6 +7,7 @@ from .defaults import Defaults
 __defaults = {
     'name': [''],
     'players': [[]],
+    'autogen_turn': [True],
     'date': [3000, 0, sys.maxsize]
 }
 

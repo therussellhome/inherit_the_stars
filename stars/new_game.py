@@ -1,9 +1,11 @@
 from . import game_engine
 from .defaults import Defaults
-from . import star_system
+from .game import Game
+from .player import Player
+from .star_system import StarSystem
+from math import pi
 from random import randint
 from random import random
-from math import pi
 
 
 """ Default values (default, min, max)  """
@@ -13,8 +15,7 @@ __defaults = {
     'new_game_y': [100, 1, 100], 
     'new_game_z': [100, 1, 100], 
     'new_game_density': [95, 1, 100],
-    'new_game_player_distance': [15, 1, 50],
-    'new_game_public_player_scores': [True], 
+    'new_game_player_distance': [25, 1, 50],
     'new_game_player01': ['No Player'],
     'new_game_player02': ['No Player'],
     'new_game_player03': ['No Player'],
@@ -47,17 +48,29 @@ __defaults = {
     'options_new_game_player14': [[]],
     'options_new_game_player15': [[]],
     'options_new_game_player16': [[]],
+    'new_game_public_player_scores': [30, 0, 200], 
+    'new_game_victory_after': [50, 10, 200], 
+    'new_game_victory_conditions': [1, 1, 10], 
+    'new_game_victory_enemies': [True],
+    'new_game_victory_enemies_left': [0, 0, 15], 
+    'new_game_victory_score': [True],
+    'new_game_victory_score_number': [1000, 100, 10000], 
     'new_game_victory_tech': [True],
-    'new_game_victory_tech_level': [20, 1, 50], 
-    'new_game_victory_tech_level_in_fields': [4, 1, 6], 
-    'new_game_number_of_ships': [300, 1, 500], 
-    'new_game_number_of_planets': [75, 1, 200], 
-    'new_game_number_of_factories': [200, 1, 500], 
-    'new_game_number_of_power_plants': [200, 1, 500], 
-    'new_game_number_of_mines': [200, 1, 500], 
-    'new_game_number_of_other_players_left': [0, 0, 15], 
-    'new_game_number_of_conditions_met': [1, 1, 9], 
-    'new_game_years_till': [75, 1, 200], 
+    'new_game_victory_tech_levels': [100, 10, 300], 
+    'new_game_victory_planets': [True],
+    'new_game_victory_planets_number': [200, 50, 1000], 
+    'new_game_victory_energy': [True],
+    'new_game_victory_energy_number': [10000, 1000, 100000], 
+    'new_game_victory_minerals': [True],
+    'new_game_victory_minerals_number': [10000, 1000, 100000], 
+    'new_game_victory_production': [True],
+    'new_game_victory_production_number': [10000, 1000, 100000], 
+    'new_game_victory_ships': [True],
+    'new_game_victory_ships_number': [1000, 100, 10000], 
+    'new_game_victory_shipsofthewall': [True],
+    'new_game_victory_shipsofthewall_number': [150, 50, 1000], 
+    'new_game_victory_starbases': [True],
+    'new_game_victory_starbases_number': [25, 10, 100], 
 }
 
 
@@ -67,15 +80,27 @@ class NewGame(Defaults):
     def post(self, action):
         if action == 'reset':
             self.reset_to_default()
-        # Always refresh the list of games
+        # Always refresh the list of races
         races = game_engine.load_list('races')
         races.insert(0, 'No Player')
+        num_players = 0
         for i in range(1, 17):
-            key = 'options_new_game_player{:02d}'.format(i)
-            self.__dict__[key] = races
+            key = 'new_game_player{:02d}'.format(i)
+            self.__dict__['options_' + key] = races
+            if self.__dict__[key] != 'No Player':
+                num_players += 1
         # Create the game
-        if action == 'submit':
-            self.create_systems(self.calc_num_systems())
+        if action == 'create':
+            systems = self.create_systems(self.calc_num_systems())
+            homes = self.generate_home_systems(num_players, systems, self.new_game_player_distance)
+            players = []
+            for i in range(1, 17):
+                key = 'new_game_player{:02d}'.format(i)
+                if self.__dict__[key] != 'No Player':
+                    players.append(Player(name=self.__dict__[key]))
+            game = Game(name=self.new_game_name, players=players)
+            game_engine.save('games', self.new_game_name)
+
     def calc_num_systems(self):
         vx = self.new_game_x
         vy = self.new_game_y
@@ -120,7 +145,7 @@ class NewGame(Defaults):
                 else:
                     counter = 0
                     system_name = names.pop(randint(0, len(names) - 1))
-                    s = star_system.StarSystem(name=system_name, x=rx, y=ry, z=rz)
+                    s = StarSystem(name=system_name, x=rx, y=ry, z=rz)
                     systems.append(s)
         return systems
 
@@ -144,7 +169,6 @@ class NewGame(Defaults):
                 if i == systems[len(systems) - 1] and len(home_systems) < num_players:
                     player_distance *= .9
         return home_systems
-
             
 
 NewGame.set_defaults(NewGame, __defaults)
