@@ -8,35 +8,28 @@ __defaults = {
 }
 
 
-""" Class defining fleets - directly modifiable by the player """
-class Fleet(Defaults):
-    """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        game_engine.register(self)
+class Ship(Defaults):
+    def move(self, speed):
+        distance = round((((self.x - self.waypoint_x) **2) + ((self.y - self.waypoint_y) **2) + ((self.z - self.waypoint_z) **2))**.5)    
+        new_x = self.x + ((speed**2)/distance)
+        new_y = self.y + ((speed**2)/distance)
+        new_z = self.z + ((speed**2)/distance)
+        return new_x, new_y, new_z
+    def orbital_mining(self, planet):
+        if planet.colonized = False:
+            ti = planet.titanium - (self.rate * planet.titanium)
+            si = planet.silicon - (self.rate * planet.silicon)
+            li = planet.lithium - (self.rate * planet.lithium)
+            planet.on_surface.titanium += round((planet.titanium - ti) + .1)
+            planet.on_surface.silicon += round((planet.silicon - si) + .1)
+            planet.on_surface.lithium += round((planet.lithium - li) + .1)
+            planet.titanium = ti
+            planet.silicon = si
+            planet.lithium = li
+        return planet
+    def repair(self, ship):
+        if ship.damage_points > 0:
+            ship.damage_points -= self.repair_points
+        return ship
 
-""" Ordered list of fleet preactions for use by the Game.generate_turn """
-Fleet.preactions = [
-    'pre_load',
-    'pre_unload',
-]
-
-""" Ordered list of fleet actions for use by the Game.generate_turn """
-Fleet.actions = [
-    'merge',
-    'generate_fuel',
-    'repair',
-    'deploy_hyper_denial',
-    'remote_mining',
-    'trade',
-    'load',
-    'piracy',
-    'lay_mines',
-    'bomb',
-    'colonize',
-    'unload',
-    'scrap',
-    'transfer',
-    'patrol',
-    'route',
-]
+        
