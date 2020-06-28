@@ -32,7 +32,7 @@ class BaseClass:
 
 
 """ Get a referenced class by name """
-def get(reference):
+def get(reference, create_new=True):
     global __registry
     # get all of a type
     if reference[-1:] == '/':
@@ -47,8 +47,10 @@ def get(reference):
             if reference == obj.__class__.__name__ + '/' + obj.name:
                 return obj
     # create new object
-    (classname, obj_name) = reference.split('/')
-    return __new(classname, None, name=obj_name)
+    if create_new:
+        (classname, obj_name) = reference.split('/')
+        return __new(classname, None, name=obj_name)
+    return None
 
 
 """ Decode a string into an object """
