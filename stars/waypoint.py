@@ -5,6 +5,7 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
+    #(.x, .y, .z; can be of an object, another ship), .actions=[], .
 }
 
 
