@@ -16,6 +16,7 @@ class Fleet(Defaults):
         super().__init__(**kwargs)
         game_engine.register(self)
     
+    """ does all the moving calculations and then moves the ships """
     def move(self):
         top_speed = waypoints[1].speed
         move = True
@@ -34,13 +35,14 @@ class Fleet(Defaults):
             if not move:
                 break
             self.move_1_ly(self.fuel, speed)
-    
+    """ calles the move for each of the ships """
     def move_1_ly(self, fuel, speed):
         fuel_1_ly = 0
         for ship in self.ships:
             fuel_1_ly += ship.move_1_ly(speed)
         self.fuel -= fuel_1_ly
     
+    """ checks if you can move at a certain speed with your entire fleet """
     def test_move_1_ly(self, fuel, speed):
         fuel_1_ly = 0
         for ship in self.ships:
@@ -50,6 +52,7 @@ class Fleet(Defaults):
         else:
             return True
         
+    """ chooses the ship to return the fuel to """
     def return_cargo(self):
         check = []
         for ship in self.ships:
@@ -63,6 +66,7 @@ class Fleet(Defaults):
                 lest = i
         return check[lest][1]
     
+    """ evenly distributes the fuel between the ships """
     def return_fuel(self):
         check = []
         for ship in self.ships:
@@ -76,6 +80,7 @@ class Fleet(Defaults):
                 lest = i
         return check[lest][1]
     
+    """ evenly distributes the cargo back to the ships """
     def returnn(self):
         while self.fuel > 0:
             ship = self.return_fuel()
@@ -96,6 +101,7 @@ class Fleet(Defaults):
                 ship.cargo.people += 1
                 self.cargo.people -= 1
     
+    """ gathers all of the minerals and fuel from the ships to the fleet """
     def compile(self):
         for ship in self.ships:
             self.cargo.titanium += ship.cargo.titanium
@@ -109,6 +115,7 @@ class Fleet(Defaults):
             self.fuel += ship.fuel
             ship.fuel = 0
     
+    """ executes the unload function """
     def unload(self):
         self.compile()
         for transfer in self.waypoint.unload.transfers:
@@ -168,6 +175,7 @@ class Fleet(Defaults):
                     self.fuel -= (recipiant.fuel_max - recipiant.fuel)
         self.returnn()
     
+    """ executes the load function """
     def load(self):
         self.compile()
         for transfer in self.waypoint.load.transfers:
@@ -226,6 +234,7 @@ class Fleet(Defaults):
                     recipiant.fuel -= (self.fuel_max - self.fuel)
         self.returnn()
     
+    """ runs all of the actions """
     def execute(self, action):
         if action in self.waypoint.actions:
             for ship in self.ships:
