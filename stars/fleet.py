@@ -185,7 +185,7 @@ class Fleet(Defaults):
         self.compile()
         if recipiant in game_engine.get('Fleet/'):
             recipiant.compile()
-        for transfer in self.waypoint.unload.transfers['unload']:
+        for transfer in self.waypoint.transfers['unload']:
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (recipiant.cargo.titanium + recipiant.cargo.lithium + recipiant.cargo.silicon + recipiant.cargo.people)
@@ -246,7 +246,7 @@ class Fleet(Defaults):
     """ executes the sell function """
     def sell(self, recipiant):
         self.compile()
-        for transfer in self.waypoint.sell.transfers['sell']:
+        for transfer in self.waypoint.transfers['sell']:
             item = transfer[0]
             amount = transfer[1]
             traety = self.player.treaties[recipiant.player.name].sell
@@ -309,7 +309,7 @@ class Fleet(Defaults):
     """ executes the buy function """
     def buy(self, recipiant):
         self.compile()
-        for transfer in self.waypoint.load.transfers['buy']:
+        for transfer in self.waypoint.transfers['buy']:
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (self.cargo.titanium + self.cargo.lithium + self.cargo.silicon + self.cargo.people)
@@ -393,7 +393,7 @@ class Fleet(Defaults):
         self.compile()
         if recipiant in game_engine.get('Fleet/'):
             recipiant.compile()
-        for transfer in self.waypoint.load.transfers['load']:
+        for transfer in self.waypoint.transfers['load']:
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (self.cargo.titanium + self.cargo.lithium + self.cargo.silicon + self.cargo.people)
@@ -458,12 +458,12 @@ class Fleet(Defaults):
             if action == 'unload' or action == 'pre_unload':
                 recipiant = self.waypoint.recipiants['unload']
                 if recipiant.x == self.x and recipiant.y == self.y and recipiant.z == self.z:
-                    if recipiant == "deep_space" or recipiant.name == "salvage" or recipiant.player == self.player:
+                    if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player == self.player:
                         self.unload(recipiant)
             if action == 'load' or action == 'pre_load':
                 recipiant = self.waypoint.recipiants['load']
                 if recipiant.x == self.x and recipiant.y == self.y and recipiant.z == self.z:
-                    if recipiant.name == "salvage" or recipiant.player == self.player:
+                    if recipiant.name == 'salvage' or recipiant.player == self.player:
                         self.load(recipiant)
             if action == 'buy' and self.waypoint.recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade:
                 recipiant = self.waypoint.recipiants['buy']
