@@ -11,6 +11,7 @@ __all__ = [
     'reference', 
     'scanner',
     'star_system', 
+    'stars_math', 
     'sun',
     'tech', 
     'tech_display',
