@@ -27,6 +27,16 @@ class ShipTestCase(unittest.TestCase):
         # set up the other ship for being repaired
         l = ship.Ship()
         l.damage_points = 60
+        # set up for bombing
+        # set up the ship for bombing
+        s.bomb.percent_pop_kill = 3/10
+        s.bomb.minimum_kill = 6000
+        s.bomb.facility_kill = 200
+        # set up the planet for being bombed
+        t = planet.Planet()
+        t.colonized = True
+        t.num_colonists = 20000
+        t.num_facilities = 800
     def test_move(self):
         self.assertEqual(self.s.move(1), (1/173, 1/173, 1/173))
     def test_orbital_mining(self):
@@ -72,3 +82,31 @@ class ShipTestCase(unittest.TestCase):
         self.assertEqual(self.s.repair(self.l).damage_points, 11)
         self.l.damage_points = 0
         self.assertEqual(self.s.repair(self.l).damage_points, 0)
+    def test_bomb(self):
+        # test population bombing
+        self.assertEqual(self.s.bomb(self.t).num_colonists, 6000)
+        self.t.num_colonists = 30000
+        self.assertEqual(self.s.bomb(self.t).num_colonists, 9000)
+        self.t.num_colonists = 900
+        self.assertEqual(self.s.bomb(self.t).num_colonists, 270)
+        self.s.bomb.percent_pop_kill = 2/10
+        self.assertEqual(self.s.bomb(self.t).num_colonists, 180)
+        self.t.num_colonists = 1000
+        self.s.bomb.percent_pop_kill = 1/10
+        self.assertEqual(self.s.bomb(self.t).num_colonists, 100)
+        self.s.bomb.percent_pop_kill = -.1
+        self.t.num_colonists = 7000
+        self.assertEqual(self.s.bomb(self.t).num_colonists, 1000)
+        # test facility bombing
+        self.assertEqual(self.s.bomb(self.t).num_facilities, 600)
+        self.s.bomb.facility_kill = 300
+        self.assertEqual(self.s.bomb(self.t).num_facilities, 300)
+        self.t.num_facilities = 900
+        self.assertEqual(self.s.bomb(self.t).num_facilities, 600)
+        self.t.num_facilities = 100
+        self.assertEqual(self.s.bomb(self.t).num_facilities, 0)
+        self.s.bomb.facilaty_kill = 2000
+        self.t.num_facilaties = 2500
+        self.assertEqual(self.s.bomb(self.t).num_facilities, 500)
+        self.t.num_facilaties = 900
+        self.assertEqual(self.s.bomb(self.t).num_facilities, 0)

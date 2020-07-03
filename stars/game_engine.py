@@ -72,11 +72,29 @@ def load_list(save_type):
 
 
 """ Load game from zip file """
-def load(save_type, name):
+def load_inspect(save_type, name, class_type):
     game_file = __game_dir / save_type / (name + '.zip')
+    internals = []
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
-            register(from_json(zipfile.read(info)))
+            if info.filename.startswith(class_type):
+                internals.append(info.filename[len(class_type):])
+    return internals
+
+
+""" Load game from zip file """
+def load(save_type, name, register_objects=True):
+    game_file = __game_dir / save_type / (name + '.zip')
+    objs = []
+    with ZipFile(game_file, 'r') as zipfile:
+        for info in zipfile.infolist():
+            obj = from_json(zipfile.read(info))
+            objs.append(obj)
+            print(obj)
+            if register_objects:
+                register(obj)
+    print(len(objs))
+    return objs
 
 
 """ Save game to zip file """
@@ -88,7 +106,7 @@ def save(save_type, name, objs=None):
     game_file.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(game_file, 'w') as zipfile:
         for obj in objs:
-            name = getattr(obj, 'name', str(id(obj)))
+            name = obj.__class__.__name__ + '/' + getattr(obj, 'name', str(id(obj)))
             zipfile.writestr(ZipInfo(name), to_json(obj))
 
 
@@ -102,7 +120,9 @@ def __encode(obj):
 """ Custom decoder to handle classes """
 def __decode(values):
     if '__class__' in values:
-        return __new(values['__class__'], values, **values)
+        classname = values['__class__']
+        del values['__class__']
+        return __new(classname, values, **values)
     return values
 
 

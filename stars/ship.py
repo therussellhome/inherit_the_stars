@@ -16,7 +16,7 @@ class Ship(Defaults):
         new_z = self.z + ((speed**2)/distance)
         return new_x, new_y, new_z
     def orbital_mining(self, planet):
-        if planet.colonized = False:
+        if planet.colonized == False:
             ti = planet.titanium - (self.rate * planet.titanium)
             si = planet.silicon - (self.rate * planet.silicon)
             li = planet.lithium - (self.rate * planet.lithium)
@@ -31,5 +31,16 @@ class Ship(Defaults):
         if ship.damage_points > 0:
             ship.damage_points -= self.repair_points
         return ship
-
-        
+    def bomb(self, p):
+        if p.colonized == True:
+            if self.bomb.percent_pop_kill * p.num_colonists < self.bomb.minimum_kill:
+                p.num_colonist -= self.bomb.minimum_kill
+            else:
+                p.num_colonists *= self.bomb.percent_pop_kill
+            p.num_facilities -= self.bomb.percent_facilities_kill
+            if p.num_colonists < 0:
+                p.num_colonists = 0
+            if p.num_facilities < 0
+                p.num_facilities = 0
+        return p
+                

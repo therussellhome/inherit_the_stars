@@ -2,6 +2,8 @@ import sys
 from . import game_engine
 from .defaults import Defaults
 from .reference import Reference
+from .ship_hull import ShipHull
+
 
 
 """ Default values (default, min, max)  """

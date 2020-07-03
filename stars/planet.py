@@ -164,27 +164,27 @@ class Planet(Defaults):
             #TODO reduce mineral concentration
     
     """ minister checks to see if you need to build more facilities """
-    def _check_should_build_facility(self):
+    def auto_build(self):
         if not self.player.is_valid:
             return
         minister = self._get_minister()
-        #scanner_tech = self.player.max_tech('planetary_scanner')
-        #penetrating_tech = self.player.max_tech('planetary_penetrating')
+    #TODO    scanner_tech = self.player.max_tech('planetary_scanner')
+    #TODO    penetrating_tech = self.player.max_tech('planetary_penetrating')
         num_facilities = (self.factories + self.power_plants + self.mines + self.defenses)
         if minister.build_penetrating_after_num_facilitys <= num_facilities: # and self.penetrating_tech != penetrating_tech:
-        #    self.penetrating_tech = penetrating_tech
-            return 'self.penetrating_tech'
+    #TODO        self.penetrating_tech = penetrating_tech
+            return self.penetrating_tech
         elif minister.build_scanner_after_num_facilitys <= num_facilities: # and self.scanner_tech != scanner_tech:
-        #    self.scanner_tech = scanner_tech
-            return 'self.scanner_tech'
+    #TODO        self.scanner_tech = scanner_tech
+            return self.scanner_tech
         else:
             total_effort = self._calc_effort()
             factory_percent = ((self.factory_tech.effort_per_facility * self.factories) / total_effort) - (minister.factories / 100)
             power_plant_percent = ((self.power_plant_tech.effort_per_facility * self.power_plants) / total_effort) - (minister.power_plants / 100)
             mine_percent = ((self.mine_tech.effort_per_facility * self.mines) / total_effort) - (minister.mines / 100)
             defense_percent = ((self.defense_tech.effort_per_facility * self.defenses) / total_effort) - (minister.defenses / 100)
-            check = [[factory_percent, 'self.factory_tech'], [power_plant_percent, 'self.power_plant_tech'], [mine_percent, 'self.mine_tech'], [defense_percent, 'self.defense_tech']]
-            print(check)
+            check = [[factory_percent, self.factory_tech], [power_plant_percent, self.power_plant_tech], [mine_percent, self.mine_tech], [defense_percent, self.defense_tech]]
+            #print(check)
             least = 1
             lest = 0
             for i in range(len(check)):
@@ -194,13 +194,12 @@ class Planet(Defaults):
             return check[lest][1]
         
     
-    #TODO    
-    """ FIX THIS IN ECONOMY OR MINISTER """
+
     """ build stuff in build queue """
-    def auto_build(self):
+    def do_construction(self, unblock):
         if not self.player.is_valid:
             return
-        remaining_production = _calc_max_production_capacity()
+        minister = self._get_minister()
         keep_going = True
         while keep_going:
             item = self.build_queue[0]
@@ -212,23 +211,37 @@ class Planet(Defaults):
                 spend_t = min([percent_t, item.cost.titanium - item.cost_complete.titanium])
                 spend_l = min([percent_l, item.cost.lithium - item.cost_complete.lithium])
                 spend_s = min([percent_s, item.cost.silicon - item.cost_complete.silicon])
-                spend_e = min([percent_e, item.cost.energy - item.cost_complete.energy])
-                if spend_t <= self.minerals.titanium and spend_l <= self.minerals.lithium and spend_s <= self.minerals.silicon and spend_e <= self.player.energy and (spend_t + spend_l + spend_s) <= remaining_production:
+                o_spend_e = min([percent_e, item.cost.energy - item.cost_complete.energy])
+                if type(item) == type(Facility()):
+                    item_type = 'planetary'
+                else:
+                    item_type = 'ship'
+                spend_e = self.player.energy_minister.check_budget(item_type, o_spend_e)
+                if spend_t <= self.minerals.titanium and spend_l <= self.minerals.lithium and spend_s <= self.minerals.silicon and spend_e == o_spend_e and (spend_t + spend_l + spend_s) <= remaining_production:
                     self.minerals.titanium -= spend_t
                     self.minerals.lithium -= spend_l
                     self.minerals.silicon -= spend_s
-                    self.player.energy -= spend_e
+                    sself.player.energy_minister.spend_budget(item_type, spend_e)
                     item.cost_complete.titanium += spend_t
                     item.cost_complete.lithium += spend_l
                     item.cost_complete.silicon += spend_s
                     item.cost_complete.energy += spend_e
                     remaining_production -= spend_t + spend_l + spend_s
                 else:
-                    keep_going = False
+                    b_spend_e = self.player.energy_minister.check_budget('baryogenesis', 100)
+                    if remaining_production >= (10 + spend_t + spend_l + spend_s) and spend_e == o_spend_e and b_spend_e == 100 and minister.unblock:
+                        if spend_t  > 0 or spend_l > 0 or spend_s > 0:
+                            remaining_production - 10
+                            self.minerals.titanium += 1
+                            self.minerals.lithium += 1
+                            self.minerals.silicon += 1
+                            self.player.energy_minister.spend_budget('baryogenesis', b_spend_e)
+                    else:
+                        keep_going = False
             if len(build_queue) == 0:
-                build_queue.push(self._check_should_build_facility())
+                build_queue.push(self.auto_build())
         max_cap = self._calc_max_production_capacity()
-        self._spend_production_capacity((max_cap-remaining_production)/max_cap)
+        self._spend_production_capacity((max_cap-self.remaining_production)/max_cap)
         
         
     """ Calculate the distance from the center of the habital range to the planet's attribute
