@@ -1,6 +1,7 @@
 import sys
 from . import game_engine
 from .defaults import Defaults
+from .component import Component
 
 
 """ Default values (default, min, max)  """

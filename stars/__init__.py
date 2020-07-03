@@ -8,6 +8,9 @@ __all__ = [
     'planet', 
     'player', 
     'reference', 
+    'ship',
+    'ship_design',
+    'ship_hull',
     'star_system', 
     'sun',
     'race_editor'
