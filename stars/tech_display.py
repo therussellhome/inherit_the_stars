@@ -2,7 +2,9 @@ import sys
 import math
 from .defaults import Defaults
 from . import game_engine
+from . import stars_math
 # testing
+from .bomb import Bomb
 from .weapon import Weapon
 from .engine import Engine
 from .scanner import Scanner
@@ -43,6 +45,7 @@ __defaults = {
     'engine_speed_exp': [0.0, 0.0, sys.maxsize],
 }
 
+""" Display information about a tech item or ship design """
 class TechDisplay(Defaults):
     def post(self, action):
         print(action)
@@ -59,7 +62,7 @@ class TechDisplay(Defaults):
         # Test values
         self.chart_kt = kt
         self.chart_scanning = scanner_ly
-        tech = game_engine.get('Component/Test Component', True)
+        tech = game_engine.get('Tech/Test Component', True)
         tech.name = 'Test Component'
         tech.cost.energy = 100
         tech.cost.titanium = 100
@@ -71,7 +74,8 @@ class TechDisplay(Defaults):
         tech.level.construction = 10
         tech.level.electronics = 5
         tech.level.biotechnology = 0
-        tech.category = 'Orbital'
+        tech.category = 'Ship Yard'
+        tech.slot_type = 'orbital'
         tech.mass = 100
         tech.cargo_max = 200
         tech.fuel_max = 1000
@@ -84,6 +88,8 @@ class TechDisplay(Defaults):
         tech.weapons.append(Weapon(power=100, range=0.3))
         tech.engines.append(Engine(kt_exponent=1.5, speed_divisor=10.0, speed_exponent=5.0))
         tech.scanners.append(Scanner(anti_cloak=50, penetrating=100, normal=200))
+        tech.bombs.append(Bomb())
+        game_engine.save('test', 'tech_display', [tech])
         # General
         self.tech_name = tech.name
         self.category = tech.category
@@ -122,7 +128,8 @@ class TechDisplay(Defaults):
             self.ecm = tech.ecm
             base = tech.shield + tech.armor
             for i in range(0, 100):
-                self.ecm_chart_data.append(base * tech.ecm / 100 * math.sqrt(i / 100))
+                range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
+                self.ecm_chart_data.append(base * tech.ecm * math.sqrt(range_ly))
         # Weapon
         for weapon in tech.weapons:
             # Only display the last one
@@ -132,12 +139,11 @@ class TechDisplay(Defaults):
             for i in range(0, 100):
                 if len(self.weapon_chart_data) < i + 1:
                     self.weapon_chart_data.append(0)
-                self.weapon_chart_data[i] += weapon.get_power(i/100, sys.maxsize, 0) * weapon.get_accuracy(i/100) / 100
+                range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
+                self.weapon_chart_data[i] += weapon.get_power(range_ly, sys.maxsize, 0) * weapon.get_accuracy(range_ly) / 100
         # Scanner
         range_per_kt = self.chart_scanning / 100
-        s = Scanner()
-        for scanner in tech.scanners:
-            s = s.add(scanner)
+        s = tech.stack_scanners()
         self.scanner_normal = s.normal
         self.scanner_penetrating = s.penetrating
         self.scanner_anticloak = s.anti_cloak

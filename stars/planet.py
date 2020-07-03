@@ -11,9 +11,9 @@ from .reference import Reference
 """ Default values (default, min, max)  """
 __defaults = {
     'distance': [50, 0, 100],
-    'temperature': [50, -15, 115],
-    'radiation': [50, 0, 100],
-    'gravity': [50, 0, 100],
+    'temperature': [50, -50, 150],
+    'radiation': [50, -50, 150],
+    'gravity': [50, -50, 150],
     'effort': [0, 0, sys.maxsize],
     'power_plants': [0, 0, sys.maxsize],
     'factories': [0, 0, sys.maxsize],
