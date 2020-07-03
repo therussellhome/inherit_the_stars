@@ -2,6 +2,8 @@ from random import random, randint
 from . import game_engine
 from .defaults import Defaults
 from .reference import Reference
+from .location import Location
+
 
 _defaults = {
     'planets': [[]],
@@ -41,6 +43,17 @@ class StarSystem(Defaults):
             planet_args['sun'] = self.planets[0]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
             self.planets.append(Reference(**planet_args))
+
+    """ returns the outer system coorenets """
+    def get_outer_system(self, location):
+        x = (location.x-self.location.x)
+        y = (location.y-self.location.y)
+        z = (location.z-self.location.z)
+        dis = (x**2 + y**2 + z**2)**(1/2)
+        x = self.x + (x/dis)*Location.TM_2_LY
+        y = self.y + (y/dis)*Location.TM_2_LY
+        z = self.z + (z/dis)*Location.TM_2_LY
+        return Location('x'=x, 'y'=y, 'z'=z)
     
         
 StarSystem.set_defaults(StarSystem, _defaults)

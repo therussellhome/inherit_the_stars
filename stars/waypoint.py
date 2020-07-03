@@ -1,17 +1,21 @@
 import sys
 from . import game_engine
 from .defaults import Defaults
+from .location import Location
+from .location import locationReference
+from .reference import Reference
+from .star_system import Star_System
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'x': [0, -sys.maxsize, sys.maxsize],
-    'y': [0, -sys.maxsize, sys.maxsize],
-    'z': [0, -sys.maxsize, sys.maxsize],
-    # (x, y, z; can be of an object, another ship)
     'actions': [[]],
-    # actions=[''], .
+    # 'pre_load', 'unload', 'sell', 'buy', 'piracy', ...'load',
+    'location': [],
+    'fly_to': [Location()],
     'speed': [1, 1, 10],
+    'description': [''],
+    'standoff': [''],
     'recipiants': [{}],
     # 'load':"your; Planet(), Fleet() or empty_space, salvage",
     # 'unload':"your; Planet(), Fleet() or salvege",
@@ -35,6 +39,14 @@ class Waypoint(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        game_engine.register(self)
     
-    
+    def move_to(self, location):
+        if self.stantoff == 'No Standoff':
+            for planet in game_engine.get('Planet/'):
+                if self.location is planet.location:
+                    self.fly_to = planet.system.get_outer_system(location)
+            for ship in game_engine.get('Planet/'):
+                if 
+        if self.standoff 
+    def calc_intercept(self):
+        
