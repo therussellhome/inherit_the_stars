@@ -5,6 +5,7 @@ from .tech_level import TechLevel
 """ Default values (default, min, max)  """
 __defaults = {
     'level': [TechLevel()],
+    'category': [''],
     'race_requirements': ['']
 }
 

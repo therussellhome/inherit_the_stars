@@ -4,6 +4,8 @@ from .cost import Cost
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'name': [''],
+    'description': [''],
     'cost': [Cost()],
     'cost_complete': [Cost()],
     'is_end_item': [False]

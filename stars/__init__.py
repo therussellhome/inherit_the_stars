@@ -1,4 +1,5 @@
 __all__ = [
+    'component', 
     'defaults', 
     'energy_minister', 
     'game_engine', 
@@ -7,11 +8,13 @@ __all__ = [
     'new_game',
     'planet', 
     'player', 
+    'race_editor',
     'reference', 
     'ship',
     'ship_design',
     'ship_hull',
+    'scanner',
     'star_system', 
     'sun',
-    'race_editor'
+    'tech_display',
 ]

@@ -99,7 +99,7 @@ class Fleet(Defaults):
     def move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.move_1_ly(speed, in_hyper_denial, dis)
+            fuel_1_ly += ship.move(speed, in_hyper_denial, dis)
         self.fuel -= fuel_1_ly
         return self.ships[0].x, self.ships[0].y, self.ships[0].z
     
@@ -107,7 +107,7 @@ class Fleet(Defaults):
     def test_move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.test_move_1_ly(speed, in_hyper_denial, dis)
+            fuel_1_ly += ship.fuel_check(speed, in_hyper_denial, dis)
         if (fuel - fuel_1_ly) >= 0:
             return False
         else:

@@ -61,7 +61,7 @@ class Defaults(game_engine.BaseClass):
         cls = object.__getattribute__(self, '__class__')
         defaults = cls.get_defaults(cls)
         for name in defaults:
-            object.__setattr__(self, name, defaults[name][0])
+            object.__setattr__(self, name, copy.copy(defaults[name][0]))
 
 
 """ Store defaults on the class """

@@ -5,128 +5,10 @@
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
+<link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
 <title>Inherit the Stars!</title>
-<style>
-body { 
-    background-color: rgb(0, 0, 44);
-    background-image: url("background.jpg");
-    background-attachment: fixed;
-    background-size: cover;
-    font-family: sans-serif;
-    font-weight: bold;
-    color: white; 
-    text-shadow: 0 0 3px black;
-    height: 100%;
-    margin: 0;
-}
-iframe {
-    border: 0;
-}
-div.screen {
-    z-index: 1;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    background-color: rgba(0, 0, 44, 0.5);
-}
-div.overlay_message {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: silver; 
-    background-color: transparent;
-    font-weight: bold; 
-    text-shadow: 0 0 10px black, 0 0 15px white
-}
-img.button {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
-    padding: 0;
-    border: 2px solid silver;
-    border-radius: 50%;
-    cursor: pointer;
-    transition-duration: 0.4s;
-    opacity: 0.6;
-}
-img.button:hover {
-    background-color: silver;
-    opacity: 1.0;
-}
-img.selected {
-    background-color: white;
-    opacity: 1.0;
-}
-a {
-    color: cyan;
-}
-a:visited {
-    color: magenta;
-}
-div.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    height: 100%;
-    background-color: rgba(0, 0, 44, 0.5);
-    transition: 0.5s;
-}
-table {
-    border: 0;
-}
-table.topbar {
-    border: 2px solid silver;
-    padding-left: 10px;
-}
-caption {
-    margin-top: 20px;
-    margin-bottom: 5px;
-    border: 2px solid silver;
-    padding-left: 5px;
-    cursor: pointer;
-    text-align: left;
-    color: black;
-    background-color: silver;
-}
-tr.collapse {
-    display: none;
-}
-tr.slider_padding {
-    height: 2em;
-}
-td {
-    white-space: nowrap;
-}
-input:disabled {
-    color: white;
-    background-color: transparent;
-    border: 0;
-}
-.hfill {
-    width: 100%;
-    white-space: nowrap;
-}
-.hide {
-    display: none;
-}
-#race_editor_hab_gravity .noUi-connect {
-    background: blue;
-}
-#race_editor_hab_temperature .noUi-connect {
-    background: red;
-}
-#race_editor_hab_radiation .noUi-connect {
-    background: green;
-}
-#race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
-    background: black;
-}
-</style>
-</head><body onload="init()">
+</head><body id="index_html" onload="init()">
 
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
@@ -157,7 +39,7 @@ input:disabled {
 </div>
 
 
-<div class="screen hide" id="screen_launch" style="width: 600px">
+<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Launch</td>
     </tr></table>
@@ -173,7 +55,7 @@ input:disabled {
             <td class="hfill"><select id="launch_player" class="hfill" onchange="post('launch')"/></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
         <tr>
             <td class="hfill"><input id="launch_player01" disabled="true" class="hfill"/></td>
             <td><input id="launch_player01_status" disabled="true"/></td>
@@ -246,7 +128,7 @@ input:disabled {
 </div>
 
 
-<div class="screen hide" id="screen_new_game" style="width: 600px">
+<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">New Game</td>
     </tr></table>
@@ -257,7 +139,7 @@ input:disabled {
             <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Galaxy</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
             <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
@@ -275,7 +157,7 @@ input:disabled {
             <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 5, 95, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Players</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
         <tr>
             <td>Player 1</td>
             <td class="hfill"><select id="new_game_player01" class="hfill" onchange="post('new_game')"/></td>
@@ -341,7 +223,7 @@ input:disabled {
             <td class="hfill"><select id="new_game_player16" class="hfill" onchange="post('new_game')"/></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Victory Conditions</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
         <tr>
             <td colspan="2">Public Scores After</td>
             <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
@@ -395,7 +277,7 @@ input:disabled {
             <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' victory conditions')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Customizations</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
         <tr>
             <td>Technology Tree</td>
             <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
@@ -404,7 +286,7 @@ input:disabled {
 </div>
 
 
-<div class="screen hide" id="screen_race_editor" style="width: 620px">
+<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Race Editor</td>
         <td class="hfill" style="text-align: right">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
@@ -418,7 +300,7 @@ input:disabled {
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Race Traits</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
         <tr>
             <td>Primary Racial Trait</td>
             <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"/></td>
@@ -450,7 +332,7 @@ input:disabled {
             <td colspan="2"><input id="race_editor_lrt_cheap_engines" type="checkbox" onchange="post('race_editor')"/> Cheap Engines</td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">
             + Habitability
             <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="race_editor_habitability_message"/>
         </caption>
@@ -471,7 +353,7 @@ input:disabled {
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse', null); 
+        <caption onclick="toggle(this.parentElement, 'collapse'); 
                 gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
                 temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
                 radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">+ Habitability Charts</caption>
@@ -485,7 +367,7 @@ input:disabled {
             <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Economy</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
         <tr>
             <td>Effort per colonist</td>
             <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"/></td>
@@ -500,7 +382,7 @@ input:disabled {
             <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr>-->
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse', null)">+ Research</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
         <tr>
             <td></td>
             <td style="text-align: center">Research Cost</td>
