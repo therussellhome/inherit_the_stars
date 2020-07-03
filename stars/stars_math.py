@@ -4,7 +4,7 @@ import math
 Tm * constant = ly
 ly / constant = Tm
 """
-TERAMETER_2_LIGHTYEAR = 0.0001057
+TERAMETER_2_LIGHTYEAR = 0.000105702977392
 
 
 """ Add volumes """

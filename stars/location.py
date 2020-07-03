@@ -14,8 +14,12 @@ class Location(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    """ Distance between 2 points """
+    def __sub__(self, other):
+        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2) ** 0.5
     
-    TM_2_LY = 0.000105702977392
+Location.set_defaults(Location, __defaults)
 
 class LocationReference:
     """ Initialize defaults """
@@ -32,3 +36,8 @@ class LocationReference:
             return self.reference.location.z
         else:
             return object.__getattribute__(self, name)
+
+    """ Distance between 2 points """
+    def __sub__(self, other):
+        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2) ** 0.5
+    
