@@ -40,7 +40,7 @@ class Fleet(Defaults):
         max_penetrating = 0
         scanner = []
         for ship in self.ships:
-            scanner.append([ship.anti_cloak_scanner, ship.normal_scanner, self.pennetrating_scaner])
+            scanner.append([ship.anti_cloak_scanner, ship.normal_scanner, self.pennetrating_scanner])
         for i in range(len(scanner)):
             if scanner[i][0] >= max_anti_cloak:
                 max_anti_cloak = scanner[i][0]
@@ -50,7 +50,22 @@ class Fleet(Defaults):
                 max_penetrating = scanner[i][2]
         self.anti_cloak_scanner = max_anti_cloak
         self.normal_scanner = max_normal
-        self.pennetrating_scaner = max_penetrating
+        self.pennetrating_scanner = max_penetrating
+    
+    """  """
+    def compile_hyper_denial(self):
+        hyper_range = 0
+        self.hyper_denial = False
+        denial = []
+        for ship in self.ships:
+            if ship.hyper_denial == True:
+                self.hyper_denial = True
+                denail.append(ship.hyper_denial_range)
+        if self.hyper_denial:
+            for i in range(len(denial)):
+                if denial[i] >= hyper_range:
+                    hyper_range = denial[i]
+        self.hyper_denial_range = hyper_range
     
     """ calculates the scaning of the fleet from curent position """
     def calculate_scanning(self):
@@ -64,9 +79,9 @@ class Fleet(Defaults):
                 distance = ((ship.x - self.x)**2 + (ship.y - self.y)**2 + (ship.z - self.z)**2)**(1/2)
                 if distance <= self.anti_cloak_scanner:
                     self.player.create_intel_on(ship, ship.mass, True)
-                elif distance <= self.pennetrating_scaner and ship.aparant_mass > 0:
+                elif distance <= self.pennetrating_scanner and ship.aparant_mass > 0:
                     self.player.create_intel_on(ship, ship.aparant_mass)
-                elif distance <= (self.pennetrating_scaner + ((self.normal_scaner - self.pennetrating_scaner) * (ship.aparant_mass / 100))) and ship.aparant_mass > 0:
+                elif distance <= (self.pennetrating_scanner + ((self.normal_scanner - self.pennetrating_scanner) * (ship.aparant_mass / 100))) and ship.aparant_mass > 0:
                     self.player.create_intel_on(ship, ship.aparant_mass)
         for planet in game_engine.get('Planet/'):
             if planet.player != self.player:
@@ -75,7 +90,7 @@ class Fleet(Defaults):
                 if planet.player.race.primary_race_trait == "SS":
                     planet.space_station.aparant_mass -= planet.space_station.kt_modifier
                 distance = ((planet.x - self.x)**2 + (planet.y - self.y)**2 + (planet.z - self.z)**2)**(1/2)
-                if distance <= self.pennetrating_scaner:
+                if distance <= self.pennetrating_scanner:
                     self.player.create_intel_on(planet, "planet")
                     if distance <= self.anti_cloak_scanner:
                         self.player.create_intel_on(planet.space_station, planet.space_station.mass, True)
@@ -93,7 +108,7 @@ class Fleet(Defaults):
             if distance_to_denial >= hyper_denial.range:
                 in_hyper_denial = True
         speed = waypoints[1].speed
-        distance_to_waypoint = ((waypoints[1].x - self.x)**2 + (waypoints[1].y - self.y)**2 + (waypoints[1].z - self.z)**2)**(1/2)
+        distance_to_waypoint = ((waypoints[1].fly_to.x - self.x)**2 + (waypoints[1].fly_to.y - self.y)**2 + (waypoints[1].fly_to.z - self.z)**2)**(1/2)
         distance_at_hyper = (speed**2)/100
         if distance_to_waypoint < distance_at_hyper:
             distance = distance_to_waypoint
