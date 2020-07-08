@@ -18,11 +18,16 @@ __defaults = {
     'speed': [1, 1, 10],
     'description': [''],
     'standoff': [''],
+    # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'(intercept if target is a ship)
+    'move_on': [False],
+    # True or False
     'recipiants': [{}],
     # 'load':"your; Planet(), Fleet() or empty_space, salvage",
     # 'unload':"your; Planet(), Fleet() or salvege",
     # 'sell':"other; Planet()",
     # 'buy':"other; Planet()",
+    # 'merge':
+    # 'transfer':
     #?'piracy':"other; Fleet()"?
     #?'pre_piracy':"other; Fleet()"?
     'transfers': [{}],
@@ -30,6 +35,8 @@ __defaults = {
     # 'unload':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
     # 'sell':[[item, amount][item, amount][item, amount][fuel, amount]],
     # 'buy':[[item, amount][item, amount][item, amount][fuel, amount]],
+    # 'merge':fleet
+    # 'transfer':player.name
     #?'piracy':[[item, amount][item, amount][item, amount][fuel, amount]]?
     #?'pre_piracy':[[item, amount][item, amount][item, amount][fuel, amount]]?
     
@@ -50,11 +57,9 @@ class Waypoint(Defaults):
         mod_x = (self.location.x-location.x)/x
         mod_y = (self.location.y-location.y)/y
         mod_z = (self.location.z-location.z)/z
-        for i in range(int(a)):
-            dis, x, y, z = self.calc_distance(location)
-            self.fly_to.x += mod*mod_x*(x/dis)
-            self.fly_to.y += mod*mod_y*(y/dis)
-            self.fly_to.z += mod*mod_z*(z/dis)
+        self.fly_to.x += mod*mod_x*(x/dis)*a
+        self.fly_to.y += mod*mod_y*(y/dis)*a
+        self.fly_to.z += mod*mod_z*(z/dis)*a
     
     """ checks the distance between the fleet an the fly_to point """
     def calc_distance(self, location):
@@ -65,14 +70,14 @@ class Waypoint(Defaults):
 	return distance, self.dis_x, self.dis_y, self.dis_z
     
     """ calculates the standoff distance for the fleet """
-    def move_to(self, fleet):
+    def move_to(self, fleet, time_in):
         if self.stantoff == 'No Standoff':
             for planet in game_engine.get('Planet/'):
                 if self.location is planet.location:
                     self.fly_to = planet.system.get_outer_system(fleet.location)
             for ship in game_engine.get('Ship/'):
                 if self.location is ship.location:
-                    self.calc_intercept(fleet, ship)            
+                    self.calc_intercept(fleet, ship, time_in)            
         fleet.compile_scanning()
         self.fly_to.x = self.location.x
         self.fly_to.y = self.location.y
@@ -103,49 +108,45 @@ class Waypoint(Defaults):
                 self.move_to(fleet)
     
     """ gets places a ship will be """
-    def get_cord(self, location, pre_location, speed):
+    def get_cord(self, location, pre_location, speed, time, time_in):
         cord = Location(location.x, location.y, location.z)
-        dis = (speed**2)/100
+        dis = (speed**2)*(time+time_in)
+        dis_self = (self.speed**2)*(time+time_in)
+        check_dis =  dis - dis_self
         x = (pre_location.x-location.x)
         y = (pre_location.y-location.y)
         z = (pre_location.z-location.z)
-        mod_x = (x)/((x)**2)**(1/2)
-        mod_y = (y)/((y)**2)**(1/2)
-        mod_z = (z)/((z)**2)**(1/2)
-        cord.x -= mod_x*(x/dis)
-        cord.y -= mod_y*(y/dis)
-        cord.z -= mod_z*(z/dis)
-        return cord
+        cord.x -= x/dis
+        cord.y -= y/dis
+        cord.z -= z/dis
+        return cord, check_dis
         
     """ Predicts the movements of a ship """
-    def predict_movment(self, speed, location, pre_location, time_distance):
+    def predict_movment(self, speed, location, pre_location, time_in):
         intercepts = [pre_location, location]
-        for i in range(100*time_distance):
-            location = get_cord(intercepts[-1], intercepts[-2], speed)
-            intercepts.append(location)
-            if i == 1:
+        for time in range(100):
+            location, check_dis = get_cord(intercepts[-1][0], intercepts[-2][0], speed, time, time_in)
+            intercepts.append([location, check_dis])
+            if time == 1 or time == 2:
                 intercepts.pop(0)
         return intercepts
     
     """ Predicts the movements of a pursuing fleet and choses the cord to go to """
-    def chose_intercept(self, fleet, ship, ship_speed, cords):
-        times = []
-        for cord in cords:
-            distance_fleet = ((fleet.location.x-cord.x)**2 + (fleet.location.y-cord.y)**2 + (fleet.location.z-cord.z)**2)**(1/2)
-            distance_ship = ((ship.location.x-cord.x)**2 + (ship.location.y-cord.y)**2 + (ship.location.z-cord.z)**2)**(1/2)
-            times.append([distance_fleet/(self.speed**2), distance_ship/(ship_speed**2), cord])
-        time = sys.maxsize
-        for i in range(len(times)):
-            if times[i][0] <= times[i][0] and times[i][0] < time:
-                time = times[i][0]
-                cord = times[i][2]
+    def chose_intercept(self, cords):
+        min_distance = sys.maxsize
+        for i in range(len(cords)):
+            if cords[i][1] < min_distance:
+                chose = i
+                min_distance = cords[i][1]
+                cord = cords[chose][0]
+            if min_disnance <= 0:
+                cord = cords[chose][0]
+                break
         return cord
     
     """ calcuates the intercept point """
-    def calc_intercept(self, fleet, ship):
-        top_speed, pre_location = fleet.player.find_intel(str(ship.name))
-        distance = ((fleet.location.x-ship.location.x)**2 + (fleet.location.y-ship.location.y)**2 + (fleet.location.z-ship.location.z)**2)**(1/2)
-        time_distance = distance/(top_speed**2)
-        cords = self.predict_movment(top_speed, ship.location, pre_location, time_distance+50)
-        self.fly_to = self.chose_intercept(fleet, ship, top_speed, cords)
+    def calc_intercept(self, fleet, ship, time_in):
+        top_speed, pre_location, ship = fleet.player.find_intel(str(ship.name))
+        cords = self.predict_movment(top_speed, ship.location, pre_location, time_in)
+        self.fly_to = self.chose_intercept(cords)
     

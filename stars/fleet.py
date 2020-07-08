@@ -31,7 +31,8 @@ class Fleet(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        game_engine.register(self)
+        for waypoint in self.ships[0].waypoints:
+            self.waypoints.append(waypoint)
     
     """ gives the fleet the highest scaner of each type from it's ships """
     def compile_scanning(self):
@@ -97,14 +98,35 @@ class Fleet(Defaults):
                     elif planet.space_station.aparant_mass > 0:
                         self.player.create_intel_on(planet.space_station, planet.space_station.aparant_mass)
     
+    
+    """ takes the move distance and changes self.location accordingly """
+    def calc_move(self, location, amount):
+        dis, x, y, z = self.calc_distance(location)
+        a = ((amount)**2)**(1/2)
+        mod = -amount/a
+        mod_x = (self.location.x-location.x)/x
+        mod_y = (self.location.y-location.y)/y
+        mod_z = (self.location.z-location.z)/z
+        self.location.x += mod*mod_x*(x/dis)*a
+        self.location.y += mod*mod_y*(y/dis)*a
+        self.location.z += mod*mod_z*(z/dis)*a
+    
+    """ checks the distance between the fleet an the fly_to point """
+    def calc_distance(self, location):
+	self.dis_x = ((self.location.x-location.x)**2)**(1/2)
+	self.dis_y = ((self.location.y-location.y)**2)**(1/2)
+	self.dis_z = ((self.location.z-location.z)**2)**(1/2)
+	distance = ((self.dis_x)**2 + (self.dis_y)**2 + (self.dis_z)**2)**(1/2)
+	return distance, self.dis_x, self.dis_y, self.dis_z
+    
     """ does all the moving calculations and then moves the ships """
-    def move(self, hyper_denials):
-        self.waypoints[1].move_to(self)
+    def move(self, time_in):
+        self.waypoints[1].move_to(self, time_in)
         in_hyper_denial = False
         for ship in self.ships:
             self.fuel += ship.fuel
             if 
-        for hyper_denial in hyper_denials:
+        for hyper_denial in game_engine.hyper_denials:
             distance_to_denial = ((hyper_denial.x - self.x)**2 + (hyper_denial.y - self.y)**2 + (hyper_denial.z - self.z)**2)**(1/2)
             if distance_to_denial >= hyper_denial.range:
                 in_hyper_denial = True
@@ -119,30 +141,37 @@ class Fleet(Defaults):
             if self.waypoints[1].move_on == True:
                 self.waypoints.pop(0)
                 self.move(hyper_denials)
-        while self.test_move_ly(self.fuel, speed, in_hyper_denial, distance):
+        while self.test_fuel(speed, in_hyper_denial, distance):
             speed -= 1
             distance_at_hyper = (speed**2)/100
             if distance_to_waypoint < distance_at_hyper:
                 distance = distance_to_waypoint
             else:
                 distance = distance_at_hyper
-        self.x, self.y, self.z = self.move_ly(self.fuel, speed, in_hyper_denial, distance)
+        self.calc_move(self.waypoints[1].fly_to, distance)
+        self.burn_fuel(speed, in_hyper_denial, distance)
         self.returnn()
+        for ship in self.ships:
+            ship.location.x = self.location.x
+            ship.location.y = self.location.y
+            ship.location.z = self.location.z
+        distance_to_end = ((waypoints[1].location.x - self.location.x)**2 + (waypoints[1].location.y - self.location.y)**2 + (waypoints[1].location.z - self.location.z)**2)**(1/2)
+        if distance_to_end == 0 and 'merge' in self.waypoints[1].actions:
+            self.execute('merge')
     
     """ calles the move for each of the ships """
-    def move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
+    def burn_fuel(self, speed, in_hyper_denial=False, dis=1):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.move(speed, in_hyper_denial, dis)
+            fuel_1_ly += ship.burn_fuel(speed, in_hyper_denial, dis)
         self.fuel -= fuel_1_ly
-        return self.ships[0].x, self.ships[0].y, self.ships[0].z
     
     """ checks if you can move at a certain speed with your entire fleet """
-    def test_move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
+    def test_fuel(self, speed, in_hyper_denial=False, dis=1):
         fuel_1_ly = 0
         for ship in self.ships:
             fuel_1_ly += ship.fuel_check(speed, in_hyper_denial, dis)
-        if (fuel - fuel_1_ly) >= 0:
+        if (self.fuel - fuel_1_ly) >= 0:
             return False
         else:
             return True
@@ -222,6 +251,26 @@ class Fleet(Defaults):
         denial.z = self.location.z
         denial.range = self.hyper_denial_range
         game_engine.hyper_denials.append(denial)
+    
+    """ Merges the fleet with the target fleet """
+    def merge(self):
+        self.compile()
+        self.waypoints[1].recipiants['merge'].compile()
+        for ship in self.ships:
+            self.waypoints[1].recipiants['merge'].ships.append(ship)
+            ship.flagship = self.waypoints[1].recipiants['merge'].ships[0].name
+        self.ships = []
+        self.waypoints[1].recipiants['merge'].fuel += self.fuel
+        self.fuel = 0
+        self.waypoints[1].recipiants['merge'].cargo.titanium += self.cargo.titanium
+        self.cargo.titanium = 0
+        self.waypoints[1].recipiants['merge'].cargo.lithium += self.cargo.lithium
+        self.cargo.lithium = 0
+        self.waypoints[1].recipiants['merge'].cargo.silicon += self.cargo.silicon
+        self.cargo.silicon = 0
+        self.waypoints[1].recipiants['merge'].cargo.people += 1
+        self.cargo.people = 0
+        self.waypoints[1].recipiants['merge'].returnn()
     
     """ executes the unload function """
     def unload(self, recipiant):
@@ -518,6 +567,8 @@ class Fleet(Defaults):
                     self.sell(recipiant)
             if action == 'deploy_hyper_denial' and self.waypoints[1].speed == 0:
                 self.deploy_hyper_denial()
+            if action == 'merge' and self.waypoints[1].x = self.x and self.waypoints[1].y = self.y and self.waypoints[1].z = self.z:
+                
             
             
 

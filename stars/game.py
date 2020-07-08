@@ -21,7 +21,8 @@ class Game(Defaults):
 
     """ Generate a turn """
     def generate_turn(self):
-        fleets = game_engine.get('Fleet/')
+        self.fleets = []
+        fleets = self.fleets
         fleets.sort(key=lambda x: x.initiative, reverse=True)
         game_engine.hyper_denials = []
         # Execute fleet preactions
@@ -30,10 +31,10 @@ class Game(Defaults):
                 fleet.execute(preaction)
         # TODO anomolies & mystery trader
         # Movment and scaning in hundredths of a turn
-        for i in range(100):
+        for time_in in range(100):
             # Fleet movement in initiative order
             for fleet in reversed(fleets):
-                fleet.move(game_engine.hyper_denials)
+                fleet.move(time_in/100)
             for fleet in fleets:
                 fleet.calculate_scanning()
             # Mineral packet movement and scaning
@@ -56,6 +57,7 @@ class Game(Defaults):
             planet.calculate_scanning()
         for station in game_engine.get('SpaceStation/'):
             station.calculate_scanning()
+        self.fleets = []
 
 
 Game.set_defaults(Game, __defaults)
