@@ -23,6 +23,7 @@ class Game(Defaults):
     def generate_turn(self):
         fleets = game_engine.get('Fleet/')
         fleets.sort(key=lambda x: x.initiative, reverse=True)
+        game_engine.hyper_denials = []
         # Execute fleet preactions
         for preaction in Fleet.preactions:
             for fleet in fleets:
@@ -32,7 +33,7 @@ class Game(Defaults):
         for i in range(100):
             # Fleet movement in initiative order
             for fleet in reversed(fleets):
-                fleet.move(self.hyper_denials)
+                fleet.move(game_engine.hyper_denials)
             for fleet in fleets:
                 fleet.calculate_scanning()
             # Mineral packet movement and scaning

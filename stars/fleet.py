@@ -52,7 +52,7 @@ class Fleet(Defaults):
         self.normal_scanner = max_normal
         self.pennetrating_scanner = max_penetrating
     
-    """  """
+    """ finds the largest range of hyper denial had by a ship in the fleet and asigns the fleet that value """
     def compile_hyper_denial(self):
         hyper_range = 0
         self.hyper_denial = False
@@ -99,6 +99,7 @@ class Fleet(Defaults):
     
     """ does all the moving calculations and then moves the ships """
     def move(self, hyper_denials):
+        self.waypoints[1].move_to(self)
         in_hyper_denial = False
         for ship in self.ships:
             self.fuel += ship.fuel
@@ -115,7 +116,9 @@ class Fleet(Defaults):
         else:
             distance = distance_at_hyper
         if distance_to_waypoint == 0:
-            #???
+            if self.waypoints[1].move_on == True:
+                self.waypoints.pop(0)
+                self.move(hyper_denials)
         while self.test_move_ly(self.fuel, speed, in_hyper_denial, distance):
             speed -= 1
             distance_at_hyper = (speed**2)/100
@@ -210,6 +213,15 @@ class Fleet(Defaults):
             self.fuel_max += ship.fuel_max
             self.fuel += ship.fuel
             ship.fuel = 0
+    
+    """ makes a hyper_denial """
+    def deploy_hyper_denial(self):
+        self.compile_hyper_denial()
+        denial.x = self.location.x
+        denial.y = self.location.y
+        denial.z = self.location.z
+        denial.range = self.hyper_denial_range
+        game_engine.hyper_denials.append(denial)
     
     """ executes the unload function """
     def unload(self, recipiant):
@@ -504,6 +516,8 @@ class Fleet(Defaults):
                 recipiant = self.waypoint.recipiants['sell']
                 if recipiant.player != self.player:
                     self.sell(recipiant)
+            if action == 'deploy_hyper_denial' and self.waypoints[1].speed == 0:
+                self.deploy_hyper_denial()
             
             
 
@@ -512,6 +526,7 @@ Fleet.preactions = [
     'pre_unload',
     'pre_load',
     'pre_piracy',
+    'deploy_hyper_denial',
 ]
 
 """ Ordered list of fleet actions for use by the Game.generate_turn """
@@ -520,7 +535,6 @@ Fleet.actions = [
     'generate_fuel',
     'self_repair',
     'repair',
-    'deploy_hyper_denial',
     'orbital_mining',
     'lay_mines',
     'bomb',

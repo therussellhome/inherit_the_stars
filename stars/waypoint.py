@@ -42,7 +42,7 @@ class Waypoint(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    """ TODO """
+    """ takes the standoff distance and changes the fly_to point accordingly """
     def calc_standoff(self, location, amount):
         dis, x, y, z = self.calc_distance(location)
         a = ((amount)**2)**(1/2)
@@ -64,7 +64,7 @@ class Waypoint(Defaults):
 	distance = ((self.dis_x)**2 + (self.dis_y)**2 + (self.dis_z)**2)**(1/2)
 	return distance, self.dis_x, self.dis_y, self.dis_z
     
-    """ TODO """
+    """ calculates the standoff distance for the fleet """
     def move_to(self, fleet):
         if self.stantoff == 'No Standoff':
             for planet in game_engine.get('Planet/'):
@@ -74,7 +74,9 @@ class Waypoint(Defaults):
                 if self.location is ship.location:
                     self.calc_intercept(fleet, ship)            
         fleet.compile_scanning()
-        self.fly_to = self.location
+        self.fly_to.x = self.location.x
+        self.fly_to.y = self.location.y
+        self.fly_to.z = self.location.z
         elif self.standoff == 'Avoid Detection':
             distance = fleet.anti_cloak_scanner
             for ship in fleet.ships:
@@ -97,10 +99,10 @@ class Waypoint(Defaults):
             if fleet.hyper_denial:
                 self.calc_standoff(fleet, fleet.hyper_denial_range-1)
             else:
-                #???
-                pass
+                self.standoff = 'No Standoff'
+                self.move_to(fleet)
     
-    """ gets places it will be """
+    """ gets places a ship will be """
     def get_cord(self, location, pre_location, speed):
         cord = Location(location.x, location.y, location.z)
         dis = (speed**2)/100
