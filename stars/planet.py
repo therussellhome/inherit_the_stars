@@ -1,5 +1,6 @@
 import sys
 from random import randint
+from random import random
 from .cargo import Cargo
 from .defaults import Defaults
 from .minerals import Minerals
@@ -54,6 +55,8 @@ class Planet(Defaults):
             self.mineral_concentration.titanium += modifier
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
+        if orbit_speed not in kwargs:
+            self.orbit_speed = random(0.01, 1.0)
 
     """ Colonize the planet """
     # player is a Reference to Player
@@ -221,7 +224,7 @@ class Planet(Defaults):
                     self.minerals.titanium -= spend_t
                     self.minerals.lithium -= spend_l
                     self.minerals.silicon -= spend_s
-                    sself.player.energy_minister.spend_budget(item_type, spend_e)
+                    self.player.energy_minister.spend_budget(item_type, spend_e)
                     item.cost_complete.titanium += spend_t
                     item.cost_complete.lithium += spend_l
                     item.cost_complete.silicon += spend_s
@@ -282,6 +285,7 @@ class Planet(Defaults):
         y = max(0.0, t - 0.5)
         z = max(0.0, r - 0.5)
         return round(100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset)
+    def orbit(self):
 
 
 Planet.set_defaults(Planet, __defaults)
