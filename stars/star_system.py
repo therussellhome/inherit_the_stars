@@ -25,7 +25,7 @@ class StarSystem(Defaults):
         game_engine.register(self)
 
     """ create planets """
-    def create_system(self, player):
+    def create_system(self, player=None):
         planet_args = {
             'name': self.name + "'s " + 'Star',
             'star_system': Reference(self)
@@ -42,8 +42,8 @@ class StarSystem(Defaults):
         sun = Sun(**planet_args)
         self.planets.append(Reference(sun))
         planet_args['sun'] = self.planets[0]
-        segment = 100.0 / self.num_planets
-        for i in range(1, self.num_planets):
+        for i in range(num_planets):
+            segment = 100.0 / num_planets
             planet_args['name'] = self.name + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
             p = Planet(**planet_args)

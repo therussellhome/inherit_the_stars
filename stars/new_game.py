@@ -98,7 +98,7 @@ class NewGame(Defaults):
         self.options_new_game_tech_tree = game_engine.load_list('tech_tree')
         self.options_new_game_tech_tree.insert(0, 'Default')
         # Create the game
-        if action == 'create':
+        if action == 'create' and len(players) > 0:
             game = Game(name=self.new_game_name)
             # Create empty systems
             system_names = []
@@ -170,7 +170,6 @@ class NewGame(Defaults):
             return []
         home_systems = [systems[0]]
         while len(home_systems) < num_players:
-            print(player_distance, len(home_systems))
             for s in systems:
                 for h in home_systems:
                     if s == h or s.location - h.location <= player_distance:
