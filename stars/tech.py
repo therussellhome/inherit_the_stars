@@ -2,6 +2,7 @@ import sys
 from .defaults import Defaults
 from .cost import Cost
 from .tech_level import TechLevel
+from .scanner import Scanner
 
 
 """ Default values (default, min, max)  """
@@ -24,7 +25,7 @@ __defaults = {
     'ecm': [0, 0, 100],
     'weapons': [[]], # weapon.Weapon()
     'bombs': [[]], # bomb.Bomb()
-    'scanners': [[]], # scanner.Scanner()
+    'scanner': [Scanner], # scanner.Scanner()
     'cloak': [0, 0, 100],
     'engines': [[]], # engine.Engine()
     'shipyard': [0, 0, sys.maxsize],

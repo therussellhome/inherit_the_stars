@@ -5,7 +5,7 @@ from .reference import Reference
 from .location import Location
 
 
-_defaults = {
+__defaults = {
     'planets': [[]],
     'x': [0, -1000, 1000],
     'y': [0, -1000, 1000],
@@ -69,9 +69,10 @@ class StarSystem(Defaults):
         y = (location.y-self.location.y)
         z = (location.z-self.location.z)
         dis = (x**2 + y**2 + z**2)**(1/2)
-        x = self.x + (x/dis)*Location.TM_2_LY
-        y = self.y + (y/dis)*Location.TM_2_LY
-        z = self.z + (z/dis)*Location.TM_2_LY
-        return Location('x'=x, 'y'=y, 'z'=z)
+        dis = self.location - location
+        x = self.x + (x/dis)*stars_math.TERAMETER_2_LIGHTYEAR
+        y = self.y + (y/dis)*stars_math.TERAMETER_2_LIGHTYEAR
+        z = self.z + (z/dis)*stars_math.TERAMETER_2_LIGHTYEAR
+        return Location(x=x, y=y, z=z)
         
-StarSystem.set_defaults(StarSystem, _defaults)
+StarSystem.set_defaults(StarSystem, __defaults)

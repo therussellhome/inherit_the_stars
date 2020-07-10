@@ -8,7 +8,7 @@ __defaults = {
     'name': [''],
     'players': [[]],
     'autogen_turn': [True],
-    'date': [3000, 0, sys.maxsize]
+    'date': [3000.0, 0.0, sys.maxsize]
 }
 
 

@@ -6,7 +6,7 @@ from .star_system import StarSystem
 from math import pi
 from random import randint
 from random import random
-from .reference import ReferenceS
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """

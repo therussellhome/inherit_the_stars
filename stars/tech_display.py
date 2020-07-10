@@ -7,7 +7,6 @@ from . import stars_math
 from .bomb import Bomb
 from .weapon import Weapon
 from .engine import Engine
-from .scanner import Scanner
 
 __defaults = {
     'tech_name': ['UNKNOWN'],
@@ -87,7 +86,7 @@ class TechDisplay(Defaults):
         tech.cloak = 50
         tech.weapons.append(Weapon(power=100, range=0.3))
         tech.engines.append(Engine(kt_exponent=1.5, speed_divisor=10.0, speed_exponent=5.0))
-        tech.scanners.append(Scanner(anti_cloak=50, penetrating=100, normal=200))
+        tech.scanner = Scanner(anti_cloak=50, penetrating=100, normal=200)
         tech.bombs.append(Bomb())
         game_engine.save('test', 'tech_display', [tech])
         # General
@@ -143,14 +142,13 @@ class TechDisplay(Defaults):
                 self.weapon_chart_data[i] += weapon.get_power(range_ly, sys.maxsize, 0) * weapon.get_accuracy(range_ly) / 100
         # Scanner
         range_per_kt = self.chart_scanning / 100
-        s = tech.stack_scanners()
-        self.scanner_normal = s.normal
-        self.scanner_penetrating = s.penetrating
-        self.scanner_anticloak = s.anti_cloak
+        self.scanner_normal = tech.scanner.normal
+        self.scanner_penetrating = tech.scanner.penetrating
+        self.scanner_anticloak = tech.scanner.anti_cloak
         self.cloak = tech.cloak
-        self.scanner_chart_data.append(s.normal)
-        self.scanner_chart_data.append(s.penetrating)
-        self.scanner_chart_data.append(s.anti_cloak)
+        self.scanner_chart_data.append(tech.scanner.normal)
+        self.scanner_chart_data.append(tech.scanner.penetrating)
+        self.scanner_chart_data.append(tech.scanner.anti_cloak)
         self.scanner_chart_data.append(kt * (1 - tech.cloak / 100.0) * range_per_kt)
         # Engine
         for engine in tech.engines:
