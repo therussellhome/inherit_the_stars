@@ -10,22 +10,6 @@ __defaults = {
 
 
 class Ship(Defaults):
-    """ if is flagship and is destroyed pick one follower as new flagship and tell other shps folloing you to follow it """
-    def on_destruction(self):
-        is_flagship = False
-        fleet = []
-        for ship in game_engine.get('Ship/'):
-            if ship.flagship == self.name:
-                is_flagship = True
-                fleet.append(ship)
-        if is_flagship:
-            a = randint(0, len(fleet))
-            flagship = fleet[a].name
-            fleet[a].flagship = None
-            fleet.pop(a)
-            for ship in fleet:
-                ship.flagship = flagship
-    
     def move(self, speed):
         distance = round((((self.x - self.waypoint.x) **2) + ((self.y - self.waypoint.y) **2) + ((self.z - self.waypoint.z) **2))**.5)    
         new_x = self.x + ((speed**2)/distance)

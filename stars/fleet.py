@@ -31,8 +31,6 @@ class Fleet(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        for waypoint in self.ships[0].waypoints:
-            self.waypoints.append(waypoint)
     
     """ gives the fleet the highest scaner of each type from it's ships """
     def compile_scanning(self):
@@ -155,9 +153,6 @@ class Fleet(Defaults):
             ship.location.x = self.location.x
             ship.location.y = self.location.y
             ship.location.z = self.location.z
-        distance_to_end = ((waypoints[1].location.x - self.location.x)**2 + (waypoints[1].location.y - self.location.y)**2 + (waypoints[1].location.z - self.location.z)**2)**(1/2)
-        if distance_to_end == 0 and 'merge' in self.waypoints[1].actions:
-            self.execute('merge')
     
     """ calles the move for each of the ships """
     def burn_fuel(self, speed, in_hyper_denial=False, dis=1):
@@ -258,7 +253,6 @@ class Fleet(Defaults):
         self.waypoints[1].recipiants['merge'].compile()
         for ship in self.ships:
             self.waypoints[1].recipiants['merge'].ships.append(ship)
-            ship.flagship = self.waypoints[1].recipiants['merge'].ships[0].name
         self.ships = []
         self.waypoints[1].recipiants['merge'].fuel += self.fuel
         self.fuel = 0

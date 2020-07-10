@@ -1,12 +1,14 @@
 import sys
 from . import game_engine
+from .race import Race
+from .ship import Ship
+from .fleet import Fleet
+from .planet import Planet
 from .defaults import Defaults
 from .location import Location
 from .location import locationReference
 from .reference import Reference
 from .star_system import Star_System
-from .fleet import Fleet
-from .ship import Ship
 
 
 """ Default values (default, min, max)  """
@@ -26,8 +28,8 @@ __defaults = {
     # 'unload':"your; Planet(), Fleet() or salvege",
     # 'sell':"other; Planet()",
     # 'buy':"other; Planet()",
-    # 'merge':
-    # 'transfer':
+    # 'merge':Fleet()
+    # 'transfer':player.name
     #?'piracy':"other; Fleet()"?
     #?'pre_piracy':"other; Fleet()"?
     'transfers': [{}],
@@ -35,8 +37,6 @@ __defaults = {
     # 'unload':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
     # 'sell':[[item, amount][item, amount][item, amount][fuel, amount]],
     # 'buy':[[item, amount][item, amount][item, amount][fuel, amount]],
-    # 'merge':fleet
-    # 'transfer':player.name
     #?'piracy':[[item, amount][item, amount][item, amount][fuel, amount]]?
     #?'pre_piracy':[[item, amount][item, amount][item, amount][fuel, amount]]?
     
