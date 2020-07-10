@@ -3,12 +3,12 @@ from .defaults import Defaults
 __defaults = {
     'name': ['kill all'],
     '1st_target': ['any'],
-    'options_1st_target': ['any', 'starbace', 'ship', 'disengage'],
+    'options_1st_target': ['any', 'starbase', 'ship', 'disengage'],
     '2nd_target': ['any'],
-    'options_2nd_target': ['any', 'starbace', 'ship', 'disengage'],
-    'tactic': ['max damage'],
-    'options_tactic': ['max damage', 'max damage ratio', 'max net damage', 'min damage to self', 'run away'],
-    'work alone': [False],
+    'options_2nd_target': ['any', 'starbase', 'ship', 'disengage'],
+    'close_to': [0, 0, 0.60],
+    'work_alone': [False],
+    'wait_until_closed_to_fire': [False],
 }
 
 class BattlePlan(Defaults):

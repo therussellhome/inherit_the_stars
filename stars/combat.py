@@ -13,47 +13,47 @@ def calc_strategy_m(me, everybody):
     excape2 = False
     for ship in everybody:
         if me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
-            if me.BattlePlan.1st_target == 'any':
-                dis = distance(me, ship)
-                if dis < closest_p:
-                    closest_p = dis
-                    move_to = ship.location
-            elif me.BattlePlan.1st_target == 'disengage':
+            if me.battle_plan.1st_target == 'disengage' or len(ship.wepons) == 0:
                 dis = distance(me, ship)
                 if dis < closest_p:
                     closest_p = dis
                     move_to = ship.location
                 excape = True
-            elif me.BattlePlan.1st_target == 'starbase':
+            elif me.battle_plan.1st_target == 'any':
+                dis = distance(me, ship)
+                if dis < closest_p:
+                    closest_p = dis
+                    move_to = ship.location
+            elif me.battle_plan.1st_target == 'starbase':
                 if ship.__class__ == 'StarBace':
                     dis = distance(me, ship)
                     if dis < closest_p:
                         closest_p = dis
                         move_to = ship.location
-            elif me.BattlePlan.1st_target == 'ship':
+            elif me.battle_plan.1st_target == 'ship':
                 if not ship.__class__ == 'StarBase':
                     dis = distance(me, ship)
                     if dis < closest_p:
                         closest_p = dis
                         move_to = ship.location
-            if me.BattlePlan.2nd_target == 'any':
+            if me.battle_plan.2nd_target == 'any':
                 dis = distance(me, ship)
                 if dis < closest_s:
                     closest_s = dis
                     move_two = ship.location
-            elif me.BattlePlan.2nd_target == 'disengage':
+            elif me.battle_plan.2nd_target == 'disengage':
                 dis = distance(me, ship)
                 if dis < closest_s:
                     closest_s = dis
                     move_two = ship.location
                 excape2 = True
-            elif me.BattlePlan.2nd_target == 'starbase':
+            elif me.battle_plan.2nd_target == 'starbase':
                 if ship.__class__ == 'StarBace':
                     dis = distance(me, ship)
                     if dis < closest_s:
                         closest_s = dis
                         move_two = ship.location
-            elif me.BattlePlan.2nd_target == 'ship':
+            elif me.battle_plan.2nd_target == 'ship':
                 if not ship.__class__ == 'StarBase':
                     dis = distance(me, ship)
                     if dis < closest_s:
@@ -138,28 +138,39 @@ def move(ship, ships):
 def distance(ship1, ship2):
     return ((ship1.location.x-ship2.location.x)**2 + (ship1.location.y-ship2.location.y)**2 + (ship1.location.z-ship2.location.z)**2)**0.5
 
+def calc_accuacy(ship, fire_at, wepon):
+    pass
+
+def calc_damage(ship, fire_at, wepon):
+    accuacy = calc_accuracy(ship, fire_at, wepon)
+    if random < accuacy:
+        return 0
+    if wepon.type == 'misile':
+        damage = wepon.power
+    if wepon.type == 'beam':
+        damage = wepon.power*(1-distance(ship, fire_at)/wepon.range)
+    return damage
+
 def fire(ship, ships):
     for wepon in ship.wepons:
         ship_to_fire_at = calc_strategy_f(ship, ships, wepon)
         if ship_to_fire_at:
-            accuracy = calc_accuacy(ship, wepon)
-            if random <= accuracy:
-                damage = calc_net_damage(ship, wepon)
-                Adamage = 0
-                if wepon.type == 'misile':
-                    Adamage = damage/4
-                    damage *= 3/4
-                while ship_to_fire_at.shealds > 0 and damage > 0:
-                    ship.ship_to_fire_at.shealds -= 1
-                    damage -= 1:
-                while ship_to_fire_at.armor > 0 and (damage > 0 or Adamage > 0):
-                    if damage > 0:
-                        damage -= 1
-                    elif Adamage > 0:
-                        Adamage -= 1
-                    else:
-                        break
-                    ship.ship_to_fire_at.armor -= 1
+            damage = calc_damage(ship, ship_to_fire_at, wepon)
+            Adamage = 0
+            if wepon.type == 'misile':
+                Adamage = damage/4
+                damage *= 3/4
+            while ship_to_fire_at.shealds > 0 and damage > 0:
+                ship.ship_to_fire_at.shealds -= 1
+                damage -= 1:
+            while ship_to_fire_at.armor > 0 and (damage > 0 or Adamage > 0):
+                if damage > 0:
+                    damage -= 1
+                elif Adamage > 0:
+                    Adamage -= 1
+                else:
+                    break
+                ship.ship_to_fire_at.armor -= 1
         save_to_combat_log()
     pass
 
