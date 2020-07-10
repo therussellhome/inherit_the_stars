@@ -1,14 +1,15 @@
 import sys
+from . import stars_math
 from . import game_engine
-from .defaults import Defaults
+from .ship import Ship
 from .cargo import Cargo
 from .player import Player
 from .planet import Planet
-from .ship import Ship
-from .reference import Reference
+from .defaults import Defaults
 from .location import Location
-from .location import locationReference
+from .location import LocationReference
 from .waypoint import Waypoint
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
@@ -21,7 +22,7 @@ __defaults = {
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
     'player': [Reference()],
-    'location': [Location()],
+    'location': [],
     'cargo': [Cargo()]
 }
 
@@ -30,12 +31,27 @@ __defaults = {
 class Fleet(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
+        while len(**kwargs['ships']) > 0:
+            ship = kwargs['ships'][0]
+            self.add_ship(ship)
+            kwargs['ships'].remove(ship)
         super().__init__(**kwargs)
-        for ship in self.ships:
-            ship.location = LocationReference('reference'=self)
         if not self.name:
-            self.name = 'Fleet #'+str(id(self))
-            
+            self.name = 'Fleet #'+str(hex(id(self)))[-7:-1]
+    
+    """ adds the ships to self.ships """
+    def add_ship(self, ship):
+        if len(self.ships) == 0:
+            self.location.x = ship.location.x
+            self.location.y = ship.location.y
+            self.location.z = ship.location.z
+            self.ships.append(ship)
+        else:
+            if (self.location - ship.location) > (stars_math.TERAMETER_2_LIGHTYEAR * 2):
+                return
+            else:
+                self.ships.append(ship)
+    
     """ finds the largest range of hyper denial had by a ship in the fleet and asigns the fleet that value """
     def compile_hyper_denial(self):
         hyper_range = 0
@@ -257,7 +273,6 @@ class Fleet(Defaults):
         self.waypoints[0].recipiants['merge'].compile()
         for ship in self.ships:
             self.waypoints[1].recipiants['merge'].ships.append(ship)
-            ship.location = LocationReferance('reference'=self.waypoints[1].recipiants['merge'].location)
         self.ships = []
         self.waypoints[1].recipiants['merge'].fuel += self.fuel
         self.fuel = 0
@@ -278,7 +293,8 @@ class Fleet(Defaults):
             ships.append(self.ships[split])
         for ship in ships:
             self.ships.remove(ship)
-        fleet = Fleet('ships'=ships, 'name'=name)
+        #fleet = Fleet('ships'=ships, 'name'=name)
+        #self.player.fleets.append(fleet)
     
     """ executes the unload function """
     def unload(self, recipiant):
