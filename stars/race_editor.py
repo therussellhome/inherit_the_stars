@@ -10,7 +10,7 @@ from . import game_engine
 cost_of_growthrate = [-7091, -5673, -4256, -2839, -1422, -838, -403, -119, 40, 150, 201, 252, 303, 355, 406, 457, 509, 560, 611, 664]
 
 __defaults = {
-    'options_race_editor_primary_race_trait': [['Aku\'Ultani', 'Cushgars', 'Formics', 'Gaerhules', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']],
+    'options_race_editor_primary_race_trait': [['Aku\'Ultan', 'Cushgar', 'Formics', 'Gaerhule', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']],
     'race_editor_habitability_message': [''],
     'race_editor_file_to_load': [''],
     'options_race_editor_file_to_load': [[]],

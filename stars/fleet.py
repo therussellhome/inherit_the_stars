@@ -5,6 +5,10 @@ from .cargo import Cargo
 from .player import Player
 from .planet import Planet
 from .ship import Ship
+from .reference import Reference
+from .location import Location
+from .location import locationReference
+from .waypoint import Waypoint
 
 
 """ Default values (default, min, max)  """
@@ -16,10 +20,8 @@ __defaults = {
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
-    'player': [Player()],
-    'x': [0, -sys.maxsize, sys.maxsize],
-    'y': [0, -sys.maxsize, sys.maxsize],
-    'z': [0, -sys.maxsize, sys.maxsize],
+    'player': [Reference()],
+    'location': [Location()],
     'cargo': [Cargo()]
 }
 
@@ -53,7 +55,7 @@ class Fleet(Defaults):
     """ calculates the scaning of the fleet from curent position """
     def calculate_scanning(self):
         self.compile_scanning()
-        for ship in game_engine.get('ship/'):
+        for ship in game_engine.get('Ship/'):
             if ship.player != self.player:
                 ship.mass = ship.hull_masss + (ship.cargo.titanium + ship.cargo.lithium + ship.cargo.silicon + ship.cargo.people)
                 ship.aparant_mass = (ship.mass * ship.cloak)
@@ -66,12 +68,26 @@ class Fleet(Defaults):
                     self.player.create_intel_on(ship, ship.aparant_mass)
                 elif distance <= (self.pennetrating_scaner + ((self.normal_scaner - self.pennetrating_scaner) * (ship.aparant_mass / 100))) and ship.aparant_mass > 0:
                     self.player.create_intel_on(ship, ship.aparant_mass)
+        for planet in game_engine.get('Planet/'):
+            if planet.player != self.player:
+                planet.space_station.mass = planet.space_station.design.mass
+                planet.space_station.aparant_mass = (planet.space_station.mass * planet.space_station.cloak)
+                if planet.player.race.primary_race_trait == "SS":
+                    planet.space_station.aparant_mass -= planet.space_station.kt_modifier
+                distance = ((planet.x - self.x)**2 + (planet.y - self.y)**2 + (planet.z - self.z)**2)**(1/2)
+                if distance <= self.pennetrating_scaner:
+                    self.player.create_intel_on(planet, "planet")
+                    if distance <= self.anti_cloak_scanner:
+                        self.player.create_intel_on(planet.space_station, planet.space_station.mass, True)
+                    elif planet.space_station.aparant_mass > 0:
+                        self.player.create_intel_on(planet.space_station, planet.space_station.aparant_mass)
     
     """ does all the moving calculations and then moves the ships """
     def move(self, hyper_denials):
         in_hyper_denial = False
         for ship in self.ships:
             self.fuel += ship.fuel
+            if 
         for hyper_denial in hyper_denials:
             distance_to_denial = ((hyper_denial.x - self.x)**2 + (hyper_denial.y - self.y)**2 + (hyper_denial.z - self.z)**2)**(1/2)
             if distance_to_denial >= hyper_denial.range:
@@ -99,7 +115,7 @@ class Fleet(Defaults):
     def move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.move_1_ly(speed, in_hyper_denial, dis)
+            fuel_1_ly += ship.move(speed, in_hyper_denial, dis)
         self.fuel -= fuel_1_ly
         return self.ships[0].x, self.ships[0].y, self.ships[0].z
     
@@ -107,7 +123,7 @@ class Fleet(Defaults):
     def test_move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.test_move_1_ly(speed, in_hyper_denial, dis)
+            fuel_1_ly += ship.fuel_check(speed, in_hyper_denial, dis)
         if (fuel - fuel_1_ly) >= 0:
             return False
         else:
@@ -219,7 +235,7 @@ class Fleet(Defaults):
                 elif (recipiant.cargo.cargo_max - sum_cargo) < amount and self.cargo.silicon >= (recipiant.cargo.cargo_max - sum_cargo):
                     recipiant.cargo.silicon += (recipiant.cargo.cargo_max - sum_cargo)
                     self.cargo.silicon -= (recipiant.cargo.cargo_max - sum_cargo)
-            elif item == 'people':
+            elif item == 'people' and waypoint.description == recipiant:
                 if self.cargo.people >= amount and (recipiant.cargo.cargo_max - sum_cargo) >= amount:
                     self.cargo.people -= amount
                     recipiant.cargo.people += amount

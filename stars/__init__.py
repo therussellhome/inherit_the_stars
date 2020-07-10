@@ -7,11 +7,15 @@ __all__ = [
     'new_game',
     'planet', 
     'player', 
+    'race_editor',
     'reference', 
     'ship',
     'ship_design',
     'ship_hull',
+    'scanner',
     'star_system', 
+    'stars_math', 
     'sun',
-    'race_editor'
+    'tech', 
+    'tech_display',
 ]

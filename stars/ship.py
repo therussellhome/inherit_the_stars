@@ -64,6 +64,6 @@ class Ship(Defaults):
             p.num_facilities -= self.bomb.percent_facilities_kill
             if p.num_colonists < 0:
                 p.num_colonists = 0
-            if p.num_facilities < 0
+            if p.num_facilities < 0:
                 p.num_facilities = 0
         return p            

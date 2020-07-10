@@ -7,6 +7,7 @@ let game_mode = 'host';
 function init() {
     // Chart defaults
     Chart.defaults.fontColor = 'white';
+    Chart.defaults.color = '#000000ff';
     Chart.defaults.animation = false;
     // Let objects initialize themselves
     var load_event = document.createEvent("HTMLEvents");
@@ -14,9 +15,6 @@ function init() {
     for(element of document.getElementsByClassName('onload')) {
         element.dispatchEvent(load_event);
     }
-    post('launch', '?reset');
-    post('new_game', '?reset');
-    post('race_editor', '?reset');
 }
 
 // Apply/remove a class to all children
@@ -104,7 +102,7 @@ function post(form, action = '') {
 
 // Update the fields and the cache
 function parse_json(url, json) {
-    var form = url.replace(/.*\//, '').replace(/\?.*/, '');
+    var form = url.replace(/\?.*/, '').replace(/.*\//, '');
     for(key in json) {
         element = document.getElementById(key);
         if(element != null) {
@@ -142,6 +140,9 @@ function parse_json(url, json) {
                 element.checked = json[key];
             } else {
                 element.value = json[key];
+            }
+            if(json.hasOwnProperty('disabled_' + key)) {
+                element.disabled = json['disabled_' + key];
             }
         }
     }
@@ -429,4 +430,273 @@ function format_temperature(value) {
 // Format radiation
 function format_radiation(value) {
     return value.toString() + ' mR';
+}
+
+// Post changes for tech
+function post_tech() {
+    post('tech', decodeURI(document.location.search))
+}
+
+// Render the tech display page
+function tech_display() {
+    for(screen of document.getElementsByClassName('tech')) {
+        screen.classList.toggle('hide', true);
+    }
+    toggle(document.body, 'hide', false);
+    if((json_map['tech']['armor'] != 0) || (json_map['tech']['shield'] != 0) || (json_map['tech']['ecm_chart_data'].length != 0) || (json_map['tech']['weapon_chart_data'].length != 0)) {
+        document.getElementById('combat').classList.toggle('hide', false);
+    }
+    if(json_map['tech']['scanner_chart_data'].length != 0) {
+        document.getElementById('scanner').classList.toggle('hide', false);
+    }
+    if(json_map['tech']['engine_chart_data'].length != 0) {
+        document.getElementById('engine').classList.toggle('hide', false);
+    }
+}
+
+// Create a chart for weapon curve
+function weapon_chart() {
+    chart = document.getElementById('weapon_chart');
+    if(chart.offsetParent === null) {
+        return;
+    }
+    if(!charts.hasOwnProperty('weapon_chart')) {
+        labels = [];
+        armor_data = [];
+        shield_data = [];
+        data = [];
+        for(var i=0; i < 100; i++) {
+            labels.push(i / 100);
+            armor_data.push(json_map['tech']['armor']);
+            shield_data.push(json_map['tech']['shield'] + json_map['tech']['armor']);
+            data.push(0);
+        }
+        charts['weapon_chart'] = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        label: 'Firepower',
+                        borderColor: 'red',
+                        backgroundColor: '#ff000055',
+                        fill: false,
+                        data: data
+                    },
+                    { 
+                        label: 'Armor',
+                        borderColor: 'gray',
+                        backgroundColor: '#99999955',
+                        fill: 'origin',
+                        data: armor_data
+                    },
+                    { 
+                        label: 'Shield',
+                        borderColor: 'cyan',
+                        backgroundColor: '#00ffff55',
+                        fill: '-1',
+                        data: shield_data
+                    },
+                    { 
+                        label: 'ECM',
+                        borderColor: 'yellow',
+                        backgroundColor: '#ffff0055',
+                        fill: false,
+                        data: data
+                    }
+                ]
+            },
+            options: { 
+                legend: {display: false},
+                elements: {point: {radius: 1}},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    titleFontSize: 10,
+                    bodyFontSize: 10,
+                    callbacks: {
+                        title: function(tooltipItems, data) {
+                            return 'Range: ' + tooltipItems[0].label + ' Tm';
+                        },
+                        label: function(tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
+                            if(tooltipItem.datasetIndex == 0) {
+                                label += Math.round(tooltipItem.value);
+                            } else if(tooltipItem.datasetIndex == 2) {
+                                label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
+                            } else if(tooltipItem.datasetIndex == 3) {
+                                base = json_map['tech']['armor'] + json_map['tech']['shield'];
+                                value = parseInt(tooltipItem.value);
+                                label += Math.round(value / base * 100) + '%';
+                                console.log(base, value, label);
+                            } else {
+                                label += tooltipItem.value;
+                            }
+                            return label;
+                        }
+                    }
+                },
+                scales: { 
+                    x: {
+                        gridLines: {display: false}
+                    },
+                    y: {
+                        gridLines: {display: false}
+                    }
+                }
+            }
+        });
+    }
+    json_ecm = json_map['tech']['ecm_chart_data'];
+    ecm_data = [];
+    for(var i=0; i <= json_ecm.length; i++) {
+        ecm_data.push(json_ecm[i]);
+    }
+    charts['weapon_chart'].data.datasets[3].data = ecm_data;
+    json_weapon = json_map['tech']['weapon_chart_data'];
+    weapon_data = [];
+    for(var i=0; i <= json_weapon.length; i++) {
+        weapon_data.push(json_weapon[i]);
+    }
+    charts['weapon_chart'].data.datasets[0].data = weapon_data;
+    charts['weapon_chart'].update('resize');
+}
+
+// Create a chart for scanner curve
+function scanner_chart() {
+    chart = document.getElementById('scanner_chart');
+    if(chart.offsetParent === null) {
+        return;
+    }
+    if(!charts.hasOwnProperty('scanner_chart')) {
+        labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
+        data = [0, 0, 0, 0];
+        charts['scanner_chart'] = new Chart(chart, {
+            type: 'polarArea',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
+                        data: data
+                    }
+                ]
+            },
+            options: { 
+                legend: {display: false},
+                tooltips: {
+                    mode: 'dataset',
+                    intersect: false,
+                    position: 'nearest',
+                    titleFontSize: 10,
+                    bodyFontSize: 10,
+                },
+                scales: { 
+                    r: {
+                        gridLines: {display: false},
+                        ticks: {backdropColor: '#000000ff'}
+                    }
+                }
+            }
+        });
+    }
+    json_data = json_map['tech']['scanner_chart_data'];
+    scanner_data = [];
+    max = 0;
+    for(var i=0; i < json_data.length; i++) {
+        scanner_data.push(json_data[i]);
+        if(json_data[i] > max) {
+            max = json_data[i];
+        }
+    }
+    charts['scanner_chart'].data.datasets[0].data = scanner_data;
+    charts['scanner_chart'].options.scales.r.max = max;
+    charts['scanner_chart'].update('resize');
+}
+
+// Create a chart for engine curve
+function engine_chart() {
+    chart = document.getElementById('engine_chart');
+    if(chart.offsetParent === null) {
+        return;
+    }
+    if(!charts.hasOwnProperty('engine_chart')) {
+        labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
+        data = [];
+        for(var i=1; i <= 10; i++) {
+            data.push(100);
+        }
+        charts['engine_chart'] = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        label: ' ₥ / ly',
+                        borderColor: 'white',
+                        backgroundColor: 'white',
+                        fill: false,
+                        data: data
+                    },
+                    { 
+                        label: ' siphon',
+                        borderColor: 'blue',
+                        backgroundColor: 'blue',
+                        fill: false,
+                        data: data
+                    },
+                    { 
+                        label: 'Max Safe',
+                        borderColor: '#ff000000',
+                        backgroundColor: '#ff000088',
+                        fill: 'end',
+                        data: data
+                    }
+                ]
+            },
+            options: { 
+                legend: {display: false},
+                elements: {point: {radius: 1}},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    titleFontSize: 10,
+                    bodyFontSize: 10,
+                    filter: function(tooltipItem, data) {
+                        if(tooltipItem.datasetIndex == 2) {
+                            return false;
+                        }
+                        return true;
+                    },
+                    callbacks: {
+                        title: function(tooltipItems, data) {
+                            return 'Hyper ' + tooltipItems[0].label;
+                        }
+                    }
+                },
+                scales: { 
+                    x: {
+                        gridLines: {color: 'gray'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        max: 120
+                    }
+                }
+            }
+        });
+    }
+    json_data = json_map['tech']['engine_chart_data'];
+    siphon = json_map['tech']['engine_siphon'];
+    engine_data = [];
+    siphon_data = [];
+    for(var i=0; i < json_data.length; i++) {
+        engine_data.push(json_data[i]);
+        siphon_data.push(siphon);
+    }
+    charts['engine_chart'].data.datasets[0].data = engine_data;
+    charts['engine_chart'].data.datasets[1].data = siphon_data;
+    charts['engine_chart'].update('resize');
 }

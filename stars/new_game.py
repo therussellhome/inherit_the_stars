@@ -6,16 +6,17 @@ from .star_system import StarSystem
 from math import pi
 from random import randint
 from random import random
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
     'new_game_name': [''],
-    'new_game_x': [100, 1, 100], 
-    'new_game_y': [100, 1, 100], 
-    'new_game_z': [100, 1, 100], 
+    'new_game_x': [500, 20, 2000], 
+    'new_game_y': [500, 20, 2000], 
+    'new_game_z': [200, 20, 2000], 
     'new_game_density': [95, 1, 100],
-    'new_game_player_distance': [25, 1, 50],
+    'new_game_player_distance': [200, 1, 2000],
     'new_game_player01': ['No Player'],
     'new_game_player02': ['No Player'],
     'new_game_player03': ['No Player'],
@@ -105,6 +106,12 @@ class NewGame(Defaults):
                     for r in objs:
                         if r.__class__.__name__ == 'Race' and r.name == race_name:
                             players.append(Player(name=race_name, race=r))
+            i = 0
+            for s in systems:
+                if s in homes:
+                    s._create_system(Refecence(players[i]))
+                else:
+                    s._create_system(None)
             game = Game(name=self.new_game_name, players=players)
             game_engine.load('tech_tree', self.new_game_tech_tree)
             game_engine.save('games', self.new_game_name)
@@ -166,7 +173,7 @@ class NewGame(Defaults):
             for i in systems:
                 p = ''
                 for k in home_systems:
-                    if round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) < player_distance:    
+                    if round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) < player_distance or system.num_planets < 1:    
                         p += 'fail'
                     elif round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) >= player_distance:
                           p += 'pass'
