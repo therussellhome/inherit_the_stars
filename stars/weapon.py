@@ -32,15 +32,20 @@ class Weapon(Defaults):
             power = self.power
             if self.is_beam:
                 power = self.power * (1 - target_ly / range_ly)
-            if power > shield:
-                power = shield + (power - shield) * self.armor_multiplier
-            return power
+            power_to_shield = min(power, shield)
+            power_to_armor = max((power - shield) * self.armor_multiplier, 0)
+            if not self.is_beam:
+                difrence = min(power/4, power_to_shield)
+                power_to_shield -= diference
+                power_to_shield += diference
+            return (power_to_armor, power_to_shield)
         return 0.0
 
     """ Calculate the damage of firing the weapon at a ship """
     def get_damage(self, target_ly, shield, armor, visible_ly, ecm):
         if self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5) <= randint(0, 100):
             return 0
-        return self.get_power(target_ly, shield, armor)
+        damage = self.get_power(target_ly, shield, armor)
+        return (sheald-damage[0], armor-damage[1])
 
 Weapon.set_defaults(Weapon, __defaults)

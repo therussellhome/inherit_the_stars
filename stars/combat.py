@@ -138,39 +138,13 @@ def move(ship, ships):
 def distance(ship1, ship2):
     return ((ship1.location.x-ship2.location.x)**2 + (ship1.location.y-ship2.location.y)**2 + (ship1.location.z-ship2.location.z)**2)**0.5
 
-def calc_accuacy(ship, fire_at, wepon):
-    pass
-
-def calc_damage(ship, fire_at, wepon):
-    accuacy = calc_accuracy(ship, fire_at, wepon)
-    if random < accuacy:
-        return 0
-    if wepon.type == 'misile':
-        damage = wepon.power
-    if wepon.type == 'beam':
-        damage = wepon.power*(1-distance(ship, fire_at)/wepon.range)
-    return damage
-
 def fire(ship, ships):
     for wepon in ship.wepons:
         ship_to_fire_at = calc_strategy_f(ship, ships, wepon)
         if ship_to_fire_at:
-            damage = calc_damage(ship, ship_to_fire_at, wepon)
-            Adamage = 0
-            if wepon.type == 'misile':
-                Adamage = damage/4
-                damage *= 3/4
-            while ship_to_fire_at.shealds > 0 and damage > 0:
-                ship.ship_to_fire_at.shealds -= 1
-                damage -= 1:
-            while ship_to_fire_at.armor > 0 and (damage > 0 or Adamage > 0):
-                if damage > 0:
-                    damage -= 1
-                elif Adamage > 0:
-                    Adamage -= 1
-                else:
-                    break
-                ship.ship_to_fire_at.armor -= 1
+            damage = wepon.get_damage(ship.location-ship_to_fire_at.location, ship_to_fire_at.shealds, ship_to_fire_at.armor, ship.Scanner.range_visible(ship_to_fire_at.calc_aparent_mass()), ship_to_fire_at.ecm)
+            ship_to_fire_at.shealds = damage[0]
+            ship_to_fire_at.armor = damage[1]
         save_to_combat_log()
     pass
 
