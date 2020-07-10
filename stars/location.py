@@ -1,30 +1,34 @@
 import sys
-from .defaults import Defaults
+from random import random
+from . import game_engine
+from . import stars_math
+from .reference import Reference
 
-
-""" Default values (default, min, max)  """
-__defaults = {
-    'x': [0.0, -sys.maxsize, sys.maxsize],
-    'y': [0.0, -sys.maxsize, sys.maxsize],
-    'z': [0.0, -sys.maxsize, sys.maxsize],
-}
 
 """ Class defining a location """
-class Location(Defaults):
+class Location(game_engine.BaseClass):
     """ Initialize defaults """
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        self.x = kwargs.get('x', 0.0)
+        self.y = kwargs.get('y', 0.0)
+        self.z = kwargs.get('z', 0.0)
 
     """ Distance between 2 points """
     def __sub__(self, other):
-        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2) ** 0.5
-    
-Location.set_defaults(Location, __defaults)
+        return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
 
-class LocationReference:
+
+""" 
+Location that is actually a reference to something else's location
+Reference must have a location attribute
+"""
+class LocationReference(Location):
     """ Initialize defaults """
-    def __init__(self, **kwargs):
-        self.reference = kwargs['reference']
+    def __init__(self, *args, **kwargs):
+        if 'reference' in kwargs:
+            self.reference = kwargs['reference']
+        else:
+            self.reference = Reference(args[0])
 
     """ Get the attribute from the real class """
     def __getattribute__(self, name):
@@ -37,7 +41,12 @@ class LocationReference:
         else:
             return object.__getattribute__(self, name)
 
-    """ Distance between 2 points """
-    def __sub__(self, other):
-        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2) ** 0.5
-    
+
+def rand_location(radius_x=1.0, radius_y=1.0, radius_z=1.0):
+    # loop until a point is created inside a r=1 sphere
+    while True:
+        x = random() * 2 - 1
+        y = random() * 2 - 1
+        z = random() * 2 - 1
+        if stars_math.distance(x, y, z, 0, 0, 0) <= 1.0:
+            return Location(x=x * radius_x, y=y * radius_y, z=z * radius_z)
