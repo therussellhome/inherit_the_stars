@@ -7,6 +7,9 @@ from math import pi
 from random import randint
 from random import random
 from .reference import Reference
+from .location import rand_location
+from .race import Race
+from .tech import Tech
 
 
 """ Default values (default, min, max)  """
@@ -14,8 +17,8 @@ __defaults = {
     'new_game_name': [''],
     'new_game_x': [500, 20, 2000], 
     'new_game_y': [500, 20, 2000], 
-    'new_game_z': [200, 20, 2000], 
-    'new_game_density': [95, 1, 100],
+    'new_game_z': [500, 20, 2000], 
+    'new_game_density': [8, 1, 100],
     'new_game_player_distance': [200, 1, 2000],
     'new_game_player01': ['No Player'],
     'new_game_player02': ['No Player'],
@@ -72,7 +75,7 @@ __defaults = {
     'new_game_victory_shipsofthewall_number': [150, 50, 1000], 
     'new_game_victory_starbases': [True],
     'new_game_victory_starbases_number': [25, 10, 100], 
-    'new_game_tech_tree': ['Inherit The Stars'],
+    'new_game_tech_tree': ['Default'],
     'options_new_game_tech_tree': [[]],
 }
 
@@ -86,103 +89,97 @@ class NewGame(Defaults):
         # Always refresh the list of races
         races = game_engine.load_list('races')
         races.insert(0, 'No Player')
-        num_players = 0
+        players = []
         for i in range(1, 17):
             key = 'new_game_player{:02d}'.format(i)
             self.__dict__['options_' + key] = races
             if self.__dict__[key] != 'No Player':
-                num_players += 1
+                players.append(self.__dict__[key])
         self.options_new_game_tech_tree = game_engine.load_list('tech_tree')
+        self.options_new_game_tech_tree.insert(0, 'Default')
         # Create the game
-        if action == 'create':
-            systems = self.create_systems(self.calc_num_systems())
-            homes = self.generate_home_systems(num_players, systems, self.new_game_player_distance)
-            players = []
-            for i in range(1, 17):
-                race_name = self.__dict__['new_game_player{:02d}'.format(i)]
-                if race_name != 'No Player':
-                    # Protect against other objects in a race file
-                    objs = game_engine.load('races', race_name, False)
-                    for r in objs:
-                        if r.__class__.__name__ == 'Race' and r.name == race_name:
-                            players.append(Player(name=race_name, race=r))
-            i = 0
+        if action == 'create' and len(players) > 0:
+            game = Game(name=self.new_game_name)
+            # Create empty systems
+            system_names = []
+            with open('stars/star_system.names') as file:
+                for name in file:
+                    system_names.append(name.strip())
+            num_systems = self.calc_num_systems(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_density)
+            systems = self.create_systems(num_systems, system_names, self.new_game_x, self.new_game_y, self.new_game_z)
+            # Create players and their home systems
+            homes = self.generate_home_systems(len(players), systems, self.new_game_player_distance)
+            for i in range(0, len(players)):
+                # Protect against other objects in a race file
+                objs = game_engine.load('races', players[i], False)
+                for r in objs:
+                    if isinstance(r, Race) and r.name == players[i]:
+                        players[i] = Player(race=r)
+                        homes[i].create_system(Reference(players[i]))
+            # Create planets in systems
             for s in systems:
-                if s in homes:
-                    s._create_system(Refecence(players[i]))
-                else:
-                    s._create_system(None)
-            game = Game(name=self.new_game_name, players=players)
-            game_engine.load('tech_tree', self.new_game_tech_tree)
+                if not s in homes:
+                    s.create_system()
+            # Load tech tree
+            if self.new_game_tech_tree == 'Default':
+                tech = game_engine.load_defaults('Tech', False)
+            else:
+                tech = game_engine.load('tech_tree', self.new_game_tech_tree, False)
+            # Protect against other objects in a tech tree file
+            for t in tech:
+                if isinstance(t, Tech):
+                    game_engine.register(t)
             game_engine.save('games', self.new_game_name)
 
-    def calc_num_systems(self):
-        vx = self.new_game_x
-        vy = self.new_game_y
-        vz = self.new_game_z
+    """ Calculate the number of systems based on the size and density """
+    def calc_num_systems(self, x, y, z, density):
         dimension = 3
-        if self.new_game_x == 0 or self.new_game_x == 1:
+        if x < 2:
             dimension -= 1
-            vx = 2
-        if self.new_game_y == 0 or self.new_game_y == 1:
+            x = 2
+        if y < 2:
             dimension -= 1
-            vy = 2
-        if self.new_game_z == 0 or self.new_game_z == 1:
+            y = 2
+        if z < 2:
             dimension -= 1
-            vz = 2
-        volume = ((4/3)*pi)*(vx/2)*(vy/2)*(vz/2)/(100**dimension)
-        num_systems = round(volume * self.new_game_density)
-        return num_systems
+            z = 2
+        # compute volume in light centuries
+        volume = ((4/3) * pi) * (x/2) * (y/2) * (z/2) / (100**dimension)
+        return round(volume * density)
 
-    def create_systems(self, num_systems):
+    """ Create the systems """
+    def create_systems(self, num_systems, names, x, y, z):
         systems = []
-        with open('stars/star_system.names') as file:
-            names = []
-            for name in file:
-                names.append(name.strip())
-        while len(systems) < num_systems:
-            rx = (random() * 2) -1
-            ry = (random() * 2) -1
-            rz = (random() * 2) -1            
-            distance = ((rx**2) + (ry**2) + (rz**2))**.5 
-            if distance <= 1 and distance >= -1:
-                rx = round(rx * (self.new_game_x/2))
-                ry = round(ry * (self.new_game_y/2))
-                rz = round(rz * (self.new_game_z/2))
-                for s in systems:
-                    counter = 0
-                    if s.x == rx and s.y == ry and s.z == rz:
-                        counter += 1
-                        break
-                    if counter == 100:
-                        return 'too many systems'
-                        break
-                else:
-                    counter = 0
-                    system_name = names.pop(randint(0, len(names) - 1))
-                    s = StarSystem(name=system_name, x=rx, y=ry, z=rz)
-                    systems.append(s)
+        attempt = 0
+        while len(systems) < num_systems and len(names) > 0 and attempt < 1000:
+            l = rand_location(x / 2, y / 2, z / 2)
+            for s in systems:
+                if s.location - l < 4.0:
+                    attempt += 1
+                    break
+            else:
+                attempt = 0
+                system_name = names.pop(randint(0, len(names) - 1))
+                s = StarSystem(name=system_name, location=l)
+                systems.append(s)
         return systems
 
+    """ Select planets to be home systems """
     def generate_home_systems(self, num_players, systems, player_distance):
-        home_systems = []
-        home_systems.append(systems[0])
-        if num_players == 1:
-           pass 
-        else:
-            for i in systems:
-                p = ''
-                for k in home_systems:
-                    if round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) < player_distance or system.num_planets < 1:    
-                        p += 'fail'
-                    elif round((((i.x - k.x)**2) + ((i.y - k.y)**2) + ((i.z - k.z)**2))**.5) >= player_distance:
-                          p += 'pass'
-                if 'fail' not in p:
-                    home_systems.append(i)
-                if len(home_systems) == num_players:
-                    break
-                if i == systems[len(systems) - 1] and len(home_systems) < num_players:
-                    player_distance *= .9
+        if len(systems) < num_players:
+            return []
+        home_systems = [systems[0]]
+        while len(home_systems) < num_players:
+            for s in systems:
+                for h in home_systems:
+                    if s == h or s.location - h.location <= player_distance:
+                        break
+                else:
+                    home_systems.append(s)
+                    if len(home_systems) == num_players:
+                        break
+            else:
+                player_distance = player_distance * 0.9 - 1
         return home_systems
             
 

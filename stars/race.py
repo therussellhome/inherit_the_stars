@@ -42,7 +42,12 @@ __defaults = {
     'hab_radiation_stop': [100, 0, 100],
     'hab_radiation_immune': [False],
     'growth_rate': [15, 1, 20],
+    'starting_pop': [250000, 150000, 300000],
     'population_max': [10000000, 0, 1000000000],
+    'starting_factories': [10, 0, 20],
+    'starting_mines': [10, 0, 20],
+    'starting_power_plants': [10, 0, 20],
+    'starting_defenses': [10, 0, 20],
 }
 
 """ Storage class for race parameters """

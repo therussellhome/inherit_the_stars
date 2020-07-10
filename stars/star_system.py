@@ -3,65 +3,57 @@ from . import game_engine
 from .defaults import Defaults
 from .reference import Reference
 from .location import Location
+from .sun import Sun
+from .planet import Planet
 
 
 __defaults = {
     'planets': [[]],
-    'x': [0, -1000, 1000],
-    'y': [0, -1000, 1000],
-    'z': [0, -1000, 1000],
+    'location': [Location()],
     'num_planets': [2, 0, 5]
 }
 
 _roman = ["I", "II", "III", "IV", "V"]
 
+""" Star System with its planets """
 class StarSystem(Defaults):
-    
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            self.name = 'System_' + str(id(self))
+            self.name = 'System ' + str(id(self))
         game_engine.register(self)
 
     """ create planets """
-    def _create_system(self, player):
-        self.num_planets = round(random() * 5)
-        if player:
-            if sef.num_planets == 0:
-                self.num_planets = 1
-        self.planets = []
+    def create_system(self, player=None):
         planet_args = {
-            'reference': 'Planet/' + str(self.name) + "'s " + 'Star',
+            'name': self.name + "'s " + 'Star',
             'star_system': Reference(self)
-            }
-        sun = Reference(**planet_args)
+        }
+        num_planets = round(random() * 5)
         if player:
-            sun.radiation = (p.race.hab_radiation_stop+p.race.hab_radiation)/2
-        self.planets.append(sun)
-        for i in range(self.num_planets):
-            if i == 0 and player:
-                p = player
-                planet_args['player'] = p
-                planet_args['gravity'] = (p.race.hab_gravity_stop+p.race.hab_gravity)/2
-                planet_args['temperature'] = (p.race.hab_temperature_stop+p.race.hab_temperature)/2
-                planet_args['population'] = p.race.starting_pop
-                planet_args['power plants'] = p.race.starting_power_plants
-                planet_args['facorys'] = p.race.starting_factories
-                planet_args['mines'] = p.race.starting_mines
-            segment = 100.0 / self.num_planets
-            planet_args['reference'] = 'Planet/' + str(self.name) + ' ' + _roman[i]
-            planet_args['sun'] = self.planets[0]
+            planet_args['radiation'] = (player.race.hab_radiation_stop + player.race.hab_radiation) / 2
+            if player.race.primary_race_trait == 'Pa\'anuri':
+                num_planets = max(1, num_planets)
+                home = 0
+            else:
+                num_planets = max(2, num_planets)
+                home = randint(1, num_planets)
+        sun = Sun(**planet_args)
+        self.planets.append(Reference(sun))
+        planet_args['sun'] = self.planets[0]
+        for i in range(num_planets):
+            segment = 100.0 / num_planets
+            planet_args['name'] = self.name + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
-            self.planets.append(Reference(**planet_args))
-            if i == 0 and player:
-                planet_args['player'] = None
-                planet_args['gravity'] = None
-                planet_args['temperature'] = None
-                planet_args['population'] = None
-                planet_args['power plants'] = None
-                planet_args['facorys'] = None
-                planet_args['mines'] = None
+            p = Planet(**planet_args)
+            self.planets.append(Reference(p))
+        if player:
+            self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
+            self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
+            self.planets[home].colonize(player, None, player.race.starting_pop, player.race.starting_factories)
+            self.planets[home].power_plants = player.race.starting_power_plants
+            self.planets[home].mines = player.race.starting_mines
 
     """ returns the outer system coorenets """
     def get_outer_system(self, location):

@@ -6,6 +6,9 @@ ly / constant = Tm
 """
 TERAMETER_2_LIGHTYEAR = 0.000105702977392
 
+""" Distance between points """
+def distance(x1, y1, z1, x2, y2, z2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2) ** 0.5
 
 """ Add volumes """
 def volume_add(r1, r2):
