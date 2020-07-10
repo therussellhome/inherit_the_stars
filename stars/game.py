@@ -8,7 +8,7 @@ __defaults = {
     'name': [''],
     'players': [[]],
     'autogen_turn': [True],
-    'date': [3000, 0, sys.maxsize]
+    'date': [3000.0, 0.0, sys.maxsize]
 }
 
 
@@ -28,12 +28,18 @@ class Game(Defaults):
             for fleet in fleets:
                 fleet.execute(preaction)
         # TODO anomolies & mystery trader
-        # Fleet movement in initiative order
-        for fleet in reversed(fleets):
-            fleet.move()
-        # Mineral packet movement
-        for packet in game_engine.get('MineralPacket/'):
-            packet.move()
+        # Movment and scaning in hundredths of a turn
+        for i in range(100):
+            # Fleet movement in initiative order
+            for fleet in reversed(fleets):
+                fleet.move(self.hyper_denials)
+            for fleet in fleets:
+                fleet.calculate_scanning()
+            # Mineral packet movement and scaning
+            for packet in game_engine.get('MineralPacket/'):
+                packet.move()
+            for packet in game_engine.get('MineralPackets/'):
+                packet.calculate_scanning()
         # Player build/research/other economic funcitions
         for player in game_engine.get('Player/'):
             player.manage_economy()
@@ -47,12 +53,8 @@ class Game(Defaults):
         # Update scanning
         for planet in game_engine.get('Planet/'):
             planet.calculate_scanning()
-        for ship in game_engine.get('Ship/'):
-            ship.calculate_scanning()
         for station in game_engine.get('SpaceStation/'):
             station.calculate_scanning()
-        for packet in game_engine.get('MineralPackets/'):
-            packet.calculate_scanning()
 
 
 Game.set_defaults(Game, __defaults)

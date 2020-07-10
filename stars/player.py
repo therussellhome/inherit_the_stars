@@ -13,7 +13,7 @@ from .tech_level import TechLevel
 """ Default values (default, min, max)  """
 __defaults = {
     'race': [Race()],
-    'intel': [[]], # array of intel objects
+    'intel': [{}], # map of intel objects
     'ministers': [[Minister(name='default')]], # modifiable by the player
     'score': [Score()],
     'tech_level': [TechLevel()],
