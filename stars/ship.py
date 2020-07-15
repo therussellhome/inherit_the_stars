@@ -1,6 +1,7 @@
 import sys
 from . import game_engine
 from .defaults import Defaults
+from random import randint
 
 
 """ Default values (default, min, max)  """

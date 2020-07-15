@@ -1,14 +1,15 @@
 import sys
+from . import stars_math
 from . import game_engine
-from .defaults import Defaults
+from .ship import Ship
 from .cargo import Cargo
 from .player import Player
 from .planet import Planet
-from .ship import Ship
-from .reference import Reference
+from .defaults import Defaults
 from .location import Location
-from .location import locationReference
+from .location import LocationReference
 from .waypoint import Waypoint
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
@@ -21,7 +22,7 @@ __defaults = {
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
     'player': [Reference()],
-    'location': [Location()],
+    'location': [],
     'cargo': [Cargo()]
 }
 
@@ -30,17 +31,51 @@ __defaults = {
 class Fleet(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
+        while len(**kwargs['ships']) > 0:
+            ship = kwargs['ships'][0]
+            self.add_ship(ship)
+            kwargs['ships'].remove(ship)
         super().__init__(**kwargs)
-        game_engine.register(self)
+        if not self.name:
+            self.name = 'Fleet #'+str(hex(id(self)))[-7:-1]
     
-    """ gives the fleet the highest scaner of each type from it's ships """
+    """ adds the ships to self.ships """
+    def add_ship(self, ship):
+        if len(self.ships) == 0:
+            self.location.x = ship.location.x
+            self.location.y = ship.location.y
+            self.location.z = ship.location.z
+            self.ships.append(ship)
+        else:
+            if (self.location - ship.location) > (stars_math.TERAMETER_2_LIGHTYEAR * 2):
+                return
+            else:
+                self.ships.append(ship)
+    
+    """ finds the largest range of hyper denial had by a ship in the fleet and asigns the fleet that value """
+    def compile_hyper_denial(self):
+        hyper_range = 0
+        self.hyper_denial = False
+        denial = []
+        for ship in self.ships:
+            if ship.hyper_denial == True:
+                self.hyper_denial = True
+                denail.append(ship.hyper_denial_range)
+        if self.hyper_denial:
+            for i in range(len(denial)):
+                if denial[i] >= hyper_range:
+                    hyper_range = denial[i]
+        
+    
+    
+    '''""" gives the fleet the highest scaner of each type from it's ships """
     def compile_scanning(self):
         max_anti_cloak = 0
         max_normal = 0
         max_penetrating = 0
         scanner = []
         for ship in self.ships:
-            scanner.append([ship.anti_cloak_scanner, ship.normal_scanner, self.pennetrating_scaner])
+            scanner.append([ship.anti_cloak_scanner, ship.normal_scanner, self.pennetrating_scanner])
         for i in range(len(scanner)):
             if scanner[i][0] >= max_anti_cloak:
                 max_anti_cloak = scanner[i][0]
@@ -50,11 +85,12 @@ class Fleet(Defaults):
                 max_penetrating = scanner[i][2]
         self.anti_cloak_scanner = max_anti_cloak
         self.normal_scanner = max_normal
-        self.pennetrating_scaner = max_penetrating
+        self.pennetrating_scanner = max_penetrating
     
     """ calculates the scaning of the fleet from curent position """
     def calculate_scanning(self):
-        self.compile_scanning()
+        for ship in self.ships:
+            ship.scan()
         for ship in game_engine.get('Ship/'):
             if ship.player != self.player:
                 ship.mass = ship.hull_masss + (ship.cargo.titanium + ship.cargo.lithium + ship.cargo.silicon + ship.cargo.people)
@@ -64,67 +100,92 @@ class Fleet(Defaults):
                 distance = ((ship.x - self.x)**2 + (ship.y - self.y)**2 + (ship.z - self.z)**2)**(1/2)
                 if distance <= self.anti_cloak_scanner:
                     self.player.create_intel_on(ship, ship.mass, True)
-                elif distance <= self.pennetrating_scaner and ship.aparant_mass > 0:
+                elif distance <= self.pennetrating_scanner and ship.aparant_mass > 0:
                     self.player.create_intel_on(ship, ship.aparant_mass)
-                elif distance <= (self.pennetrating_scaner + ((self.normal_scaner - self.pennetrating_scaner) * (ship.aparant_mass / 100))) and ship.aparant_mass > 0:
+                elif distance <= (self.pennetrating_scanner + ((self.normal_scanner - self.pennetrating_scanner) * (ship.aparant_mass / 100))) and ship.aparant_mass > 0:
                     self.player.create_intel_on(ship, ship.aparant_mass)
         for planet in game_engine.get('Planet/'):
             if planet.player != self.player:
-                planet.space_station.mass = planet.space_station.design.mass
-                planet.space_station.aparant_mass = (planet.space_station.mass * planet.space_station.cloak)
-                if planet.player.race.primary_race_trait == "SS":
-                    planet.space_station.aparant_mass -= planet.space_station.kt_modifier
-                distance = ((planet.x - self.x)**2 + (planet.y - self.y)**2 + (planet.z - self.z)**2)**(1/2)
-                if distance <= self.pennetrating_scaner:
+                distance = self.location.__sub__(planet.location)
+                if distance <= self.pennetrating_scanner:
                     self.player.create_intel_on(planet, "planet")
                     if distance <= self.anti_cloak_scanner:
                         self.player.create_intel_on(planet.space_station, planet.space_station.mass, True)
                     elif planet.space_station.aparant_mass > 0:
-                        self.player.create_intel_on(planet.space_station, planet.space_station.aparant_mass)
+                        self.player.create_intel_on(planet.space_station, planet.space_station.aparant_mass)'''
+    
+    
+    """ takes the move distance and changes self.location accordingly """
+    def calc_move(self, location, amount):
+        dis, x, y, z = self.calc_distance(location)
+        a = ((amount)**2)**(1/2)
+        mod = -amount/a
+        mod_x = (self.location.x-location.x)/x
+        mod_y = (self.location.y-location.y)/y
+        mod_z = (self.location.z-location.z)/z
+        self.location.x += mod*mod_x*(x/dis)*a
+        self.location.y += mod*mod_y*(y/dis)*a
+        self.location.z += mod*mod_z*(z/dis)*a
+    
+    """ checks the distance between the fleet an the fly_to point """
+    def calc_distance(self, location):
+        self.dis_x = ((self.location.x-location.x)**2)**(1/2)
+        self.dis_y = ((self.location.y-location.y)**2)**(1/2)
+        self.dis_z = ((self.location.z-location.z)**2)**(1/2)
+        distance = ((self.dis_x)**2 + (self.dis_y)**2 + (self.dis_z)**2)**(1/2)
+        return distance, self.dis_x, self.dis_y, self.dis_z
     
     """ does all the moving calculations and then moves the ships """
-    def move(self, hyper_denials):
+    def move(self, time_in):
+        self.waypoints[1].move_to(self, time_in)
         in_hyper_denial = False
+        num_denials = 0
         for ship in self.ships:
             self.fuel += ship.fuel
-            if 
-        for hyper_denial in hyper_denials:
-            distance_to_denial = ((hyper_denial.x - self.x)**2 + (hyper_denial.y - self.y)**2 + (hyper_denial.z - self.z)**2)**(1/2)
-            if distance_to_denial >= hyper_denial.range:
-                in_hyper_denial = True
+            #if 
+        for hyper_denial in game_engine.hyper_denials:
+            distance_to_denial = self.location - hyper_denial.location
+            if distance_to_denial >= hyper_denial.range and hyper_denial.player:
+                num_denials += 1
         speed = waypoints[1].speed
-        distance_to_waypoint = ((waypoints[1].x - self.x)**2 + (waypoints[1].y - self.y)**2 + (waypoints[1].z - self.z)**2)**(1/2)
+        distance_to_waypoint = self.location - self.waypoints[1].fly_to
         distance_at_hyper = (speed**2)/100
         if distance_to_waypoint < distance_at_hyper:
             distance = distance_to_waypoint
         else:
             distance = distance_at_hyper
         if distance_to_waypoint == 0:
-            #???
-        while self.test_move_ly(self.fuel, speed, in_hyper_denial, distance):
+            if self.waypoints[1].move_on == True:
+                self.waypoints.pop(0)
+                self.move(time_in)
+        while self.test_fuel(speed, in_hyper_denial, distance):
             speed -= 1
             distance_at_hyper = (speed**2)/100
             if distance_to_waypoint < distance_at_hyper:
                 distance = distance_to_waypoint
             else:
                 distance = distance_at_hyper
-        self.x, self.y, self.z = self.move_ly(self.fuel, speed, in_hyper_denial, distance)
+        self.calc_move(self.waypoints[1].fly_to, distance)
+        self.burn_fuel(speed, in_hyper_denial, distance)
         self.returnn()
+        for ship in self.ships:
+            ship.location.x = self.location.x
+            ship.location.y = self.location.y
+            ship.location.z = self.location.z
     
     """ calles the move for each of the ships """
-    def move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
+    def burn_fuel(self, speed, num_denials, dis):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.move(speed, in_hyper_denial, dis)
+            fuel_1_ly += ship.burn_fuel(speed, num_denials, dis)
         self.fuel -= fuel_1_ly
-        return self.ships[0].x, self.ships[0].y, self.ships[0].z
     
     """ checks if you can move at a certain speed with your entire fleet """
-    def test_move_ly(self, fuel, speed, in_hyper_denial=False, dis=1):
+    def test_fuel(self, speed, num_denials, dis):
         fuel_1_ly = 0
         for ship in self.ships:
-            fuel_1_ly += ship.fuel_check(speed, in_hyper_denial, dis)
-        if (fuel - fuel_1_ly) >= 0:
+            fuel_1_ly += ship.fuel_check(speed, num_denials, dis)
+        if (self.fuel - fuel_1_ly) >= 0:
             return False
         else:
             return True
@@ -195,6 +256,45 @@ class Fleet(Defaults):
             self.fuel_max += ship.fuel_max
             self.fuel += ship.fuel
             ship.fuel = 0
+    
+    """ makes a hyper_denial """
+    def deploy_hyper_denial(self):
+        for ship in self.ships:
+            self.compile_hyper_denial()
+        denial.location.x = self.location.x
+        denial.location.y = self.location.y
+        denial.location.z = self.location.z
+        denial.range = self.hyper_denial_range
+        game_engine.hyper_denials.append(denial)
+    
+    """ Merges the fleet with the target fleet """
+    def merge(self):
+        self.compile()
+        self.waypoints[0].recipiants['merge'].compile()
+        for ship in self.ships:
+            self.waypoints[1].recipiants['merge'].ships.append(ship)
+        self.ships = []
+        self.waypoints[1].recipiants['merge'].fuel += self.fuel
+        self.fuel = 0
+        self.waypoints[1].recipiants['merge'].cargo.titanium += self.cargo.titanium
+        self.cargo.titanium = 0
+        self.waypoints[1].recipiants['merge'].cargo.lithium += self.cargo.lithium
+        self.cargo.lithium = 0
+        self.waypoints[1].recipiants['merge'].cargo.silicon += self.cargo.silicon
+        self.cargo.silicon = 0
+        self.waypoints[1].recipiants['merge'].cargo.people += 1
+        self.cargo.people = 0
+        self.waypoints[1].recipiants['merge'].returnn()
+    
+    """ splits the fleet """
+    def split(self, splits, name=None):
+        ships = []
+        for split in splits:
+            ships.append(self.ships[split])
+        for ship in ships:
+            self.ships.remove(ship)
+        #fleet = Fleet('ships'=ships, 'name'=name)
+        #self.player.fleets.append(fleet)
     
     """ executes the unload function """
     def unload(self, recipiant):
@@ -444,7 +544,7 @@ class Fleet(Defaults):
                     self.cargo.silicon += (self.cargo.cargo_max - sum_cargo)
                     recipiant.cargo.silicon -= (self.cargo.cargo_max - sum_cargo)
             elif item == 'people':
-                if self.cargo.cargo_max - sum_cargo) >= amount:
+                if self.cargo.cargo_max - sum_cargo >= amount:
                     self.cargo.people += amount
                     recipiant.cargo.people -= amount
                 elif recipiant.cargo.people < amount and (self.cargo.cargo_max - sum_cargo) >= recipiant.cargo.people:
@@ -489,6 +589,10 @@ class Fleet(Defaults):
                 recipiant = self.waypoint.recipiants['sell']
                 if recipiant.player != self.player:
                     self.sell(recipiant)
+            if action == 'deploy_hyper_denial' and self.waypoints[1].speed == 0:
+                self.deploy_hyper_denial()
+            if action == 'merge' and self.waypoints[1].x == self.x and self.waypoints[1].y == self.y and self.waypoints[1].z == self.z:
+                self.merge()
             
             
 
@@ -497,6 +601,7 @@ Fleet.preactions = [
     'pre_unload',
     'pre_load',
     'pre_piracy',
+    'deploy_hyper_denial',
 ]
 
 """ Ordered list of fleet actions for use by the Game.generate_turn """
@@ -505,7 +610,6 @@ Fleet.actions = [
     'generate_fuel',
     'self_repair',
     'repair',
-    'deploy_hyper_denial',
     'orbital_mining',
     'lay_mines',
     'bomb',

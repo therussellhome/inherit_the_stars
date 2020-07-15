@@ -3,6 +3,7 @@ __all__ = [
     'energy_minister', 
     'game_engine', 
     'launch', 
+    'location', 
     'minister',
     'new_game',
     'planet', 

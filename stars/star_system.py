@@ -7,9 +7,7 @@ from .location import Location
 
 __defaults = {
     'planets': [[]],
-    'x': [0, -1000, 1000],
-    'y': [0, -1000, 1000],
-    'z': [0, -1000, 1000],
+    'location': [Location()],
     'num_planets': [2, 0, 5]
 }
 
@@ -21,11 +19,11 @@ class StarSystem(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            self.name = 'System_' + str(id(self))
+            self.name = 'System ' + str(id(self))
         game_engine.register(self)
 
     """ create planets """
-    def _create_system(self, player):
+    def create_system(self, player):
         self.num_planets = round(random() * 5)
         if player:
             if sef.num_planets == 0:
