@@ -22,4 +22,6 @@ __all__ = [
     'cargo',
     'fleet',
     'waypoint',
+    'combat',
+    'battle_plan',
 ]
