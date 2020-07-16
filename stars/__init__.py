@@ -19,4 +19,6 @@ __all__ = [
     'sun',
     'tech', 
     'tech_display',
+    'combat',
+    'battle_plan',
 ]

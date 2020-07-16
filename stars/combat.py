@@ -11,10 +11,9 @@ def polar_to_cartesian(dis, lat, lon):
 def distance(ship1, ship2):
     return (ship1.location-ship2.location)
 
-class combat():
+class Combat():
     def __init__(self, **kwargs):
-        for key in **kwargs:
-            self.__dict__[key] = **kwargs[key]
+        super().__init__(**kwargs)
     """ calculates where the ship should move to"""
     def calc_strategy_m(self, me):
         closest_p = 1021
@@ -27,7 +26,7 @@ class combat():
         excape = False
         excape2 = False
         for ship in self.everybody:
-            if True #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
+            if True: #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
                 if me.battle_plan.p_target == 'disengage' or len(ship.wepons) == 0:
                     dis = distance(me, ship)
                     if dis < closest_p:
@@ -101,7 +100,7 @@ class combat():
         fire_at = None
         fire_att = None
         for ship in self.everybody:
-            if True #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
+            if True: #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
                 if me.battle_plan.p_target == 'any':
                     dis = distance(me, ship)
                     if dis < closest_p:
@@ -164,10 +163,10 @@ class combat():
     def save_to_combat_log(self):
         pass
 
-    save_to_combat_log()
+    #self.save_to_combat_log()
     def take_turn(self):
         mi = 0
-        for ship in self.everybody
+        for ship in self.everybody:
             #ship.calc_initative()
             if ship.initative > mi:
                 mi = int(ship.initative)
