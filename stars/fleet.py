@@ -7,8 +7,8 @@ from .player import Player
 from .planet import Planet
 from .defaults import Defaults
 from .location import Location
-from .location import LocationReference
 from .waypoint import Waypoint
+from .location import LocationReference
 from .reference import Reference
 
 
@@ -39,6 +39,8 @@ class Fleet(Defaults):
         super().__init__(**kwargs)
         if not self.name:
             self.name = 'Fleet #'+str(hex(id(self)))[-7:-1]
+        self.compile()
+        self.returnn()
     
     """ adds the ships to self.ships """
     def add_ship(self, ship):
@@ -209,10 +211,7 @@ class Fleet(Defaults):
     
     """ evenly distributes the fuel between the ships """
     def return_fuel(self):
-        check = []
-        for ship in self.ships:
-            ship_percent_fuel = ship.fuel / ship.max_fuel
-            check.append([ship_percent_fuel, ship])
+        check = [[ship.fuel / ship.max_fuel, ship] for ship in self.ships]
         least = 1
         lest = 0
         for i in range(len(check)):

@@ -28,17 +28,15 @@ __defaults = {
     # 'unload':"your; Planet(), Fleet() or salvege",
     # 'sell':"other; Planet()",
     # 'buy':"other; Planet()",
-    # 'merge':Fleet()
-    # 'transfer':player.name
+    # 'merge':Reference(Fleet())
+    # 'transfer':Reference(Fleet().player)
     #?'piracy':"other; Fleet()"?
-    #?'pre_piracy':"other; Fleet()"?
     'transfers': [{}],
     # 'load':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
     # 'unload':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
     # 'sell':[[item, amount][item, amount][item, amount][fuel, amount]],
     # 'buy':[[item, amount][item, amount][item, amount][fuel, amount]],
     #?'piracy':[[item, amount][item, amount][item, amount][fuel, amount]]?
-    #?'pre_piracy':[[item, amount][item, amount][item, amount][fuel, amount]]?
     
 }
 

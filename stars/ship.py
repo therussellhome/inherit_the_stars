@@ -10,6 +10,9 @@ __defaults = {
 
 
 class Ship(Defaults):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        
     def move(self, speed):
         distance = round((((self.x - self.waypoint.x) **2) + ((self.y - self.waypoint.y) **2) + ((self.z - self.waypoint.z) **2))**.5)    
         new_x = self.x + ((speed**2)/distance)
@@ -45,3 +48,4 @@ class Ship(Defaults):
                 p.num_facilities = 0
         return p
                 
+Ship.set_defaults(Ship, __defaults)
