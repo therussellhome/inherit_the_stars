@@ -4,7 +4,7 @@ from .defaults import Defaults
 from random import randint
 from .tech import Tech
 from .location import Location
-
+from .battle_plan import BattlePlan
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -17,7 +17,6 @@ __defaults = {
 }
 
 
-<<<<<<< HEAD
 class Ship(Tech):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
