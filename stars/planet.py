@@ -269,6 +269,7 @@ class Planet(Defaults):
         z = max(0.0, r - 0.5)
         return round(100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset)
     def orbit(self):
+        pass
 
 
 Planet.set_defaults(Planet, __defaults)
