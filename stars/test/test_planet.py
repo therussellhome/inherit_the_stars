@@ -55,12 +55,12 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.temperature = t
         self.planet.radiation = r
         race = self.planet.player.race
-        race.gravity_start = g_start
-        race.gravity_stop = g_stop
-        race.temperature_start = t_start
-        race.temperature_stop = t_stop
-        race.radiation_start = r_start
-        race.radiation_stop = r_stop
+        race.hab_gravity = g_start
+        race.hab_gravity_stop = g_stop
+        race.hab_temperature = t_start
+        race.hab_temperature_stop = t_stop
+        race.hab_radiation = r_start
+        race.hab_radiation_stop = r_stop
         self.assertEqual(self.planet.calc_planet_value(race), expect)
 
     def test_have_babies(self):

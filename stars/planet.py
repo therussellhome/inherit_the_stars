@@ -18,6 +18,7 @@ __defaults = {
     'power_plants': [0, 0, sys.maxsize],
     'factories': [0, 0, sys.maxsize],
     'mines': [0, 0, sys.maxsize],
+    'defense': [0, 0, sys.maxsize],
     'power_plant_tech': [Facility()],
     'factory_tech': [Facility()],
     'mine_tech': [Facility()],
@@ -44,8 +45,11 @@ class Planet(Defaults):
             self.name = 'Planet_' + str(id(self))
         if 'temperature' not in kwargs and 'sun' in kwargs and 'distance' in kwargs:
             self.temperature = round(self.distance * 0.35 + self.sun.temperature * 0.65 + randint(-15, 15))
-        if 'sun' in kwargs:
-            self.radiation = self.sun.radiation
+        if 'radiation' not in kwargs:
+            if 'sun' in kwargs:
+                self.radiation = self.sun.radiation
+            else:
+                self.radiation = randint(0, 100)
         if 'gravity' not in kwargs:
             self.gravity = randint(0, 100)
         if 'mineral_concentration' not in kwargs:
@@ -251,9 +255,9 @@ class Planet(Defaults):
     and 100 subtracted from the result
     """
     def calc_planet_value(self, race):
-        g = self._calc_range_from_center(self.gravity, race.gravity_start, race.gravity_stop)
-        t = self._calc_range_from_center(self.temperature, race.temperature_start, race.temperature_stop)
-        r = self._calc_range_from_center(self.radiation, race.radiation_start, race.radiation_stop)
+        g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop)
+        t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop)
+        r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop)
         negative_offset = 0
         if t > 1.0 or r > 1.0 or g > 1.0:
             negative_offset = -100.0
