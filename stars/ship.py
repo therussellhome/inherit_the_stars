@@ -6,6 +6,7 @@ from .tech import Tech
 from .location import Location
 from .battle_plan import BattlePlan
 
+
 """ Default values (default, min, max)  """
 __defaults = {
     'location': [Location()],
