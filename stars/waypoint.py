@@ -22,7 +22,7 @@ __defaults = {
     'standoff': [''],
     # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'(intercept if target is a ship)
     'move_on': [False],
-    # True or False
+    'upgrade_if_commanded': [False],
     'recipiants': [{}],
     # 'load':"your; Planet(), Fleet() or empty_space, salvage",
     # 'unload':"your; Planet(), Fleet() or salvege",
@@ -63,11 +63,11 @@ class Waypoint(Defaults):
     
     """ checks the distance between the fleet an the fly_to point """
     def calc_distance(self, location):
-	self.dis_x = ((self.fly_to.x-location.x)**2)**(1/2)
-	self.dis_y = ((self.fly_to.y-location.y)**2)**(1/2)
-	self.dis_z = ((self.fly_to.z-location.z)**2)**(1/2)
-	distance = ((self.dis_x)**2 + (self.dis_y)**2 + (self.dis_z)**2)**(1/2)
-	return distance, self.dis_x, self.dis_y, self.dis_z
+	dis_x = ((self.fly_to.x-location.x)**2)**(1/2)
+	dis_y = ((self.fly_to.y-location.y)**2)**(1/2)
+	dis_z = ((self.fly_to.z-location.z)**2)**(1/2)
+	distance = ((dis_x)**2 + (dis_y)**2 + (dis_z)**2)**(1/2)
+	return distance, dis_x, dis_y, dis_z
     
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet, time_in):
@@ -111,7 +111,7 @@ class Waypoint(Defaults):
     def get_cord(self, location, pre_location, speed, time, time_in):
         cord = Location(location.x, location.y, location.z)
         dis = (speed**2)*(time+time_in)
-        dis_self = (self.speed**2)*(time+time_in)
+        dis_self = (self.speed**2)*(time+time_in)/100
         check_dis =  dis - dis_self
         x = (pre_location.x-location.x)
         y = (pre_location.y-location.y)
@@ -124,8 +124,8 @@ class Waypoint(Defaults):
     """ Predicts the movements of a ship """
     def predict_movment(self, speed, location, pre_location, time_in):
         intercepts = [pre_location, location]
-        for time in range(100):
-            location, check_dis = get_cord(intercepts[-1][0], intercepts[-2][0], speed, time, time_in)
+        for time in range(1000):
+            location, check_dis = get_cord(intercepts[-1][0], intercepts[-2][0], speed, time, time_in*100)
             intercepts.append([location, check_dis])
             if time == 1 or time == 2:
                 intercepts.pop(0)
