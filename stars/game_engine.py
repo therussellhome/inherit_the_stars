@@ -34,6 +34,9 @@ class BaseClass:
 """ Get a referenced class by name """
 def get(reference, create_new=True):
     global __registry
+    # reference must be a string
+    if not reference:
+        raise LookupError('None is not a valid reference')
     # get all of a type
     if reference[-1:] == '/':
         objs = []

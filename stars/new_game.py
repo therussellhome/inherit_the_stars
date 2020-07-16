@@ -17,7 +17,7 @@ __defaults = {
     'new_game_name': [''],
     'new_game_x': [500, 20, 2000], 
     'new_game_y': [500, 20, 2000], 
-    'new_game_z': [200, 20, 2000], 
+    'new_game_z': [500, 20, 2000], 
     'new_game_density': [8, 1, 100],
     'new_game_player_distance': [200, 1, 2000],
     'new_game_player01': ['No Player'],
@@ -75,7 +75,7 @@ __defaults = {
     'new_game_victory_shipsofthewall_number': [150, 50, 1000], 
     'new_game_victory_starbases': [True],
     'new_game_victory_starbases_number': [25, 10, 100], 
-    'new_game_tech_tree': ['Inherit The Stars'],
+    'new_game_tech_tree': ['Default'],
     'options_new_game_tech_tree': [[]],
 }
 
@@ -98,7 +98,7 @@ class NewGame(Defaults):
         self.options_new_game_tech_tree = game_engine.load_list('tech_tree')
         self.options_new_game_tech_tree.insert(0, 'Default')
         # Create the game
-        if action == 'create':
+        if action == 'create' and len(players) > 0:
             game = Game(name=self.new_game_name)
             # Create empty systems
             system_names = []
@@ -121,7 +121,7 @@ class NewGame(Defaults):
                 if not s in homes:
                     s.create_system()
             # Load tech tree
-            if self.new_game_tech_tree == 'Defaults':
+            if self.new_game_tech_tree == 'Default':
                 tech = game_engine.load_defaults('Tech', False)
             else:
                 tech = game_engine.load('tech_tree', self.new_game_tech_tree, False)
@@ -171,12 +171,12 @@ class NewGame(Defaults):
         home_systems = [systems[0]]
         while len(home_systems) < num_players:
             for s in systems:
-                if not s in home_systems:
-                    for h in home_systems:
-                        if s.location - h.location <= player_distance:
-                            break
-                    else:
-                        home_systems.append(s)
+                for h in home_systems:
+                    if s == h or s.location - h.location <= player_distance:
+                        break
+                else:
+                    home_systems.append(s)
+                    if len(home_systems) == num_players:
                         break
             else:
                 player_distance = player_distance * 0.9 - 1
