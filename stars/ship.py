@@ -2,14 +2,22 @@ import sys
 from . import game_engine
 from .defaults import Defaults
 from random import randint
+from .tech import Tech
+from .location import Location
 
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'location': [Location()],
+    'wepons': [[]],
+    'battle_plan': [BattlePlan()],
+    'armor': [1, 0, sys.maxsize],
+    'shealds': [0, 0, sys.maxsize],
+    'initative': [0, 0, sys.maxsize],
 }
 
 
-class Ship(Defaults):
+class Ship(Tech):
     """ Moves on the ship level """
     """ If it has no engines it does an early exit with the empty return """
     def move(self, speed):

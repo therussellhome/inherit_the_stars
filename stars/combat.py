@@ -1,5 +1,6 @@
 from random import random
 from math import cos, sin, pi, atan2
+from .stars_math import TERAMETER_2_LIGHTYEAR
 
 def polar_to_cartesian(dis, lat, lon):
     x = round(cos(lat*pi/180)*dis*cos(lon*pi/180), 5)
@@ -14,7 +15,7 @@ class combat():
     def __init__(self, **kwargs):
         for key in **kwargs:
             self.__dict__[key] = **kwargs[key]
-    """ calculates whare the ship should move to"""
+    """ calculates where the ship should move to"""
     def calc_strategy_m(self, me):
         closest_p = 1021
         closest_s = 1021
@@ -26,7 +27,7 @@ class combat():
         excape = False
         excape2 = False
         for ship in self.everybody:
-            if me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
+            if True #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
                 if me.battle_plan.p_target == 'disengage' or len(ship.wepons) == 0:
                     dis = distance(me, ship)
                     if dis < closest_p:
@@ -74,22 +75,25 @@ class combat():
                             closest_s = dis
                             move_two = ship.location
         if move_to:
-            if not excape:
-                m_dis = closest_p
-            m_lat = atan2(move_to.y, move_to.x)
-            m_lon = atan2(move_to.x, move_to.z)
-            if excape:
-                m_lon += pi
+            return (move_to, excape)
+        #    if not excape:
+        #        m_dis = closest_p
+        #    m_lat = atan2(move_to.y, move_to.x)
+        #    m_lon = atan2(move_to.x, move_to.z)
+        #    if excape:
+        #        m_lon += pi
         elif move_two:
-            if not excape2:
-                m_dis = closest_s
-            m_lat = atan2(move_two.y, move_two.x)
-            m_lon = atan2(move_two.x, move_two.z)
-            if excape2:
-                m_lon += pi
+            return (move_two, excape2)
+        #    if not excape2:
+        #        m_dis = closest_s
+        #    m_lat = atan2(move_two.y, move_two.x)
+        #    m_lon = atan2(move_two.x, move_two.z)
+        #    if excape2:
+        #        m_lon += pi
         else:
-            m_dis = 0
-        return [m_dis, m_lat*180/pi, m_lon*180/pi]
+            return (me.location, False)
+        #    m_dis = 0
+        #return [m_dis, m_lat*180/pi, m_lon*180/pi]
     """ calculates the ship to fire at"""
     def calc_strategy_f(self, me, wepon):
         closest_p = 1021
@@ -97,44 +101,44 @@ class combat():
         fire_at = None
         fire_att = None
         for ship in self.everybody:
-            if me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
-                if me.BattlePlan.p_target == 'any':
+            if True #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
+                if me.battle_plan.p_target == 'any':
                     dis = distance(me, ship)
                     if dis < closest_p:
                         closest_p = dis
                         fire_at = ship
-                elif me.BattlePlan.p_target == 'starbase':
+                elif me.battle_plan.p_target == 'starbase':
                     if ship.__class__ == 'StarBace':
                         dis = distance(me, ship)
                         if dis < closest_p:
                             closest_p = dis
                             fire_at = ship
-                elif me.BattlePlan.p_target == 'ship':
+                elif me.battle_plan.p_target == 'ship':
                     if not ship.__class__ == 'StarBase':
                         dis = distance(me, ship)
                         if dis < closest_p:
                             closest_p = dis
                             fire_at = ship
-                if me.BattlePlan.s_target == 'any':
+                if me.battle_plan.s_target == 'any':
                     dis = distance(me, ship)
                     if dis < closest_s:
                         closest_s = dis
                         fire_att = ship 
-                elif me.BattlePlan.s_target == 'starbase':
+                elif me.battle_plan.s_target == 'starbase':
                     if ship.__class__ == 'StarBace':
                         dis = distance(me, ship)
                         if dis < closest_s:
                             closest_s = dis
                             fire_att = ship
-                elif me.BattlePlan.s_target == 'ship':
+                elif me.battle_plan.s_target == 'ship':
                     if not ship.__class__ == 'StarBase':
                         dis = distance(me, ship)
                         if dis < closest_s:
                             closest_s = dis
                             fire_att = ship
-        if fire_at and closest_p <= wepon.range:
+        if fire_at and closest_p <= wepon.range*TERAMETER_2_LIGHTYEAR:
             return fire_at
-        elif fire_att and closest_s <= wepon.range:
+        elif fire_att and closest_s <= wepon.range*TERAMETER_2_LIGHTYEAR:
             return fire_att
         else:
             return None
@@ -142,11 +146,8 @@ class combat():
 
     def move(self, ship, ships):
         move = self.calc_strategy_m(ship)
-        moved = polar_to_cartesion(min(ship.movement, move[0]), move[1], move[2])
-        ship.location.x += moved[0]
-        ship.location.y += moved[1]
-        ship.location.z += moved[2]
-        save_to_cobat_log()
+        ship.location = ship.loction.move(move[0], ship.max_distance, move[1])
+        self.save_to_cobat_log()
         pass
 
     def fire(self, ship):
@@ -167,7 +168,7 @@ class combat():
     def take_turn(self):
         mi = 0
         for ship in self.everybody
-            ship.calc_initative()
+            #ship.calc_initative()
             if ship.initative > mi:
                 mi = int(ship.initative)
         for i in range(mi, -1, -1):
