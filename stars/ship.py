@@ -8,7 +8,7 @@ __defaults = {
 }
 
 
-class Ship(Defaults):
+class Ship(ShipDesign):
     """ Moves on the ship level """
     """ If it has no engines it does an early exit with the empty return """
     def move(self, speed):
@@ -66,4 +66,5 @@ class Ship(Defaults):
                 p.num_colonists = 0
             if p.num_facilities < 0:
                 p.num_facilities = 0
-        return p            
+        return p
+

@@ -15,7 +15,7 @@ __defaults = {
 
 
 
-class ShipDesign(Defaults):
+class ShipDesign(Tech):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
