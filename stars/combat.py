@@ -1,4 +1,5 @@
 from random import random
+from .defaults import Defaults
 from math import cos, sin, pi, atan2
 from .stars_math import TERAMETER_2_LIGHTYEAR
 
@@ -11,9 +12,10 @@ def polar_to_cartesian(dis, lat, lon):
 def distance(ship1, ship2):
     return (ship1.location-ship2.location)
 
-class Combat():
+class Combat(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+    
     """ calculates where the ship should move to"""
     def calc_strategy_m(self, me):
         closest_p = 1021

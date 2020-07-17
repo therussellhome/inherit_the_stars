@@ -22,7 +22,6 @@ __defaults = {
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
     'player': [Reference()],
-    'location': [],
     'cargo': [Cargo()]
 }
 
@@ -31,23 +30,24 @@ __defaults = {
 class Fleet(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
-        while len(**kwargs['ships']) > 0:
-            ship = kwargs['ships'][0]
-            self.add_ship(ship)
-            kwargs['ships'].remove(ship)
-        del kwargs['ships']
+        self.ships = []
+        if 'ships' in kwargs:
+            ships = kwargs['ships']
+            while len(ships) > 0:
+                ship = ships[0]
+                self.add_ship(ship)
+                ships.remove(ship)
+            del kwargs['ships']
         super().__init__(**kwargs)
-        if not self.name:
-            self.name = 'Fleet #'+str(hex(id(self)))[-7:-1]
+        self.player.fleets.append(self)
+        self.name = 'Fleet #'+str(hex(id(self)))[-7:-1]
         self.compile()
         self.returnn()
     
     """ adds the ships to self.ships """
     def add_ship(self, ship):
         if len(self.ships) == 0:
-            self.location.x = ship.location.x
-            self.location.y = ship.location.y
-            self.location.z = ship.location.z
+            self.location = Location(x=ship.location.x, y=ship.location.y, z=ship.location.z)
             self.ships.append(ship)
         else:
             if (self.location - ship.location) > (stars_math.TERAMETER_2_LIGHTYEAR * 2):
@@ -197,10 +197,7 @@ class Fleet(Defaults):
         
     """ chooses the ship to return the fuel to """
     def return_cargo(self):
-        check = []
-        for ship in self.ships:
-            ship_percent_cargo = (ship.cargo.titanium + ship.cargo.lithium + ship.cargo.silicon + ship.cargo.people) / ship.cargo.cargo_max
-            check.append([ship.persent_cargo, ship])
+        check = [[(ship.cargo.titanium + ship.cargo.lithium + ship.cargo.silicon + ship.cargo.people) / ship.cargo.cargo_max, ship] for ship in self.ships]
         least = 1
         lest = 0
         for i in range(len(check)):
@@ -267,27 +264,27 @@ class Fleet(Defaults):
                 ship.deploy_hyper_denial()
                 hyper_denial = True
         if not hyper_denial:
-            
+            pass
             
     
     """ Merges the fleet with the target fleet """
     def merge(self):
         self.compile()
-        self.waypoints[1].recipiants['merge'].compile()
+        self.waypoints[0].recipiants['merge'].compile()
         for ship in self.ships:
-            self.waypoints[1].recipiants['merge'].ships.append(ship)
+            self.waypoints[0].recipiants['merge'].ships.append(ship)
         self.ships = []
-        self.waypoints[1].recipiants['merge'].fuel += self.fuel
+        self.waypoints[0].recipiants['merge'].fuel += self.fuel
         self.fuel = 0
-        self.waypoints[1].recipiants['merge'].cargo.titanium += self.cargo.titanium
+        self.waypoints[0].recipiants['merge'].cargo.titanium += self.cargo.titanium
         self.cargo.titanium = 0
-        self.waypoints[1].recipiants['merge'].cargo.lithium += self.cargo.lithium
+        self.waypoints[0].recipiants['merge'].cargo.lithium += self.cargo.lithium
         self.cargo.lithium = 0
-        self.waypoints[1].recipiants['merge'].cargo.silicon += self.cargo.silicon
+        self.waypoints[0].recipiants['merge'].cargo.silicon += self.cargo.silicon
         self.cargo.silicon = 0
-        self.waypoints[1].recipiants['merge'].cargo.people += 1
+        self.waypoints[0].recipiants['merge'].cargo.people += self.cargo.people
         self.cargo.people = 0
-        self.waypoints[1].recipiants['merge'].returnn()
+        self.waypoints[0].recipiants['merge'].returnn()
     
     """ splits the fleet """
     def split(self, splits, name=None):
@@ -301,10 +298,11 @@ class Fleet(Defaults):
     
     """ executes the unload function """
     def unload(self, recipiant):
+        if recipiant not in self.player.fleets:
+            return
         self.compile()
-        if recipiant in game_engine.get('Fleet/'):
-            recipiant.compile()
-        for transfer in self.waypoint.transfers['unload']:
+        recipiant.compile()
+        for transfer in self.waypoints[0].transfers['unload']:
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (recipiant.cargo.titanium + recipiant.cargo.lithium + recipiant.cargo.silicon + recipiant.cargo.people)
@@ -359,13 +357,12 @@ class Fleet(Defaults):
                     recipiant.fuel += (recipiant.fuel_max - recipiant.fuel)
                     self.fuel -= (recipiant.fuel_max - recipiant.fuel)
         self.returnn()
-        if recipiant in game_engine.get('Fleet/'):
-            recipiant.returnn()
+        recipiant.returnn()
     
     """ executes the sell function """
     def sell(self, recipiant):
         self.compile()
-        for transfer in self.waypoint.transfers['sell']:
+        for transfer in self.waypoints[0].transfers['sell']:
             item = transfer[0]
             amount = transfer[1]
             traety = self.player.treaties[recipiant.player.name].sell
@@ -428,7 +425,7 @@ class Fleet(Defaults):
     """ executes the buy function """
     def buy(self, recipiant):
         self.compile()
-        for transfer in self.waypoint.transfers['buy']:
+        for transfer in self.waypoints[0].transfers['buy']:
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (self.cargo.titanium + self.cargo.lithium + self.cargo.silicon + self.cargo.people)
@@ -509,17 +506,18 @@ class Fleet(Defaults):
     
     """ executes the load function """
     def load(self, recipiant):
+        if recipiant not in self.player.fleets:
+            return
         self.compile()
-        if recipiant in game_engine.get('Fleet/'):
-            recipiant.compile()
-        for transfer in self.waypoint.transfers['load']:
+        recipiant.compile()
+        for transfer in self.waypoints[0].transfers['load']:
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (self.cargo.titanium + self.cargo.lithium + self.cargo.silicon + self.cargo.people)
             if item == 'titanium':
                 if recipiant.cargo.titanium >= amount and (self.cargo.cargo_max - sum_cargo) >= amount:
                     recipiant.cargo.titanium -= amount
-                    self.cargo.titinium += amount
+                    self.cargo.titanium += amount
                 elif recipiant.cargo.titanium < amount and (self.cargo.cargo_max - sum_cargo) >= recipiant.cargo.titanium:
                     self.cargo.titanium += recipiant.cargo.titanium
                     recipiant.cargo.titanium = 0
@@ -567,37 +565,34 @@ class Fleet(Defaults):
                     self.fuel += (self.fuel_max - self.fuel)
                     recipiant.fuel -= (self.fuel_max - self.fuel)
         self.returnn()
-        if recipiant in game_engine.get('Fleet/'):
-            recipiant.returnn()
+        recipiant.returnn()
     
     """ runs all of the actions """
     def execute(self, action):
         self.waypoint = self.waypoints[0]
         if action in self.waypoint.actions:
-            if action == 'unload' or action == 'pre_unload':
+            if action == 'unload' or action == 'pre_unload' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['unload']
-                if recipiant.x == self.x and recipiant.y == self.y and recipiant.z == self.z:
-                    if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player == self.player:
-                        self.unload(recipiant)
-            if action == 'load' or action == 'pre_load':
+                if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
+                    self.unload(recipiant)
+            if action == 'load' or action == 'pre_load' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['load']
-                if recipiant.x == self.x and recipiant.y == self.y and recipiant.z == self.z:
-                    if recipiant.name == 'salvage' or recipiant.player == self.player:
-                        self.load(recipiant)
-            if action == 'buy' and self.waypoint.recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade:
+                if recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
+                    self.load(recipiant)
+            if action == 'buy' and self.waypoint.recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['buy']
-                if recipiant.player != self.player:
+                if recipiant.player.name != self.player.name:
                     self.buy(recipiant)
-            if action == 'sell' and self.waypoint.recipiants['sell'] in game_engine.get('Planet/') and self.waypoint.recipiants['sell'].space_station.trade:
+            if action == 'sell' and self.waypoint.recipiants['sell'] in game_engine.get('Planet/') and self.waypoint.recipiants['sell'].space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['sell']
-                if recipiant.player != self.player:
+                if recipiant.player.name != self.player.name:
                     self.sell(recipiant)
-            if action == 'deploy_hyper_denial' and self.waypoints[1].speed == 0:
+            if action == 'deploy_hyper_denial' and self.waypoint.speed == 0:
                 self.deploy_hyper_denial()
-            if action == 'merge' and self.waypoints[1].x == self.x and self.waypoints[1].y == self.y and self.waypoints[1].z == self.z:
+            if action == 'merge' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 self.merge()
             
-            
+Fleet.set_defaults(Fleet, __defaults)
 
 """ Ordered list of fleet preactions for use by the Game.generate_turn """
 Fleet.preactions = [

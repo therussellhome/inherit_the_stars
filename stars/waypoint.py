@@ -2,13 +2,13 @@ import sys
 from . import game_engine
 from .race import Race
 from .ship import Ship
-from .fleet import Fleet
+#from .fleet import Fleet
 from .planet import Planet
 from .defaults import Defaults
 from .location import Location
-from .location import locationReference
+#from .location import locationReference
 from .reference import Reference
-from .star_system import Star_System
+#from .star_system import Star_System
 
 
 """ Default values (default, min, max)  """
@@ -61,14 +61,18 @@ class Waypoint(Defaults):
     
     """ checks the distance between the fleet an the fly_to point """
     def calc_distance(self, location):
-	dis_x = ((self.fly_to.x-location.x)**2)**(1/2)
-	dis_y = ((self.fly_to.y-location.y)**2)**(1/2)
-	dis_z = ((self.fly_to.z-location.z)**2)**(1/2)
-	distance = ((dis_x)**2 + (dis_y)**2 + (dis_z)**2)**(1/2)
-	return distance, dis_x, dis_y, dis_z
+        dis_x = ((self.fly_to.x-location.x)**2)**(1/2)
+        dis_y = ((self.fly_to.y-location.y)**2)**(1/2)
+        dis_z = ((self.fly_to.z-location.z)**2)**(1/2)
+        distance = ((dis_x)**2 + (dis_y)**2 + (dis_z)**2)**(1/2)
+        return distance, dis_x, dis_y, dis_z
     
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet, time_in):
+        fleet.compile_scanning()
+        self.fly_to.x = self.location.x
+        self.fly_to.y = self.location.y
+        self.fly_to.z = self.location.z
         if self.stantoff == 'No Standoff':
             for planet in game_engine.get('Planet/'):
                 if self.location is planet.location:
@@ -76,10 +80,6 @@ class Waypoint(Defaults):
             for ship in game_engine.get('Ship/'):
                 if self.location is ship.location:
                     self.calc_intercept(fleet, ship, time_in)            
-        fleet.compile_scanning()
-        self.fly_to.x = self.location.x
-        self.fly_to.y = self.location.y
-        self.fly_to.z = self.location.z
         elif self.standoff == 'Avoid Detection':
             distance = fleet.anti_cloak_scanner
             for ship in fleet.ships:
