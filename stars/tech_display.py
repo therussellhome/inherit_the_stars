@@ -141,7 +141,6 @@ class TechDisplay(Defaults):
                 range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
                 self.weapon_chart_data[i] += weapon.get_power(range_ly, sys.maxsize, 0) * weapon.get_accuracy(range_ly) / 100
         # Scanner
-        range_per_kt = self.chart_scanning / 100
         self.scanner_normal = tech.scanner.normal
         self.scanner_penetrating = tech.scanner.penetrating
         self.scanner_anticloak = tech.scanner.anti_cloak
@@ -149,7 +148,7 @@ class TechDisplay(Defaults):
         self.scanner_chart_data.append(tech.scanner.normal)
         self.scanner_chart_data.append(tech.scanner.penetrating)
         self.scanner_chart_data.append(tech.scanner.anti_cloak)
-        self.scanner_chart_data.append(kt * (1 - tech.cloak / 100.0) * range_per_kt)
+        self.scanner_chart_data.append(tech.scanner.visable_range(kt * (1 - tech.cloak / 100)))
         # Engine
         for engine in tech.engines:
             # Only display the last one

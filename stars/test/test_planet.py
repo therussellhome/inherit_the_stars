@@ -55,20 +55,21 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.temperature = t
         self.planet.radiation = r
         race = self.planet.player.race
-        race.gravity_start = g_start
-        race.gravity_stop = g_stop
-        race.temperature_start = t_start
-        race.temperature_stop = t_stop
-        race.radiation_start = r_start
-        race.radiation_stop = r_stop
+        race.hab_gravity = g_start
+        race.hab_gravity_stop = g_stop
+        race.hab_temperature = t_start
+        race.hab_temperature_stop = t_stop
+        race.hab_radiation = r_start
+        race.hab_radiation_stop = r_stop
         self.assertEqual(self.planet.calc_planet_value(race), expect)
 
     def test_have_babies(self):
+        self.__calcplanet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)
         self.planet.player.race.growth_rate = 10
         self.planet.player.race.maximum_population = 10000000
         self.planet.on_surface.people = 250
         self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 225)
+        self.assertEqual(self.planet.on_surface.people, 274)
         self.planet.player.race.growth_rate = 10
         self.planet.on_surface.people = 0
         self.planet.have_babies()
@@ -80,41 +81,20 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.player.race.growth_rate = 0
         self.planet.on_surface.people = 250
         self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 250)
-        self.planet.player.race.growth_rate = -10
-        self.planet.on_surface.people = 250
-        self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 250)
-        self.planet.player.race.growth_rate = -10
-        self.planet.on_surface.people = 'me'
-        self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 0)
-        self.planet.player.race.growth_rate = 'chicken'
-        self.planet.on_surface.people = 250
-        self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 225)
-        self.planet.planet_value = -100
-        self.planet.player.race.growth_rate = -10
-        self.planet.on_surface.people = 250
-        self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 250)
+        self.assertEqual(self.planet.on_surface.people, 252)
+        self.__calcplanet_value_expect(0, 115, 100, 99, 100, -1, -15, 0, 12, -100)
         self.planet.player.race.growth_rate = 10
         self.planet.on_surface.people = 250
         self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 225)
-        self.planet.planet_value = 100
-        self.planet.player.race.growth_rate = -20
-        self.planet.on_surface.people = 220
-        self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 220)
-        self.planet.planet_value = 0
+        self.assertEqual(self.planet.on_surface.people, 226)
+        self.__calcplanet_value_expect(0, 0, 0, 0, 100, 0, 100, 0, 100, 0)
         self.planet.player.race.growth_rate = 10
         self.planet.on_surface.people = 250
         self.planet.have_babies()
         self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 202)
+        self.assertEqual(self.planet.on_surface.people, 250)
+        self.__calcplanet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)
         self.planet.player.race.growth_rate = 20
-        self.planet.planet_value = 100
         self.planet.on_surface.people = 100
         self.planet.have_babies()
         self.assertEqual(self.planet.on_surface.people, 120)
@@ -126,7 +106,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertEqual(self.planet.on_surface.people, 10000)
         self.planet.on_surface.people = 9999
         self.planet.have_babies()
-        self.assertEqual(self.planet.on_surface.people, 10000)
+        self.assertEqual(self.planet.on_surface.people, 9999)
     
     def test_auto_build(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)

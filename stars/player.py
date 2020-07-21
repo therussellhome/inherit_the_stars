@@ -21,6 +21,7 @@ __defaults = {
     'research_field': [''], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
+    'fleets': [[]]
 }
 
 """ A player in a game """
@@ -29,7 +30,7 @@ class Player(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            self.name = 'Player_' + str(id(self))
+            self.name = 'Player ' + str(id(self))
         game_engine.register(self)
     
     """ Build/research/other economic funcitions """

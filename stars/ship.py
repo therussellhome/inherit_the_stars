@@ -1,14 +1,27 @@
 import sys
 from . import game_engine
 from .defaults import Defaults
+from random import randint
+from .tech import Tech
+from .location import Location
+from .battle_plan import BattlePlan
 
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'location': [Location()],
+    'wepons': [[]],
+    'battle_plan': [BattlePlan()],
+    'armor': [1, 0, sys.maxsize],
+    'shealds': [0, 0, sys.maxsize],
+    'initative': [0, 0, sys.maxsize],
 }
 
 
-class Ship(ShipDesign):
+class Ship(Tech):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
     """ Moves on the ship level """
     """ If it has no engines it does an early exit with the empty return """
     def move(self, speed):
@@ -18,7 +31,7 @@ class Ship(ShipDesign):
         self.x = self.x + ((speed**2)/distance)
         self.y = self.y + ((speed**2)/distance)
         self.z = self.z + ((speed**2)/distance)
-
+    
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
@@ -33,7 +46,7 @@ class Ship(ShipDesign):
         for engine in self.engines:
             fuel += engine.tachometer(speed, mass_per_tachometer) * mass_per_engine * distance
         return fuel
-
+    
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
         if planet.colonized == False:
@@ -47,13 +60,13 @@ class Ship(ShipDesign):
             planet.silicon = si
             planet.lithium = li
         return planet
-
+    
     """ Repairs the ship if it needs it """
     def repair(self, ship):
         if ship.damage_points > 0:
             ship.damage_points -= self.repair_points
         return ship
-
+    
     """ Bombs the planet if the planet is colonized """
     def bomb(self, p):
         if p.colonized == True:
@@ -67,4 +80,5 @@ class Ship(ShipDesign):
             if p.num_facilities < 0:
                 p.num_facilities = 0
         return p
-
+                
+Ship.set_defaults(Ship, __defaults)

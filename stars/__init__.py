@@ -3,6 +3,7 @@ __all__ = [
     'energy_minister', 
     'game_engine', 
     'launch', 
+    'location', 
     'minister',
     'new_game',
     'planet', 
@@ -18,4 +19,9 @@ __all__ = [
     'sun',
     'tech', 
     'tech_display',
+    'cargo',
+    'fleet',
+    'waypoint',
+    'combat',
+    'battle_plan',
 ]

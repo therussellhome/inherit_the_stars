@@ -4,7 +4,7 @@ from zipfile import ZipFile, ZipInfo
 
 
 """ Base directory for saved games, races, etc """
-__game_dir = Path.home() / 'stars' / 'inherit'
+__game_dir = Path.home() / 'Inherit!'
 
 
 """ Registry of all game objects """
@@ -34,6 +34,9 @@ class BaseClass:
 """ Get a referenced class by name """
 def get(reference, create_new=True):
     global __registry
+    # reference must be a string
+    if not reference:
+        raise LookupError('None is not a valid reference')
     # get all of a type
     if reference[-1:] == '/':
         objs = []
@@ -92,10 +95,20 @@ def load(save_type, name, register_objects=True):
         for info in zipfile.infolist():
             obj = from_json(zipfile.read(info))
             objs.append(obj)
-            print(obj)
             if register_objects:
                 register(obj)
-    print(len(objs))
+    return objs
+
+
+""" Load tech from loose files """
+def load_defaults(save_type, register_objects=True):
+    objs = []
+    for fname in ('defaults' / save_type).iterdir():
+        with open(fname, 'r') as f:
+            obj = from_json(f.read(info))
+            objs.append(obj)
+            if register_objects:
+                register(obj)
     return objs
 
 
