@@ -21,6 +21,7 @@ __defaults = {
     'research_field': [''], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
+    'fleets': [[]]
 }
 
 """ A player in a game """
