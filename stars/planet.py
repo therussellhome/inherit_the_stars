@@ -265,5 +265,4 @@ class Planet(Defaults):
     def orbit(self):
         pass
 
-
 Planet.set_defaults(Planet, __defaults)
