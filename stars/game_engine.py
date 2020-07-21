@@ -4,7 +4,7 @@ from zipfile import ZipFile, ZipInfo
 
 
 """ Base directory for saved games, races, etc """
-__game_dir = Path.home() / 'stars' / 'inherit'
+__game_dir = Path.home() / 'Inherit!'
 
 
 """ Registry of all game objects """

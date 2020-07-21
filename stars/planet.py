@@ -94,17 +94,11 @@ class Planet(Defaults):
         if not self.player.is_valid:
             return
         pop = self.on_surface.people * 1000
-        rate = self.player.race.growth_rate / 100.0
+        planet_value = self.calc_planet_value(self.player.race)
+        rate = self.player.race.growth_rate / 100.0 * planet_value / 100.0
         maxpop = self.player.race.population_max
-        maxpop *= self.planet_value / 100
-        if pop < maxpop:
-            p = pop/maxpop
-            rate -= rate*(p**4)
-            pop *= (rate + 1.0)
-        elif pop > maxpop:
-            pop *= (1.0 - rate)
-            if pop < maxpop:
-                pop = maxpop
+        pop = pop + (pop * rate) - (pop * pop / maxpop * rate)
+        print(pop, planet_value, rate, maxpop)
         self.on_surface.people = int(round(pop, -3)/1000)
     
     """ Get the requested minister """
