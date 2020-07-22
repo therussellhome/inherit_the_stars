@@ -15,5 +15,12 @@ class Minerals(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def __add__(self, other):
+        m = Minerals()
+        m.titanium = self.titanium + other.titanium
+        m.lithium = self.lithium + other.lithium
+        m.silicon = self.silicon + other.silicon
+        return m
+
 
 Minerals.set_defaults(Minerals, __defaults)

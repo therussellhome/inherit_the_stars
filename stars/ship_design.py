@@ -1,16 +1,14 @@
+import copy
 import sys
-from . import game_engine
 from .defaults import Defaults
-from .reference import Reference
-from .ship_hull import ShipHull
+from .tech import Tech
 
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'hull': [ShipHull()],
+    'hull': [Tech()],
     'components': [[]],
-    'player': [Reference()],
 }
 
 
@@ -19,27 +17,31 @@ class ShipDesign(Tech):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        game_engine.register(self)
-    def get_armor_strength(self):
-        a = self.hull.armor
-        for c in self.compontent:
-            a += c.armor
-        return a
-    def get_shield_strength(self):
-        b = self.hull.shield
-        for s in self.component:
-            b += s.shield
-        return b
-    def get_cargo_max(self):
-        d = self.hull.cargo
-        for c in self.component:
-            d += c
-        return d
-    def get_fuel_max(self):
-        e = self.hull.fuel
-        for f in self.component:
-            e += f
-        return e
 
 
+    """ Add a component """
+    def add_component(self, tech):
+        self.components.append(copy.copy(tech))
+        self.compute_stats()
 
+
+    """ Recompute self from components """
+    def compute_stats(self):
+        # Reset stats
+        hull = self.hull.__dict__
+        # Start by resetting each field in the hull
+        for name in hull:
+            # Skip strings
+            if not isinstance(hull[name], str):
+                self.__dict__[name] = copy.copy(hull[name])
+                # Extend lists
+                if isinstance(hull[name], list):
+                    for c in self.components:
+                        self.__dict__[name].extend(getattr(c, name))
+                # Add numbers
+                else:
+                    for c in self.components:
+                        self.__dict__[name] += getattr(c, name)
+
+
+ShipDesign.set_defaults(ShipDesign, __defaults)

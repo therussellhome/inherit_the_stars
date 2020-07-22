@@ -27,13 +27,13 @@ class Scanner(Defaults):
             visible_at = min(visible_at, apparent_mass * ly_per_kt)
         return visible_at
 
-    """ Stack another scanner with this one """
-    def stack(self, scanner):
+    def __add__(self, other):
         s = Scanner()
-        s.anti_cloak = stars_math.volume_add(self.anti_cloak, scanner.anti_cloak)
-        s.penetrating = stars_math.volume_add(self.penetrating, scanner.penetrating)
-        s.normal = stars_math.volume_add(self.normal, scanner.normal)
-        return s 
+        s.anti_cloak = stars_math.volume_add(self.anti_cloak, other.anti_cloak)
+        s.penetrating = stars_math.volume_add(self.penetrating, other.penetrating)
+        s.normal = stars_math.volume_add(self.normal, other.normal) 
+        return s
+
     def scan_ships(self, player, location):
         for ship in game_engine.get('Ship/'):
             distance = ship.location - location

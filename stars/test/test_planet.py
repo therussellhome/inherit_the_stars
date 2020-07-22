@@ -43,12 +43,12 @@ class PlanetTestCase(unittest.TestCase):
         self.__calcplanet_value_expect(30, 30, 30, 0, 100, 0, 100, 0, 100, 60)
         self.__calcplanet_value_expect(30, 90, 60, 0, 100, 0, 100, 0, 100, 41)
         self.__calcplanet_value_expect(18, 1, 40, 0, 100, 0, 100, 0, 100, 23) 
-        self.__calcplanet_value_expect(300, 2000, 'me', 0, 100, 0, 100, 0, 100, -9)
-        self.__calcplanet_value_expect(150, 304, 30, -900, 100, 0, -8000, 0, 100, -59)
-        self.__calcplanet_value_expect(-30, 30, -0, 0, 10, 0, 00, 0, 360, -59)
-        self.__calcplanet_value_expect(950, 3300, -430, 0, 100, 0, 1010, 'break', 100, -9)
+        self.__calcplanet_value_expect(300, 2000, 'me', 0, 100, 0, 100, 0, 100, -86)
+        self.__calcplanet_value_expect(150, 304, 30, -900, 100, 0, -8000, 0, 100, -86)
+        self.__calcplanet_value_expect(-30, 30, -0, 0, 10, 0, 00, 0, 360, -86)
+        self.__calcplanet_value_expect(950, 3300, -430, 0, 100, 0, 1010, 'break', 100, -100)
         self.__calcplanet_value_expect(70, 33, -430, 0, 100, 0, 68, 90, 100, -59)
-        self.__calcplanet_value_expect(950, 60, 70, 70, 100, 70, 100, 70, 100, -30)
+        self.__calcplanet_value_expect(950, 60, 70, 70, 100, 70, 100, 70, 100, -75)
 
     def __calcplanet_value_expect(self, g, t, r, g_start, g_stop, t_start, t_stop, r_start, r_stop, expect):
         self.planet.gravity = g

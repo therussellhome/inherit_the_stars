@@ -6,7 +6,7 @@ class ScannerTestCase(unittest.TestCase):
         s = scanner.Scanner()
         s.normal = 100
         s.penatrating = 75
-        c = ship.Ship
+        c = ship.Ship()
         c.location.x = 100
         c.mass = 50
         c.cloak = 80

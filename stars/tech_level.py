@@ -23,5 +23,14 @@ class TechLevel(Defaults):
             return True
         return False
 
+    def __add__(self, other):
+        t = TechLevel()
+        t.energy = max(self.energy, other.energy)
+        t.weapons = max(self.weapons, other.weapons)
+        t.propulsion = max(self.propulsion, other.propulsion)
+        t.construction = max(self.construction, other.construction)
+        t.electronics = max(self.electronics, other.electronics)
+        t.biotechnology = max(self.biotechnology, other.biotechnology)
+        return t
 
 TechLevel.set_defaults(TechLevel, __defaults)

@@ -1,6 +1,6 @@
 import sys
 from random import randint
-from random import random
+from random import uniform
 from .cargo import Cargo
 from .defaults import Defaults
 from .minerals import Minerals
@@ -58,8 +58,8 @@ class Planet(Defaults):
             self.mineral_concentration.titanium += modifier
             self.mineral_concentration.lithium += modifier
             self.mineral_concentration.silicon += modifier
-        if orbit_speed not in kwargs:
-            self.orbit_speed = random(0.01, 1.0)
+        if 'orbit_speed' not in kwargs:
+            self.orbit_speed = uniform(0.01, 1.0)
 
     """ Colonize the planet """
     # player is a Reference to Player

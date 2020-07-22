@@ -25,7 +25,7 @@ __defaults = {
     'ecm': [0, 0, 100],
     'weapons': [[]], # weapon.Weapon()
     'bombs': [[]], # bomb.Bomb()
-    'scanner': [Scanner], # scanner.Scanner()
+    'scanner': [Scanner()], # scanner.Scanner()
     'cloak': [0, 0, 100],
     'engines': [[]], # engine.Engine()
     'shipyard': [0, 0, sys.maxsize],
@@ -56,15 +56,5 @@ class Tech(Defaults):
             # TODO check race requirements
             return True
         return False
-
-    """ Stack the scanners """
-    def stack_scanners(self):
-        stack = None
-        for scanner in self.scanners:
-            if not stack:
-                stack = scanner
-            else:
-                stack = stack.stack(scanner)
-        return stack
 
 Tech.set_defaults(Tech, __defaults)

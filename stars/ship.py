@@ -2,23 +2,21 @@ import sys
 from . import game_engine
 from .defaults import Defaults
 from random import randint
-from .tech import Tech
 from .location import Location
 from .battle_plan import BattlePlan
+from .ship_design import ShipDesign
 
 
 """ Default values (default, min, max)  """
 __defaults = {
     'location': [Location()],
-    'wepons': [[]],
     'battle_plan': [BattlePlan()],
-    'armor': [1, 0, sys.maxsize],
-    'shealds': [0, 0, sys.maxsize],
     'initative': [0, 0, sys.maxsize],
 }
 
 
-class Ship(Tech):
+class Ship(ShipDesign):
+    """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
@@ -81,4 +79,5 @@ class Ship(Tech):
                 p.num_facilities = 0
         return p
                 
+
 Ship.set_defaults(Ship, __defaults)
