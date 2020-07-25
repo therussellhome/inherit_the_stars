@@ -87,7 +87,6 @@ class Planet(Defaults):
     
     """ Operate facilities """
     def generate_resources(self):
-        self.effort = self._calc_effort()
         self._generate_energy()
         self._mine_minerals()
     
