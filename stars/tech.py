@@ -3,6 +3,7 @@ from .defaults import Defaults
 from .cost import Cost
 from .tech_level import TechLevel
 from .scanner import Scanner
+from .cloak import Cloak
 
 
 """ Default values (default, min, max)  """
@@ -26,7 +27,7 @@ __defaults = {
     'weapons': [[]], # weapon.Weapon()
     'bombs': [[]], # bomb.Bomb()
     'scanner': [Scanner()], # scanner.Scanner()
-    'cloak': [0, 0, 100],
+    'cloak': [Cloak()],
     'engines': [[]], # engine.Engine()
     'shipyard': [0, 0, sys.maxsize],
     'repair': [0, 0, sys.maxsize],

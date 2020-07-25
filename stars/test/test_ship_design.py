@@ -16,9 +16,23 @@ class ShipDesignTestCase(unittest.TestCase):
         s.add_component(tech.Tech(shield=321))
         self.assertEqual(s.shield, 444)
 
+    def test_cloak(self):
+        s = ship_design.ShipDesign()
+        self.assertEqual(s.cargo_max, 0)
+        s.add_component(tech.Tech(cloak=cloak.Cloak(percent=50)))
+        s.add_component(tech.Tech(cloak=cloak.Cloak(percent=50)))
+        self.assertEqual(s.cloak.percent, 75)
+
     def test_cargo_max(self):
-        pass
+        s = ship_design.ShipDesign()
+        self.assertEqual(s.cargo_max, 0)
+        s.add_component(tech.Tech(cargo_max=123))
+        s.add_component(tech.Tech(cargo_max=321))
+        self.assertEqual(s.cargo_max, 444)
 
     def test_fuel_max(self):
-        pass
-
+        s = ship_design.ShipDesign()
+        self.assertEqual(s.fuel_max, 0)
+        s.add_component(tech.Tech(fuel_max=123))
+        s.add_component(tech.Tech(fuel_max=321))
+        self.assertEqual(s.fuel_max, 444)
