@@ -48,6 +48,10 @@ __defaults = {
     'starting_mines': [10, 0, 20],
     'starting_power_plants': [10, 0, 20],
     'starting_defenses': [10, 0, 20],
+    'population_per_factory': [1000, 500, 2000],
+    'population_per_mine': [1000, 500, 2000],
+    'population_per_power_plant': [1000, 500, 2000],
+    'population_per_defense': [1000, 500, 2000],
 }
 
 """ Storage class for race parameters """

@@ -101,7 +101,6 @@ class Planet(Defaults):
         rate = self.player.race.growth_rate / 100.0 * planet_value / 100.0
         maxpop = self.player.race.population_max
         pop = pop + (pop * rate) - (pop * pop / maxpop * rate)
-        print(pop, planet_value, rate, maxpop)
         self.on_surface.people = int(round(pop, -3)/1000)
     
     """ Get the requested minister """
@@ -119,8 +118,8 @@ class Planet(Defaults):
     def _generate_energy(self):
         if self.player.is_valid:
             allocation = self._get_minister().power_plants / 100
-            energy_per_plant = self.power_plant_tech.output_per_facility
-            population_per_plant = self.power_plant_tech.population_per_facility
+            energy_per_plant = self.power_plant_tech.facility_output
+            population_per_plant = self.player.race.population_per_power_plant
             operate = min([self.power_plants, allocation * (self.on_surface.people * 1000) / population_per_plant])
             self.player.energy += operate * energy_per_plant
     
@@ -128,7 +127,7 @@ class Planet(Defaults):
     def _calc_max_production_capacity(self):
         if self.player.is_valid:
             allocation = self._get_minister().factories / 100
-            production_capacity_per_factory = self.factory_tech.output_per_facility
+            production_capacity_per_factory = self.factory_tech.facility_output
             effort_per_factory = self.factory_tech.effort_per_facility
             operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
             max_production_capacity = operate * production_capacity_per_plant
@@ -138,9 +137,9 @@ class Planet(Defaults):
     def _mine_minerals(self):
         if self.player.is_valid:
             allocation = self._get_minister().mines / 100
-            minerals_per_mine = self.mine_tech.output_per_facility
-            population_per_mine = self.mine_tech.population_per_facility
-            operate = min([self.power_plants, allocation * self.effort / population_per_plant])
+            minerals_per_mine = self.mine_tech.facility_output
+            population_per_mine = self.player.race.population_per_mine
+            operate = min([self.power_plants, allocation * self.effort / population_per_mine])
             #TODO apply mineral concentration
             self.on_surface.titanium += round(operate * minerals_per_mine)
             self.on_surface.lithium += round(operate * minerals_per_mine)
@@ -162,10 +161,10 @@ class Planet(Defaults):
     #TODO        self.scanner_tech = scanner_tech
             return self.scanner_tech
         else:
-            factory_percent = ((self.factory_tech.population_per_facility * self.factories) / self.on_surface.people) - (minister.factories / 100)
-            power_plant_percent = ((self.power_plant_tech.population_per_facility * self.power_plants) / tself.on_surface.people) - (minister.power_plants / 100)
-            mine_percent = ((self.mine_tech.population_per_facility * self.mines) / self.on_surface.people) - (minister.mines / 100)
-            defense_percent = ((self.defense_tech.population_per_facility * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
+            factory_percent = ((self.player.race.population_per_factory * self.factories) / self.on_surface.people) - (minister.factories / 100)
+            power_plant_percent = ((self.player.race.population_per_power_plant * self.power_plants) / self.on_surface.people) - (minister.power_plants / 100)
+            mine_percent = ((self.player.race.population_per_mine * self.mines) / self.on_surface.people) - (minister.mines / 100)
+            defense_percent = ((self.player.race.population_per_defense * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
             check = [[factory_percent, self.factory_tech], [power_plant_percent, self.power_plant_tech], [mine_percent, self.mine_tech], [defense_percent, self.defense_tech]]
             #print(check)
             least = 1

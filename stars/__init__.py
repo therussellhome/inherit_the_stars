@@ -7,6 +7,7 @@ __all__ = [
     'energy_minister', 
     'fleet',
     'game_engine', 
+    'hyperdenial',
     'launch', 
     'location', 
     'minister',

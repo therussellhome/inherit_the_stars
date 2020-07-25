@@ -29,7 +29,7 @@ class Combat(Defaults):
         excape2 = False
         for ship in self.everybody:
             if True: #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
-                if me.battle_plan.p_target == 'disengage' or len(ship.wepons) == 0:
+                if me.battle_plan.p_target == 'disengage' or len(ship.weapons) == 0:
                     dis = distance(me, ship)
                     if dis < closest_p:
                         closest_p = dis
@@ -52,7 +52,7 @@ class Combat(Defaults):
                         if dis < closest_p:
                             closest_p = dis
                             move_to = ship.location
-                if me.battle_plan.s_target == 'disengage' or len(ship.wepons) == 0:
+                if me.battle_plan.s_target == 'disengage' or len(ship.weapons) == 0:
                     dis = distance(me, ship)
                     if dis < closest_s:
                         closest_s = dis
@@ -152,7 +152,7 @@ class Combat(Defaults):
         pass
 
     def fire(self, ship):
-        for wepon in ship.wepons:
+        for wepon in ship.weapons:
             ship_to_fire_at = self.calc_strategy_f(ship, wepon)
             if ship_to_fire_at:
                 damage = wepon.get_damage(ship.location-ship_to_fire_at.location, ship_to_fire_at.shealds, ship_to_fire_at.armor, ship.Scanner.range_visible(ship_to_fire_at.calc_aparent_mass()), ship_to_fire_at.ecm)

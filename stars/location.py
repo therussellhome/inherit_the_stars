@@ -12,6 +12,7 @@ class Location(game_engine.BaseClass):
         self.x = kwargs.get('x', 0.0)
         self.y = kwargs.get('y', 0.0)
         self.z = kwargs.get('z', 0.0)
+
     """ returns the location to move to """
     def move(self, target, max_distance, away=False):
         if not away:
@@ -22,9 +23,14 @@ class Location(game_engine.BaseClass):
         y = self.y + (self.y-target.y)*f
         z = self.z + (self.z-target.z)*f
         return Loction(x, y, z)
+
     """ Distance between 2 points """
     def __sub__(self, other):
         return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
+
+    """ Equality check """
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.z == other.z
 
 
 """ 

@@ -11,15 +11,6 @@ class PlanetTestCase(unittest.TestCase):
         self.assertEqual(self.planet.on_surface.people, 25000)
         self.assertEqual(self.planet.factories, 2)
 
-    def test_calculate_effort(self):
-        self.planet.on_surface.people = 1000
-        self.assertEqual(self.planet._calc_effort(), 1000000)
-        self.planet.on_surface.people = 500
-        self.assertEqual(self.planet._calc_effort(), 500000)
-        self.planet.on_surface.people = 1000
-        self.planet.player.race.effort_per_kt = 800
-        self.assertEqual(self.planet._calc_effort(), 800000)
-
     def test_generate_energy(self):
         # TODO
         pass

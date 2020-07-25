@@ -1,9 +1,10 @@
 import sys
-from .defaults import Defaults
-from .cost import Cost
-from .tech_level import TechLevel
-from .scanner import Scanner
 from .cloak import Cloak
+from .cost import Cost
+from .defaults import Defaults
+from .hyperdenial import HyperDenial
+from .scanner import Scanner
+from .tech_level import TechLevel
 
 
 """ Default values (default, min, max)  """
@@ -26,13 +27,13 @@ __defaults = {
     'ecm': [0, 0, 100],
     'weapons': [[]], # weapon.Weapon()
     'bombs': [[]], # bomb.Bomb()
-    'scanner': [Scanner()], # scanner.Scanner()
+    'scanner': [Scanner()],
     'cloak': [Cloak()],
     'engines': [[]], # engine.Engine()
     'shipyard': [0, 0, sys.maxsize],
     'repair': [0, 0, sys.maxsize],
     'fuel_generation': [0, 0, sys.maxsize],
-    'hyperdenial': [0, 0, sys.maxsize],
+    'hyperdenial': [HyperDenial()],
     'special_type': [''],
     'colonizer': [False],
     'facility_output': [0.0, 0.0, sys.maxsize],
