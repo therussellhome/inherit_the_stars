@@ -208,7 +208,7 @@ class Fleet(Defaults):
     
     """ evenly distributes the fuel between the ships """
     def return_fuel(self):
-        check = [[ship.fuel / ship.max_fuel, ship] for ship in self.ships]
+        check = [[ship.fuel / ship.fuel_max, ship] for ship in self.ships]
         least = 1
         lest = 0
         for i in range(len(check)):
@@ -368,54 +368,72 @@ class Fleet(Defaults):
             traety = self.player.treaties[recipiant.player.name].sell
             if item == 'titanium' and traety.cost_titanium != None:
                 if self.cargo.titanium >= amount:
+                    if recipiant.player.energy < (amount * traety.cost_titanium):
+                        amount = int(recipiant.player.energy / traety.cost_titanium)
                     self.cargo.titanium -= amount
                     recipiant.on_surface.titanium += amount
                     self.player.energy += (amount * traety.cost_titanium)
                     recipiant.player.energy -= (amount * traety.cost_titanium)
                 else:
                     amount = self.cargo.titanium
+                    if recipiant.player.energy < (amount * traety.cost_titanium):
+                        amount = int(recipiant.player.energy / traety.cost_titanium)
                     self.cargo.titanium -= amount
                     recipiant.on_surface.titanium += amount
                     self.player.energy += (amount * traety.cost_titanium)
                     recipiant.player.energy -= (amount * traety.cost_titanium)
             elif item == 'lithium' and traety.cost_lithium != None:
                 if self.cargo.lithium >= amount:
+                    if recipiant.player.energy < (amount * traety.cost_lithium):
+                        amount = int(recipiant.player.energy / traety.cost_lithium)
                     self.cargo.lithium -= amount
                     recipiant.on_surface.lithium += amount
                     self.player.energy += (amount * traety.cost_lithium)
                     recipiant.player.energy -= (amount * traety.cost_lithium)
                 else:
                     amount = self.cargo.lithium
+                    if recipiant.player.energy < (amount * traety.cost_lithium):
+                        amount = int(recipiant.player.energy / traety.cost_lithium)
                     self.cargo.lithium -= amount
                     recipiant.on_surface.lithium += amount
                     self.player.energy += (amount * traety.cost_lithium)
                     recipiant.player.energy -= (amount * traety.cost_lithium)
             elif item == 'silicon' and traety.cost_silicon != None:
                 if self.cargo.silicon >= amount:
+                    if recipiant.player.energy < (amount * traety.cost_silicon):
+                        amount = int(recipiant.player.energy / traety.cost_silicon)
                     self.cargo.silicon -= amount
                     recipiant.on_surface.silicon += amount
                     self.player.energy += (amount * traety.cost_silicon)
                     recipiant.player.energy -= (amount * traety.cost_silicon)
                 else:
                     amount = self.cargo.silicon
+                    if recipiant.player.energy < (amount * traety.cost_silicon):
+                        amount = int(recipiant.player.energy / traety.cost_silicon)
                     self.cargo.silicon -= amount
                     recipiant.on_surface.silicon += amount
                     self.player.energy += (amount * traety.cost_silicon)
                     recipiant.player.energy -= (amount * traety.cost_silicon)
             elif item == 'fuel' and traety.cost_fuel != None:
                 if self.fuel >= amount and (recipiant.space_station.fuel_max - recipiant.space_station.fuel) >= amount:
+                    if recipiant.player.energy < (amount * traety.cost_fuel):
+                        amount = int(recipiant.player.energy / traety.cost_fuel)
                     self.fuel -= amount
                     recipiant.space_station.fuel += amount
                     self.player.energy += (amount * traety.cost_fuel)
                     recipiant.player.energy -= (amount * traety.cost_fuel)
                 elif self.fuel < amount and (recipiant.space_station.fuel_max - recipiant.space_station.fuel) >= self.fuel:
                     amount = self.fuel
+                    if recipiant.player.energy < (amount * traety.cost_fuel):
+                        amount = int(recipiant.player.energy / traety.cost_fuel)
                     self.fuel -= amount
                     recipiant.spase_station.fuel += amount
                     self.player.energy += (amount * traety.cost_fuel)
                     recipiant.player.energy -= (amount * straety.cost_fuel)
                 elif (recipiant.spase_station.fuel_max - recipiant.spase_station.fuel) < amount and self.fuel >= (recipiant.spase_station.fuel_max - recipiant.spase_station.fuel):
                     amount = (recipiant.fuel_max - recipiant.fuel)
+                    if recipiant.player.energy < (amount * traety.cost_fuel):
+                        amount = int(recipiant.player.energy / traety.cost_fuel)
                     self.fuel -= amount
                     recipiant.spase_station.fuel += amount
                     self.player.energy += (amount * traety.cost_fuel)
@@ -429,75 +447,99 @@ class Fleet(Defaults):
             item = transfer[0]
             amount = transfer[1]
             sum_cargo = (self.cargo.titanium + self.cargo.lithium + self.cargo.silicon + self.cargo.people)
-            traety = self.player.treties[recipiant.player.name].buy
+            traety = self.player.treaties[recipiant.player.name].buy
             if item == 'titanium' and traety.cost_titanium != None:
                 if recipiant.on_surface.titanium >= amount and (self.cargo.cargo_max - sum_cargo) >= amount:
+                    if self.player.energy < (amount * traety.cost_titanium):
+                        amount = int(self.player.energy / traety.cost_titanium)
                     recipiant.on_surface.titanium -= amount
                     self.cargo.titinium += amount
                     self.player.energy -= (amount * traety.cost_titanium)
                     recipiant.player.energy += (amount * traety.cost_titanium)
                 elif recipiant.on_surface.titanium < amount and (self.cargo.cargo_max - sum_cargo) >= recipiant.on_surface.titanium:
                     amount = recipiant.on_surface.titanium
+                    if self.player.energy < (amount * traety.cost_titanium):
+                        amount = int(self.player.energy / traety.cost_titanium)
                     recipiant.cargo.titanium -= amount
                     self.cargo.titinium += amount
                     self.player.energy -= (amount * traety.cost_titanium)
                     recipiant.player.energy += (amount * traety.cost_titanium)
                 elif (self.cargo.cargo_max - sum_cargo) < amount and recipiant.on_surface.titanium >= (self.cargo.cargo_max - sum_cargo):
                     amount = (self.cargo.cargo_max - sum_cargo)
+                    if self.player.energy < (amount * traety.cost_titanium):
+                        amount = int(self.player.energy / traety.cost_titanium)
                     recipiant.on_surface.titanium -= amount
                     self.cargo.titinium += amount
                     self.player.energy -= (amount * traety.cost_titanium)
                     recipiant.player.energy += (amount * traety.cost_titanium)
             elif item == 'lithium' and traety.cost_lithium != None:
                 if recipiant.on_surface.lithium >= amount and (self.cargo.cargo_max - sum_cargo) >= amount:
+                    if self.player.energy < (amount * traety.cost_lithium):
+                        amount = int(self.player.energy / traety.cost_lithium)
                     self.cargo.lithium += amount
                     recipiant.on_surface.lithium -= amount
                     self.player.energy -= (amount * traety.cost_lithium)
                     recipiant.player.energy += (amount * traety.cost_lithium)
                 elif recipiant.on_surface.lithium < amount and (self.cargo.cargo_max - sum_cargo) >= recipiant.on_surface.lithium:
                     amount = recipiant.on_surface.lithium
+                    if self.player.energy < (amount * traety.cost_lithium):
+                        amount = int(self.player.energy / traety.cost_lithium)
                     self.cargo.lithium += amount
                     recipiant.on_surface.lithium -= amount
                     self.player.energy -= (amount * traety.cost_lithium)
                     recipiant.player.energy += (amount * traety.cost_lithium)
                 elif (self.cargo.cargo_max - sum_cargo) < amount and recipiant.on_surface.lithium >= (self.cargo.cargo_max - sum_cargo):
                     amount = (self.cargo.cargo_max - sum_cargo)
+                    if self.player.energy < (amount * traety.cost_lithium):
+                        amount = int(self.player.energy / traety.cost_lithium)
                     self.cargo.lithium += amount
                     recipiant.on_surface.lithium -= amount
                     self.player.energy -= (amount * traety.cost_lithium)
                     recipiant.player.energy += (amount * traety.cost_lithium)
             elif item == 'silicon' and traety.cost_silicon != None:
                 if recipiant.on_surface.silicon >= amount and (self.cargo.cargo_max - sum_cargo) >= amount:
+                    if self.player.energy < (amount * traety.cost_silicon):
+                        amount = int(self.player.energy / traety.cost_silicon)
                     self.cargo.silicon += amount
                     recipiant.on_surface.silicon -= amount
                     self.player.energy -= (amount * traety.cost_silicon)
                     recipiant.player.energy += (amount * traety.cost_silicon)
                 elif recipiant.on_surface.silicon < amount and (self.cargo.cargo_max - sum_cargo) >= recipiant.on_surface.silicon:
                     amount = recipiant.on_surface.silicon
+                    if self.player.energy < (amount * traety.cost_silicon):
+                        amount = int(self.player.energy / traety.cost_silicon)
                     self.cargo.silicon += amount
                     recipiant.on_surface.silicon -= amount
                     self.player.energy -= (amount * traety.cost_silicon)
                     recipiant.player.energy += (amount * traety.cost_silicon)
                 elif (self.cargo.cargo_max - sum_cargo) < amount and recipiant.on_surface.silicon >= (self.cargo.cargo_max - sum_cargo):
                     amount = (self.cargo.cargo_max - sum_cargo)
+                    if self.player.energy < (amount * traety.cost_silicon):
+                        amount = int(self.player.energy / traety.cost_silicon)
                     self.cargo.silicon += amount
                     recipiant.on_surface.silicon -= amount
                     self.player.energy -= (amount * traety.cost_silicon)
                     recipiant.player.energy += (amount * traety.cost_silicon)
             elif item == 'fuel' and traety.cost_fuel != None:
                 if recipiant.space_station.fuel >= amount and (self.fuel_max - self.fuel) >= amount:
+                    if self.player.energy < (amount * traety.cost_fuel):
+                        amount = int(self.player.energy / traety.cost_fuel)
                     self.fuel += amount
                     recipiant.space_station.fuel -= amount
                     self.player.energy -= (amount * traety.cost_fuel)
                     recipiant.player.energy += (amount * traety.cost_fuel)
                 elif recipiant.space_station.fuel < amount and (self.fuel_max - self.fuel) >= recipiant.space_station.fuel:
                     amount = recipiant.space_station.fuel
+                    if self.player.energy < (amount * traety.cost_fuel):
+                        amount = int(self.player.energy / traety.cost_fuel)
                     self.fuel += amount
                     recipiant.space_station.fuel -= amount
                     self.player.energy -= (amount * traety.cost_fuel)
                     recipiant.player.energy += (amount * traety.cost_fuel)
                 elif (self.fuel_max - self.fuel) < amount and recipiant.space_station.fuel >= (self.fuel_max - self.fuel):
                     amount = (self.fuel_max - self.fuel)
+                    if self.player.energy < (amount * traety.cost_fuel):
+                        amount = int(self.player.energy / traety.cost_fuel)
                     self.fuel += amount
                     recipiant.space_station.fuel -= amount
                     self.player.energy -= (amount * traety.cost_fuel)
@@ -583,10 +625,12 @@ class Fleet(Defaults):
                 recipiant = self.waypoint.recipiants['buy']
                 if recipiant.player.name != self.player.name:
                     self.buy(recipiant)
-            if action == 'sell' and self.waypoint.recipiants['sell'] in game_engine.get('Planet/') and self.waypoint.recipiants['sell'].space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+            if action == 'sell':
                 recipiant = self.waypoint.recipiants['sell']
-                if recipiant.player.name != self.player.name:
-                    self.sell(recipiant)
+                if recipiant in game_engine.get('Planet/') and recipiant.space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+                    recipiant = self.waypoint.recipiants['sell']
+                    if recipiant.player.name != self.player.name:
+                        self.sell(recipiant)
             if action == 'deploy_hyper_denial' and self.waypoint.speed == 0:
                 self.deploy_hyper_denial()
             if action == 'merge' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
