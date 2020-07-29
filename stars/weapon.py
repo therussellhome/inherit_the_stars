@@ -9,7 +9,7 @@ __defaults = {
     'armor_multiplier': [0, 0, 200],
     'is_beam': [True],
     'is_multishot': [False],
-    'range': [0.0, 0.0, sys.maxsize], # terameters
+    'range_tm': [0.0, 0.0, sys.maxsize], # terameters
     'accuracy': [100, 0, 100]
 }
 
@@ -20,7 +20,7 @@ class Weapon(Defaults):
 
     """ Get the accuracy of the weapon at a given range """
     def get_accuracy(self, target_ly):
-        range_ly = self.range * stars_math.TERAMETER_2_LIGHTYEAR 
+        range_ly = self.range_tm * stars_math.TERAMETER_2_LIGHTYEAR 
         if not self.is_beam:
             return self.accuracy * (1 - (target_ly / range_ly) ** 4)
         return self.accuracy
@@ -38,8 +38,8 @@ class Weapon(Defaults):
                 difrence = min(power/4, power_to_shield)
                 power_to_shield -= diference
                 power_to_shield += diference
-            return (power_to_armor, power_to_shield)
-        return 0.0
+            return (power_to_sheald, power_to_armor)
+        return (0.0, 0)
 
     """ Calculate the damage of firing the weapon at a ship """
     def get_damage(self, target_ly, shield, armor, visible_ly, ecm):

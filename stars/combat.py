@@ -96,7 +96,7 @@ class Combat(Defaults):
         #    m_dis = 0
         #return [m_dis, m_lat*180/pi, m_lon*180/pi]
     """ calculates the ship to fire at"""
-    def calc_strategy_f(self, me, wepon):
+    def calc_strategy_f(self, me, weapon):
         closest_p = 1021
         closest_s = 1021
         fire_at = None
@@ -109,7 +109,7 @@ class Combat(Defaults):
                         closest_p = dis
                         fire_at = ship
                 elif me.battle_plan.p_target == 'starbase':
-                    if ship.__class__ == 'StarBace':
+                    if ship.__class__ == 'StarBase':
                         dis = distance(me, ship)
                         if dis < closest_p:
                             closest_p = dis
@@ -126,7 +126,7 @@ class Combat(Defaults):
                         closest_s = dis
                         fire_att = ship 
                 elif me.battle_plan.s_target == 'starbase':
-                    if ship.__class__ == 'StarBace':
+                    if ship.__class__ == 'StarBase':
                         dis = distance(me, ship)
                         if dis < closest_s:
                             closest_s = dis
@@ -137,27 +137,29 @@ class Combat(Defaults):
                         if dis < closest_s:
                             closest_s = dis
                             fire_att = ship
-        if fire_at and closest_p <= wepon.range*TERAMETER_2_LIGHTYEAR:
+        if fire_at and closest_p <= weapon.range_tm*TERAMETER_2_LIGHTYEAR:
             return fire_at
-        elif fire_att and closest_s <= wepon.range*TERAMETER_2_LIGHTYEAR:
+        elif fire_att and closest_s <= weapon.range_tm*TERAMETER_2_LIGHTYEAR:
             return fire_att
         else:
             return None
         pass
 
-    def move(self, ship, ships):
+    def move(self, ship):
         move = self.calc_strategy_m(ship)
         ship.location = ship.loction.move(move[0], ship.max_distance, move[1])
         self.save_to_cobat_log()
         pass
 
     def fire(self, ship):
-        for wepon in ship.weapons:
-            ship_to_fire_at = self.calc_strategy_f(ship, wepon)
+        for weapon in ship.weapons:
+            ship_to_fire_at = self.calc_strategy_f(ship, weapon)
             if ship_to_fire_at:
-                damage = wepon.get_damage(ship.location-ship_to_fire_at.location, ship_to_fire_at.shealds, ship_to_fire_at.armor, ship.Scanner.range_visible(ship_to_fire_at.calc_aparent_mass()), ship_to_fire_at.ecm)
+                damage = weapon.get_damage(ship.location-ship_to_fire_at.location, ship_to_fire_at.shealds, ship_to_fire_at.armor, ship.Scanner.range_visible(ship_to_fire_at.calc_aparent_mass()), ship_to_fire_at.ecm)
                 ship_to_fire_at.shealds = damage[0]
                 ship_to_fire_at.armor = damage[1]
+                if ship.armor==0:
+                    ship.blow_up()
             save_to_combat_log()
         pass
 

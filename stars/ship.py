@@ -12,6 +12,8 @@ __defaults = {
     'location': [Location()],
     'battle_plan': [BattlePlan()],
     'initative': [0, 0, sys.maxsize],
+    'armor': [10, 0, sys.maxsize],
+    'shealds': [0, 0, sys.maxsize],
 }
 
 
