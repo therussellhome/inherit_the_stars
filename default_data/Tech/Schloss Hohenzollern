@@ -1,0 +1,19 @@
+{
+    "name": "Schloss Hohenzollern"
+    "category": "Armor",
+    "description": "Schloss is German for castle. It rhymes with floss and starts with the sh sound.",
+    "cost": {
+        "titanium": 11,
+        "lithium": 2,
+        "silicon": 1,
+        "energy": 3000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 12,
+        "__class__": "TechLevel"
+    },
+    "mass": 45,
+    "armor": 275,
+    "__class__": "Tech"
+}

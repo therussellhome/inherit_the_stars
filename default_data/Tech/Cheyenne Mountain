@@ -1,0 +1,19 @@
+{
+    "name": "Cheyenne Mountain"
+    "category": "Armor",
+    "description": "Not to be confused with Cheyenne the capital of Wyoming.  If you don't know what Cheyenne Mountain is, you should look it up.  No wonder I named the best armor after it.",
+    "cost": {
+        "titanium": 25,
+        "lithium": 0,
+        "silicon": 0,
+        "energy": 10000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 24,
+        "__class__": "TechLevel"
+    },
+    "mass": 30,
+    "armor": 1500,
+    "__class__": "Tech"
+}

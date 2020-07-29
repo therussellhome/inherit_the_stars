@@ -1,0 +1,19 @@
+{
+    "name": "Hallaton Castle"
+    "category": "Armor",
+    "description": "armor",
+    "cost": {
+        "titanium": 9,
+        "lithium": 1,
+        "silicon": 0,
+        "energy": 2500,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 9,
+        "__class__": "TechLevel"
+    },
+    "mass": 50,
+    "armor": 180,
+    "__class__": "Tech"
+}
