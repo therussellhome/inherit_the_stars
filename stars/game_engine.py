@@ -103,7 +103,7 @@ def load(save_type, name, register_objects=True):
 """ Load tech from loose files """
 def load_defaults(save_type, register_objects=True):
     objs = []
-    for fname in ('defaults' / save_type).iterdir():
+    for fname in ('..' / 'default_data' / save_type).iterdir():
         with open(fname, 'r') as f:
             obj = from_json(f.read(info))
             objs.append(obj)
