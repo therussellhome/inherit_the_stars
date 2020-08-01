@@ -16,6 +16,7 @@ __all__ = [
     'player', 
     'race_editor',
     'reference', 
+    'render_stars',
     'scanner',
     'ship',
     'ship_design',

@@ -2,6 +2,7 @@
 let json_map = {};
 let charts = {};
 let game_mode = 'host';
+let current_screen = 'home';
 
 // Initialize the fields from python
 function init() {
@@ -38,6 +39,16 @@ function toggle(start, css_class, force = null) {
 
 // Show a given screen, hide all others, highlight the clicked button
 function show_screen(show) {
+    // Handle button toggle
+    if((show != 'home') && (show == current_screen)) {
+        if(game_mode == 'host') {
+            show = 'home';
+        } else {
+            show = null;
+        }
+    }
+    current_screen = show;
+    // Reset associated data
     if(json_map.hasOwnProperty(show)) {
         post(show, '?reset');
     }
@@ -58,10 +69,23 @@ function show_screen(show) {
 
 // Show the home screen
 function show_home() {
+    toggle(document.getElementById('play_mode'), 'hide', true);
     game_mode = 'host';
-    toggle(document.getElementById('sidebar_host'), 'hide', false);
     toggle(document.getElementById('sidebar_play'), 'hide', true);
+    toggle(document.getElementById('sidebar_host'), 'hide', false);
     show_screen('home');
+}
+
+// Switch to play mode
+function launch_player(token) {
+    if(token.value != '') {
+        game_mode = 'play';
+        post('render_stars');
+        toggle(document.getElementById('sidebar_host'), 'hide', true);
+        toggle(document.getElementById('sidebar_play'), 'hide', false);
+        show_screen();
+        toggle(document.getElementById('play_mode'), 'hide', false);
+    }
 }
 
 // Submit data for actioning
@@ -70,27 +94,28 @@ function post(form, action = '') {
     if(!json_map.hasOwnProperty(form)) {
         json_map[form] = {};
     }
-    // Update the json
+    // Only post what is in both the map and has an element
+    json_post = {}
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {
             if(element.nodeName == 'DIV') {
                 value = element.noUiSlider.get();
                 if(Array.isArray(value)) {
-                    json_map[form][key] = parseFloat(value[0]);
-                    json_map[form][key + '_stop'] = parseFloat(value[1]);
+                    json_post[key] = parseFloat(value[0]);
+                    json_post[key + '_stop'] = parseFloat(value[1]);
                 } else {
-                    json_map[form][key] = parseFloat(value);
+                    json_post[key] = parseFloat(value);
                 }
             } else if(element.matches('[type="checkbox"]')) {
-                json_map[form][key] = element.checked;
+                json_post[key] = element.checked;
             } else {
-                json_map[form][key] = element.value;
+                json_post[key] = element.value;
             }
         }
     }
     // Fetch and process the response
-    fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_map[form]) }).then(response => 
+    fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_post) }).then(response => 
         response.json().then(json => ({
             json: json,
             url: response.url
@@ -103,14 +128,14 @@ function post(form, action = '') {
 // Update the fields and the cache
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
+    // Store the entire response to the cache
+    json_map[form] = json;
     for(key in json) {
         element = document.getElementById(key);
         if(element != null) {
-            json_map[form][key] = json[key];
             if(element.nodeName == 'DIV') {
                 value = [json[key]];
                 if(json.hasOwnProperty(key + '_stop')) {
-                    json_map[form][key + '_stop'] = json[key + '_stop'];
                     value.push(json[key + '_stop']);
                 }
                 element.noUiSlider.set(value);
@@ -127,10 +152,10 @@ function parse_json(url, json) {
                     }
                     options.splice(options.indexOf(opt_text), 1);
                 }
-                for(opt_text in options) {
-                    for(var i = 0; i < element.length; i++) {
-                        if(element.options[i].text == opt_text) {
-                            element.remove(i);
+                for(var i = 0; i < options.length; i++) {
+                    for(var j = 0; j < element.length; j++) {
+                        if(element.options[j].text == options[i]) {
+                            element.remove(j);
                             break;
                         }
                     }
@@ -157,6 +182,15 @@ function parse_json(url, json) {
 // Confirm if everyone is submitted before generating
 function host_generate() {
     alert('TODO');
+}
+
+// Render the stars, planets, etc
+function render_stars() {
+    if(json_map.hasOwnProperty('render_stars')) {
+        if(json_map['render_stars'].hasOwnProperty('systems')) {
+            draw_stars();
+        }
+    }
 }
 
 // Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
