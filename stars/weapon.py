@@ -1,6 +1,7 @@
 import sys
 from . import stars_math
 from .defaults import Defaults
+from random import randint
 
 
 """ Default values (default, min, max)  """
@@ -27,7 +28,7 @@ class Weapon(Defaults):
 
     """ Get the power at a given range for a given shield and armor """
     def get_power(self, target_ly, shield, armor):
-        range_ly = self.range * stars_math.TERAMETER_2_LIGHTYEAR 
+        range_ly = self.range_tm * stars_math.TERAMETER_2_LIGHTYEAR 
         if target_ly < range_ly:
             power = self.power
             if self.is_beam:
@@ -38,7 +39,7 @@ class Weapon(Defaults):
                 difrence = min(power/4, power_to_shield)
                 power_to_shield -= diference
                 power_to_shield += diference
-            return (power_to_sheald, power_to_armor)
+            return (power_to_shield, power_to_armor)
         return (0.0, 0)
 
     """ Calculate the damage of firing the weapon at a ship """
@@ -46,6 +47,6 @@ class Weapon(Defaults):
         if self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5) <= randint(0, 100):
             return 0
         damage = self.get_power(target_ly, shield, armor)
-        return (sheald-damage[0], armor-damage[1])
+        return (shield-damage[0], armor-damage[1])
 
 Weapon.set_defaults(Weapon, __defaults)
