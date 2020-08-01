@@ -19,7 +19,7 @@ def register(obj):
 
 
 """ Unregister objects to keep them from being part of the save game """
-def unregister(obj):
+def unregister(obj=None):
     global __registry
     if obj:
         __registry.remove(obj)
@@ -102,7 +102,7 @@ def load(save_type, name, register_objects=True):
 
 
 """ Load tech from loose files """
-def load_defaults(save_type, register_objects=True):
+def load_defaults(save_type, register_objects=False):
     objs = []
     for fname in (__default_data / save_type).iterdir():
         with open(fname, 'r') as f:

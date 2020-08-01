@@ -127,7 +127,7 @@ class NewGame(Defaults):
                     game_engine.register(s)
             # Load tech tree
             if self.new_game_tech_tree == 'Default':
-                tech = game_engine.load_defaults('Tech', False)
+                tech = game_engine.load_defaults('Tech')
             else:
                 tech = game_engine.load('tech_tree', self.new_game_tech_tree, False)
             # Protect against other objects in a tech tree file

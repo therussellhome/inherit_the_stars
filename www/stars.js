@@ -70,6 +70,7 @@ function show_screen(show) {
 // Show the home screen
 function show_home() {
     toggle(document.getElementById('play_mode'), 'hide', true);
+    document.getElementById('player_token').value = '';
     game_mode = 'host';
     toggle(document.getElementById('sidebar_play'), 'hide', true);
     toggle(document.getElementById('sidebar_host'), 'hide', false);
