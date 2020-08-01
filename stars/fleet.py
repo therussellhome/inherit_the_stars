@@ -285,16 +285,21 @@ class Fleet(Defaults):
         self.waypoints[0].recipiants['merge'].cargo.people += self.cargo.people
         self.cargo.people = 0
         self.waypoints[0].recipiants['merge'].returnn()
+        self.player.fleets.remove(self)
     
     """ splits the fleet """
-    def split(self, splits, name=None):
+    def split(self):
         ships = []
-        for split in splits:
-            ships.append(self.ships[split])
-        for ship in ships:
+        for ship in self.waypoints[0].split_out:
+            ships.append(ship)
             self.ships.remove(ship)
-        #fleet = Fleet('ships'=ships, 'name'=name)
-        #self.player.fleets.append(fleet)
+        fleet = Fleet(ships=ships, player=self.player)
+    
+    """ transfers the fleet """
+    def transfer(self):
+        self.player.fleets.remove(self)
+        self.player = self.waypoints[0].recipiants['transfer']
+        self.player.fleets.append(self)
     
     """ executes the unload function """
     def unload(self, recipiant):
@@ -635,6 +640,10 @@ class Fleet(Defaults):
                 self.deploy_hyper_denial()
             if action == 'merge' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 self.merge()
+            if action == 'split' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+                self.split()
+            if action == 'transfer' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+                self.transfer()
             
 Fleet.set_defaults(Fleet, __defaults)
 
