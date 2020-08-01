@@ -1,5 +1,6 @@
 __all__ = [
     'battle_plan',
+    'bomb',
     'cargo',
     'cloak',
     'combat',
