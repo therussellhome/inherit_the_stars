@@ -1,4 +1,5 @@
 import sys
+from . import game_engine
 from random import randint
 from random import uniform
 from .cargo import Cargo
@@ -60,6 +61,7 @@ class Planet(Defaults):
             self.mineral_concentration.silicon += modifier
         if 'orbit_speed' not in kwargs:
             self.orbit_speed = uniform(0.01, 1.0)
+        game_engine.register(self)
 
     """ Colonize the planet """
     # player is a Reference to Player
