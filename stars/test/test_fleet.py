@@ -4,9 +4,9 @@ class FleetCase(unittest.TestCase):
     def start1(self):
         self.p1 = player.Player()
         self.p2 = player.Player()
-        self.ship_1 = ship.Ship(location=location.Location(), cargo=cargo.Cargo(titanium=100, cargo_max=200), fuel=0, fuel_max=10000)
-        self.ship_2 = ship.Ship(location=location.Location(), cargo=cargo.Cargo(people=100, cargo_max=200), fuel=0, fuel_max=10000)
-        self.fleet_one = fleet.Fleet(player=reference.Reference(self.p1), ships=[self.ship_1, self.ship_2], waypoints=[waypoint.Waypoint(actions=['split', 'transfer'], recipiants={'transfer':reference.Reference(self.p2)}, location=location.Location(), split_out=[self.ship_1, self.ship_2])], cargo=cargo.Cargo(), fuel=0, fuel_max=0)
+        self.ship_1 = ship.Ship(engines=[engine.Engine(speed_divisor=10.0, speed_exponent=5.0, antimatter_siphon=0.0, kt_exponent=1.5)], location=location.Location(), cargo=cargo.Cargo(titanium=100, cargo_max=200), fuel=0, fuel_max=10000)
+        self.ship_2 = ship.Ship(engines=[engine.Engine(speed_divisor=10.0, speed_exponent=5.0, antimatter_siphon=0.0, kt_exponent=1.5)], location=location.Location(), cargo=cargo.Cargo(people=100, cargo_max=200), fuel=0, fuel_max=10000)
+        self.fleet_one = fleet.Fleet(player=reference.Reference(self.p1), ships=[self.ship_1, self.ship_2], waypoints=[waypoint.Waypoint(actions=['split'], location=location.Location(), splits=[[self.ship_1, self.ship_2]]), waypoint.Waypoint(actions=['transfer'], speed=1, move_on=False, standoff='No Standoff', recipiants={'transfer':reference.Reference(self.p2)}, location=location.Location(x=1, y=1, z=1))], cargo=cargo.Cargo(), fuel=0, fuel_max=0)
         self.ship_3 = ship.Ship(location=location.Location(), cargo=cargo.Cargo(silicon=100, cargo_max=100), fuel=0, fuel_max=10000)
         self.ship_4 = ship.Ship(location=location.Location(), cargo=cargo.Cargo(lithium=100, cargo_max=300), fuel=0, fuel_max=10000)
         self.fleet_two = fleet.Fleet(player=reference.Reference(self.p1), ships=[self.ship_3, self.ship_4], waypoints=[waypoint.Waypoint(actions=['merge', 'load', 'unload'], transfers={'unload':[['lithium', 60], ['silicon', 40]], 'load':[['titanium', 60], ['people', 40]]}, recipiants={'merge':self.fleet_one, 'load':self.fleet_one, 'unload':self.fleet_one}, location=location.Location(x=self.fleet_one.location.x, y=self.fleet_one.location.y, z=self.fleet_one.location.z))], cargo=cargo.Cargo(), fuel=0, fuel_max=0)
@@ -52,7 +52,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_8.cargo.lithium, 38)
         self.assertEqual(self.ship_8.cargo.silicon, 37)
     
-    def merge_split(self):
+    def t_merge(self):
         self.fleet_two.execute('merge')
         self.assertEqual(self.ship_1.cargo.titanium, 25)
         self.assertEqual(self.ship_1.cargo.people, 25)
@@ -70,21 +70,27 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_4.cargo.people, 38)
         self.assertEqual(self.ship_4.cargo.lithium, 38)
         self.assertEqual(self.ship_4.cargo.silicon, 37)
+        
+    def t_split(self):
         self.fleet_one.execute('split')
         self.assertEqual(self.p1.fleets[1].ships[0], self.ship_1)
         self.assertEqual(self.p1.fleets[1].ships[1], self.ship_2)
         self.fleet_two = self.p1.fleets[1]
         
-    def transfer(self):
+    def t_transfer(self):
         self.fleet_one.execute('transfer')
-        self.assertEqual(self.p2.fleets[0], self.fleet_one)
         self.assertEqual(self.p1.fleets[0], self.fleet_two)
+        self.assertEqual(self.p2.fleets[0], self.fleet_one)
         
-    
-    def buy_sell(self):
+    def t_move(self):
+        for i in range(175):
+            self.fleet_one.move()
+        self.assertEqual(self.fleet_one.location.x, 1)
+        self.assertEqual(self.fleet_one.location.y, 1)
+        self.assertEqual(self.fleet_one.location.z, 1)
+        
+    def t_sell(self):
         self.fleet_three.execute('sell')
-        #p2 90000+80180=170180-420=169760
-        #p1 90000-80180=9820+420=10240
         self.assertEqual(self.p1.energy, 9820)
         self.assertEqual(self.p2.energy, 170180)
         self.assertEqual(self.ultimantico.on_surface.titanium, 1020)
@@ -97,6 +103,8 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_7.fuel, 0)
         self.assertEqual(self.ship_8.cargo.titanium, 30)
         self.assertEqual(self.ship_8.fuel, 0)
+        
+    def t_buy(self):
         self.fleet_three.execute('buy')
         self.assertEqual(self.p1.energy, 10240)
         self.assertEqual(self.p2.energy, 169760)
@@ -112,7 +120,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_8.cargo.silicon, 60)
         
         
-    def load_unload(self):
+    def t_load(self):
         self.fleet_two.execute('load')
         self.assertEqual(self.ship_1.cargo.titanium, 20)
         self.assertEqual(self.ship_1.cargo.people, 30)
@@ -122,6 +130,8 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_3.cargo.people, 10)
         self.assertEqual(self.ship_4.cargo.titanium, 45)
         self.assertEqual(self.ship_4.cargo.people, 30)
+        
+    def t_unload(self):
         self.fleet_two.execute('unload')
         self.assertEqual(self.ship_1.cargo.lithium, 30)
         self.assertEqual(self.ship_1.cargo.silicon, 20)
@@ -133,16 +143,24 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_4.cargo.silicon, 45)
     
     def test_fleet_actions(self):
-        print('setup 1 with test', end=', ')
+        print('setup 1 with test', end='; ')
         self.start1()
-        print('testing load and unload', end=', ')
-        self.load_unload()
-        print('testing merge and split', end=', ')
-        self.merge_split()
-        print('testing transfer', end=', ')
-        self.transfer()
-        print('setup 2 with test', end=', ')
+        print('testing load; ', end='')
+        self.t_load()
+        print('testing unload; ', end='')
+        self.t_unload()
+        print('testing merge; ', end='')
+        self.t_merge()
+        print('testing split; ', end='')
+        self.t_split()
+        print('testing move', end='; ')
+        self.t_move()
+        print('testing transfer', end='; ')
+        self.t_transfer()
+        print('setup 2 with test', end='; ')
         self.start2()
-        print('testing buy and sell', end='. ')
-        self.buy_sell()
+        print('testing sell', end='. ')
+        self.t_sell()
+        print('testing buy; ', end='')
+        self.t_buy()
         print('Sucsuss!')

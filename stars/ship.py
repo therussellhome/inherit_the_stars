@@ -44,6 +44,16 @@ class Ship(ShipDesign):
         for engine in self.engines:
             fuel += engine.tachometer(speed, mass_per_tachometer) * mass_per_engine * distance
         return fuel
+
+    """ Calculates how much fuel it will take to move """
+    """ Coded for use of the fleet """
+    """ If there are no engines it returns 0 because it doesn't use any fuel """
+    def burn_fuel(self, speed, in_hyper_denial, distance, x, y, z):
+        fuel = self.fuel_check(speed, in_hyper_denial, distance)
+        self.location.x = x
+        self.location.y = y
+        self.location.z = z
+        return fuel
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
