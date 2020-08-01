@@ -16,6 +16,7 @@ _handlers = {
     '/new_game': new_game.NewGame(),
     '/launch': launch.Launch(),
     '/race_editor': race_editor.RaceEditor(),
+    '/render_stars': render_stars.RenderStars(),
     '/tech': tech_display.TechDisplay(),
 }
 

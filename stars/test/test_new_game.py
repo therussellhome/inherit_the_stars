@@ -6,13 +6,13 @@ class NewGameTestCase(unittest.TestCase):
     def test_calc_num_systems(self):
         ng = new_game.NewGame()
         self.assertEqual(ng.calc_num_systems(500, 500, 500, 8), 524)
-        self.assertEqual(ng.calc_num_systems(0, 500, 500, 8), 209)
-        self.assertEqual(ng.calc_num_systems(0, 50, 500, 8), 21)
+        self.assertEqual(ng.calc_num_systems(500, 500, 0, 8), 209)
+        self.assertEqual(ng.calc_num_systems(500, 50, 0, 8), 21)
         self.assertEqual(ng.calc_num_systems(50, 50, 50, 8), 1)
         self.assertEqual(ng.calc_num_systems(50, 50, 50, 50), 3)
         self.assertEqual(ng.calc_num_systems(25, 25, 100, 50), 2)
         self.assertEqual(ng.calc_num_systems(25, 50, 100, 50), 3)
-        self.assertEqual(ng.calc_num_systems(1, 1, 1, 50), 209)
+        self.assertEqual(ng.calc_num_systems(2, 2, 1, 50), 0)
 
     def test_create_systems(self):
         ng = new_game.NewGame()
