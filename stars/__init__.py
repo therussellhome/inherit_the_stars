@@ -4,6 +4,7 @@ __all__ = [
     'cargo',
     'cloak',
     'combat',
+    'cost',
     'defaults', 
     'energy_minister', 
     'fleet',
