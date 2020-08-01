@@ -31,7 +31,6 @@ class Player(Defaults):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Player ' + str(id(self))
-        game_engine.register(self)
     
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn

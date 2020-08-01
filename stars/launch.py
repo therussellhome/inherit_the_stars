@@ -43,6 +43,8 @@ __defaults = {
     'launch_player16': ['No Player'],
     'launch_player16_status': [''],
     'launch_loaded_autogen': ['Auto Generate: DISABLED'],
+    # Shared with other forms and used to identify player
+    'player_token': [''],
 }
 
 
@@ -85,6 +87,10 @@ class Launch(Defaults):
                 self.launch_loaded_autogen = 'Auto Generate: ENABLED'
             else:
                 self.launch_loaded_autogen = 'Auto Generate: DISABLED'
+            if self.launch_player != 'Host Mode':
+                for p in games[0].players:
+                    if self.launch_player == p.name:
+                        self.player_token = str(id(p))
         # Load the players
         for i in range(1, 17):
             key = 'launch_player{:02d}'.format(i)

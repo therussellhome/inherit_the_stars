@@ -7,6 +7,7 @@
 <script src="chart.js"></script>
 <link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
+<!-- Simple UI --><script src="render_stars.js"></script>
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
@@ -52,7 +53,10 @@
             <td class="hfill" colspan="2">Auto Generate: <input id="launch_autogen" type="checkbox" onchange="post('launch')"/></td>
         </tr><tr>
             <td>Player:</td>
-            <td class="hfill"><select id="launch_player" class="hfill" onchange="post('launch')"/></td>
+            <td class="hfill">
+                <select id="launch_player" class="hfill" onchange="post('launch')"/>
+                <input id="player_token" disabled="true" class="onsubmit" style="display: none" onsubmit="launch_player(this)"/>
+            </td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
@@ -139,16 +143,19 @@
             <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">
+            + Galaxy
+            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="new_game_num_systems"/>
+        </caption>
         <tr>
             <td>Diameter: X axis</td>
-            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Y axis</td>
-            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Z axis</td>
-            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>System Density</td>
             <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 1, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"/></td>
@@ -419,14 +426,55 @@
 </td></tr></table>
 
 
-<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 66px; height: 100%">
-    <iframe src="/help.html" style="width: 100%; height: 99%"/>
+<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
+    <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
 </div></div>
 
 
 <div class="screen overlay_message hide" id="screen_shutdown" style="font-size: 300%">
     Thank you for playing
 </div>
+
+
+<div class="hide onsubmit" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
+    <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none" onmousedown="draw_stars_pan_start(event)"></div>
+</div>
+
+
+<div class="screen hide onload" id="screen_empire" style="width: 600px" onload="post('empire')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Launch</td>
+    </tr></table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Score</caption>
+        <tr>
+            <td class="hfill"><input id="empire_player01" disabled="true" class="hfill"/></td>
+            <td><input id="empire_player01_score" disabled="true"/></td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+</div>
+
+
+<div class="screen hide onload" id="screen_ships" style="width: 600px" onload="post('ships')">
+</div>
+
+
+<div class="screen hide onload" id="screen_search" style="width: 600px" onload="post('search')">
+</div>
+
+
+<div class="screen hide onload" id="screen_generate" style="width: 600px" onload="post('generate')">
+</div>
+
+
+<div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+</div>
+
+
 <!--
 S!
 + (fas fa-plus) New Game
