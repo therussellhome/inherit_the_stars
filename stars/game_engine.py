@@ -5,6 +5,7 @@ from zipfile import ZipFile, ZipInfo
 
 """ Base directory for saved games, races, etc """
 __game_dir = Path.home() / 'Inherit!'
+__default_data = Path(__file__).parent.parent / 'default_data'
 
 
 """ Registry of all game objects """
@@ -18,7 +19,7 @@ def register(obj):
 
 
 """ Unregister objects to keep them from being part of the save game """
-def unregister(obj):
+def unregister(obj=None):
     global __registry
     if obj:
         __registry.remove(obj)
@@ -101,11 +102,11 @@ def load(save_type, name, register_objects=True):
 
 
 """ Load tech from loose files """
-def load_defaults(save_type, register_objects=True):
+def load_defaults(save_type, register_objects=False):
     objs = []
-    for fname in ('defaults' / save_type).iterdir():
+    for fname in (__default_data / save_type).iterdir():
         with open(fname, 'r') as f:
-            obj = from_json(f.read(info))
+            obj = from_json(f.read())
             objs.append(obj)
             if register_objects:
                 register(obj)
