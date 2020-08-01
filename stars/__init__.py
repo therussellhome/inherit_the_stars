@@ -12,6 +12,7 @@ __all__ = [
     'hyperdenial',
     'launch', 
     'location', 
+    'minerals',
     'minister',
     'new_game',
     'planet', 
