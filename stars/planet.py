@@ -66,13 +66,12 @@ class Planet(Defaults):
     """ Colonize the planet """
     # player is a Reference to Player
     # because minister names can change, minister is a string
-    def colonize(self, player, minister, population, factories, power_plants, mines, titanium, lithium, silicon):
+    # TODO change population to cargo_dump
+    def colonize(self, player, minister, population, factories=1, power_plants=1, mines=1):
         self.player = player
         self.minister = minister
         self.on_surface.people = int(population)
-        self.on_surface.titanium += int(titanium)
-        self.on_surface.lithium += int(lithium)
-        self.on_surface.silicon += int(silicon)
+        #self.on_surface += cargo_dump
         self.factories += int(factories)
         self.power_plants += int(power_plants)
         self.mines += int(mines)

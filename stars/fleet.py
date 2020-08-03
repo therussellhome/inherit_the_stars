@@ -244,17 +244,11 @@ class Fleet(Defaults):
     """ gathers all of the minerals and fuel from the ships to the fleet """
     def compile(self):
         self.fuel_max = 0
-        self.cargo.cargo_max = 0
+        self.cargo = Cargo()
         for ship in self.ships:
-            self.cargo.titanium += ship.cargo.titanium
-            self.cargo.lithium += ship.cargo.lithium
-            self.cargo.silicon += ship.cargo.silicon
-            self.cargo.people += ship.cargo.people
-            self.cargo.cargo_max += ship.cargo.cargo_max
-            ship.cargo.titanium = 0
-            ship.cargo.lithium = 0
-            ship.cargo.silicon = 0
-            ship.cargo.people = 0
+            self.cargo += ship.cargo
+            cargo_max = ship.cargo.cargo_max
+            ship.cargo = Cargo(cargo_max)
             self.fuel_max += ship.fuel_max
             self.fuel += ship.fuel
             ship.fuel = 0
@@ -556,32 +550,12 @@ class Fleet(Defaults):
         self.returnn()
         
     """ telles the ships in the fleet that can colonize to colonize the planet """
-    def colonize(self):
+    def colonize(self, player):
         planet = self.waypoints[0].location
         if planet.player.is_valid:
             return
-        pop = 0
-        factories = 0
-        power_plants = 0
-        mines = 0
-        titanium = 0
-        lithium = 0
-        silicon = 0
         for ship in self.ships:
-            if ship.can_colonize == True:
-                ships.append(ship)
-                self.ships.remove(ship)
-                pop += ship.cargo.people
-                titanium = ship.cargo.titanium
-                lithium = ship.cargo.lithium
-                silicon = ship.cargo.silicon
-                factories += ship.colonize_factories
-                power_plants += ship.colonize_power_plants
-                mines += ship.colonize_mines
-        if len(ships) >= 1:
-            planet.colonize(self.player, 'default', pop, factories, power_plants, mines, titanium, lithium, silicon)
-        for ship in ships:
-            ship.scrap(True)
+            ship.colonize(player, planet)
     
     """ scraps the fleet """
     def scrap(self):
@@ -595,6 +569,7 @@ class Fleet(Defaults):
             return
         self.compile()
         recipiant.compile()
+        print('recipiat is fleet')
         for transfer in self.waypoints[0].transfers['load']:
             item = transfer[0]
             amount = transfer[1]
@@ -656,13 +631,16 @@ class Fleet(Defaults):
     def execute(self, action):
         self.waypoint = self.waypoints[0]
         if action in self.waypoint.actions:
+            print(action)
             if action == 'unload' or action == 'pre_unload' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['unload']
                 if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
                     self.unload(recipiant)
             if action == 'load' or action == 'pre_load' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['load']
+                print('recognition of load command')
                 if recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
+                    print('start load')
                     self.load(recipiant)
             if action == 'buy' and self.waypoint.recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 recipiant = self.waypoint.recipiants['buy']

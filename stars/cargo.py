@@ -14,6 +14,12 @@ __defaults = {
 class Cargo(Minerals):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+    
+    def __add__(self, other):
+        m = super().__add__(other)
+        c = Cargo(**m.__dict__)
+        c.people = self.people + other.people
+        c.cargo_max = self.cargo_max + other.cargo_max
+        return c
 
 Cargo.set_defaults(Cargo, __defaults)
