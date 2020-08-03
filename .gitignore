@@ -1,3 +1,4 @@
 games/**
 test_output
 **/*.pyc
+.coverage
