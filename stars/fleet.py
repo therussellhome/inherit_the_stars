@@ -554,6 +554,40 @@ class Fleet(Defaults):
                     self.player.energy -= (amount * traety.cost_fuel)
                     recipiant.player.energy += (amount * traety.cost_fuel)
         self.returnn()
+        
+    """ telles the ships in the fleet that can colonize to colonize the planet """
+    def colonize(self):
+        planet = self.waypoints[0].location
+        if planet.player.is_valid:
+            return
+        pop = 0
+        factories = 0
+        power_plants = 0
+        mines = 0
+        titanium = 0
+        lithium = 0
+        silicon = 0
+        for ship in self.ships:
+            if ship.can_colonize == True:
+                ships.append(ship)
+                self.ships.remove(ship)
+                pop += ship.cargo.people
+                titanium = ship.cargo.titanium
+                lithium = ship.cargo.lithium
+                silicon = ship.cargo.silicon
+                factories += ship.colonize_factories
+                power_plants += ship.colonize_power_plants
+                mines += ship.colonize_mines
+        if len(ships) >= 1:
+            planet.colonize(self.player, 'default', pop, factories, power_plants, mines, titanium, lithium, silicon)
+        for ship in ships:
+            ship.scrap(True)
+    
+    """ scraps the fleet """
+    def scrap(self):
+        while len(self.ships) > 0:
+            ship = self.ships.pop(0)
+            ship.scrap()
     
     """ executes the load function """
     def load(self, recipiant):
@@ -648,6 +682,8 @@ class Fleet(Defaults):
                 self.split()
             if action == 'transfer' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
                 self.transfer()
+            if action == 'colonize' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+                self.colonize()
             
 Fleet.set_defaults(Fleet, __defaults)
 

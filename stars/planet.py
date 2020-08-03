@@ -66,11 +66,16 @@ class Planet(Defaults):
     """ Colonize the planet """
     # player is a Reference to Player
     # because minister names can change, minister is a string
-    def colonize(self, player, minister, population, factories):
+    def colonize(self, player, minister, population, factories, power_plants, mines, titanium, lithium, silicon):
         self.player = player
         self.minister = minister
         self.on_surface.people = int(population)
-        self.factories += factories
+        self.on_surface.titanium += int(titanium)
+        self.on_surface.lithium += int(lithium)
+        self.on_surface.silicon += int(silicon)
+        self.factories += int(factories)
+        self.power_plants += int(power_plants)
+        self.mines += int(mines)
         if self.power_plant_tech == Facility():
             self.power_plant_tech = self._get_facility_upgrade('Power')
         if self.factory_tech == Facility():
