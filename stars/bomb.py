@@ -8,7 +8,7 @@ __defaults = {
     'percent_pop_kill': [0, 0, 100],
     'minimum_pop_kill': [0, 0, sys.maxsize],
     'shield_kill': [0, 0, sys.maxsize],
-    'max_defense': [1, 1, 1000],
+    'max_defense': [100, 1, 1000],
     'dirty_temperature': [0.0, -1.0, 1.0],
     'dirty_radiation': [0.0, -1.0, 1.0],
     'dirty_gravity': [0.0, -1.0, 1.0],
