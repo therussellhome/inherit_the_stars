@@ -21,10 +21,10 @@ class Location(game_engine.BaseClass):
         if not away:
             f = min(1, max_distance / distance)
         else:
-            f = -max_distance / distance
-        x = self.x + (self.x-target.x)*f
-        y = self.y + (self.y-target.y)*f
-        z = self.z + (self.z-target.z)*f
+            f = -1 * max_distance / distance
+        x = self.x - (self.x - target.x) * f
+        y = self.y - (self.y - target.y) * f
+        z = self.z - (self.z - target.z) * f
         return Location(x=x, y=y, z=z)
 
     """ Distance between 2 points """
