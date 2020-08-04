@@ -22,7 +22,6 @@ __defaults = {
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
-    'player': [Reference()],
     'cargo': [Cargo()]
 }
 
@@ -40,7 +39,6 @@ class Fleet(Defaults):
                 ships.remove(ship)
             del kwargs['ships']
         super().__init__(**kwargs)
-        self.player.fleets.append(self)
         self.name = 'Fleet #'+str(hex(id(self)))[-7:-1]
         self.compile()
         self.returnn()
@@ -48,31 +46,13 @@ class Fleet(Defaults):
     """ adds the ships to self.ships """
     def add_ship(self, ship):
         if len(self.ships) == 0:
-            self.location = Location(x=ship.location.x, y=ship.location.y, z=ship.location.z)
+            self.location = copy.copy(ship.location)
             self.ships.append(ship)
         else:
-            if (self.location - ship.location) > (stars_math.TERAMETER_2_LIGHTYEAR * 2):
-                return
-            else:
+            if (self.location - ship.location) <= (stars_math.TERAMETER_2_LIGHTYEAR * 2):
                 self.ships.append(ship)
     
-    '''""" finds the largest range of hyper denial had by a ship in the fleet and asigns the fleet that value """
-    def compile_hyper_denial(self):
-        hyper_range = 0
-        self.hyper_denial = False
-        denial = []
-        for ship in self.ships:
-            if ship.hyper_denial == True:
-                self.hyper_denial = True
-                denail.append(ship.hyper_denial_range)
-        if self.hyper_denial:
-            for i in range(len(denial)):
-                if denial[i] >= hyper_range:
-                    hyper_range = denial[i]
-        
-    
-    
-    '''""" gives the fleet the highest scaner of each type from it's ships """
+    """ gives the fleet the highest scaner of each type from it's ships """
     def compile_scanning(self):
         max_anti_cloak = 0
         max_normal = 0
@@ -90,60 +70,13 @@ class Fleet(Defaults):
         self.anti_cloak_scanner = max_anti_cloak
         self.normal_scanner = max_normal
         self.pennetrating_scanner = max_penetrating
-    
-    '''""" calculates the scaning of the fleet from curent position """
-    def calculate_scanning(self):
-        for ship in self.ships:
-            ship.scan()
-        for ship in game_engine.get('Ship/'):
-            if ship.player != self.player:
-                ship.mass = ship.hull_masss + (ship.cargo.titanium + ship.cargo.lithium + ship.cargo.silicon + ship.cargo.people)
-                ship.aparant_mass = (ship.mass * ship.cloak)
-                if ship.player.race.primary_race_trait == "SS":
-                    ship.aparant_mass -= ship.kt_modifier
-                distance = ((ship.x - self.x)**2 + (ship.y - self.y)**2 + (ship.z - self.z)**2)**(1/2)
-                if distance <= self.anti_cloak_scanner:
-                    self.player.create_intel_on(ship, ship.mass, True)
-                elif distance <= self.pennetrating_scanner and ship.aparant_mass > 0:
-                    self.player.create_intel_on(ship, ship.aparant_mass)
-                elif distance <= (self.pennetrating_scanner + ((self.normal_scanner - self.pennetrating_scanner) * (ship.aparant_mass / 100))) and ship.aparant_mass > 0:
-                    self.player.create_intel_on(ship, ship.aparant_mass)
-        for planet in game_engine.get('Planet/'):
-            if planet.player != self.player:
-                distance = self.location.__sub__(planet.location)
-                if distance <= self.pennetrating_scanner:
-                    self.player.create_intel_on(planet, "planet")
-                    if distance <= self.anti_cloak_scanner:
-                        self.player.create_intel_on(planet.space_station, planet.space_station.mass, True)
-                    elif planet.space_station.aparant_mass > 0:
-                        self.player.create_intel_on(planet.space_station, planet.space_station.aparant_mass)'''
-    
+        
     """ checks if can upgrade and then stops moving if comanded to """
     def check_upgrade(self):
-        self.waypoints[1] = waypoint
-        if waypoint.upgrade_if_commanded == True and self.waypoints[1].location in game_engine.get('Planets/') and self.waypoints[1].location.space_station:
+        if self.waypoints[1].upgrade_if_commanded == True and self.waypoints[1].location in game_engine.get('Planets/') and self.waypoints[1].location.space_station:
             for ship in self.ships:
                 if ship.new_design and ship.new_design.mass <= self.waypoints[1].location.space_station.max_build_mass:
                     self.waypoints[1].location.upgrade(ship)
-    
-    """ takes the move distance and changes self.location accordingly """
-    def calc_move(self, location, amount):
-        dis, x, y, z = self.calc_distance(location)
-        a = ((amount)**2)**(1/2)
-        mod_x = (self.location.x-location.x)/x
-        mod_y = (self.location.y-location.y)/y
-        mod_z = (self.location.z-location.z)/z
-        self.location.x -= mod_x*(x/dis)*a
-        self.location.y -= mod_y*(y/dis)*a
-        self.location.z -= mod_z*(z/dis)*a
-    
-    """ checks the distance between the fleet an the fly_to point """
-    def calc_distance(self, location):
-        dis_x = ((self.location.x-location.x)**2)**(1/2)
-        dis_y = ((self.location.y-location.y)**2)**(1/2)
-        dis_z = ((self.location.z-location.z)**2)**(1/2)
-        distance = ((dis_x)**2 + (dis_y)**2 + (dis_z)**2)**(1/2)
-        return distance, dis_x, dis_y, dis_z
     
     """ does all the moving calculations and then moves the ships """
     def move(self):
@@ -166,10 +99,7 @@ class Fleet(Defaults):
             distance = distance_at_hyper
         if distance_to_waypoint == 0:
             self.waypoints.pop(0)
-            if self.waypoints[0].move_on == True:
-                self.move()
-            else:
-                return
+            self.move()
         while self.test_fuel(speed, in_hyper_denial, distance):
             speed -= 1
             distance_at_hyper = (speed**2)/100
@@ -177,7 +107,7 @@ class Fleet(Defaults):
                 distance = distance_to_waypoint
             else:
                 distance = distance_at_hyper
-        self.calc_move(self.waypoints[1].fly_to, distance)
+        self.location.move(self.waypoints[1].fly_to, distance)
         self.burn_fuel(speed, in_hyper_denial, distance)
         self.returnn()
     
@@ -254,57 +184,46 @@ class Fleet(Defaults):
             ship.fuel = 0
     
     """ makes a hyper_denial """
-    def deploy_hyper_denial(self):
-        hyper_denial = False
+    def deploy_hyper_denial(self, player):
         for ship in self.ships:
-            if ship.hyper_denial == True:
-                ship.deploy_hyper_denial()
-                hyper_denial = True
-        if not hyper_denial:
-            pass
+            ship.deploy_hyper_denial(player)
             
-    
     """ Merges the fleet with the target fleet """
-    def merge(self):
-        self.compile()
-        self.waypoints[0].recipiants['merge'].compile()
-        for ship in self.ships:
-            self.waypoints[0].recipiants['merge'].ships.append(ship)
-        self.ships = []
-        self.waypoints[0].recipiants['merge'].fuel += self.fuel
-        self.fuel = 0
-        self.waypoints[0].recipiants['merge'].cargo.titanium += self.cargo.titanium
-        self.cargo.titanium = 0
-        self.waypoints[0].recipiants['merge'].cargo.lithium += self.cargo.lithium
-        self.cargo.lithium = 0
-        self.waypoints[0].recipiants['merge'].cargo.silicon += self.cargo.silicon
-        self.cargo.silicon = 0
-        self.waypoints[0].recipiants['merge'].cargo.people += self.cargo.people
-        self.cargo.people = 0
-        self.waypoints[0].recipiants['merge'].returnn()
-        self.player.fleets.remove(self)
+    def merge(self, player):
+        o_fleet = waypoint.recipiants['merge']
+        if type(o_fleet) != type(Fleet) or o_fleet not in player.fleets:
+            return
+        for Ship in self.ships:
+            o_fleet.ships.append(ship)
+        o_fleet.compile()
+        o_fleet.returnn()
+        player.remove_fleet(self)
     
     """ splits the fleet """
-    def split(self):
-        for split_out in range(len(self.waypoints[0].splits)):
-            ships = []
-            for ship in self.waypoints[0].splits[split_out]:
-                ships.append(ship)
-                self.ships.remove(ship)
-            fleet = Fleet(ships=ships, player=self.player)
+    def split(self, player):
+        for split in waypoint.splits:
+            Player.create_fleet(ships=split.ships, waypoints=copy.copy(fleet.waypoints))
+            for ship in split.ships:
+                fleet.ships.remove(ship)
+        if len(self.ships) == 0:
+            Player.remove_fleet(self)
     
     """ transfers the fleet """
-    def transfer(self):
-        self.player.fleets.remove(self)
-        self.player = self.waypoints[0].recipiants['transfer']
-        self.player.fleets.append(self)
+    def transfer(self, playre):
+        player_2 = self.waypoints[0].recipiants['transfer']
+        if type(player_2) != Player():
+            return
+        self.waypoints = []
+        player_2.create_fleet(self.__dict__)
+        Player.remove_fleet(self)
     
     """ executes the unload function """
-    def unload(self, recipiant):
-        if recipiant not in self.player.fleets:
+    def unload(self, recipiant, player):
+        if not self.check(recipiant, player):
             return
         self.compile()
-        recipiant.compile()
+        if recipiant in player.fleets:
+            recipiant.compile()
         for transfer in self.waypoints[0].transfers['unload']:
             item = transfer[0]
             amount = transfer[1]
@@ -559,17 +478,24 @@ class Fleet(Defaults):
     
     """ scraps the fleet """
     def scrap(self):
-        while len(self.ships) > 0:
-            ship = self.ships.pop(0)
-            ship.scrap()
+        for ship in ships:
+            ship.scrap(fleet.location)
+    
+    def check(self, recipiant, player):
+        if recipiant in player.fleets:
+            return True
+        if recipiant in game_engine.get('Planet/') and recipiant.player = player:
+            return True
+        return False
     
     """ executes the load function """
-    def load(self, recipiant):
-        if recipiant not in self.player.fleets:
+    def load(self, recipiant, player):
+        if not self.check(recipiant, player):
             return
         self.compile()
-        recipiant.compile()
-        print('recipiat is fleet')
+        if recipiant in player.fleets:
+            recipiant.compile()
+        print('recipiat pass check')
         for transfer in self.waypoints[0].transfers['load']:
             item = transfer[0]
             amount = transfer[1]
@@ -625,43 +551,113 @@ class Fleet(Defaults):
                     self.fuel += (self.fuel_max - self.fuel)
                     recipiant.fuel -= (self.fuel_max - self.fuel)
         self.returnn()
-        recipiant.returnn()
+        if recipiant in player.fleets:
+            recipiant.returnn()
+    
+    def repair(self, player):
+        repair_points = 0
+        for ship in self.ships:
+            repair_points += ship.open_repair_bays()
+        for fleet in player.fleets:
+            if (self.location - fleet.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+                for ship in fleet:
+                    ships_here.append(ship)
+        self.distribute_repair(ships_here, repair_points)
+    
+    def distribute_repair(self, ships_here, repair_points):
+        while repair_points > 0 and self.find_repair(ships_here) != False:
+            ship = self.find_repair(ships_here)
+            ship.repair(1)
+            repair_points -= 1
+    
+    def find_repair(self, ships_here):
+        damage_ratio = []
+        for ship in ships_here:
+            damage_ratio.append([100 * (ship.armor / ship.max_armor), ship])
+        damage = 100
+        worst = 0
+        for i in range(len(damage_ratio)):
+            if damage_ratio[i][0] <= damage:
+                damage = damage_ratio[i][0]
+                worst = i
+        if damage_ratio[worst][0] == 100:
+            return False
+        return dmage_ratio[worst][1]
+    
+    def lay_mines(self, player):
+        system = self.waypoints[0].recipiants['lay_mines']
+        for ship in self.ships:
+            ship.lay_mines(player, system)
+    
+    def self_repair(self):
+        for ship in self.ships:
+            ship.self_repair()
+    
+    def orbital_mining(self):
+        check planet
+        for ship in self.ships:
+            ship.orbital_mining(planet)
+    
+    def scan(self, player):
+        for ship in self.ships:
+            ship.scan(player)
+    
+    def bomb(self, player):
+        planet = self.waypoints[0].recipiants['bomb']
+        if planet.player != player and planet.player.is_valid:
+            for ship in self.ships:
+                ship.bomb(planet)
     
     """ runs all of the actions """
-    def execute(self, action):
-        self.waypoint = self.waypoints[0]
-        if action in self.waypoint.actions:
+    def execute(self, action, player):
+        if action == 'scan':
+            self.scan(player)
+        elif action == 'move':
+            self.move(player)
+        elif action in self.waypoints[0].actions and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
             print(action)
-            if action == 'unload' or action == 'pre_unload' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+            if action == 'unload' or action == 'pre_unload':
                 recipiant = self.waypoint.recipiants['unload']
                 if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
-                    self.unload(recipiant)
-            if action == 'load' or action == 'pre_load' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                recipiant = self.waypoint.recipiants['load']
+                    self.unload(recipiant, player)
+            elif action == 'load' or action == 'pre_load':
+                recipiant = self.waypoints[0].recipiants['load']
                 print('recognition of load command')
-                if recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
+                if recipiant.name == 'salvage' or recipiant in player.fleets or recipiant.player == player:
                     print('start load')
-                    self.load(recipiant)
-            if action == 'buy' and self.waypoint.recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                recipiant = self.waypoint.recipiants['buy']
+                    self.load(recipiant, player)
+            elif action == 'buy' and self.waypoints[0].recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade:
+                recipiant = self.waypoints[0].recipiants['buy']
                 if recipiant.player.name != self.player.name:
-                    self.buy(recipiant)
-            if action == 'sell':
+                    self.buy(recipiant, player)
+            elif action == 'sell':
                 recipiant = self.waypoint.recipiants['sell']
-                if recipiant in game_engine.get('Planet/') and recipiant.space_station.trade and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                    recipiant = self.waypoint.recipiants['sell']
-                    if recipiant.player.name != self.player.name:
-                        self.sell(recipiant)
-            if action == 'deploy_hyper_denial' and self.waypoint.speed == 0:
-                self.deploy_hyper_denial()
-            if action == 'merge' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                self.merge()
-            if action == 'split' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                self.split()
-            if action == 'transfer' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                self.transfer()
-            if action == 'colonize' and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                self.colonize()
+                if recipiant in game_engine.get('Planet/') and recipiant.space_station.trade:
+                    if recipiant.player != player:
+                        self.sell(recipiant, player)
+            elif action == 'deploy_hyper_denial' and self.waypoints[1].deploy_hyper_denial_time > 0:
+                self.waypoints[1].deploy_hyper_denial_time -= 1
+                self.deploy_hyper_denial(player)
+            elif action == 'merge':
+                self.merge(player)
+            elif action == 'split':
+                self.split(player)
+            elif action == 'transfer':
+                self.transfer(player)
+            elif action == 'colonize':
+                self.colonize(player)
+            elif action == 'lay_mines':
+                self.lay_mines(player)
+            elif action == 'scrap':
+                self.scrap()
+            elif action == 'repair':
+                self.repair(player)
+            elif action == 'orbital_mining':
+                self.orbital_mining()
+            elif action == 'self_repair':
+                self.self_repair()
+            elif action == 'bomb':
+                self.bomb(player)
             
 Fleet.set_defaults(Fleet, __defaults)
 
@@ -676,7 +672,7 @@ Fleet.preactions = [
 """ Ordered list of fleet actions for use by the Game.generate_turn """
 Fleet.actions = [
     'merge',
-    'generate_fuel',
+    'generate_fuel',#move to starbase
     'self_repair',
     'repair',
     'orbital_mining',

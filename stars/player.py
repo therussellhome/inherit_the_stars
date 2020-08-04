@@ -32,6 +32,11 @@ class Player(Defaults):
         if 'name' not in kwargs:
             self.name = 'Player ' + str(id(self))
     
+    """ calles fleets to do actions """
+    def ship_action(self, action):
+        for fleet in self.fleets:
+            fleet.execute(action, self)
+    
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
     def manage_economy(self):

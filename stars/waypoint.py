@@ -48,29 +48,9 @@ class Waypoint(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    """ takes the standoff distance and changes the fly_to point accordingly """
-    def calc_standoff(self, location, amount):
-        dis, x, y, z = self.calc_distance(location)
-        a = ((amount)**2)**(1/2)
-        mod = -amount/a
-        mod_x = (self.location.x-location.x)/x
-        mod_y = (self.location.y-location.y)/y
-        mod_z = (self.location.z-location.z)/z
-        self.fly_to.x += mod*mod_x*(x/dis)*a
-        self.fly_to.y += mod*mod_y*(y/dis)*a
-        self.fly_to.z += mod*mod_z*(z/dis)*a
-    
-    """ checks the distance between the fleet an the fly_to point """
-    def calc_distance(self, location):
-        dis_x = ((self.fly_to.x-location.x)**2)**(1/2)
-        dis_y = ((self.fly_to.y-location.y)**2)**(1/2)
-        dis_z = ((self.fly_to.z-location.z)**2)**(1/2)
-        distance = ((dis_x)**2 + (dis_y)**2 + (dis_z)**2)**(1/2)
-        return distance, dis_x, dis_y, dis_z
-    
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet):
-        self.fly_to = Location(x=copy.copy(self.location.x), y=copy.copy(self.location.y), z=copy.copy(self.location.z))
+        self.fly_to = copy.copy(self.location)
         if self.standoff == 'No Standoff':
             for planet in game_engine.get('Planet/'):
                 if self.location is planet.location:
@@ -101,7 +81,7 @@ class Waypoint(Defaults):
                     self.move_to(fleet)
             elif standoff == 'Anti-Cloak Minimum':
                 if fleet.anti_cloak_scanner >= 1:
-                    self.calc_standoff(fleet, fleet.anti_cloak_scanner-1)
+                    self.fly_to.move(fleet.location, fleet.anti_cloak_scanner-1)
                 else:
                     self.standoff = 'No Standoff'
                     self.move_to(fleet)
