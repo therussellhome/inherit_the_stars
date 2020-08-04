@@ -30,5 +30,6 @@ __all__ = [
     'tech_display',
     'tech_level',
     'waypoint',
+    'weapon',
     'engine',
 ]

@@ -40,7 +40,7 @@ class Weapon(Defaults):
                 power_to_shield -= diference
                 power_to_shield += diference
             return (power_to_shield, power_to_armor)
-        return (0.0, 0)
+        return (0, 0)
 
     """ Calculate the damage of firing the weapon at a ship """
     def get_damage(self, target_ly, shield, armor, visible_ly, ecm):

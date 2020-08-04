@@ -99,13 +99,14 @@ class TechDisplay(Defaults):
         for weapon in tech.weapons:
             # Only display the last one
             self.weapon_power = weapon.power
-            self.weapon_range = weapon.range
+            self.weapon_range = weapon.range_tm
             self.weapon_accuracy = weapon.accuracy
             for i in range(0, 100):
                 if len(self.weapon_chart_data) < i + 1:
                     self.weapon_chart_data.append(0)
                 range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
-                self.weapon_chart_data[i] += weapon.get_power(range_ly, sys.maxsize, 0) * weapon.get_accuracy(range_ly) / 100
+                power = weapon.get_power(range_ly, sys.maxsize, 0)
+                self.weapon_chart_data[i] += power[0] * weapon.get_accuracy(range_ly) / 100
         # Scanner
         self.scanner_normal = tech.scanner.normal
         self.scanner_penetrating = tech.scanner.penetrating
@@ -125,6 +126,6 @@ class TechDisplay(Defaults):
             for i in range(0, 10):
                 if len(self.engine_chart_data) < i + 1:
                     self.engine_chart_data.append(0)
-                self.engine_chart_data[i] += engine.tachometer(i, kt / len(tech.engines))
+                self.engine_chart_data[i] += engine.tachometer(i, kt / len(tech.engines), 0)
         
 TechDisplay.set_defaults(TechDisplay, __defaults)
