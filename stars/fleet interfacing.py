@@ -28,7 +28,7 @@ Fleet.returnn()
         else: planet.on_surface += cargo + Cargo
 """ merge """ #written
     Fleet.excute('merge', player): Fleet.merge(player)
-    Fleet.merge(player): o_fleet = waypoint.recipiants['merge'] if type(o_fleet) != type(Fleet) or o_fleet not in player.fleets: return;
+    Fleet.merge(player): o_fleet = waypoint.recipiants['merge'] if o_fleet not in player.fleets: return;
         for Ship in ships: o_fleet.ships.append(ship); o_fleet.compile() o_fleet.returnn()
 """ split """ #written
     Fleet.excute('split', player): Fleet.split(player)
