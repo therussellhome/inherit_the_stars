@@ -53,7 +53,7 @@ class Defaults(game_engine.BaseClass):
                     elif type(default[0]) == type(value):
                         pass
                 except:
-                    return copy.copy(default[0])
+                    value = copy.copy(default[0])
             object.__setattr__(self, name, value)
 
     """ Reset values to default """

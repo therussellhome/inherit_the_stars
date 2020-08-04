@@ -19,8 +19,12 @@ class ReferenceTestCase(unittest.TestCase):
     def test_create(self):
         r = reference.Reference('_TestReference', 'ref 2')
         self.assertEqual(r.name, 'ref 2')
+        r = reference.Reference(reference='_TestReference/ref 2')
+        self.assertEqual(r.name, 'ref 2')
 
     def test_throw(self):
         r = reference.Reference('_TestRef', 'ref 3')
         with self.assertRaises(LookupError):
             r.get_name()
+        with self.assertRaises(LookupError):
+            r.a_value = 123
