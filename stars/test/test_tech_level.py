@@ -11,7 +11,6 @@ class TechLevelTestCase(unittest.TestCase):
         self.assertEqual(t3.weapons, 5)
         self.assertEqual(t3.propulsion, 4)
         self.assertEqual(t3.construction, 4)
-        print(t3.__dict__)
         self.assertEqual(t3.electronics, 5)
         self.assertEqual(t3.biotechnology, 6)
 
