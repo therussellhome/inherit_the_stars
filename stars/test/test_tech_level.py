@@ -15,18 +15,18 @@ class TechLevelTestCase(unittest.TestCase):
         self.assertEqual(t3.biotechnology, 6)
 
     def test_is_available(self):
-        t1 = tech_level.TechLevel(evergy=1, weapons=2, propulsion=3, construction=4, electonics=5, biotechnology=6)
-        t2 = tech_level.TechLevel(evergy=1)
-        self.assertFalse(t2.is_available(t1))
-        t2.weapons = 2
-        self.assertFalse(t2.is_available(t1))
-        t2.propulsion = 3
-        self.assertFalse(t2.is_available(t1))
-        t2.construction = 4
-        self.assertFalse(t2.is_available(t1))
-        t2.electronics = 5
-        self.assertFalse(t2.is_available(t1))
-        t2.biotechnology = 6
-        self.assertTrue(t2.is_available(t1))
-        t2.energy = 2
-        self.assertTrue(t2.is_available(t1))
+        tech_item = tech_level.TechLevel(evergy=1, weapons=2, propulsion=3, construction=4, electonics=5, biotechnology=6)
+        player_level = tech_level.TechLevel(evergy=1)
+        self.assertFalse(tech_item.is_available(player_level))
+        player_level.weapons = 2
+        self.assertFalse(tech_item.is_available(player_level))
+        player_level.propulsion = 3
+        self.assertFalse(tech_item.is_available(player_level))
+        player_level.construction = 4
+        self.assertFalse(tech_item.is_available(player_level))
+        player_level.electronics = 5
+        self.assertFalse(tech_item.is_available(player_level))
+        player_level.biotechnology = 6
+        self.assertTrue(tech_item.is_available(player_level))
+        player_level.energy = 2
+        self.assertTrue(tech_item.is_available(player_level))

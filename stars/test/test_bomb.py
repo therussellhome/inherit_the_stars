@@ -15,6 +15,7 @@ class BombTestCase(unittest.TestCase):
     def test_kill_shields(self):
         b = bomb.Bomb(shield_kill=3)
         self.assertEqual(b.kill_shield_facilities(1000000, 0), 3)
+        self.assertEqual(b.kill_shield_facilities(1000000, 999999999999), 0)
 
     def test_kill_pop(self):
         b = bomb.Bomb(minimum_pop_kill=123)
