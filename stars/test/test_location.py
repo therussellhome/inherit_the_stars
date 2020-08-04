@@ -2,6 +2,11 @@ import unittest
 from math import pi
 from .. import *
 
+class _TestLocationReference(game_engine.BaseClass):
+    def __init__(self, **kwargs):
+        self.name = kwargs.get('name', str(id(self)))
+        self.location = location.Location()
+
 class LocationCase(unittest.TestCase):
     def test_sub(self):
         l1 = location.Location(x=0, y=0, z=0)
@@ -23,6 +28,8 @@ class LocationCase(unittest.TestCase):
     def test_move(self):
         l1 = location.Location(x=0, y=0, z=0)
         l2 = location.Location(x=1, y=0, z=0)
+        l3 = l1.move(l1, 0.5)
+        self.assertEqual(l3, l1)
         l3 = l1.move(l2, 0.5)
         self.assertEqual(l3.x, 0.5)
         self.assertEqual(l3.y, 0)
@@ -41,6 +48,19 @@ class LocationCase(unittest.TestCase):
         self.assertEqual(l3.x, 5.5)
         self.assertEqual(l3.y, 0)
         self.assertEqual(l3.z, 0)
+
+    def test_reference(self):
+        ref = _TestLocationReference()
+        ref.location = location.Location(x=1, y=2, z=3)
+        game_engine.register(ref)
+        lr = location.LocationReference(reference=ref)
+        self.assertEqual(lr.x, 1)
+        self.assertEqual(lr.y, 2)
+        self.assertEqual(lr.z, 3)
+        lr = location.LocationReference(ref)
+        self.assertEqual(lr.x, 1)
+        self.assertEqual(lr.y, 2)
+        self.assertEqual(lr.z, 3)
 
     def test_rand(self):
         l0 = location.Location(x=0, y=0, z=0)

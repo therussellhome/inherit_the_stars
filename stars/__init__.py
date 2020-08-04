@@ -28,6 +28,7 @@ __all__ = [
     'sun',
     'tech', 
     'tech_display',
+    'tech_level',
     'waypoint',
     'engine',
 ]
