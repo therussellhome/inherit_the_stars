@@ -1,6 +1,7 @@
 import sys
 from . import game_engine
 from .cost import Cost
+from .fleet import Fleet
 from .defaults import Defaults
 from .energy_minister import EnergyMinister
 from .intel import Intel
@@ -36,6 +37,12 @@ class Player(Defaults):
     def ship_action(self, action):
         for fleet in self.fleets:
             fleet.execute(action, self)
+    
+    def create_fleet(self, **kwargs):
+        self.fleets.append(Fleet(**kwargs))
+    
+    def remove_fleet(self, fleet):
+        self.fleets.remove(fleet)
     
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
