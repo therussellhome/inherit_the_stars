@@ -139,9 +139,9 @@ class Combat(Defaults):
                             closest_s = dis
                             fire_att = ship
         print(fire_at, fire_att)
-        if fire_at:# and closest_p <= weapon.range_tm*TERAMETER_2_LIGHTYEAR:
+        if fire_at:
             return fire_at
-        elif fire_att:# and closest_s <= weapon.range_tm*TERAMETER_2_LIGHTYEAR:
+        elif fire_att:
             return fire_att
         else:
             return None
@@ -149,6 +149,7 @@ class Combat(Defaults):
 
     def move(self, ship):
         move = self.calc_strategy_m(ship)
+        print(move[0].x, TERAMETER_2_LIGHTYEAR/2)
         ship.location = ship.location.move(move[0], ship.max_distance, move[1])
         self.save_to_combat_log()
         pass
