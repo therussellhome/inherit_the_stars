@@ -1,8 +1,10 @@
 __all__ = [
     'battle_plan',
+    'bomb',
     'cargo',
     'cloak',
     'combat',
+    'cost',
     'defaults', 
     'energy_minister', 
     'fleet',
@@ -10,6 +12,7 @@ __all__ = [
     'hyperdenial',
     'launch', 
     'location', 
+    'minerals',
     'minister',
     'new_game',
     'planet', 
@@ -25,5 +28,8 @@ __all__ = [
     'sun',
     'tech', 
     'tech_display',
+    'tech_level',
     'waypoint',
+    'weapon',
+    'engine',
 ]

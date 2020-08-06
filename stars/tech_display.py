@@ -42,53 +42,19 @@ __defaults = {
     'engine_kt_exp': [0.0, 0.0, sys.maxsize],
     'engine_speed_div': [0.0, 0.0001, sys.maxsize],
     'engine_speed_exp': [0.0, 0.0, sys.maxsize],
+
+    # Shared with other forms and used to identify player
+    'player_token': [''],
 }
 
 """ Display information about a tech item or ship design """
 class TechDisplay(Defaults):
     def post(self, action):
-        print(action)
-        kt = self.chart_kt
-        scanner_ly = self.chart_scanning
-        player = None
-
-        if '&' in action:
-            action, token = action.split('&')
-        tech = game_engine.get(action, False)
+        tech = game_engine.get('Tech/' + action, False)
         if tech == None:
             self.reset_to_default()
-        #kt = self.chart_kt
-        # Test values
-        self.chart_kt = kt
-        self.chart_scanning = scanner_ly
-        tech = game_engine.get('Tech/Test Component', True)
-        tech.name = 'Test Component'
-        tech.cost.energy = 100
-        tech.cost.titanium = 100
-        tech.cost.lithium = 100
-        tech.cost.silicon = 100
-        tech.level.energy = 3
-        tech.level.weapons = 0
-        tech.level.propulsion = 0
-        tech.level.construction = 10
-        tech.level.electronics = 5
-        tech.level.biotechnology = 0
-        tech.category = 'Ship Yard'
-        tech.slot_type = 'orbital'
-        tech.mass = 100
-        tech.cargo_max = 200
-        tech.fuel_max = 1000
-        tech.description = 'a component\nstuff'
-        tech.race_requirements = '-Aku\'Ultan'
-        tech.shield = 100
-        tech.armor = 200
-        tech.ecm = 20
-        tech.cloak = 50
-        tech.weapons.append(Weapon(power=100, range=0.3))
-        tech.engines.append(Engine(kt_exponent=1.5, speed_divisor=10.0, speed_exponent=5.0))
-        tech.scanner = Scanner(anti_cloak=50, penetrating=100, normal=200)
-        tech.bombs.append(Bomb())
-        game_engine.save('test', 'tech_display', [tech])
+            return
+        kt = self.chart_kt
         # General
         self.tech_name = tech.name
         self.category = tech.category
@@ -133,13 +99,14 @@ class TechDisplay(Defaults):
         for weapon in tech.weapons:
             # Only display the last one
             self.weapon_power = weapon.power
-            self.weapon_range = weapon.range
+            self.weapon_range = weapon.range_tm
             self.weapon_accuracy = weapon.accuracy
             for i in range(0, 100):
                 if len(self.weapon_chart_data) < i + 1:
                     self.weapon_chart_data.append(0)
                 range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
-                self.weapon_chart_data[i] += weapon.get_power(range_ly, sys.maxsize, 0) * weapon.get_accuracy(range_ly) / 100
+                power = weapon.get_power(range_ly, sys.maxsize, 0)
+                self.weapon_chart_data[i] += power[0] * weapon.get_accuracy(range_ly) / 100
         # Scanner
         self.scanner_normal = tech.scanner.normal
         self.scanner_penetrating = tech.scanner.penetrating
@@ -148,7 +115,7 @@ class TechDisplay(Defaults):
         self.scanner_chart_data.append(tech.scanner.normal)
         self.scanner_chart_data.append(tech.scanner.penetrating)
         self.scanner_chart_data.append(tech.scanner.anti_cloak)
-        self.scanner_chart_data.append(tech.scanner.visable_range(kt * (1 - tech.cloak / 100)))
+        self.scanner_chart_data.append(tech.scanner.range_visible(kt * (1 - tech.cloak.percent / 100)))
         # Engine
         for engine in tech.engines:
             # Only display the last one
@@ -159,6 +126,6 @@ class TechDisplay(Defaults):
             for i in range(0, 10):
                 if len(self.engine_chart_data) < i + 1:
                     self.engine_chart_data.append(0)
-                self.engine_chart_data[i] += engine.tachometer(i, kt / len(tech.engines))
+                self.engine_chart_data[i] += engine.tachometer(i, kt / len(tech.engines), 0)
         
 TechDisplay.set_defaults(TechDisplay, __defaults)
