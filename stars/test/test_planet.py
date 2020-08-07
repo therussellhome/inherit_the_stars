@@ -6,6 +6,39 @@ class PlanetTestCase(unittest.TestCase):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25000, 1)
 
+    def test_planet_color(self):
+        self.assertEqual(self.planet.red, 128)
+        self.assertEqual(self.planet.green, 128)
+        self.assertEqual(self.planet.blue, 128)
+        self.planet.gravity = 75
+        self.planet.temperature = 75
+        self.planet.radiation = 75
+        self.assertEqual(self.planet.red, 191)
+        self.assertEqual(self.planet.green, 191)
+        self.assertEqual(self.planet.blue, 191)
+        self.planet.gravity = 100
+        self.planet.temperature = 0
+        self.planet.radiation = 5
+        self.assertEqual(self.planet.red, 255)
+        self.assertEqual(self.planet.green, 3)
+        self.assertEqual(self.planet.blue, 13)
+        self.planet.gravity = 1000
+        self.planet.temperature = 10
+        self.planet.radiation = 33
+        self.assertEqual(self.planet.red, 255)
+        self.assertEqual(self.planet.green, 26)
+        self.assertEqual(self.planet.blue, 84)
+        self.planet.gravity = 33.33
+        self.planet.temperature = -60.88
+        self.planet.radiation = 15
+        self.assertEqual(self.planet.red, 255)
+        self.assertEqual(self.planet.green, 3)
+        self.assertEqual(self.planet.blue, 38) 
+        #reset gravity, temperature and radiation so other functions don't have problems
+        self.planet.gravity = 50
+        self.planet.temperature = 50
+        self.planet.radiation = 50
+
     def test_colonize(self):
         self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', 25000, 1)
         self.assertEqual(self.planet.on_surface.people, 25000)
