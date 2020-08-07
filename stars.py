@@ -7,17 +7,16 @@ import socketserver
 import urllib.parse
 import webbrowser
 from pathlib import Path
-from stars import *
+from stars.ui import *
 
 
 """ Map of post handlers """
 _handlers = {
     '/launch': launch.Launch(),
     '/new_game': new_game.NewGame(),
-    '/launch': launch.Launch(),
     '/race_editor': race_editor.RaceEditor(),
     '/render_stars': render_stars.RenderStars(),
-    '/tech': tech_display.TechDisplay(),
+    '/tech': tech.Tech(),
 }
 
 

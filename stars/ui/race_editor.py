@@ -1,8 +1,8 @@
-from math import log, exp
 import sys
-from .race import Race
-from .defaults import Defaults
-from . import game_engine
+from math import log, exp
+from ..race import Race
+from ..defaults import Defaults
+from .. import game_engine
 #s = SUM(FILTER(C2:C80,E2:E80=Y1)) #total
 #b = COUNTIFS(E28:E33, Y1)*2 #tech
 #c = COUNTIFS(E40:E45, Y1)*2 #tech

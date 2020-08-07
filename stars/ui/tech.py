@@ -1,12 +1,8 @@
 import sys
 import math
-from .defaults import Defaults
-from . import game_engine
-from . import stars_math
-# testing
-from .bomb import Bomb
-from .weapon import Weapon
-from .engine import Engine
+from ..defaults import Defaults
+from .. import game_engine
+from .. import stars_math
 
 __defaults = {
     'tech_name': ['UNKNOWN'],
@@ -48,7 +44,7 @@ __defaults = {
 }
 
 """ Display information about a tech item or ship design """
-class TechDisplay(Defaults):
+class Tech(Defaults):
     def post(self, action):
         tech = game_engine.get('Tech/' + action, False)
         if tech == None:
@@ -128,4 +124,4 @@ class TechDisplay(Defaults):
                     self.engine_chart_data.append(0)
                 self.engine_chart_data[i] += engine.tachometer(i, kt / len(tech.engines), 0)
         
-TechDisplay.set_defaults(TechDisplay, __defaults)
+Tech.set_defaults(Tech, __defaults)

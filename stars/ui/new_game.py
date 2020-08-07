@@ -1,16 +1,16 @@
 import sys
-from . import game_engine
-from .defaults import Defaults
-from .game import Game
-from .player import Player
-from .star_system import StarSystem
 from math import pi
 from random import randint
 from random import random
-from .reference import Reference
-from .location import rand_location
-from .race import Race
-from .tech import Tech
+from .. import game_engine
+from ..defaults import Defaults
+from ..game import Game
+from ..location import rand_location
+from ..player import Player
+from ..race import Race
+from ..reference import Reference
+from ..star_system import StarSystem
+from ..tech import Tech
 
 
 """ Default values (default, min, max)  """

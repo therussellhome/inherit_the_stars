@@ -1,5 +1,5 @@
-from . import game_engine
-from .defaults import Defaults 
+from .. import game_engine
+from ..defaults import Defaults 
 
 
 """ Default values (default, min, max)  """
