@@ -17,7 +17,6 @@ class Game(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        game_engine.register(self)
 
     """ Generate a turn """
     def generate_turn(self):

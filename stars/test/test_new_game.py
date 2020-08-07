@@ -6,21 +6,25 @@ class NewGameTestCase(unittest.TestCase):
     def test_calc_num_systems(self):
         ng = new_game.NewGame()
         self.assertEqual(ng.calc_num_systems(500, 500, 500, 8), 524)
-        self.assertEqual(ng.calc_num_systems(0, 500, 500, 8), 209)
-        self.assertEqual(ng.calc_num_systems(0, 50, 500, 8), 21)
+        self.assertEqual(ng.calc_num_systems(500, 500, 0, 8), 209)
+        self.assertEqual(ng.calc_num_systems(500, 50, 0, 8), 21)
         self.assertEqual(ng.calc_num_systems(50, 50, 50, 8), 1)
         self.assertEqual(ng.calc_num_systems(50, 50, 50, 50), 3)
         self.assertEqual(ng.calc_num_systems(25, 25, 100, 50), 2)
         self.assertEqual(ng.calc_num_systems(25, 50, 100, 50), 3)
-        self.assertEqual(ng.calc_num_systems(1, 1, 1, 50), 209)
+        self.assertEqual(ng.calc_num_systems(2, 2, 1, 50), 0)
 
     def test_create_systems(self):
         ng = new_game.NewGame()
         names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        self.assertEqual(len(ng.create_systems(2, copy.copy(names), 5, 5, 5)), 2, msg='NOTE: this will sometimes fail as it is statistical in nature')
         self.assertLess(len(ng.create_systems(10, copy.copy(names), 5, 5, 5)), 5)
         self.assertEqual(len(ng.create_systems(10, copy.copy(names), 500, 500, 500)), 10)
         self.assertEqual(len(ng.create_systems(20, copy.copy(names), 500, 500, 500)), 10)
+
+    def test_create_systems2(self):
+        ng = new_game.NewGame()
+        names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        self.assertEqual(len(ng.create_systems(2, copy.copy(names), 5, 5, 5)), 2, msg='NOTE: this will sometimes fail as it is statistical in nature')
 
     def test_generate_home_systems(self):
         ng = new_game.NewGame()
