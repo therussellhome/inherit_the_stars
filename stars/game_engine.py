@@ -33,10 +33,10 @@ class BaseClass:
 
 
 """ Get a referenced class by name """
-def get(reference, create_new=True):
+def get(reference, create_new=False):
     global __registry
     # reference must be a string
-    if not reference:
+    if not isinstance(reference, str):
         raise LookupError('None is not a valid reference')
     # get all of a type
     if reference[-1:] == '/':
