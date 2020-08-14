@@ -149,7 +149,6 @@ class Combat(Defaults):
 
     def move(self, ship):
         move = self.calc_strategy_m(ship)
-        print(move[0].x, TERAMETER_2_LIGHTYEAR/2)
         ship.location = ship.location.move(move[0], ship.max_distance, move[1])
         self.save_to_combat_log()
         pass
@@ -176,7 +175,7 @@ class Combat(Defaults):
     def take_turn(self):
         mi = 0
         for ship in self.everybody:
-            #ship.calc_initative()
+            ship.calc_initative()
             if ship.initative > mi:
                 mi = int(ship.initative)
         for i in range(mi, -1, -1):

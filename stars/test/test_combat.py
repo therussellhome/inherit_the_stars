@@ -15,10 +15,8 @@ class TestCombat(unittest.TestCase):
         everybody=[ship.Ship(location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(location=location.Location(x=0, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
         c = combat.Combat(everybody=everybody)
         c.move(c.everybody[0])
-        print(c.everybody[0].location.x, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0).x)
         self.assertEqual(c.everybody[0].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0))
         c.move(c.everybody[1])
-        print(c.everybody[0].location.x, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0).x)
         self.assertEqual(c.everybody[1].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0))
     def test_calc_strategy_f(self):
         everybody=[ship.Ship(location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon()]), ship.Ship(weapons=[weapon.Weapon()])]
@@ -28,7 +26,7 @@ class TestCombat(unittest.TestCase):
         strategy = c.calc_strategy_f(c.everybody[1], c.everybody[1].weapons[0])
         self.assertEqual(strategy, c.everybody[0])
     def test_fire(self):
-        everybody=[ship.Ship(armor=10, location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon(power=2, range_tm=4, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(armor=10, weapons=[weapon.Weapon(power=2, range_tm=2, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
+        everybody=[ship.Ship(armor=10, location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon(power=2, range_tm=2, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(armor=10, weapons=[weapon.Weapon(power=2, range_tm=2, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
         c = combat.Combat(everybody=everybody)
         c.fire(c.everybody[0])
         self.assertEqual(c.everybody[1].armor, 9)

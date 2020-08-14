@@ -5,7 +5,6 @@ from random import randint
 from .location import Location
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from .scanner import Scanner
 from . import stars_math
 
 """ Default values (default, min, max)  """
@@ -95,5 +94,11 @@ class Ship(ShipDesign):
 
     def calc_aparent_mass(self):
         return 100
+
+    def blow_up(self):
+        pass
+
+    def calc_initative(self):
+        self.initative = 1
 
 Ship.set_defaults(Ship, __defaults)
