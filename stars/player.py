@@ -1,7 +1,5 @@
 import sys
 from . import game_engine
-from .cost import Cost
-from .fleet import Fleet
 from .defaults import Defaults
 from .energy_minister import EnergyMinister
 from .intel import Intel

@@ -1,11 +1,9 @@
 import sys
 from . import game_engine
-from .defaults import Defaults
 from random import randint
 from .location import Location
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from .scanner import Scanner
 from . import stars_math
 
 """ Default values (default, min, max)  """

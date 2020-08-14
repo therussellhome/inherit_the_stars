@@ -2,15 +2,11 @@ import sys
 import copy
 from . import stars_math
 from . import game_engine
-from .ship import Ship
 from .cargo import Cargo
-from .player import Player
-from .planet import Planet
 from .defaults import Defaults
 from .location import Location
 from .waypoint import Waypoint
 from .location import LocationReference
-from .reference import Reference
 
 
 """ Default values (default, min, max)  """
@@ -484,7 +480,7 @@ class Fleet(Defaults):
     def check(self, recipiant, player):
         if recipiant in player.fleets:
             return True
-        if recipiant in game_engine.get('Planet/') and recipiant.player = player:
+        if recipiant in game_engine.get('Planet/') and recipiant.player == player:
             return True
         return False
     
@@ -594,7 +590,8 @@ class Fleet(Defaults):
             ship.self_repair()
     
     def orbital_mining(self):
-        check planet
+        planet = self.waypoints[0].recipiants['orbital_mining']
+        #check planet
         for ship in self.ships:
             ship.orbital_mining(planet)
     
