@@ -21,7 +21,7 @@ class Reference(game_engine.BaseClass):
             return object.__getattribute__(self, name)
         else:
             reference = object.__getattribute__(self, 'reference')
-            obj = game_engine.get(reference)
+            obj = game_engine.get(reference, create_new=True)
             if name == 'is_valid':
                 return (obj != None)
             elif obj != None:
@@ -35,7 +35,7 @@ class Reference(game_engine.BaseClass):
             self.__dict__[name] = value
         else:
             reference = object.__getattribute__(self, 'reference')
-            obj = game_engine.get(reference)
+            obj = game_engine.get(reference, create_new=True)
             if obj != None:
                 obj.__setattr__(name, value)
             else:

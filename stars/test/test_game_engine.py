@@ -6,6 +6,7 @@ from .. import *
 class _TestGameEngine(game_engine.BaseClass):
     def __init__(self, **kwargs):
         self.name = kwargs.get('name', str(id(self)))
+        self.dict = {'abc': 'xzy'}
 
 
 class GameEngineTestCase(unittest.TestCase):
@@ -42,11 +43,14 @@ class GameEngineTestCase(unittest.TestCase):
         t0 = game_engine.get('_TestGameEngine/test_get2')
         self.assertEqual(t0.name, t2.name)
         # Don't create a new object
-        t0 = game_engine.get('_TestGameEngine/test_get0', False)
+        t0 = game_engine.get('_TestGameEngine/test_get0')
         self.assertEqual(t0, None)
         # Create an object
-        t0 = game_engine.get('_TestGameEngine/test_get0')
+        t0 = game_engine.get('_TestGameEngine/test_get0', True)
         self.assertEqual(t0.name, 'test_get0')
+        # Test errors
+        with self.assertRaises(LookupError):
+            game_engine.get(0)
 
     def test_unregister(self):
         game_engine.unregister()
@@ -73,7 +77,7 @@ class GameEngineTestCase(unittest.TestCase):
         t2 = game_engine.from_json(json)
         self.assertEqual(t1.name, t2.name)
 
-    def test_load_save(self):
+    def test_load_save_list(self):
         game_engine.unregister()
         t = _TestGameEngine(name='test_save')
         game_engine.register(t)
@@ -94,8 +98,18 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.get('_TestGameEngine/')
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].name, 'test_save')
+        # Testing list has to be done after save
+        l = game_engine.load_list('test')
+        self.assertEqual(len(l), 1)
+        self.assertEqual(l[0], 'unittest')
 
     def test_load_defaults(self):
+        game_engine.unregister()
         ts = game_engine.load_defaults('Tech')
         self.assertGreater(len(ts), 0)
         self.assertEqual(ts[0].__class__.__name__, 'Tech')
+        ts = game_engine.get('Tech/')
+        self.assertEqual(len(ts), 0)
+        ts = game_engine.load_defaults('Tech', True)
+        ts = game_engine.get('Tech/')
+        self.assertGreater(len(ts), 0)
