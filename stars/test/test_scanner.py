@@ -17,6 +17,8 @@ class ScannerTestCase(unittest.TestCase):
         # TODO
         pass
     def test_scan_ships(self):
+        # TODO
         pass
     def test_scan_planets(self):
+        # TODO
         pass
