@@ -459,7 +459,7 @@ function format_gravity(value) {
 
 // Format temperature
 function format_temperature(value) {
-    return (value * 4 - 200).toString() + ' °C';
+    return (value * 2 - 50).toString() + ' °C';
 }
 
 // Format radiation

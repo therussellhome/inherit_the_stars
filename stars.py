@@ -7,15 +7,22 @@ import socketserver
 import urllib.parse
 import webbrowser
 from pathlib import Path
+from stars import game_engine
 from stars.ui import *
 
 
 """ Map of post handlers """
 _handlers = {
+    '/empire': empire.Empire(),
+    '/generate': generate.Generate(),
     '/launch': launch.Launch(),
     '/new_game': new_game.NewGame(),
+    '/planets': planets.Planets(),
     '/race_editor': race_editor.RaceEditor(),
     '/render_stars': render_stars.RenderStars(),
+    '/search': search.Search(),
+    '/settings': settings.Settings(),
+    '/ships': ships.Ships(),
     '/tech': tech.Tech(),
 }
 
@@ -39,8 +46,10 @@ class Httpd(http.server.BaseHTTPRequestHandler):
                 _handlers[form].update(**json)
                 _handlers[form].post(action)
                 response_str = game_engine.to_json(response)
-                print('    resp = ', response_str)
-                self.wfile.write(response_str.encode())
+            else:
+                response_str = '{}'
+            print('    resp = ', response_str)
+            self.wfile.write(response_str.encode())
 
     def do_GET(self):
         get = Path('.') / 'www' / re.sub('\?.*', '', self.path).split('/')[-1]
