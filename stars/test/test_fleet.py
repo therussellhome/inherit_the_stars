@@ -1,7 +1,7 @@
 import unittest
 from .. import *
 class FleetCase(unittest.TestCase):
-    def test_compile_returnn(self):
+    def test_addships_compile_returnn(self):
         ship_1 = ship.Ship(
             location=location.Location(),
             cargo=cargo.Cargo(titanium=100, cargo_max=200)
@@ -12,7 +12,8 @@ class FleetCase(unittest.TestCase):
             )
         game_engine.register(ship_1)
         game_engine.register(ship_2)
-        fleet_one = fleet.Fleet(ships=[ship_1, ship_2])
+        fleet_one = fleet.Fleet()
+        fleet_one.add_ships([ship_1, ship_2])
         fleet_one.compile()
         fleet_one.returnn()
         self.assertEqual(ship_1.cargo.titanium, 50)
@@ -53,42 +54,139 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(self.ship_8.cargo.lithium, 38)
         self.assertEqual(self.ship_8.cargo.silicon, 37)
     
-    def t_merge(self):
-        self.fleet_two.execute('merge')
-        self.assertEqual(self.ship_1.cargo.titanium, 25)
-        self.assertEqual(self.ship_1.cargo.people, 25)
-        self.assertEqual(self.ship_1.cargo.lithium, 25)
-        self.assertEqual(self.ship_1.cargo.silicon, 25)
-        self.assertEqual(self.ship_2.cargo.titanium, 25)
-        self.assertEqual(self.ship_2.cargo.people, 25)
-        self.assertEqual(self.ship_2.cargo.lithium, 25)
-        self.assertEqual(self.ship_2.cargo.silicon, 25)
-        self.assertEqual(self.ship_3.cargo.titanium, 13)
-        self.assertEqual(self.ship_3.cargo.people, 12)
-        self.assertEqual(self.ship_3.cargo.lithium, 12)
-        self.assertEqual(self.ship_3.cargo.silicon, 13)
-        self.assertEqual(self.ship_4.cargo.titanium, 37)
-        self.assertEqual(self.ship_4.cargo.people, 38)
-        self.assertEqual(self.ship_4.cargo.lithium, 38)
-        self.assertEqual(self.ship_4.cargo.silicon, 37)
+    def test_merge(self):
+        ship_1 = ship.Ship(location = location.Location())
+        ship_2 = ship.Ship(location = location.Location())
+        game_engine.register(ship_1)
+        game_engine.register(ship_2)
+        fleet_one = fleet.Fleet(ships = [ship_1])
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
+            waypoints = [waypoint.Waypoint(
+                actions = ['merge'],
+                recipiants = {'merge': fleet_one},
+                location = location.LocationReference(fleet_one)
+                )]
+            )
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.execute('merge', p1)
+        self.assertEqual(len(p1.fleets), 1)
+        self.assertEqual(ship_2 in fleet_one.ships, True)
+        ship_3 = ship.Ship(location = location.Location())
+        game_engine.register(ship_1)
+        game_engine.register(ship_2)
+        fleet_one = fleet.Fleet(ships = [ship_1])
+        fleet_two = fleet.Fleet(
+            ships = [ship_3],
+            waypoints = [waypoint.Waypoint(
+                actions = ['merge'],
+                recipiants = {'merge': fleet_one},
+                location = location.LocationReference(fleet_one)
+                )]
+            )
+        p2 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('merge', p2)
+        self.assertEqual(len(p1.fleets), 1)
+        self.assertEqual(ship_3 in fleet_two.ships, True)
         
-    def t_split(self):
-        self.fleet_one.execute('split')
-        self.assertEqual(self.p1.fleets[1].ships[0], self.ship_1)
-        self.assertEqual(self.p1.fleets[1].ships[1], self.ship_2)
-        self.fleet_two = self.p1.fleets[1]
+    def test_split(self):
+        ship_1 = ship.Ship(location = location.Location())
+        ship_2 = ship.Ship(location = location.Location())
+        game_engine.register(ship_1)
+        game_engine.register(ship_2)
+        fleet_one = fleet.Fleet(
+            ships = [ship_1, ship_2],
+            waypoints = [waypoint.Waypoint(
+                actions = ['split'],
+                splits = [[ship_2]],
+                location = location.Location()
+                )]
+            )
+        p1 = player.Player(fleets = [fleet_one])
+        fleet_one.execute('split', p1)
+        self.assertEqual(ship_1 in fleet_one.ships, True)
+        self.assertEqual(ship_2 in p1.fleets[1].ships, True)
         
     def t_transfer(self):
         self.fleet_one.execute('transfer')
         self.assertEqual(self.p1.fleets[0], self.fleet_two)
         self.assertEqual(self.p2.fleets[0], self.fleet_one)
         
-    def t_move(self):
+    def test_move(self):
+        ship_1 = ship.Ship(
+            fuel = 0,
+            fuel_max = 100,
+            location=location.Location(),
+            engines = [
+                engine.Engine(
+                    kt_exponent = 1.5,
+                    speed_divisor = 10.0,
+                    speed_exponent = 5.0,
+                    antimatter_siphon = 0.0
+                    ),
+                engine.Engine(
+                    kt_exponent = 1.5,
+                    speed_divisor = 10.0,
+                    speed_exponent = 5.0,
+                    antimatter_siphon = 0.0
+                    )
+                ]
+            )
+        ship_2 = ship.Ship(
+            fuel = 1000,
+            fuel_max = 10000,
+            location=location.Location(),
+            engines = [
+                engine.Engine(
+                    kt_exponent = 1.5,
+                    speed_divisor = 10.0,
+                    speed_exponent = 5.0,
+                    antimatter_siphon = 0.0
+                    ),
+                engine.Engine(
+                    kt_exponent = 1.5,
+                    speed_divisor = 10.0,
+                    speed_exponent = 5.0,
+                    antimatter_siphon = 0.0
+                    )
+                ]
+            )
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    location = location.Location()
+                    ),
+                waypoint.Waypoint(
+                    location = location.Location(x = 1, y = 1, z = 1),
+                    speed = 1,
+                    standoff = 'No Standoff'
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_one])
         for i in range(175):
+            fleet_one.execute('move', p1)
+        self.assertEqual(fleet_one.location.x, 1)
+        self.assertEqual(fleet_one.location.y, 1)
+        self.assertEqual(fleet_one.location.z, 1)
+        """
+        fleet_one = fleet.Fleet(
+            ships = [ship_1, ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    location = location.Location(x = 24/100, y = 7/100, z = 0),
+                    speed = 5,
+                    standoff = 'No Standoff'
+                    )
+                ]
+            )
+        for i in range(6):
             self.fleet_one.move()
-        self.assertEqual(self.fleet_one.location.x, 1)
-        self.assertEqual(self.fleet_one.location.y, 1)
-        self.assertEqual(self.fleet_one.location.z, 1)
+        self.assertEqual(self.fleet_one.location.x, 24/100)
+        self.assertEqual(self.fleet_one.location.y, 7/100)
+        self.assertEqual(self.fleet_one.location.z, 0)
+        """
         
     def t_sell(self):
         self.fleet_three.execute('sell')

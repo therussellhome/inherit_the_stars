@@ -19,6 +19,7 @@ __defaults = {
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
     'cargo': [Cargo()],
+    'location':[Location()]
 }
 
 
@@ -66,16 +67,14 @@ class Fleet(Defaults):
                     self.waypoints[1].location.upgrade(ship)
     
     """ does all the moving calculations and then moves the ships """
-    def move(self):
+    def move(self, player):
         self.waypoints[1].move_to(self)
-        in_hyper_denial = False
         num_denials = 0
         for ship in self.ships:
             self.fuel += ship.fuel
-            #if 
         #for hyper_denial in game_engine.hyper_denials:
         #    distance_to_denial = self.location - hyper_denial.location
-        #    if distance_to_denial >= hyper_denial.range and hyper_denial.player:
+        #    if distance_to_denial >= hyper_denial.range and hyper_denial.player.treaties[player.name].relation == 'enemy':
         #        num_denials += 1
         speed = self.waypoints[1].speed
         distance_to_waypoint = self.location - self.waypoints[1].fly_to
@@ -87,7 +86,7 @@ class Fleet(Defaults):
         if distance_to_waypoint == 0:
             self.waypoints.pop(0)
             self.move()
-        while self.test_fuel(speed, in_hyper_denial, distance):
+        while self.test_fuel(speed, num_denials, distance) and self.test_damage(speed, num_denials):
             speed -= 1
             distance_at_hyper = (speed**2)/100
             if distance_to_waypoint < distance_at_hyper:
@@ -95,7 +94,7 @@ class Fleet(Defaults):
             else:
                 distance = distance_at_hyper
         self.location.move(self.waypoints[1].fly_to, distance)
-        self.burn_fuel(speed, in_hyper_denial, distance)
+        self.burn_fuel(speed, num_denials, distance)
         self.returnn()
     
     """ calles the move for each of the ships """
@@ -114,6 +113,13 @@ class Fleet(Defaults):
             return False
         else:
             return True
+        
+    """ checks if you can move at a certain speed with your entire fleet """
+    def test_damage(self, speed, num_denials):
+        for ship in self.ships:
+            if not ship.speed_is_damaging(speed, num_denials):
+                return False
+        return True
         
     """ chooses the ship to return the fuel to """
     def return_cargo(self):
@@ -176,23 +182,22 @@ class Fleet(Defaults):
             
     """ Merges the fleet with the target fleet """
     def merge(self, player):
-        o_fleet = waypoint.recipiants['merge']
-        if type(o_fleet) != type(Fleet) or o_fleet not in player.fleets:
+        o_fleet = self.waypoints[0].recipiants['merge']
+        if type(o_fleet) != type(Fleet()) or o_fleet not in player.fleets:
+            print('not fleet')
             return
-        for Ship in self.ships:
+        for ship in self.ships:
             o_fleet.ships.append(ship)
-        o_fleet.compile()
-        o_fleet.returnn()
         player.remove_fleet(self)
     
     """ splits the fleet """
     def split(self, player):
-        for split in waypoint.splits:
-            Player.create_fleet(ships=split.ships, waypoints=copy.copy(fleet.waypoints))
-            for ship in split.ships:
-                fleet.ships.remove(ship)
+        for split in self.waypoints[0].splits:
+            player.create_fleet(ships = split, waypoints = copy.copy(self.waypoints))
+            for ship in split:
+                self.ships.remove(ship)
         if len(self.ships) == 0:
-            Player.remove_fleet(self)
+            player.remove_fleet(self)
     
     """ transfers the fleet """
     def transfer(self, player):
@@ -386,21 +391,21 @@ class Fleet(Defaults):
             self.scan(player)
         elif action == 'move':
             self.move(player)
-        elif action in self.waypoints[0].actions and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
+        elif action in self.waypoints[0].actions and (self.waypoints[0].location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
             if action == 'unload' or action == 'pre_unload':
-                recipiant = self.waypoint.recipiants['unload']
+                recipiant = self.waypoints[0].recipiants['unload']
                 if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
                     self.unload(recipiant, player)
             elif action == 'load' or action == 'pre_load':
                 recipiant = self.waypoints[0].recipiants['load']
                 if recipiant.name == 'salvage' or recipiant in player.fleets or recipiant.player == player:
                     self.load(recipiant, player)
-            elif action == 'buy' and self.waypoints[0].recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade:
+            elif action == 'buy' and self.waypoints[0].recipiants['buy'] in game_engine.get('Planet/') and self.waypoints[0].recipiants['buy'].space_station.trade:
                 recipiant = self.waypoints[0].recipiants['buy']
                 if recipiant.player.name != self.player.name:
                     self.buy(recipiant, player)
             elif action == 'sell':
-                recipiant = self.waypoint.recipiants['sell']
+                recipiant = self.waypoints[0].recipiants['sell']
                 if recipiant in game_engine.get('Planet/') and recipiant.space_station.trade:
                     if recipiant.player != player:
                         self.sell(recipiant, player)

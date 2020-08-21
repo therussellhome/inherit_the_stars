@@ -8,6 +8,7 @@ from .race import Race
 from .reference import Reference
 from .score import Score
 from .tech_level import TechLevel
+from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -40,6 +41,7 @@ class Player(Defaults):
         self.fleets.append(Fleet(**kwargs))
     
     def remove_fleet(self, fleet):
+        print('remove fleet')
         self.fleets.remove(fleet)
     
     """ Build/research/other economic funcitions """

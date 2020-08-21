@@ -1,4 +1,5 @@
 import sys
+from .engine import Engine
 from .cargo import Cargo
 from . import game_engine
 from random import randint
@@ -19,6 +20,7 @@ __defaults = {
     'repair_points': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
+    'engines': [Engine()],
     'cargo': [Cargo()]
 }
 
@@ -41,27 +43,34 @@ class Ship(ShipDesign):
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def fuel_check(self, speed, in_hyper_denial, distance):
+    def fuel_check(self, speed, num_denials, distance):
         if len(self.engines) == 0:
             return 0
         fuel = 0
         mass_per_engine = self.mass/len(self.engines)
-        mass_per_tachometer = mass_per_engine
-        if in_hyper_denial:
-            mass_per_tachometer = mass_per_engine * speed
         for engine in self.engines:
-            fuel += engine.tachometer(speed, mass_per_tachometer) * mass_per_engine * distance
+            fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
         return fuel
-
+    
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def burn_fuel(self, speed, in_hyper_denial, distance, x, y, z):
-        fuel = self.fuel_check(speed, in_hyper_denial, distance)
+    def burn_fuel(self, speed, num_denials, distance, x, y, z):
+        fuel = self.fuel_check(speed, num_denials, distance)
         self.location.x = x
         self.location.y = y
         self.location.z = z
         return fuel
+    
+    """ checks if speed will damage ship """
+    def speed_is_damaging(self, speed, num_denials):
+        if len(self.engines) == 0:
+            return True
+        mass_per_engine = self.mass/len(self.engines)
+        for engine in self.engines:
+            if engine.tachometer(speed, mass_per_engine, num_denials) >= 100:
+                return True
+        return False
     
     def colonize(self, player, planet):
         planet.colonize(player, copy.copy(player.colonize_minister), self.cargo, self.num_col_modules, self.num_col_modules, self.num_col_modules)
