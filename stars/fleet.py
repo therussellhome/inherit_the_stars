@@ -365,7 +365,8 @@ class Fleet(Defaults):
     
     def orbital_mining(self):
         planet = self.waypoints[0].recipiants['orbital_mining']
-        #check planet
+        if planet not in game_engine.get('Planet/') or planet.on_surface.people != 0:
+            return
         for ship in self.ships:
             ship.orbital_mining(planet)
     
@@ -375,7 +376,7 @@ class Fleet(Defaults):
     
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
-        if planet.player != player and planet.player.is_valid:
+        if planet in game_engine.get('Planet/') and planet.player != player and planet.player.is_valid and player.treaties[planet.player.name].relation == 'enemy':
             for ship in self.ships:
                 ship.bomb(planet)
     
@@ -386,16 +387,13 @@ class Fleet(Defaults):
         elif action == 'move':
             self.move(player)
         elif action in self.waypoints[0].actions and (self.waypoint.location - self.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-            print(action)
             if action == 'unload' or action == 'pre_unload':
                 recipiant = self.waypoint.recipiants['unload']
                 if recipiant == "deep_space" or recipiant.name == 'salvage' or recipiant.player.name == self.player.name:
                     self.unload(recipiant, player)
             elif action == 'load' or action == 'pre_load':
                 recipiant = self.waypoints[0].recipiants['load']
-                print('recognition of load command')
                 if recipiant.name == 'salvage' or recipiant in player.fleets or recipiant.player == player:
-                    print('start load')
                     self.load(recipiant, player)
             elif action == 'buy' and self.waypoints[0].recipiants['buy'] in game_engine.get('Planet/') and self.waypoint.recipiants['buy'].space_station.trade:
                 recipiant = self.waypoints[0].recipiants['buy']
