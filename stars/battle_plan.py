@@ -6,8 +6,7 @@ __defaults = {
     'options_p_target': ['any', 'starbase', 'ship', 'disengage'],
     's_target': ['any'],
     'options_s_target': ['any', 'starbase', 'ship', 'disengage'],
-    'close_to': [0, 0, 0.60],
-    'work_alone': [False],
+    'close_to': [0.0, 0, 0.60],
     'wait_until_closed_to_fire': [False],
 }
 

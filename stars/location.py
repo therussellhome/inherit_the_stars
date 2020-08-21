@@ -12,9 +12,25 @@ class Location(game_engine.BaseClass):
         self.x = kwargs.get('x', 0.0)
         self.y = kwargs.get('y', 0.0)
         self.z = kwargs.get('z', 0.0)
+    
+    def polar_to_cartesian(dis, lat, lon):
+        x = round(cos(lat*pi/180)*dis*cos(lon*pi/180), 5)
+        y = round(sin(lat*pi/180)*dis*cos(lon*pi/180), 5)
+        z = round(sin(lon*pi/180)*dis, 5)
+        return [x, y, z]
 
+    def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
+        distance = self - target
+        f = standoff / distance
+        x = self.x - (self.x - target.x) * f
+        y = self.y - (self.y - target.y) * f
+        z = self.z - (self.z - target.z) * f
+        return Location(x=x, y=y, z=z)
+
+    
     """ returns the location to move to """
-    def move(self, target, max_distance, away=False):
+    def move(self, target, max_distance, away=False, standoff=0.0, target_prev=None):
+        target = self.intercept(target, max_distance, standoff, target_prev)
         distance = self - target
         if distance == 0:
             return self
@@ -26,11 +42,11 @@ class Location(game_engine.BaseClass):
         y = self.y - (self.y - target.y) * f
         z = self.z - (self.z - target.z) * f
         return Location(x=x, y=y, z=z)
-
+    
     """ Distance between 2 points """
     def __sub__(self, other):
         return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
-
+    
     """ Equality check """
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
