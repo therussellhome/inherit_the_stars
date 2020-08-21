@@ -1,4 +1,5 @@
 import sys
+from .cargo import Cargo
 from . import game_engine
 from random import randint
 from .location import Location
@@ -16,6 +17,9 @@ __defaults = {
     'max_distance': [0, 0, sys.maxsize],
     'damage_points': [0, 0, sys.maxsize],
     'repair_points': [0, 0, sys.maxsize],
+    'fuel': [0, 0, sys.maxsize],
+    'fuel_max': [0, 0, sys.maxsize],
+    'cargo': [Cargo()]
 }
 
 

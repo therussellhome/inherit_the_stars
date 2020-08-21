@@ -1,26 +1,24 @@
 import unittest
 from .. import *
 class FleetCase(unittest.TestCase):
-    def start1(self):
-        self.p1 = player.Player()
-        self.p2 = player.Player()
-        self.ship_1 = ship.Ship(engines=[engine.Engine(speed_divisor=10.0, speed_exponent=5.0, antimatter_siphon=0.0, kt_exponent=1.5)], location=location.Location(), cargo=cargo.Cargo(titanium=100, cargo_max=200), fuel=0, fuel_max=10000)
-        self.ship_2 = ship.Ship(engines=[engine.Engine(speed_divisor=10.0, speed_exponent=5.0, antimatter_siphon=0.0, kt_exponent=1.5)], location=location.Location(), cargo=cargo.Cargo(people=100, cargo_max=200), fuel=0, fuel_max=10000)
-        self.fleet_one = fleet.Fleet(player=reference.Reference('Player', self.p1.name), ships=[reference.Reference(self.ship_1), reference.Reference(self.ship_2)], waypoints=[waypoint.Waypoint(actions=['split'], location=location.Location(), splits=[[self.ship_1, self.ship_2]]), waypoint.Waypoint(actions=['transfer'], speed=1, move_on=False, standoff='No Standoff', recipiants={'transfer':reference.Reference(self.p2)}, location=location.Location(x=1, y=1, z=1))], cargo=cargo.Cargo(), fuel=0, fuel_max=0)
-        self.ship_3 = ship.Ship(location=location.Location(), cargo=cargo.Cargo(silicon=100, cargo_max=100), fuel=0, fuel_max=10000)
-        self.ship_4 = ship.Ship(location=location.Location(), cargo=cargo.Cargo(lithium=100, cargo_max=300), fuel=0, fuel_max=10000)
-        self.fleet_two = fleet.Fleet(player=reference.Reference(self.p1), ships=[reference.Reference(self.ship_3), reference.Reference(self.ship_4)], waypoints=[waypoint.Waypoint(actions=['merge', 'load', 'unload'], transfers={'unload':[['lithium', 60], ['silicon', 40]], 'load':[['titanium', 60], ['people', 40]]}, recipiants={'merge':self.fleet_one, 'load':self.fleet_one, 'unload':self.fleet_one}, location=location.Location(x=self.fleet_one.location.x, y=self.fleet_one.location.y, z=self.fleet_one.location.z))], cargo=cargo.Cargo(), fuel=0, fuel_max=0)
-        print(self.p1.__dict__)
-        self.assertEqual(self.ship_1.cargo.titanium, 50)
-        self.assertEqual(self.ship_1.cargo.people, 50)
-        self.assertEqual(self.ship_2.cargo.titanium, 50)
-        self.assertEqual(self.ship_2.cargo.people, 50)
-        self.assertEqual(self.ship_3.cargo.lithium, 25)
-        self.assertEqual(self.ship_3.cargo.silicon, 25)
-        self.assertEqual(self.ship_4.cargo.lithium, 75)
-        self.assertEqual(self.ship_4.cargo.silicon, 75)
-        self.assertEqual(self.p1.fleets[0], self.fleet_one)
-        self.assertEqual(self.p1.fleets[1], self.fleet_two)
+    def test_compile_returnn(self):
+        ship_1 = ship.Ship(
+            location=location.Location(),
+            cargo=cargo.Cargo(titanium=100, cargo_max=200)
+            )
+        ship_2 = ship.Ship(
+            location=location.Location(),
+            cargo=cargo.Cargo(people=100, cargo_max=200)
+            )
+        game_engine.register(ship_1)
+        game_engine.register(ship_2)
+        fleet_one = fleet.Fleet(ships=[ship_1, ship_2])
+        fleet_one.compile()
+        fleet_one.returnn()
+        self.assertEqual(ship_1.cargo.titanium, 50)
+        self.assertEqual(ship_1.cargo.people, 50)
+        self.assertEqual(ship_2.cargo.titanium, 50)
+        self.assertEqual(ship_2.cargo.people, 50)
     
     def start2(self):
         self.p1 = player.Player(energy=90000)
@@ -136,34 +134,11 @@ class FleetCase(unittest.TestCase):
         
     def t_unload(self):
         self.fleet_two.execute('unload')
-        self.assertEqual(self.ship_1.cargo.lithium, 30)
-        self.assertEqual(self.ship_1.cargo.silicon, 20)
-        self.assertEqual(self.ship_2.cargo.lithium, 30)
-        self.assertEqual(self.ship_2.cargo.silicon, 20)
-        self.assertEqual(self.ship_3.cargo.lithium, 10)
-        self.assertEqual(self.ship_3.cargo.silicon, 15)
-        self.assertEqual(self.ship_4.cargo.lithium, 30)
-        self.assertEqual(self.ship_4.cargo.silicon, 45)
-    
-    def test_fleet_actions(self):
-        print('setup 1 with test', end='; ')
-        self.start1()
-        print('testing load; ', end='')
-        self.t_load()
-        print('testing unload; ', end='')
-        self.t_unload()
-        print('testing merge; ', end='')
-        self.t_merge()
-        print('testing split; ', end='')
-        self.t_split()
-        print('testing move', end='; ')
-        self.t_move()
-        print('testing transfer', end='; ')
-        self.t_transfer()
-        print('setup 2 with test', end='; ')
-        self.start2()
-        print('testing sell', end='. ')
-        self.t_sell()
-        print('testing buy; ', end='')
-        self.t_buy()
-        print('Sucsuss!')
+        self.assertEqual(ship_1.cargo.lithium, 30)
+        self.assertEqual(ship_1.cargo.silicon, 20)
+        self.assertEqual(ship_2.cargo.lithium, 30)
+        self.assertEqual(ship_2.cargo.silicon, 20)
+        self.assertEqual(ship_3.cargo.lithium, 10)
+        self.assertEqual(ship_3.cargo.silicon, 15)
+        self.assertEqual(ship_4.cargo.lithium, 30)
+        self.assertEqual(ship_4.cargo.silicon, 45)
