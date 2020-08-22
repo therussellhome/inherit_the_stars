@@ -376,18 +376,21 @@
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
         <tr>
-            <td>Effort per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_effort_per_colonist" onload="slider(this, 'race_editor', 0.2, 5.0, 0.1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' man-years')"/></td>
+            <td>colonists to opperate mine</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_opperate_mine" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>colonists to opperate factory</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_opperate_factory" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>colonists to opperate power plant</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_opperate_power_plant" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>colonists to opperate defense</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_opperate_defense" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.2, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>minerals per mine</td>
-            <td class="hfill"><div class="onload" disabled="true" id="race_editor_minerals_per_mine" onload="slider(this, 'race_editor', 1, 9, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' KT')"/></td>
-        </tr><tr class="slider_padding"></tr><!--<tr>
-            <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 0.01, 0.1, 0.01, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
-        </tr><tr class="slider_padding"></tr>-->
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
+        </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
         <tr>
@@ -420,6 +423,33 @@
             <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
             <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
+        <tr>
+            <td>starting mines</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_mines" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting factories</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' factories')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting power plants</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
+        </tr><tr class="slider_padding"></tr>
+            <td>starting defenses</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting energy</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 25000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' YJ')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting lithium</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting silicon</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting titanium</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
     </table>
 </div>
 
