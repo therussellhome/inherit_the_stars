@@ -10,7 +10,7 @@ __defaults = {
 
 
 """ Represent Open Game action """
-class Search(Defaults):
+class Intel(Defaults):
     """ Interact with UI """
     def post(self, action):
         # Always reset to default
@@ -34,4 +34,4 @@ class Search(Defaults):
         """
             
 
-Search.set_defaults(Search, __defaults)
+Intel.set_defaults(Intel, __defaults)

@@ -50,6 +50,14 @@ div.sidebar {
     background-color: rgba(0, 0, 44, 0.5);
     transition: 0.5s;
 }
+div.submenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    padding-left: 70px;
+    transition: 0.5s;
+}
 div.toc {
     position: fixed;
     top: 0;
@@ -57,6 +65,9 @@ div.toc {
     z-index: 2;
     height: 100%;
     width: 150px;
+}
+input.vertical {
+    transform: rotate(-90deg);
 }
 img.button {
     width: 50px;

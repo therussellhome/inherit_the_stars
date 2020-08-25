@@ -12,6 +12,7 @@ from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
     'intel': [{}], # map of intel objects
     'ministers': [[Minister(name='default')]], # modifiable by the player
@@ -32,6 +33,40 @@ class Player(Defaults):
         if 'name' not in kwargs:
             self.name = 'Player ' + str(id(self))
     
+    """ Return the id for use as a temporary player token """
+    def token(self):
+        return str(id(self))
+
+    """ Add an intel report """
+    def add_intel(self, obj, **kwargs):
+        # Intentionally allowing this to fail if the object does not have a name attribute
+        reference = obj.__class__.__name__ + '/' + obj.name
+        if reference not in self.intel:
+            self.intel[reference] = Intel(reference=reference)
+        self.intel[reference].add_report(date=self.date, **kwargs)
+        # If seeing a new player then capture that
+        if 'player' in kwargs:
+            reference = 'Player/' + kwargs['player']
+            if reference not in self.intel:
+                self.intel[reference] = Intel(reference=reference)
+
+    """ Get intel about an object or objects """
+    def get_intel(self, reference):
+        if '/' in reference:
+            if reference in self.intel:
+                return self.intel[reference]
+            return Intel()
+        reports = []
+        for k, i in self.intel.items():
+            if k.starswith(reference + '/'):
+                reports.append(i)
+        return reports
+
+    """ Compute score based on intel """
+    def compute_score(self):
+        #TODO
+        pass
+
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
     def manage_economy(self):
@@ -42,7 +77,7 @@ class Player(Defaults):
         self.energy += self.energy_minister.unallocated_budget 
         # Get the list of planets
         planets = []
-        for planet in game_engine.get('Planet/'):
+        for planet in game_engine.get('Planet'):
             if planet.player.eq(self):
                 planets.append(planet)
         planets.sort(key=lambda x: x.on_planet.people)

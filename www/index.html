@@ -11,6 +11,25 @@
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
+<!--
+S!
+New Game
+Load Game
+Launch
+Race
+Shutdown
+Help
+
+S!
+Intel: messages [list], battles [space explosion], ships (inc mystery trader) [ships], stars/planets [planets], search [search]
+Empire: score [chart], research [chemistry beaker], race [alien], energy minister [atomic symbol], player relations [shaking hands]
+Systems: planets [list], planet ministers, anomalies report
+Ships: ship designer [parts], battle plans [target crosshairs], ship report [list]
+Submit
+View Config
+Help: help, tech
+-->
+
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
     <tr><td><img class="button selected" id="button_home" title="Splash Screen" src="/S!.png" onclick="show_home()"/></td></tr>
@@ -24,14 +43,46 @@
 
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
     <tr><td><img class="button" id="button_home_play" title="Home" src="/S!.png" onclick="show_home()"/></td></tr>
-    <tr><td><img class="button" id="button_empire" title="Empire" src="/empire.png" onclick="show_screen('empire')"/></td></tr>
-    <tr><td><img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/></td></tr>
-    <tr><td><img class="button" id="button_ships" title="Ships" src="/ships.png" onclick="show_screen('ships')"/></td></tr>
-    <tr><td><img class="button" id="button_search" title="Search" src="/search.png" onclick="show_screen('search')"/></td></tr>
+    <tr><td><img class="button" id="button_intel" title="Intel" src="/intel.png" onclick="show_menu('intel')" onmouseover="show_menu('intel')"/></td></tr>
+    <tr><td><img class="button" id="button_empire" title="Empire" src="/empire.png" onclick="show_menu('empire')" onmouseover="show_menu('empire')"/></td></tr>
+    <tr><td><img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_menu('planets')" onmouseover="show_menu('planets')"/></td></tr>
+    <tr><td><img class="button" id="button_ships" title="Ships" src="/ships.png" onclick="show_menu('ships')" onmouseover="show_menu('ships')"/></td></tr>
     <tr><td><img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="play_generate()"/></td></tr>
     <tr><td><img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/></td></tr>
     <tr><td><img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/></td></tr>
 </table></div>
+
+
+<div class="submenu hide" id="submenu_intel" onmouseleave="show_menu(null)">
+    <img class="button" id="button_intel_messages" title="Messages" src="/list.png" onclick="show_screen('intel_messages')"/>
+    <img class="button" id="button_intel_battles" title="Battles" src="/battles.png" onclick="show_screen('intel_battles')"/>
+    <img class="button" id="button_intel_ships" title="Ships" src="/ships.png" onclick="show_screen('intel_ships')"/>
+    <img class="button" id="button_intel_planets" title="Planets" src="/planets.png" onclick="show_screen('intel_planets')"/>
+    <img class="button" id="button_intel_search" title="Search" src="/search.png" onclick="show_screen('intel_search')"/>
+</div>
+    
+
+<div class="submenu hide" id="submenu_empire" onmouseleave="show_menu(null)">
+    <img class="button" id="button_empire_score" title="Score" src="/score.png" onclick="show_screen('score')"/>
+    <img class="button" id="button_empire_research" title="Research" src="/research.png" onclick="show_screen('research')"/>
+    <img class="button" id="button_empire_race" title="Race" src="/race_editor.png" onclick="show_screen('race_viewer')"/>
+    <img class="button" id="button_empire_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
+    <img class="button" id="button_empire_diplomacy" title="Diplomacy" src="/diplomacy.png" onclick="show_screen('diplomacy')"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_planets" onmouseleave="show_menu(null)">
+    <img class="button" id="button_planets_list" title="list" src="/list.png" onclick="show_screen('planets_list')"/>
+    <img class="button" id="button_planets_minister" title="minister" src="/planetary_minister.png" onclick="show_screen('planets_minister')"/>
+    <img class="button" id="button_planets_intersteller" title="intersteller" src="/intersteller.png" onclick="show_screen('planets_intersteller')"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_ships" onmouseleave="show_menu(null)">
+    <img class="button" id="button_ships_list" title="list" src="/list.png" onclick="show_screen('ships_list')"/>
+    <img class="button" id="button_ships_designs" title="designs" src="/ship_design.png" onclick="show_screen('ships_designs')"/>
+    <img class="button" id="button_ships_battle_plans" title="battle_plans" src="/battle_plans.png" onclick="show_screen('ships_battle_plans')"/>
+</div>
 
 
 <div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
@@ -441,15 +492,73 @@
 </div>
 
 
-<div class="screen hide onload" id="screen_empire" style="width: 600px" onload="post('empire')">
+<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Launch</td>
+        <td style="font-size: 200%">Score</td>
     </tr></table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Score</caption>
         <tr>
-            <td class="hfill"><input id="empire_player01" disabled="true" class="hfill"/></td>
-            <td><input id="empire_player01_score" disabled="true"/></td>
+            <td></td>
+            <td><input id="score_player01" disabled="true" class="vertical"/></td>
+            <td><input id="score_player02" disabled="true" class="vertical"/></td>
+            <td><input id="score_player03" disabled="true" class="vertical"/></td>
+            <td><input id="score_player04" disabled="true" class="vertical"/></td>
+            <td><input id="score_player05" disabled="true" class="vertical"/></td>
+            <td><input id="score_player06" disabled="true" class="vertical"/></td>
+            <td><input id="score_player07" disabled="true" class="vertical"/></td>
+            <td><input id="score_player08" disabled="true" class="vertical"/></td>
+            <td><input id="score_player09" disabled="true" class="vertical"/></td>
+            <td><input id="score_player10" disabled="true" class="vertical"/></td>
+            <td><input id="score_player11" disabled="true" class="vertical"/></td>
+            <td><input id="score_player12" disabled="true" class="vertical"/></td>
+            <td><input id="score_player13" disabled="true" class="vertical"/></td>
+            <td><input id="score_player14" disabled="true" class="vertical"/></td>
+            <td><input id="score_player15" disabled="true" class="vertical"/></td>
+            <td><input id="score_player16" disabled="true" class="vertical"/></td>
+        </tr>
+        <tr>
+            <td>Planets</td>
+            <td><input id="score_planets01" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets02" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets03" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets04" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets05" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets06" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets07" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets08" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets09" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets10" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets11" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets12" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets13" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets14" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets15" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets16" disabled="true" style="width: 5em"/></td>
+        </tr>
+        <tr>
+            <td>Ships</td>
+            <td><input id="score_ships01" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships02" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships03" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships04" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships05" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships06" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships07" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships08" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships09" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships10" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships11" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships12" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships13" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships14" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships15" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships16" disabled="true" style="width: 5em"/></td>
+        </tr>
+    </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"/></caption>
+        <tr>
+            <td>TODO</td>
         </tr>
     </table>
 </div>
@@ -460,6 +569,19 @@
 
 
 <div class="screen hide onload" id="screen_ships" style="width: 600px" onload="post('ships')">
+    <table class="topbar hfill"><tr><td>
+        <img class="button" id="button_ship_design" title="Ship Design" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
+        <img class="button" id="button_battle_plans" title="Battle Plans" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
+        <img class="button" id="button_ship_report" title="Ship Design" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
+        <img class="button" id="button_ship_intel" title="Ship Design" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
+    </td></tr></table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ </caption>
+        <tr>
+            <td class="hfill"><input id="empire_player01" disabled="true" class="hfill"/></td>
+            <td><input id="empire_player01_score" disabled="true"/></td>
+        </tr>
+    </table>
 </div>
 
 
@@ -474,59 +596,5 @@
 <div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
 </div>
 
-
-<!--
-S!
-+ (fas fa-plus) New Game
-Load Game
-Launch
-Race
-Shutdown
-Help
-
-S!
-Empire: score, research, race, energy minister, player relations
-Systems: system report, planet report, anomalies report
-Ships: ship designer, battle plans, ship report, enemy ship report
-Search
-Submit
-View Config
-Help: help, tech
-<button class="circle" onclick="">S!</button><br/>
-<button class="circle" onclick="empire">♔</button><br/>
-<button class="circle" onclick="planet">🪐</button><br/>
-<button class="circle" onclick="rocket">🛸</button><br/>
-<button class="circle" onclick="search">🔍</button><br/>
-<button class="circle" onclick="submit">✔️</button><br/>
-<button class="circle" onclick="gear">⛭</button><br/>
-<button class="circle" onclick="help">❔</button><br/>
-
-<div class="menu_button" onclick="menu(this)">
-    <div class="bar1"></div>
-    <div class="bar2"></div>
-    <div class="bar3"></div>
-</div>
-
-<button class="circle" onclick="document.getElementById('sidebar').style.display = 'block'">S!</button>
-<button class="circle" onclick="document.getElementById('sidebar').style.display = 'block'">x</button>
-
-<table class="vfill sidebar" id="sidebar">
-    <tr><td><button class="sidebar" id="new_game_sidebar" onclick="show_screen('new_game')">New Game</button></td></tr>
-    <tr><td><button class="sidebar" id="launch_sidebar" onclick="show_screen('host')">Host</button></td></tr>
-    <tr><td><button class="sidebar" id="player_sidebar" onclick="show_screen('player')">Player</button></td></tr>
-    <tr><td><button class="sidebar" id="race_editor_sidebar" onclick="show_screen('race_editor')">Race Editor</button></td></tr>
-    <tr><td class="vfill"></td></tr>
-    <tr><td><button class="sidebar" id="help_sidebar" onclick="show_screen('help')">Help</button></td></tr>
-    <tr><td><button class="sidebar" id="shutdown_sidebar" onclick="shutdown()">Shutdown</button></td></tr>
-</table>
-
-
-<div class="title_small" id="title_small">INHERIT THE STARS!</div>
-
-
-
-
-
--->
 
 </body></html>

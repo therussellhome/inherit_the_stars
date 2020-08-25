@@ -13,14 +13,14 @@ from stars.ui import *
 
 """ Map of post handlers """
 _handlers = {
-    '/empire': empire.Empire(),
     '/generate': generate.Generate(),
+    '/intel': intel.Intel(),
     '/launch': launch.Launch(),
     '/new_game': new_game.NewGame(),
     '/planets': planets.Planets(),
     '/race_editor': race_editor.RaceEditor(),
     '/render_stars': render_stars.RenderStars(),
-    '/search': search.Search(),
+    '/score': score.Score(),
     '/settings': settings.Settings(),
     '/ships': ships.Ships(),
     '/tech': tech.Tech(),
