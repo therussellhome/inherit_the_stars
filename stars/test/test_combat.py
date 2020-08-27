@@ -11,6 +11,14 @@ class TestCombat(unittest.TestCase):
         strategy = c.calc_strategy_m(c.everybody[1])
         self.assertEqual(strategy[0], location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0))
         self.assertEqual(strategy[1], True)
+        everybody=[ship.Ship(battle_plan=battle_plan.BattlePlan(p_target='starbace', s_target='ship'), location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0)), ship.Ship(battle_plan=battle_plan.BattlePlan(s_target='starbace', p_target='ship'))]
+        c = combat.Combat(everybody=everybody)
+        strategy = c.calc_strategy_m(c.everybody[0])
+        self.assertEqual(strategy[0], location.Location(x=0, y=0, z=0))
+        self.assertEqual(strategy[1], True)
+        strategy = c.calc_strategy_m(c.everybody[1])
+        self.assertEqual(strategy[0], location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0))
+        self.assertEqual(strategy[1], True)
     def test_move(self):
         everybody=[ship.Ship(location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(location=location.Location(x=0, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
         c = combat.Combat(everybody=everybody)
@@ -18,15 +26,33 @@ class TestCombat(unittest.TestCase):
         self.assertEqual(c.everybody[0].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0))
         c.move(c.everybody[1])
         self.assertEqual(c.everybody[1].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0))
+        everybody=[ship.Ship(battle_plan=battle_plan.BattlePlan(standoff=0.2), location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(battle_plan=battle_plan.BattlePlan(standoff=0.2), location=location.Location(x=0, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
+        c = combat.Combat(everybody=everybody)
+        c.move(c.everybody[0])
+        self.assertEqual(c.everybody[0].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR/2, y=0, z=0))
+        c.move(c.everybody[1])
+        self.assertEqual(c.everybody[1].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR*0.3, y=0, z=0))
+        everybody=[ship.Ship(battle_plan=battle_plan.BattlePlan(standoff=0.2), location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR*0.01, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(battle_plan=battle_plan.BattlePlan(standoff=0.2), location=location.Location(x=stars_math.TERAMEETER_2_LIGHTYEAR*-0.01, y=0, z=0), weapons=[weapon.Weapon()], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
+        c = combat.Combat(everybody=everybody)
+        c.move(c.everybody[0])
+        self.assertEqual(c.everybody[0].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR*0.51, y=0, z=0))
+        c.move(c.everybody[1])
+        self.assertEqual(c.everybody[1].location, location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR*-0.51, y=0, z=0))
     def test_calc_strategy_f(self):
         everybody=[ship.Ship(location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon()]), ship.Ship(weapons=[weapon.Weapon()])]
         c = combat.Combat(everybody=everybody)
-        strategy = c.calc_strategy_f(c.everybody[0], c.everybody[0].weapons[0])
+        strategy = c.calc_strategy_f(c.everybody[0])
         self.assertEqual(strategy, c.everybody[1])
-        strategy = c.calc_strategy_f(c.everybody[1], c.everybody[1].weapons[0])
+        strategy = c.calc_strategy_f(c.everybody[1])
+        self.assertEqual(strategy, c.everybody[0])
+        everybody=[ship.Ship(battle_plan=battle_plan.BattlePlan(p_target='starbace', s_target='ship'), location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon()]), ship.Ship(battle_plan=battle_plan.BattlePlan(s_target='starbace', p_target='ship'), weapons=[weapon.Weapon()])]
+        c = combat.Combat(everybody=everybody)
+        strategy = c.calc_strategy_f(c.everybody[0])
+        self.assertEqual(strategy, c.everybody[1])
+        strategy = c.calc_strategy_f(c.everybody[1])
         self.assertEqual(strategy, c.everybody[0])
     def test_fire(self):
-        everybody=[ship.Ship(armor=10, location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon(power=2, range_tm=4, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(armor=10, weapons=[weapon.Weapon(power=2, range_tm=2, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
+        everybody=[ship.Ship(armor=10, location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0), weapons=[weapon.Weapon(power=2, range_tm=2, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2), ship.Ship(armor=10, weapons=[weapon.Weapon(power=2, range_tm=2, armor_mutiplier=1)], max_distance=stars_math.TERAMETER_2_LIGHTYEAR/2)]
         c = combat.Combat(everybody=everybody)
         c.fire(c.everybody[0])
         self.assertEqual(c.everybody[1].armor, 9)

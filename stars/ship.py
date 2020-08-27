@@ -14,8 +14,8 @@ __defaults = {
     'battle_plan': [BattlePlan()],
     'initative': [0, 0, sys.maxsize],
     'armor': [10, 0, sys.maxsize],
-    'sheaulds': [0, 0, sys.maxsize],
-    'max_distance': [0, 0, sys.maxsize],
+    'shields': [0, 0, sys.maxsize],
+    'max_distance': [0.0, 0.0, sys.maxsize],
     'damage_points': [0, 0, sys.maxsize],
     'repair_points': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
@@ -136,5 +136,11 @@ class Ship(ShipDesign):
 
     def calc_aparent_mass(self):
         return 100
+
+    def blow_up(self):
+        pass
+
+    def calc_initative(self):
+        self.initative = 1
 
 Ship.set_defaults(Ship, __defaults)
