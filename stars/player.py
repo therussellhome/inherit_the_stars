@@ -40,8 +40,10 @@ class Player(Defaults):
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
     
+    def add_fleet(self, fleet):
+        self.fleets.append(fleet)
+    
     def remove_fleet(self, fleet):
-        print('remove fleet')
         self.fleets.remove(fleet)
     
     """ Build/research/other economic funcitions """

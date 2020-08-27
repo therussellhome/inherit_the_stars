@@ -83,9 +83,9 @@ class Fleet(Defaults):
             distance = distance_to_waypoint
         else:
             distance = distance_at_hyper
-        if distance_to_waypoint == 0:
+        if distance_to_waypoint == 0 and self.waypoints[2] and self.waypoints[2].location - self.location != 0:
             self.waypoints.pop(0)
-            self.move()
+            self.move(player)
         while self.test_fuel(speed, num_denials, distance) and self.test_damage(speed, num_denials):
             speed -= 1
             distance_at_hyper = (speed**2)/100
@@ -93,7 +93,7 @@ class Fleet(Defaults):
                 distance = distance_to_waypoint
             else:
                 distance = distance_at_hyper
-        self.location.move(self.waypoints[1].fly_to, distance)
+        self.location = self.location.move(self.waypoints[1].fly_to, distance)
         self.burn_fuel(speed, num_denials, distance)
         self.returnn()
     
@@ -184,7 +184,6 @@ class Fleet(Defaults):
     def merge(self, player):
         o_fleet = self.waypoints[0].recipiants['merge']
         if type(o_fleet) != type(Fleet()) or o_fleet not in player.fleets:
-            print('not fleet')
             return
         for ship in self.ships:
             o_fleet.ships.append(ship)
@@ -202,11 +201,10 @@ class Fleet(Defaults):
     """ transfers the fleet """
     def transfer(self, player):
         player_2 = self.waypoints[0].recipiants['transfer']
-        if type(player_2) != Player():
-            return
         self.waypoints = []
-        player_2.create_fleet(self.__dict__)
-        Player.remove_fleet(self)
+        player_2.add_fleet(self)
+        if self in player_2.fleets:
+            player.remove_fleet(self)
     
     """ executes the unload function """
     def unload(self, recipiant, player):
@@ -305,8 +303,10 @@ class Fleet(Defaults):
         return False
     
     def check_team(self, recipiant, player):
-        if recipiant in game_engine.get('Planet/') and recipiant.player.treaties[player.name].relation == "team" and player.treaties[recipiant.player.name].relation == "team":
-            return True
+        if recipiant in game_engine.get('Planet/'):
+            if recipiant.player.treaties[player.name].relation == "team":
+                if player.treaties[recipiant.player.name].relation == "team":
+                    return True
         return False
     
     """ executes the load function """

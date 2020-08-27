@@ -20,7 +20,7 @@ __defaults = {
     'repair_points': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
-    'engines': [Engine()],
+    'engines': [[]],
     'cargo': [Cargo()]
 }
 
