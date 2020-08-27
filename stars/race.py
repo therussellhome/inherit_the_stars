@@ -30,7 +30,7 @@ __defaults = {
     'starting_tech_electronics': [0, 0, 25],
     'starting_tech_biotechnology': [0, 0, 25],
     'effort_per_colonist': [1.0, 0.2, 5.0],
-    'energy_per_colonist': [0.05, 0.01, 0.2],
+    'energy_per_colonist': [5, 1, 20],
     'minerals_per_mine': [3, 1, 9],
     'hab_gravity': [0, 0, 100],
     'hab_gravity_stop': [100, 0, 100],
@@ -48,10 +48,14 @@ __defaults = {
     'starting_mines': [10, 0, 20],
     'starting_power_plants': [10, 0, 20],
     'starting_defenses': [10, 0, 20],
-    'population_per_factory': [1000, 500, 2000],
-    'population_per_mine': [1000, 500, 2000],
-    'population_per_power_plant': [1000, 500, 2000],
-    'population_per_defense': [1000, 500, 2000],
+    'colonists_to_opperate_factory': [1000, 200, 5000],
+    'colonists_to_opperate_mine': [1000, 200, 5000],
+    'colonists_to_opperate_power_plant': [1000, 200, 5000],
+    'colonists_to_opperate_defense': [1000, 200, 5000],
+    'starting_energy': [50000, 25000, 100000],
+    'starting_lithium': [500, 400, 700], 
+    'starting_silicon': [500, 400, 700], 
+    'starting_titanium': [500, 400, 700], 
 }
 
 """ Storage class for race parameters """
