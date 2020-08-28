@@ -22,7 +22,7 @@ class Combat(Defaults):
         excape = False
         excape2 = False
         for ship in self.everybody:
-            if not ship is me: #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
+            if ship is not me: #me.player.relashons(ship.player) == 'enemy' and me.can_see(ship):
                 if me.battle_plan.p_target == 'disengage' or len(ship.weapons) == 0:
                     dis = distance(me, ship)
                     if dis < closest_p:
@@ -35,7 +35,7 @@ class Combat(Defaults):
                         closest_p = dis
                         move_to = ship.location
                 elif me.battle_plan._target == 'starbase':
-                    if ship.__class__ == 'StarBace':
+                    if ship.__class__ == 'StarBase':
                         dis = distance(me, ship)
                         if dis < closest_p:
                             closest_p = dis
@@ -58,7 +58,7 @@ class Combat(Defaults):
                         closest_s = dis
                         move_two = ship.location
                 elif me.battle_plan.s_target == 'starbase':
-                    if ship.__class__ == 'StarBace':
+                    if ship.__class__ == 'StarBase':
                         dis = distance(me, ship)
                         if dis < closest_s:
                             closest_s = dis
@@ -76,6 +76,12 @@ class Combat(Defaults):
         else:
             return (me.location, False)
     
+    def move(self, ship):
+        move = self.calc_strategy_m(ship)
+        ship.location = ship.location.move(move[0], ship.max_distance, move[1], ship.battle_plan.standoff)
+        self.save_to_combat_log()
+        pass
+
     """ calculates the ship to fire at"""
     def calc_strategy_f(self, me):
         closest_p = 1021
@@ -124,12 +130,6 @@ class Combat(Defaults):
             return fire_att
         else:
             return None
-        pass
-
-    def move(self, ship):
-        move = self.calc_strategy_m(ship)
-        ship.location = ship.location.move(move[0], ship.max_distance, move[1])
-        self.save_to_combat_log()
         pass
 
     def fire(self, ship):

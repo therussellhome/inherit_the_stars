@@ -19,26 +19,32 @@ class Location(game_engine.BaseClass):
         z = round(sin(lon*pi/180)*dis, 5)
         return [x, y, z]
 
-    def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
-        distance = self - target
-        f = standoff / distance
-        x = self.x - (self.x - target.x) * f
-        y = self.y - (self.y - target.y) * f
-        z = self.z - (self.z - target.z) * f
-        return Location(x=x, y=y, z=z)
+    #def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
+    #    distance = (self - target) - standoff
+    #    f = max_distance / distance
+    #    x = self.x - (self.x - target.x) * f
+    #    y = self.y - (self.y - target.y) * f
+    #    z = self.z - (self.z - target.z) * f
+    #    return Location(x=x, y=y, z=z)
 
-    
     """ returns the location to move to """
     def move(self, target, max_distance, away=False, standoff=0.0, target_prev=None):
-        if standoff > 0:
-            target = self.intercept(target, max_distance, standoff, target_prev)
+        #target = self.intercept(target, max_distance, standoff, target_prev)
         distance = self - target
+        move_distance = max_distance
+        if distance - max_distance < standoff:
+            if distance < standoff:
+                away = True
+                if max_distance > standoff:
+                    move_distance = standoff - distance
+            else:
+                move_distance = distance - standoff
         if distance == 0:
             return self
         if not away:
-            f = min(1, max_distance / distance)
+            f = min(1, move_distance / distance)
         else:
-            f = -1 * max_distance / distance
+            f = -1 * move_distance / distance
         x = self.x - (self.x - target.x) * f
         y = self.y - (self.y - target.y) * f
         z = self.z - (self.z - target.z) * f
