@@ -83,9 +83,12 @@ class Fleet(Defaults):
             distance = distance_to_waypoint
         else:
             distance = distance_at_hyper
-        if distance_to_waypoint == 0 and self.waypoints[2] and self.waypoints[2].location - self.location != 0:
-            self.waypoints.pop(0)
-            self.move(player)
+        if distance_to_waypoint == 0:
+            if self.waypoints[2] and self.waypoints[2].location - self.location != 0:
+                self.waypoints.pop(0)
+                self.move(player)
+            else:
+                return
         while self.test_fuel(speed, num_denials, distance) and self.test_damage(speed, num_denials):
             speed -= 1
             distance_at_hyper = (speed**2)/100

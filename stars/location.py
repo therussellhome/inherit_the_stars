@@ -30,7 +30,8 @@ class Location(game_engine.BaseClass):
     
     """ returns the location to move to """
     def move(self, target, max_distance, away=False, standoff=0.0, target_prev=None):
-        target = self.intercept(target, max_distance, standoff, target_prev)
+        if standoff > 0:
+            target = self.intercept(target, max_distance, standoff, target_prev)
         distance = self - target
         if distance == 0:
             return self
