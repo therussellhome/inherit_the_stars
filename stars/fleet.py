@@ -216,6 +216,8 @@ class Fleet(Defaults):
         self.compile()
         if recipiant in player.fleets:
             recipiant.compile()
+            load_fuel = recipiant
+            load_cargo = recipiant.cargo
         else:
             load_fuel = recipiant.space_station
             load_cargo = recipiant.on_surface
@@ -223,8 +225,12 @@ class Fleet(Defaults):
             item = transfer[0]
             amount = transfer[1]
             amount = self.handle_cargo(self, load_fuel, item, amount, load_cargo, self.cargo)
-            setattr(recipiant, item, getattr(recipient, item) + amount)
-            setattr(self.cargo, item, getattr(self.cargo, item) - amount)    
+            if item == 'fuel':
+                setattr(load_fuel, item, getattr(load_fuel, item) + amount)
+                setattr(self, item, getattr(self, item) - amount)
+            else:
+                setattr(load_cargo, item, getattr(load_cargo, item) + amount)
+                setattr(self.cargo, item, getattr(self.cargo, item) - amount)    
         self.returnn()
         if recipiant in player.fleets:
             recipiant.returnn()
@@ -234,7 +240,13 @@ class Fleet(Defaults):
         if not self.check_team(recipiant, player):
             return
         self.compile()
-        recipiant_fuel = recipiant.space_station.fuel
+        if recipiant in player.fleets:
+            recipiant.compile()
+            recipiant_fuel = recipiant
+            recipiant_cargo = recipiant.cargo
+        else:
+            recipiant_fuel = recipiant.space_station
+            recipiant_cargo = recipiant.on_surface
         for transfer in self.waypoints[0].transfers['sell']:
             item = transfer[0]
             amount = transfer[1]
@@ -245,13 +257,18 @@ class Fleet(Defaults):
                 amount = self.handle_cargo(recipiant.space_station, self, item, amount, self.cargo, recipiant.on_surface)
                 for i in amount:
                     if recipiant.player.energy_minister.check_budget("trade", getattr(traety, "cost_"+item)) > getattr(traety, "cost_"+item):
-                        setattr(recipient, item, getattr(recipient, item) - 1)
-                        setattr(self.cargo, item, getattr(self.cargo, item) + 1)
+                        if item == 'fuel':
+                            setattr(recipiant_fuel, item, getattr(recipiant_fuel, item) - 1)
+                            setattr(self, item, getattr(self, item) + 1)
+                        else:
+                            setattr(recipiant_cargo, item, getattr(recipiant_cargo, item) - 1)
+                            setattr(self.cargo, item, getattr(self.cargo, item) + 1)
                         player.energy_minister.spend_budget("trade", -getattr(traety, "cost_"+item))
                         recipiant.player.energy_minister.spend_budget("trade", getattr(traety, "cost_"+item))
         self.returnn()
     
     def handle_cargo(self, unload_fuel, load_fuel, item, amount, load_cargo, unload_cargo):
+        print(amount, ' becomes ', end='')
         sum_cargo = (load_cargo.titanium + load_cargo.silicon + load_cargo.lithium + load_cargo.people)
         if item in ["fuel", "titanium", "silicon", "lithium", "people"]:
             if item == 'fuel':
@@ -264,6 +281,7 @@ class Fleet(Defaults):
                     amount = getattr(unload_cargo, item)
                 elif (load_cargo.cargo_max - sum_cargo) < amount and getattr(unload_cargo, item) >= (load_cargo.cargo_max - sum_cargo):
                     amount = (load_cargo.cargo_max - sum_cargo)
+        print(amount)
         return amount
     
     """ executes the buy function """
@@ -271,16 +289,27 @@ class Fleet(Defaults):
         if not self.check_team(recipiant, player):
             return
         self.compile()
+        if recipiant in player.fleets:
+            recipiant.compile()
+            recipiant_fuel = recipiant
+            recipiant_cargo = recipiant.cargo
+        else:
+            recipiant_fuel = recipiant.space_station
+            recipiant_cargo = recipiant.on_surface
         for transfer in self.waypoints[0].transfers['buy']:
             item = transfer[0]
             amount = transfer[1]
             traety = player.treaties[recipiant.player.name].sell
             if getattr(traety, "cost_"+item) != None:
-                amount = self.handle_cargo(self, recipiant.space_station, item, amount, recipiant.on_surface, self.cargo)
+                amount = self.handle_cargo(self, recipiant_fuel, item, amount, recipiant_cargo, self.cargo)
                 for i in amount:
                     if recipiant.player.energy_minister.check_budget("trade", getattr(traety, "cost_"+item)) > getattr(traety, "cost_"+item):
-                        setattr(recipient, item, getattr(recipient, item) + 1)
-                        setattr(self.cargo, item, getattr(self.cargo, item) - 1)
+                        if item == 'fuel':
+                            setattr(recipiant_fuel, item, getattr(recipiant_fuel, item) + 1)
+                            setattr(self, item, getattr(self, item) - 1)
+                        else:
+                            setattr(recipiant_cargo, item, getattr(recipiant_cargo, item) + 1)
+                            setattr(self.cargo, item, getattr(self.cargo, item) - 1)
                         player.energy_minister.check_budget("trade", getattr(traety, "cost_"+item))
                         recipiant.player.energy_minister.check_budget("trade", -getattr(traety, "cost_"+item))
         self.returnn()
@@ -319,6 +348,8 @@ class Fleet(Defaults):
         self.compile()
         if recipiant in player.fleets:
             recipiant.compile()
+            unload_fuel = recipiant
+            unload_cargo = recipiant.cargo
         else:
             unload_fuel = recipiant.space_station
             unload_cargo = recipiant.on_surface
@@ -326,8 +357,12 @@ class Fleet(Defaults):
             item = transfer[0]
             amount = transfer[1]
             amount = self.handle_cargo(unload_fuel, self, item, amount, self.cargo, unload_cargo)
-            setattr(recipiant, item, getattr(recipient, item) - amount)
-            setattr(self.cargo, item, getattr(self.cargo, item) + amount)    
+            if item == 'fuel':
+                setattr(unload_fuel, item, getattr(unload_fuel, item) - amount)
+                setattr(self, item, getattr(self, item) + amount)
+            else:
+                setattr(unload_cargo, item, getattr(unload_cargo, item) - amount)
+                setattr(self.cargo, item, getattr(self.cargo, item) + amount)    
         self.returnn()
         if recipiant in player.fleets:
             recipiant.returnn()

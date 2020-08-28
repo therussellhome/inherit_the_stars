@@ -270,7 +270,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_8.cargo.silicon, 60)
         
         
-    def test_load_unload(self):
+    def test_load_unload_fleet(self):
         ship_1 = ship.Ship(
             location = location.Location(),
             cargo = cargo.Cargo(titanium=100, cargo_max=200)
@@ -324,6 +324,56 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_3.cargo.silicon, 15)
         self.assertEqual(ship_4.cargo.lithium, 30)
         self.assertEqual(ship_4.cargo.silicon, 45)
+    
+    def test_load_unload_planet(self):
+        ship_1 = ship.Ship(
+            location = location.Location(),
+            cargo = cargo.Cargo(titanium=100, cargo_max=200)
+            )
+        ship_2 = ship.Ship(
+            location = location.Location(),
+            cargo = cargo.Cargo(people=100, cargo_max=200)
+            )
+        game_engine.register(ship_1)
+        game_engine.register(ship_2)
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            player = p1,
+            on_surface = cargo.Cargo(
+                titanium = 0,
+                lithium = 100,
+                silicon = 100,
+                people = 0,
+                cargo_max = 1000000000000
+                ),
+            location=location.Location()
+            )
+        fleet_one = fleet.Fleet(
+            ships = [ship_1, ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load', 'unload'],
+                    transfers = {'unload':[['lithium', 60], ['silicon', 40]], 'load':[['titanium', 60], ['people', 40]]},
+                    recipiants = {'load':ultimantico, 'unload':ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )
+                ]
+            )
+        p1.fleets = [fleet_one]
+        fleet_one.execute('load', p1)
+        self.assertEqual(ship_1.cargo.titanium, 20)
+        self.assertEqual(ship_1.cargo.people, 30)
+        self.assertEqual(ship_2.cargo.titanium, 20)
+        self.assertEqual(ship_2.cargo.people, 30)
+        self.assertEqual(ultimantico.on_surface.titanium, 60)
+        self.assertEqual(ultimantico.on_surface.people, 40)
+        fleet_one.execute('unload', p1)
+        self.assertEqual(ship_1.cargo.lithium, 30)
+        self.assertEqual(ship_1.cargo.silicon, 20)
+        self.assertEqual(ship_2.cargo.lithium, 30)
+        self.assertEqual(ship_2.cargo.silicon, 20)
+        self.assertEqual(ultimantico.on_surface.lithium, 40)
+        self.assertEqual(ultimantico.on_surface.silicon, 60)
     
     def test_self_repair(self):
         pass
