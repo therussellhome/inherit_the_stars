@@ -15,7 +15,7 @@ class RaceEditorTestCase(unittest.TestCase):
                                    race_editor_lrt_advanced_depot = True,
                                    race_editor_lrt_ultimate_recycling = True,
                                    race_editor_lrt_improved_fuel_efficiency = True,
-                                   race_editor_lrt_improved_starbases = True,
+                                   race_editor_lrt_McMansion = True,
                                    race_editor_lrt_generalized_research = True,
                                    race_editor_lrt_regenerating_shields = True,
                                    race_editor_lrt_no_antimatter_collecting_engines = True,

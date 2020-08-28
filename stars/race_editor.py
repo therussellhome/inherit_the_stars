@@ -42,7 +42,7 @@ class RaceEditor(Defaults):
             aps += 176
         elif self.race_editor_primary_race_trait == 'TANSTAAFL':
             aps += 399
-        elif self.race_editor_primary_race_trait == 'Cushgars':
+        elif self.race_editor_primary_race_trait == 'Kender':
             aps += 354
         elif self.race_editor_primary_race_trait == 'Aku\'Ultani':
             aps += 347
@@ -66,7 +66,7 @@ class RaceEditor(Defaults):
             aps += 66
             lrts += 1
             #print("IFE")
-        if self.race_editor_lrt_improved_starbases:
+        if self.race_editor_lrt_McMansion:
             aps += 55
             lrts += 1
             #print("ISB")

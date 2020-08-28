@@ -9,7 +9,7 @@ __defaults = {
     'lrt_advanced_depot': [False],
     'lrt_ultimate_recycling': [False],
     'lrt_improved_fuel_efficiency': [False],
-    'lrt_improved_starbases': [False],
+    'lrt_McMansion': [False],
     'lrt_generalized_research': [False],
     'lrt_regenerating_shields': [False],
     'lrt_bleeding_edge_technology': [False],
