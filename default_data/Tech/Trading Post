@@ -1,0 +1,20 @@
+{
+    "name": "Trading Post",
+    "category": "Orbital",
+    "description": "allows you to trade with other players",
+    "cost": {
+        "titanium": 4,
+        "lithium": 0,
+        "silicon": 2,
+        "energy": 2000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 3,
+        "construction": 3,
+        "__class__": "TechLevel"
+    },
+    "mass": 22,
+    "is_trading_post": True,
+    "__class__": "Tech"
+}
