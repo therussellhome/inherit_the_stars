@@ -7,20 +7,20 @@ class RaceEditorTestCase(unittest.TestCase):
     def test_calc_race_trait_cost(self):
         r = race_editor.RaceEditor(race_editor_primary_race_trait='Pa\'anuri')
         self.assertEqual(r.calc_race_trait_cost(), 0)
-        r = race_editor.RaceEditor(race_editor_primary_race_trait='Halleyforms', race_editor_lrt_total_terraforming = True, race_editor_lrt_improved_fuel_efficiency = True)
+        r = race_editor.RaceEditor(race_editor_primary_race_trait='Halleyforms', race_editor_lrt_total_terraforming = True, race_editor_lrt_Hypermiler = True)
         self.assertEqual(r.calc_race_trait_cost(), 462)
-        r = race_editor.RaceEditor(race_editor_lrt_bleeding_edge_technology = True,
-                                   race_editor_lrt_trader = True,
-                                   race_editor_lrt_total_terraforming = True,
-                                   race_editor_lrt_advanced_depot = True,
-                                   race_editor_lrt_ultimate_recycling = True,
-                                   race_editor_lrt_improved_fuel_efficiency = True,
+        r = race_editor.RaceEditor(race_editor_lrt_BleedingEdge = True,
+                                   race_editor_lrt_Trader = True,
+                                   race_editor_lrt_Bioengineer = True,
+                                   race_editor_lrt_SpacedOut = True,
+                                   race_editor_lrt_WasteNot = True,
+                                   race_editor_lrt_Hypermiler = True,
                                    race_editor_lrt_McMansion = True,
-                                   race_editor_lrt_generalized_research = True,
-                                   race_editor_lrt_regenerating_shields = True,
-                                   race_editor_lrt_no_antimatter_collecting_engines = True,
-                                   race_editor_lrt_no_advanced_scanners = True,
-                                   race_editor_lrt_cheap_engines = True)
+                                   race_editor_lrt_MadScientist = True,
+                                   race_editor_lrt_QuickHeal = True,
+                                   race_editor_lrt_Forager = True,
+                                   race_editor_lrt_2ndSight = True,
+                                   race_editor_lrt_JuryRigged = True)
         self.assertEqual(r.calc_race_trait_cost(), 542)
     def test_calc_reseach_cost(self):
         r = race_editor.RaceEditor(race_editor_starting_tech_biotechnology=25)

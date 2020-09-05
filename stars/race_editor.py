@@ -10,7 +10,7 @@ from . import game_engine
 cost_of_growthrate = [-7091, -5673, -4256, -2839, -1422, -838, -403, -119, 40, 150, 201, 252, 303, 355, 406, 457, 509, 560, 611, 664]
 
 __defaults = {
-    'options_race_editor_primary_race_trait': [['Aku\'Ultan', 'Cushgar', 'Formics', 'Gaerhule', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']],
+    'options_race_editor_primary_race_trait': [['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']],
     'race_editor_habitability_message': [''],
     'race_editor_file_to_load': [''],
     'options_race_editor_file_to_load': [[]],
@@ -46,23 +46,23 @@ class RaceEditor(Defaults):
             aps += 354
         elif self.race_editor_primary_race_trait == 'Aku\'Ultani':
             aps += 347
-        if self.race_editor_lrt_trader:
+        if self.race_editor_lrt_Trader:
             aps += 126
             lrts += 1
             #print("T")
-        if self.race_editor_lrt_total_terraforming:
+        if self.race_editor_lrt_Bioengineer:
             aps += 122
             lrts += 1
             #print("TT")
-        if self.race_editor_lrt_advanced_depot:
+        if self.race_editor_lrt_SpacedOut:
             aps += 81
             lrts += 1
             #print("AD")
-        if self.race_editor_lrt_ultimate_recycling:
+        if self.race_editor_lrt_WasteNot:
             aps += 76
             lrts += 1
             #print("UR")
-        if self.race_editor_lrt_improved_fuel_efficiency:
+        if self.race_editor_lrt_Hypermiler:
             aps += 66
             lrts += 1
             #print("IFE")
@@ -70,30 +70,32 @@ class RaceEditor(Defaults):
             aps += 55
             lrts += 1
             #print("ISB")
-        if self.race_editor_lrt_generalized_research:
+        if self.race_editor_lrt_MadScientist:
             aps += -10
             lrts += 1
             #print("GR")
-        if self.race_editor_lrt_regenerating_shields:
+        if self.race_editor_lrt_QuickHeal:
             aps += -14
             lrts += 1
             #print("RS")
-        if self.race_editor_lrt_bleeding_edge_technology:
+        if self.race_editor_lrt_BleedingEdge:
             aps += -28
             lrts += 1
             #print("BET")
-        if self.race_editor_lrt_no_antimatter_collecting_engines:
-            aps += -56
+        aps += -56
+        if self.race_editor_lrt_Forager:
+            aps += 56
             lrts += 1
             #print("NACE")
         #if self.race_editor_low_starting_popultion:
         #    aps += -62
         #    lrts += 1
-        if self.race_editor_lrt_no_advanced_scanners:
-            aps += -99
+        aps += -99
+        if self.race_editor_lrt_2ndSight:
+            aps += 99
             lrts += 1
             #print("NAS")
-        if self.race_editor_lrt_cheap_engines:
+        if self.race_editor_lrt_JuryRigged:
             aps += -109
             lrts += 1
             #print("CE")
@@ -150,16 +152,16 @@ class RaceEditor(Defaults):
 
     def calc_economy_cost(self):
         ap = 0
-        c = round((self.race_editor_colonists_to_opperate_factory/1000)**(-0.5)*1000-1000)
+        c = round((self.race_editor_colonists_to_operate_factory/1000)**(-0.5)*1000-1000)
         #print(c)
         ap -= c
-        c = round((self.race_editor_colonists_to_opperate_mine/1000)**(-0.5)*500-500)
+        c = round((self.race_editor_colonists_to_operate_mine/1000)**(-0.5)*500-500)
         #print(c)
         ap -= c
-        c = round((self.race_editor_colonists_to_opperate_power_plant/1000)**(-0.5)*1000-1000)
+        c = round((self.race_editor_colonists_to_operate_power_plant/1000)**(-0.5)*1000-1000)
         #print(c)
         ap -= c
-        c = (1000/self.race_editor_colonists_to_opperate_defense)*100-100
+        c = (1000/self.race_editor_colonists_to_operate_defense)*100-100
         #print(c)
         ap -= c
         c = round(log(self.race_editor_energy_per_colonist*0.1, 2)*1000)
@@ -168,6 +170,8 @@ class RaceEditor(Defaults):
         #print(c)
         ap -= c+500
         #print(ap)
+        ap -= (self.race_editor_starting_colonists-250)/1.25
+        ap -= (10000-self.race_editor_cost_of_baryogenesis)/100
         return -ap
 
     def calc_hab_cost(self):

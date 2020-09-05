@@ -37,6 +37,14 @@ function toggle(start, css_class, force = null) {
     }
 }
 
+function save_race() {
+    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
+        alert('cannot save, negitive avantage points');
+    } else {
+        post('race_editor', '?save');
+    }
+}
+
 // Show a given screen, hide all others, highlight the clicked button
 function show_screen(show) {
     // Handle button toggle
