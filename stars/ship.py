@@ -30,16 +30,6 @@ class Ship(ShipDesign):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    """ Moves on the ship level """
-    """ If it has no engines it does an early exit with the empty return """
-    def move(self, speed):
-        if len(self.engines) == 0:
-            return
-        distance = round((((self.x - self.waypoint.x) **2) + ((self.y - self.waypoint.y) **2) + ((self.z - self.waypoint.z) **2))**.5)    
-        self.x = self.x + ((speed**2)/distance)
-        self.y = self.y + ((speed**2)/distance)
-        self.z = self.z + ((speed**2)/distance)
-    
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
@@ -55,12 +45,9 @@ class Ship(ShipDesign):
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def burn_fuel(self, speed, num_denials, distance, x, y, z):
-        fuel = self.fuel_check(speed, num_denials, distance)
-        self.location.x = x
-        self.location.y = y
-        self.location.z = z
-        return fuel
+    def move(self, speed, num_denials, fly_to, distance):
+        self.location = self.location.move(fly_to, distance)
+        return self.fuel_check(speed, num_denials, distance)
     
     """ checks if speed will damage ship """
     def speed_is_damaging(self, speed, num_denials):
