@@ -11,6 +11,7 @@ __all__ = [
     'game_engine', 
     'hyperdenial',
     'location', 
+    'message',
     'minerals',
     'minister',
     'planet', 

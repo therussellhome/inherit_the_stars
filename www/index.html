@@ -35,7 +35,7 @@ Help: help, tech
     <tr><td><img class="button selected" id="button_home" title="Splash Screen" src="/S!.png" onclick="show_home()"/></td></tr>
     <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
     <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
-    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race_editor.png" onclick="show_screen('race_editor')"/></td></tr>
+    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
     <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
     <tr><td><img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/></td></tr>
 </table></div>
@@ -43,45 +43,48 @@ Help: help, tech
 
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
     <tr><td><img class="button" id="button_home_play" title="Home" src="/S!.png" onclick="show_home()"/></td></tr>
-    <tr><td><img class="button" id="button_intel" title="Intel" src="/intel.png" onclick="show_menu('intel')" onmouseover="show_menu('intel')"/></td></tr>
-    <tr><td><img class="button" id="button_empire" title="Empire" src="/empire.png" onclick="show_menu('empire')" onmouseover="show_menu('empire')"/></td></tr>
-    <tr><td><img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_menu('planets')" onmouseover="show_menu('planets')"/></td></tr>
-    <tr><td><img class="button" id="button_ships" title="Ships" src="/ships.png" onclick="show_menu('ships')" onmouseover="show_menu('ships')"/></td></tr>
-    <tr><td><img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="play_generate()"/></td></tr>
-    <tr><td><img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/></td></tr>
-    <tr><td><img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/></td></tr>
+    <tr><td><img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/></tr></td>
+    <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
+    <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
+    <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
+    <tr><td><img class="button" id="button_game" title="Game" src="/launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
 </table></div>
 
 
-<div class="submenu hide" id="submenu_intel" onmouseleave="show_menu(null)">
-    <img class="button" id="button_intel_messages" title="Messages" src="/list.png" onclick="show_screen('intel_messages')"/>
-    <img class="button" id="button_intel_battles" title="Battles" src="/battles.png" onclick="show_screen('intel_battles')"/>
-    <img class="button" id="button_intel_ships" title="Ships" src="/ships.png" onclick="show_screen('intel_ships')"/>
-    <img class="button" id="button_intel_planets" title="Planets" src="/planets.png" onclick="show_screen('intel_planets')"/>
-    <img class="button" id="button_intel_search" title="Search" src="/search.png" onclick="show_screen('intel_search')"/>
+<div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
+    <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
+    <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
+    <img class="button" id="button_interstellar" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
+    <img class="button" id="button_battles" title="Battles" src="/battles.png" onclick="show_screen('battles')"/>
 </div>
     
 
-<div class="submenu hide" id="submenu_empire" onmouseleave="show_menu(null)">
-    <img class="button" id="button_empire_score" title="Score" src="/score.png" onclick="show_screen('score')"/>
-    <img class="button" id="button_empire_research" title="Research" src="/research.png" onclick="show_screen('research')"/>
-    <img class="button" id="button_empire_race" title="Race" src="/race_editor.png" onclick="show_screen('race_viewer')"/>
-    <img class="button" id="button_empire_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
-    <img class="button" id="button_empire_diplomacy" title="Diplomacy" src="/diplomacy.png" onclick="show_screen('diplomacy')"/>
+<div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
+    <img class="button" id="button_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
+    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="/planetary_minister.png" onclick="show_screen('planetary_minister')"/>
+    <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
+    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
+</div>
+    
+
+<div class="submenu hide" id="submenu_admirality" onmouseleave="show_menu(null)">
+    <img class="button" id="button_shipyard" title="Shipyard" src="/shipyard.png" onclick="show_screen('shipyard')"/>
+    <img class="button" id="button_plans" title="Operational Plans" src="/plans.png" onclick="show_screen('plans')"/>
 </div>
 
 
-<div class="submenu hide" id="submenu_planets" onmouseleave="show_menu(null)">
-    <img class="button" id="button_planets_list" title="list" src="/list.png" onclick="show_screen('planets_list')"/>
-    <img class="button" id="button_planets_minister" title="minister" src="/planetary_minister.png" onclick="show_screen('planets_minister')"/>
-    <img class="button" id="button_planets_intersteller" title="intersteller" src="/intersteller.png" onclick="show_screen('planets_intersteller')"/>
+<div class="submenu hide" id="submenu_game" onmouseleave="show_menu(null)">
+    <img class="button" id="button_score" title="Score" src="/score.png" onclick="show_screen('score')"/>
+    <img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/>
+    <img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="play_generate()"/>
 </div>
 
 
-<div class="submenu hide" id="submenu_ships" onmouseleave="show_menu(null)">
-    <img class="button" id="button_ships_list" title="list" src="/list.png" onclick="show_screen('ships_list')"/>
-    <img class="button" id="button_ships_designs" title="designs" src="/ship_design.png" onclick="show_screen('ships_designs')"/>
-    <img class="button" id="button_ships_battle_plans" title="battle_plans" src="/battle_plans.png" onclick="show_screen('ships_battle_plans')"/>
+<div class="submenu hide" id="submenu_help_menu" onmouseleave="show_menu(null)">
+    <img class="button" id="button_race_viewer" title="Race" src="/race.png" onclick="show_screen('race_viewer')"/>
+    <img class="button" id="button_tech_browser" title="Technology" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/>
 </div>
 
 
@@ -352,7 +355,7 @@ Help: help, tech
         <tr>
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
-            <td rowspan="2"><img class="button" title="Save" src="/race_editor.png" onclick="post('race_editor', '?save')"/></td>
+            <td rowspan="2"><img class="button" title="Save" src="/race.png" onclick="post('race_editor', '?save')"/></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
@@ -489,6 +492,38 @@ Help: help, tech
 
 <div class="hide onsubmit" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
     <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none" onmousedown="draw_stars_pan_start(event)"></div>
+</div>
+
+
+<div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
+    <input id="messages_index" class="hidden" disabled="true"/>
+    <table class="topbar hfill"><tr>
+        <td class="hfill" style="font-size: 200%">Messages</td>
+        <td><img class="button" title="Close" src="/close.png" onclick="show_screen(null)"/></td>
+    </tr></table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
+        <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
+    </table><table class="hfill">
+        <tr>
+            <td><img class="button button_s" title="Prev" src="/prev.png" onclick="post('messages', '?prev')"/></td>
+            <td class="hfill"></td>
+            <td><img class="button button_s" title="Trash" src="/trash.png" onclick="post('messages', '?trash')"/></td>
+            <td><img class="button button_s" title="Next" src="/next.png" onclick="post('messages', '?next')"/></td>
+        </tr>
+    </table><table class="hfill">
+        <tr>
+            <td colspan="3" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+        </tr><tr>
+            <td rowspan="2"><input id="messages_from_icon" disabled="true" style="font-size: 200%"/></td>
+            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+            <td rowspan="2"><img class="button button_s" title="GoTo" src="/goto.png" onclick="message_goto()"/></td>
+        </tr><tr>
+            <td><input id="messages_date" disabled="true" style="font-size: 75%"/></td>
+        </tr><tr>
+            <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
+        </tr>
+    </table>
 </div>
 
 

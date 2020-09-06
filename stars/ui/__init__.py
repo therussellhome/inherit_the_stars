@@ -2,6 +2,7 @@ __all__ = [
     'generate',
     'intel',
     'launch', 
+    'messages',
     'new_game',
     'planets',
     'player',

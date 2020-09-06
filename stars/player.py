@@ -14,7 +14,8 @@ from .tech_level import TechLevel
 __defaults = {
     'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
-    'intel': [{}], # map of intel objects
+    'intel': [{}], # map of intel objects indexed by object reference
+    'messages': [[]], # list of messages from oldest to newest
     'ministers': [[Minister(name='default')]], # modifiable by the player
     'score': [Score()],
     'tech_level': [TechLevel()],
@@ -61,6 +62,10 @@ class Player(Defaults):
             if k.starswith(reference + '/'):
                 reports.append(i)
         return reports
+
+    """ Add a message """
+    def add_message(self, source, subject, body, link):
+        self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
 
     """ Compute score based on intel """
     def compute_score(self):

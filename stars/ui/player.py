@@ -18,11 +18,10 @@ class Player(Defaults):
         self.reset_to_default()
         # Process for the given player
         if me != None:
-            self.player_token = me.token()
             self._post(action, me)
 
     """ Method to subclasses to override """
     def _post(self, action, me):
         pass
 
-Player.set_defaults(Player, __defaults)
+Player.set_defaults(Player, __defaults, no_reset=['player_token'])

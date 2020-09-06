@@ -16,6 +16,7 @@ _handlers = {
     '/generate': generate.Generate(),
     '/intel': intel.Intel(),
     '/launch': launch.Launch(),
+    '/messages': messages.Messages(),
     '/new_game': new_game.NewGame(),
     '/planets': planets.Planets(),
     '/race_editor': race_editor.RaceEditor(),

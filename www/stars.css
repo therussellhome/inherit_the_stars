@@ -80,6 +80,10 @@ img.button {
     transition-duration: 0.4s;
     opacity: 0.6;
 }
+img.button_s {
+    width: 25px;
+    height: 25px;
+}
 ul {
     margin: 0;
     padding-left: 15px;
