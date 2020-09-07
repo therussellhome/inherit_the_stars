@@ -10,16 +10,21 @@ class Intel(game_engine.BaseClass):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         if not hasattr(self, 'latest'):
-            self.latest = {'date': None}
+            self.latest = {'date': 0.0}
             self.reports = []
 
-    """ Always update the 'latest' intel """
+    """ Always update the 'latest' intel, old reports are ignored """
     def add_report(self, **kwargs):
         report = {}
         for key in kwargs:
-            report[key] = copy.copy(kwargs[name])
+            report[key] = copy.copy(kwargs[key])
+        if 'date' not in report:
+            report['date'] = self.latest['date']
+        # ignore old reports
+        if report['date'] < self.latest['date']:
+            return
         # already got a report this turn so update
-        if report['date'] == self.latest['date']:
+        elif report['date'] == self.latest['date'] and len(self.reports) > 0:
             self.reports[0].update(report)
         else:
             self.reports.insert(0, report)

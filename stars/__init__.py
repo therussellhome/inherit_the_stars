@@ -11,6 +11,7 @@ __all__ = [
     'fleet',
     'game_engine', 
     'hyperdenial',
+    'intel',
     'location', 
     'message',
     'minerals',
