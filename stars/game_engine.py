@@ -55,10 +55,12 @@ def get(reference, create_new=False):
         if hasattr(obj, 'name'):
             if reference == obj.__class__.__name__ + '/' + obj.name:
                 return obj
-    # create new object
+    # create and register new object
     if create_new:
         (classname, obj_name) = reference.split('/')
-        return __new(classname, None, name=obj_name)
+        obj = __new(classname, None, name=obj_name)
+        register(obj)
+        return obj
     return None
 
 
