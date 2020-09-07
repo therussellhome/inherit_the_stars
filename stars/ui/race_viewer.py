@@ -1,8 +1,8 @@
-from math import log, exp
 import sys
-from .race import Race
-from .defaults import Defaults
-from . import game_engine
+from math import log, exp
+from ..race import Race
+from ..defaults import Defaults
+from .. import game_engine
 #s = SUM(FILTER(C2:C80,E2:E80=Y1)) #total
 #b = COUNTIFS(E28:E33, Y1)*2 #tech
 #c = COUNTIFS(E40:E45, Y1)*2 #tech
@@ -22,7 +22,7 @@ def calc_hab_cost(start, stop): #not temperature
     return (size*5 - 300) - dis*2
 
 
-class RaceEditor(Defaults):
+class RaceViewer(Defaults):
 
     """ calulate the cost of race traits """
     def calc_race_trait_cost(self):
@@ -258,4 +258,4 @@ class RaceEditor(Defaults):
 for key in Race.defaults:
     __defaults['race_editor_' + key] = Race.defaults[key]
 
-RaceEditor.set_defaults(RaceEditor, __defaults)
+RaceViewer.set_defaults(RaceViewer, __defaults)

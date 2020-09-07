@@ -7,17 +7,31 @@ import socketserver
 import urllib.parse
 import webbrowser
 from pathlib import Path
-from stars import *
+from stars import game_engine
+from stars.ui import *
 
 
 """ Map of post handlers """
 _handlers = {
+    '/battles': battles.Battles(),
+    '/energy_minister': energy_minister.EnergyMinister(),
+    '/fleets': fleets.Fleets(),
+    '/foreign_minister': foreign_minister.ForeignMinister(),
+    '/generate': generate.Generate(),
     '/launch': launch.Launch(),
+    '/messages': messages.Messages(),
     '/new_game': new_game.NewGame(),
-    '/launch': launch.Launch(),
+    '/planetary_minister': planetary_minister.PlanetaryMinister(),
+    '/planets': planets.Planets(),
+    '/plans': plans.Plans(),
     '/race_editor': race_editor.RaceEditor(),
+    '/race_viewer': race_viewer.RaceViewer(),
     '/render_stars': render_stars.RenderStars(),
-    '/tech': tech_display.TechDisplay(),
+    '/research_minister': research_minister.ResearchMinister(),
+    '/score': score.Score(),
+    '/settings': settings.Settings(),
+    '/shipyard': shipyard.Shipyard(),
+    '/tech': tech.Tech(),
 }
 
 
@@ -40,8 +54,10 @@ class Httpd(http.server.BaseHTTPRequestHandler):
                 _handlers[form].update(**json)
                 _handlers[form].post(action)
                 response_str = game_engine.to_json(response)
-                print('    resp = ', response_str)
-                self.wfile.write(response_str.encode())
+            else:
+                response_str = '{}'
+            print('    resp = ', response_str)
+            self.wfile.write(response_str.encode())
 
     def do_GET(self):
         get = Path('.') / 'www' / re.sub('\?.*', '', self.path).split('/')[-1]

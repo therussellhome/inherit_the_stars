@@ -1,5 +1,5 @@
-from . import game_engine
-from .defaults import Defaults 
+from .. import game_engine
+from ..defaults import Defaults 
 
 
 """ Default values (default, min, max)  """
@@ -58,7 +58,7 @@ class Launch(Defaults):
         self.options_launch_game = game_engine.load_list('games')
         self.launch_loaded_autogen = 'Auto Generate: DISABLED'
         # Get the currently loaded game
-        games = game_engine.get('Game/')
+        games = game_engine.get('Game')
         # Load info from the loaded game
         if len(games) > 0:
             self.launch_loaded_game = games[0].name
@@ -72,7 +72,7 @@ class Launch(Defaults):
                     self.options_launch_player.append(player.name)
         # Load the player list
         elif self.launch_game != '':
-            self.options_launch_player = game_engine.load_inspect('games', self.launch_game, 'Player/')
+            self.options_launch_player = game_engine.load_inspect('games', self.launch_game, 'Player')
             self.options_launch_player.insert(0, 'Host Mode')
         else:
             self.options_launch_player = ['Host Mode']
@@ -80,7 +80,7 @@ class Launch(Defaults):
         if action == 'go':
             game_engine.unregister(None)
             game_engine.load('games', self.launch_game)
-            games = game_engine.get('Game/')
+            games = game_engine.get('Game')
             games[0].autogen_turn = self.launch_autogen
             self.launch_loaded_game = games[0].name
             if games[0].autogen_turn:
