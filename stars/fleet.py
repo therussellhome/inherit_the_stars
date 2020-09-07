@@ -336,16 +336,16 @@ class Fleet(Defaults):
     
     def check_self(self, recipiant, player):
         if recipiant in player.fleets:
-            print('\nFleet-Yours')
+            print('Fleet-Yours')
             return True
         if recipiant in game_engine.get('Planet/'):
             print('\nPlanet-', end='')
             if recipiant.player == player:
                 print('Yours')
                 return True
-        print('Nither')
-        print(player.name)
-        print(recipiant.player.name)
+            print('Nither')
+            print(recipiant.player.name)
+            print(player.name)
         return False
     
     def check_team(self, recipiant, player):
@@ -367,7 +367,7 @@ class Fleet(Defaults):
         else:
             unload_fuel_from = recipiant.space_station
             unload_cargo_from = recipiant.on_surface
-        for transfer in self.waypoints[0].transfers['unload']:
+        for transfer in self.waypoints[0].transfers['load']:
             item = transfer[0]
             amount = transfer[1]
             amount = self.handle_cargo(unload_fuel_from, self, item, amount, self.cargo, unload_cargo_from)
