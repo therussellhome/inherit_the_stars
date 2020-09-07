@@ -35,7 +35,7 @@ class Scanner(Defaults):
         return s
 
     def scan_ships(self, player, location):
-        for ship in game_engine.get('Ship/'):
+        for ship in game_engine.get('Ship'):
             report = self.scan_ship(location, ship)
             if report:
                 player.addReport(ship, **report)
@@ -59,7 +59,7 @@ class Scanner(Defaults):
         return report
 
     def scan_planets(self, player, location):
-        for planet in game_engine.get('Planet/'):
+        for planet in game_engine.get('Planet'):
             report = self.scan_planet(location, planet)
             if report:
                 player.addReport(planet, **report)

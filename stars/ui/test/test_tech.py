@@ -1,22 +1,27 @@
 import unittest
-from .. import *
+from ..tech import Tech
+from ... import game_engine
+from ...tech import Tech as TechItem
+from ...engine import Engine
+from ...tech_level import TechLevel
+from ...weapon import Weapon
 
 class TechDisplayTestCase(unittest.TestCase):
     def setUp(self):
-        self.tech = tech.Tech(
+        self.tech = TechItem(
             name = 'test_tech_display',
-            level = tech_level.TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=6),
+            level = TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=6),
             cargo_max = 9,
             fuel_max = 5,
             shield = 999,
-            weapons = [weapon.Weapon()],
-            engines = [engine.Engine()],
+            weapons = [Weapon()],
+            engines = [Engine()],
             slots_orbital = 1
         )
         game_engine.register(self.tech)
         
     def test_post(self):
-        display = tech_display.TechDisplay()
+        display = Tech()
         display.post('test_tech_display')
         self.assertEqual(display.tech_name, 'test_tech_display')
         self.assertGreater(len(display.tech_level), 50)

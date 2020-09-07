@@ -20,7 +20,7 @@ class Game(Defaults):
 
     """ Generate a turn """
     def generate_turn(self):
-        fleets = game_engine.get('Fleet/')
+        fleets = game_engine.get('Fleet')
         fleets.sort(key=lambda x: x.initiative, reverse=True)
         game_engine.hyper_denials = []
         # Execute fleet preactions
@@ -34,22 +34,22 @@ class Game(Defaults):
             for fleet in reversed(fleets):
                 fleet.move(time_in/100)
             # Mineral packet movement
-            for packet in game_engine.get('MineralPacket/'):
+            for packet in game_engine.get('MineralPacket'):
                 packet.move()
             # Update scanning
-            for planet in game_engine.get('Planet/'):
+            for planet in game_engine.get('Planet'):
                 planet.calculate_scanning()
-            for station in game_engine.get('SpaceStation/'):
+            for station in game_engine.get('SpaceStation'):
                 station.calculate_scanning()
             for fleet in fleets:
                 fleet.calculate_scanning()
-            for packet in game_engine.get('MineralPackets/'):
+            for packet in game_engine.get('MineralPackets'):
                 packet.calculate_scanning()
         # Player build/research/other economic funcitions
-        for player in game_engine.get('Player/'):
+        for player in game_engine.get('Player'):
             player.manage_economy()
         # Execute combat
-        for system in game_engine.get('StarSystem/'):
+        for system in game_engine.get('StarSystem'):
             system.combat()
         # Execute fleet actions in action order and reverse initiativve
         for action in Fleet.actions:
