@@ -10,7 +10,7 @@ __defaults = {
 
 
 """ Represent Open Game action """
-class Ships(Defaults):
+class ResearchMinister(Defaults):
     """ Interact with UI """
     def post(self, action):
         # Always reset to default
@@ -34,4 +34,4 @@ class Ships(Defaults):
         """
             
 
-Ships.set_defaults(Ships, __defaults)
+ResearchMinister.set_defaults(ResearchMinister, __defaults)

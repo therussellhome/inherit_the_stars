@@ -13,17 +13,24 @@ from stars.ui import *
 
 """ Map of post handlers """
 _handlers = {
+    '/battles': battles.Battles(),
+    '/energy_minister': energy_minister.EnergyMinister(),
+    '/fleets': fleets.Fleets(),
+    '/foreign_minister': foreign_minister.ForeignMinister(),
     '/generate': generate.Generate(),
-    '/intel': intel.Intel(),
     '/launch': launch.Launch(),
     '/messages': messages.Messages(),
     '/new_game': new_game.NewGame(),
+    '/planetary_minister': planetary_minister.PlanetaryMinister(),
     '/planets': planets.Planets(),
+    '/plans': plans.Plans(),
     '/race_editor': race_editor.RaceEditor(),
+    '/race_viewer': race_viewer.RaceViewer(),
     '/render_stars': render_stars.RenderStars(),
+    '/research_minister': research_minister.ResearchMinister(),
     '/score': score.Score(),
     '/settings': settings.Settings(),
-    '/ships': ships.Ships(),
+    '/shipyard': shipyard.Shipyard(),
     '/tech': tech.Tech(),
 }
 

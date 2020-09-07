@@ -11,38 +11,24 @@
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
-<!--
-S!
-New Game
-Load Game
-Launch
-Race
-Shutdown
-Help
-
-S!
-Intel: messages [list], battles [space explosion], ships (inc mystery trader) [ships], stars/planets [planets], search [search]
-Empire: score [chart], research [chemistry beaker], race [alien], energy minister [atomic symbol], player relations [shaking hands]
-Systems: planets [list], planet ministers, anomalies report
-Ships: ship designer [parts], battle plans [target crosshairs], ship report [list]
-Submit
-View Config
-Help: help, tech
--->
-
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
-    <tr><td><img class="button selected" id="button_home" title="Splash Screen" src="/S!.png" onclick="show_home()"/></td></tr>
+    <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
     <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
     <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
     <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
     <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
-    <tr><td><img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/></td></tr>
 </table></div>
 
 
+<div class="submenu hide" id="submenu_home" onmouseleave="show_menu(null)">
+    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+</div>
+    
+
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
-    <tr><td><img class="button" id="button_home_play" title="Home" src="/S!.png" onclick="show_home()"/></td></tr>
+    <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
     <tr><td><img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/></tr></td>
     <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
     <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
@@ -51,6 +37,12 @@ Help: help, tech
     <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
 </table></div>
 
+
+<div class="submenu hide" id="submenu_home2" onmouseleave="show_menu(null)">
+    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+</div>
+    
 
 <div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
     <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
@@ -480,6 +472,11 @@ Help: help, tech
 </td></tr></table>
 
 
+<div class="screen hide" id="screen_tech_browser" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
+    <iframe src="/tech" style="width: 100%; height: 99%"></iframe>
+</div></div>
+
+
 <div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
     <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
 </div></div>
@@ -490,9 +487,15 @@ Help: help, tech
 </div>
 
 
+<!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
+
+
 <div class="hide onsubmit" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
     <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none" onmousedown="draw_stars_pan_start(event)"></div>
 </div>
+
+
+<!-- PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS -->
 
 
 <div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
@@ -524,6 +527,46 @@ Help: help, tech
             <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
         </tr>
     </table>
+</div>
+
+
+<div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+</div>
+
+
+<div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
+</div>
+
+
+<div class="screen hide onload" id="screen_interstellar" style="width: 600px" onload="post('interstellar')">
+</div>
+
+
+<div class="screen hide onload" id="screen_battles" style="width: 600px" onload="post('battles')">
+</div>
+
+
+<div class="screen hide onload" id="screen_energy_minister" style="width: 600px" onload="post('energy_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_planetary_minister" style="width: 600px" onload="post('planetary_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+</div>
+
+
+<div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
 </div>
 
 
@@ -599,36 +642,11 @@ Help: help, tech
 </div>
 
 
-<div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
-</div>
-
-
-<div class="screen hide onload" id="screen_ships" style="width: 600px" onload="post('ships')">
-    <table class="topbar hfill"><tr><td>
-        <img class="button" id="button_ship_design" title="Ship Design" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
-        <img class="button" id="button_battle_plans" title="Battle Plans" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
-        <img class="button" id="button_ship_report" title="Ship Design" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
-        <img class="button" id="button_ship_intel" title="Ship Design" src="/ship_design.png" onclick="show_screen('ships')"/></td></tr>
-    </td></tr></table>
-    <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ </caption>
-        <tr>
-            <td class="hfill"><input id="empire_player01" disabled="true" class="hfill"/></td>
-            <td><input id="empire_player01_score" disabled="true"/></td>
-        </tr>
-    </table>
-</div>
-
-
-<div class="screen hide onload" id="screen_search" style="width: 600px" onload="post('search')">
-</div>
-
-
-<div class="screen hide onload" id="screen_generate" style="width: 600px" onload="post('generate')">
-</div>
-
-
 <div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+</div>
+
+
+<div class="screen hide onload" id="screen_race_viewer" style="width: 600px" onload="post('race_viewer')">
 </div>
 
 

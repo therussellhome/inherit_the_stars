@@ -10,7 +10,7 @@ __defaults = {
 
 
 """ Represent Open Game action """
-class Intel(Defaults):
+class Shipyard(Defaults):
     """ Interact with UI """
     def post(self, action):
         # Always reset to default
@@ -34,4 +34,4 @@ class Intel(Defaults):
         """
             
 
-Intel.set_defaults(Intel, __defaults)
+Shipyard.set_defaults(Shipyard, __defaults)
