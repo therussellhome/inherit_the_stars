@@ -1,6 +1,5 @@
 import sys
 from . import game_engine
-from .cost import Cost
 from .defaults import Defaults
 from .energy_minister import EnergyMinister
 from .intel import Intel
@@ -9,6 +8,7 @@ from .race import Race
 from .reference import Reference
 from .score import Score
 from .tech_level import TechLevel
+from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -33,6 +33,20 @@ class Player(Defaults):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Player ' + str(id(self))
+    
+    """ calles fleets to do actions """
+    def ship_action(self, action):
+        for fleet in self.fleets:
+            fleet.execute(action, self)
+    
+    def create_fleet(self, **kwargs):
+        self.fleets.append(Fleet(**kwargs))
+    
+    def add_fleet(self, fleet):
+        self.fleets.append(fleet)
+    
+    def remove_fleet(self, fleet):
+        self.fleets.remove(fleet)
     
     """ Return the id for use as a temporary player token """
     def token(self):

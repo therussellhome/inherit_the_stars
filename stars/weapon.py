@@ -7,7 +7,7 @@ from random import randint
 """ Default values (default, min, max)  """
 __defaults = {
     'power': [0, 0, sys.maxsize],
-    'armor_multiplier': [0, 0, 200],
+    'armor_multiplier': [1, 0, 200],
     'is_beam': [True],
     'is_multishot': [False],
     'range_tm': [0.0, 0.0, sys.maxsize], # terameters
@@ -38,7 +38,7 @@ class Weapon(Defaults):
             if not self.is_beam:
                 difrence = min(power/4, power_to_shield)
                 power_to_shield -= diference
-                power_to_shield += diference
+                power_to_armor += diference
             return (power_to_shield, power_to_armor)
         return (0, 0)
 
