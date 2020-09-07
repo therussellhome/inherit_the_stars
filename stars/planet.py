@@ -86,7 +86,7 @@ class Planet(Defaults):
     """ Return the highest facility of the specified type """
     def _get_facility_upgrade(self, facility_type):
         best = Facility()
-        for f in game_engine.get('Facility/'):
+        for f in game_engine.get('Facility'):
             if f.upgrade_path == facility_type and f.upgrade_level > best.upgrade_level and f.is_available(self.player):
                 best = f
         return best

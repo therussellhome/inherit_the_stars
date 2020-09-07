@@ -1,0 +1,29 @@
+{
+    "name": "Dall's Porpoise",
+    "category": "Engine",
+    "description": "This engine requires both the Hypermiler and Forager lesser racial traits.  It is the fastest and most fuel-efficient foraging engine, as well as the lightest and one of the cheapest.  It is also available at a lower tech level than the Dragonfly 10.",
+    "race_requirements": "Hypermiler, Forager",
+    "cost": {
+        "titanium": 4,
+        "lithium": 2,
+        "silicon": 9,
+        "energy": 1200,
+        "__class__": "Cost"
+    },
+    "level": {
+    	"energy": 5,
+    	"propulsion": 20,
+        "__class__": "TechLevel"
+    },
+    "mass": 8,
+    "engines": [
+        {
+            "kt_exponent": 1.1,
+            "speed_divisor": 11,
+            "speed_exponent": 4.0,
+            "antimatter_siphon": 600,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}

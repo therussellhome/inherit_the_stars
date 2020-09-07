@@ -1,0 +1,26 @@
+{
+    "name": "Dreadnought"
+    "category": "Hull",
+    "description": "Ship hull with 48 general-purpose slots.",
+    "cost": {
+        "titanium": 30,
+        "lithium": 12,
+        "silicon": 20,
+        "energy": 8000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 16,
+        "__class__": "TechLevel"
+    },
+    "mass": 96,
+    "fuel_max": 800000,
+    "armor": 240,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__class__": "Scanner"
+    },
+    "repair": 48,
+    "slots_general": 48,
+    "__class__": "Tech"
+}

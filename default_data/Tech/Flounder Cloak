@@ -1,0 +1,23 @@
+{
+    "name": "Flounder Cloak",
+    "category": "Cloak",
+    "description": "Cloaks are components you put on hulls to make them harder to detect.",
+    "cost": {
+        "titanium": 1,
+        "lithium": 0,
+        "silicon": 4,
+        "energy": 1200,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 6,
+        "electronics": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 5,
+    "cloak": {
+        "percent": 50,
+        "__class__": "Cloak"
+    },
+    "__class__": "Tech"
+}
