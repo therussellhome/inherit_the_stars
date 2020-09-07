@@ -3,7 +3,7 @@ from . import game_engine
 from .defaults import Defaults
 from .energy_minister import EnergyMinister
 from .intel import Intel
-from .minister import Minister
+from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
@@ -16,14 +16,14 @@ __defaults = {
     'race': [Race()],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
-    'ministers': [[Minister(name='default')]], # modifiable by the player
+    'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
     'tech_level': [TechLevel()],
     'next_tech_cost': [TechLevel()],
     'research_field': [''], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
-    'fleets': [[]]
+    'fleets': [[]],
 }
 
 """ A player in a game """
@@ -86,6 +86,16 @@ class Player(Defaults):
         #TODO
         pass
 
+    """ Get the minister for a given planet """
+    def get_minister(self, planet):
+        for m in self.planetary_ministers:
+            if planet in m.planets:
+                return m
+        for m in self.planetary_ministers:
+            if m.new_colony_minister:
+                return m
+        return self.planetary_ministers[0]
+
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
     def manage_economy(self):
@@ -129,7 +139,7 @@ class Player(Defaults):
     """ Research """
     def _do_research(self):
         budget = self.energy_minister.check_budget('research', self.energy)
-        if not self.race.lrt_generalized_research:
+        if not self.race.lrt_MadScientist:
             while budget > 0:
                 budget = self._research_in_field(self.research_field, budget)
                 if budget > 0:

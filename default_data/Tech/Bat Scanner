@@ -18,7 +18,7 @@
     "mass": 2,
     "scanner": {
         "penetrating": 50.0,
-	"normal": 75.0
+        "normal": 75.0,
         "__class__": "Scanner"
     },
     "__class__": "Tech"

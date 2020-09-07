@@ -1,11 +1,10 @@
 import sys
-from . import game_engine
 from random import randint
 from random import uniform
+from . import game_engine
 from .cargo import Cargo
 from .defaults import Defaults
 from .minerals import Minerals
-from .minister import Minister
 from .facility import Facility
 from .reference import Reference
 
@@ -108,30 +107,19 @@ class Planet(Defaults):
         pop = pop + (pop * rate) - (pop * pop / maxpop * rate)
         self.on_surface.people = int(round(pop, -3)/1000)
     
-    """ Get the requested minister """
-    def _get_minister(self):
-        if self.player.is_valid:
-            for minister in self.player.ministers:
-                if minister.name == self.minister:
-                    return minister
-            minister = Minister(name=self.minister)
-            self.player.ministers.append(minister)
-            return minister
-        return Minister(name=self.minister)
-    
     """ power plants make energy """
     def _generate_energy(self):
         if self.player.is_valid:
-            allocation = self._get_minister().power_plants / 100
+            allocation = self.player.get_minister(self.name).power_plants / 100
             energy_per_plant = self.power_plant_tech.facility_output
-            population_per_plant = self.player.race.population_per_power_plant
-            operate = min([self.power_plants, allocation * (self.on_surface.people * 1000) / population_per_plant])
+            colonists_to_operate_plant = self.player.race.colonists_to_operate_power_plant
+            operate = min([self.power_plants, allocation * (self.on_surface.people * 1000) / colonists_to_operate_plant])
             self.player.energy += operate * energy_per_plant
     
     """ calculates max production capasity """
     def _calc_max_production_capacity(self):
         if self.player.is_valid:
-            allocation = self._get_minister().factories / 100
+            allocation = self.player.get_minister(self.name).factories / 100
             production_capacity_per_factory = self.factory_tech.facility_output
             effort_per_factory = self.factory_tech.effort_per_facility
             operate = min([self.power_plants, allocation * self.effort / effort_per_plant])
@@ -141,10 +129,10 @@ class Planet(Defaults):
     """ mines mine the minerals """
     def _mine_minerals(self):
         if self.player.is_valid:
-            allocation = self._get_minister().mines / 100
+            allocation = self.player.get_minister(self.name).mines / 100
             minerals_per_mine = self.mine_tech.facility_output
-            population_per_mine = self.player.race.population_per_mine
-            operate = min([self.power_plants, allocation * self.effort / population_per_mine])
+            colonists_to_operate_mine = self.player.race.colonists_to_operate_mine
+            operate = min([self.power_plants, allocation * self.effort / colonists_to_operate_mine])
             #TODO apply mineral concentration
             self.on_surface.titanium += round(operate * minerals_per_mine)
             self.on_surface.lithium += round(operate * minerals_per_mine)
@@ -155,7 +143,7 @@ class Planet(Defaults):
     def auto_build(self):
         if not self.player.is_valid:
             return
-        minister = self._get_minister()
+        minister = self.player.get_minister(self.name)
     #TODO    scanner_tech = self.player.max_tech('planetary_scanner')
     #TODO    penetrating_tech = self.player.max_tech('planetary_penetrating')
         num_facilities = (self.factories + self.power_plants + self.mines + self.defenses)
@@ -166,10 +154,10 @@ class Planet(Defaults):
     #TODO        self.scanner_tech = scanner_tech
             return self.scanner_tech
         else:
-            factory_percent = ((self.player.race.population_per_factory * self.factories) / self.on_surface.people) - (minister.factories / 100)
-            power_plant_percent = ((self.player.race.population_per_power_plant * self.power_plants) / self.on_surface.people) - (minister.power_plants / 100)
-            mine_percent = ((self.player.race.population_per_mine * self.mines) / self.on_surface.people) - (minister.mines / 100)
-            defense_percent = ((self.player.race.population_per_defense * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
+            factory_percent = ((self.player.race.colonists_to_operate_factory * self.factories) / self.on_surface.people) - (minister.factories / 100)
+            power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.power_plants) / self.on_surface.people) - (minister.power_plants / 100)
+            mine_percent = ((self.player.race.colonists_to_operate_mine * self.mines) / self.on_surface.people) - (minister.mines / 100)
+            defense_percent = ((self.player.race.colonists_to_operate_defense * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
             check = [[factory_percent, self.factory_tech], [power_plant_percent, self.power_plant_tech], [mine_percent, self.mine_tech], [defense_percent, self.defense_tech]]
             #print(check)
             least = 1
@@ -184,7 +172,7 @@ class Planet(Defaults):
     def do_construction(self, unblock):
         if not self.player.is_valid:
             return
-        minister = self._get_minister()
+        minister = self.player.get_minister(self.name)
         keep_going = True
         self.remaining_production = self._calc_max_production_capacity()
         while keep_going:

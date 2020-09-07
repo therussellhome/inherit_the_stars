@@ -1,5 +1,5 @@
 {
-    "name": "Dreadnought"
+    "name": "Dreadnought",
     "category": "Hull",
     "description": "Ship hull with 48 general-purpose slots.",
     "cost": {

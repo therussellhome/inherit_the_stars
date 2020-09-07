@@ -3,6 +3,7 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'new_colony_minister': [False],
     'power_plants': [25, 0, 100],
     'factories': [25, 0, 100],
     'mines': [25, 0, 100],
@@ -12,17 +13,17 @@ __defaults = {
     'build_mattrans_after_num_facilitys': [100, 0, sys.maxsize],
     'build_min_terraform': [1, 0, 100],
     'build_max_terraform': [100, 0, 100],
-    'unblock': [True]
+    'unblock': [True],
+    'planets': [[]],
 }
 
 
 """ TODO """
-class Minister(Defaults):
+class PlanetaryMinister(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            self.name = 'minister_' + str(id(self))
-        # do not register the object as it is stored by the player object
+            self.name = 'Planetary Minister ' + str(id(self))
     
     """ makes shure that all effort is alocated and the total is = to 100% """
     def __getattribute__(self, name):
@@ -43,4 +44,4 @@ class Minister(Defaults):
         return super().__getattribute__(name)
 
         
-Minister.set_defaults(Minister, __defaults)
+PlanetaryMinister.set_defaults(PlanetaryMinister, __defaults)

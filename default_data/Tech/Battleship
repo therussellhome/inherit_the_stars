@@ -1,5 +1,5 @@
 {
-    "name": "Battleship"
+    "name": "Battleship",
     "category": "Hull",
     "description": "Ship hull with 32 general-purpose slots.",
     "cost": {

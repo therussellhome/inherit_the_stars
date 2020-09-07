@@ -12,6 +12,6 @@
     },
     "mass": 50,
     "repair": 2,
-    "colonizer": True,
+    "is_colonizer": true,
     "__class__": "Tech"
 }

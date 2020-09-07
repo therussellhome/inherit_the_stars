@@ -63,8 +63,11 @@ def get(reference, create_new=False):
 
 
 """ Decode a string into an object """
-def from_json(string):
-	return json.loads(string, object_hook=__decode)
+def from_json(string, name='<Internal>'):
+    try:
+	    return json.loads(string, object_hook=__decode)
+    except Exception as e:
+        print('Decode error ' + str(e) + ' in ' + name + '\n' + string)
 
 
 """ Encode an object into a string """
@@ -100,7 +103,7 @@ def load(save_type, name, register_objects=True):
     objs = []
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
-            obj = from_json(zipfile.read(info))
+            obj = from_json(zipfile.read(info), str(info))
             objs.append(obj)
             if register_objects:
                 register(obj)
@@ -112,7 +115,7 @@ def load_defaults(save_type, register_objects=False):
     objs = []
     for fname in (__default_data / save_type).iterdir():
         with open(fname, 'r') as f:
-            obj = from_json(f.read())
+            obj = from_json(f.read(), str(fname))
             objs.append(obj)
             if register_objects:
                 register(obj)

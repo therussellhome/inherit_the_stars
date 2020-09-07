@@ -1,5 +1,5 @@
 {
-    "name": "Battle Cruiser"
+    "name": "Battle Cruiser",
     "category": "Hull",
     "description": "Ship hull with 24 general-purpose slots.",
     "race_requirements": "Aku'Ultan",
