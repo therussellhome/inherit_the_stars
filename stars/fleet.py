@@ -266,29 +266,28 @@ class Fleet(Defaults):
         self.returnn()
     
     def handle_cargo(self, unload_fuel_from, load_fuel_to, item, amount, load_cargo_to, unload_cargo_from):
-        print(amount, item, 'with problem', end=' ')
+        #print(amount, item, 'with problem', end=' ')
         sum_cargo = (load_cargo_to.titanium + load_cargo_to.silicon + load_cargo_to.lithium + load_cargo_to.people)
         if item in ["fuel", "titanium", "silicon", "lithium", "people"]:
             if item == 'fuel':
                 if unload_fuel_from.fuel < amount and (load_fuel_to.fuel_max - load_fuel_to.fuel) >= unload_fuel_from.fuel:
-                    print("'not enough "+item+"'", "{'fuel': "+str(unload_fuel_from.fuel)+", 'fuel_max': "+str(unload_fuel_from.fuel_max)+"}", end=' ')
+                    #print("'not enough "+item+"'", "{'fuel': "+str(unload_fuel_from.fuel)+", 'fuel_max': "+str(unload_fuel_from.fuel_max)+"}", end=' ')
                     amount = unload_fuel_from.fuel
                 elif (load_fuel_to.fuel_max - load_fuel_to.fuel) < amount and unload_fuel_from.fuel >= (load_fuel_to.fuel_max - load_fuel_to.fuel):
-                    print("'not enough capacity'", "{'fuel': "+str(unload_fuel_from.fuel)+", 'fuel_max': "+str(unload_fuel_from.fuel_max)+"}", end=' ')
+                    #print("'not enough capacity'", "{'fuel': "+str(unload_fuel_from.fuel)+", 'fuel_max': "+str(unload_fuel_from.fuel_max)+"}", end=' ')
                     amount = (load_fuel_to.fuel_max - load_fuel_no.fuel)
-                else:
-                    print('none', end=' ')
+                #else:
+                    #print('none', end=' ')
             else:
                 if getattr(unload_cargo_from, item) < amount and (load_cargo_to.cargo_max - sum_cargo) >= getattr(unload_cargo_from, item):
-                    print("'not enough "+item+"'", unload_cargo_from.__dict__, end=' ')
+                    #print("'not enough "+item+"'", unload_cargo_from.__dict__, end=' ')
                     amount = getattr(unload_cargo_from, item)
                 elif (load_cargo_to.cargo_max - sum_cargo) < amount and getattr(unload_cargo_from, item) >= (load_cargo_to.cargo_max - sum_cargo):
-                    print("'not enough capacity'", unload_cargo_from.__dict__, end=' ')
+                    #print("'not enough capacity'", unload_cargo_from.__dict__, end=' ')
                     amount = (load_cargo_to.cargo_max - sum_cargo)
-                else:
-                    print('none', end=' ')
-        
-        print('becomes', amount)
+                #else:
+                    #print('none', end=' ')
+        #print('becomes', amount)
         return amount
     
     """ executes the buy function """
@@ -308,7 +307,8 @@ class Fleet(Defaults):
             amount = transfer[1]
             traety = player.treaties[recipiant.player.name].sell
             if getattr(traety, "cost_"+item) != None:
-                amount = self.handle_cargo(unload_fuel_from, self, item, amount, self.cargo, unload_cargo_from)
+                if item in ['fuel', 'titanium', 'silicon', 'lithium']:
+                    amount = self.handle_cargo(unload_fuel_from, self, item, amount, self.cargo, unload_cargo_from)
                 for i in amount:
                     if recipiant.player.energy_minister.check_budget("trade", getattr(traety, "cost_"+item)) > getattr(traety, "cost_"+item):
                         if item == 'fuel':
@@ -323,7 +323,7 @@ class Fleet(Defaults):
         
     """ telles the ships in the fleet that can colonize to colonize the planet """
     def colonize(self, player):
-        planet = self.waypoints[0].location
+        planet = self.waypoints[0].recipiants['colonize']
         if planet.player.is_valid:
             return
         for ship in self.ships:
@@ -331,27 +331,27 @@ class Fleet(Defaults):
     
     """ scraps the fleet """
     def scrap(self):
-        for ship in ships:
-            ship.scrap(fleet.location)
+        for ship in self.ships:
+            ship.scrap(self.location)
     
     def check_self(self, recipiant, player):
         if recipiant in player.fleets:
-            print('Fleet-Yours')
+            #print('Fleet-Yours')
             return True
         if recipiant in game_engine.get('Planet/'):
-            print('\nPlanet-', end='')
-            if recipiant.player == player:
-                print('Yours')
+            #print('\nPlanet-', end='')
+            if recipiant.player.name == player.name:
+                #print('Yours')
                 return True
-            print('Nither')
-            print(recipiant.player.name)
-            print(player.name)
+            #print('Nither')
+            #print(recipiant.player.name)
+            #print(player.name)
         return False
     
     def check_team(self, recipiant, player):
         if recipiant in game_engine.get('Planet/'):
-            if recipiant.player.treaties[player.name].relation == "team":
-                if player.treaties[recipiant.player.name].relation == "team":
+            if recipiant.player.treaties[player.name].relation == 'team':
+                if player.treaties[recipiant.player.name].relation == 'team':
                     return True
         return False
     
@@ -383,11 +383,12 @@ class Fleet(Defaults):
     
     def repair(self, player):
         repair_points = 0
+        ships_here = []
         for ship in self.ships:
             repair_points += ship.open_repair_bays()
         for fleet in player.fleets:
             if (self.location - fleet.location) <= (2 * stars_math.TERAMETER_2_LIGHTYEAR):
-                for ship in fleet:
+                for ship in fleet.ships:
                     ships_here.append(ship)
         self.distribute_repair(ships_here, repair_points)
     

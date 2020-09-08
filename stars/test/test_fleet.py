@@ -209,7 +209,7 @@ class FleetCase(unittest.TestCase):
             fuel_max = 500000
             )
         ultimantico = planet.Planet(
-            player = p1,
+            player = reference.Reference(p1),
             space_station = space_station,
             on_surface = cargo.Cargo(
                 titanium = 1000,
@@ -221,18 +221,21 @@ class FleetCase(unittest.TestCase):
             location=location.Location()
             )
         ship_7 = ship.Ship(
+            name = 'ship_7',
             location = location.Location(),
             cargo = cargo.Cargo(silicon=100, cargo_max=100),
             fuel = 10000,
             fuel_max = 10000
             )
         ship_8 = ship.Ship(
+            name = 'ship_8',
             location = location.Location(),
             cargo = cargo.Cargo(lithium=100, cargo_max=300),
             fuel = 10000,
             fuel_max = 30000
             )
         ship_6 = ship.Ship(
+            name = 'ship_6',
             location = location.Location(),
             cargo = cargo.Cargo(titanium=100, cargo_max=200),
             fuel = 10000,
@@ -250,7 +253,30 @@ class FleetCase(unittest.TestCase):
                 ]
             )
         p2.fleets = [fleet_three]
+        fleet_three.compile()
+        fleet_three.returnn()
+        """print()
+        for shipp in fleet_three.ships:
+            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
+            for key in shipp.cargo.__dict__:
+                if key != 'cargo_max':
+                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
+            print("}")
+        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
+        for key in ultimantico.on_surface.__dict__:
+            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
+        print("}")"""
         fleet_three.execute('sell', p2)
+        for shipp in fleet_three.ships:
+            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
+            for key in shipp.cargo.__dict__:
+                if key != 'cargo_max':
+                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
+            print("}")
+        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
+        for key in ultimantico.on_surface.__dict__:
+            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
+        print("}")
         self.assertEqual(p1.energy, 9820)
         self.assertEqual(p2.energy, 170180)
         self.assertEqual(ultimantico.on_surface.titanium, 1040)
@@ -261,7 +287,17 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_7.fuel, 0)
         self.assertEqual(ship_8.cargo.titanium, 30)
         self.assertEqual(ship_8.fuel, 0)
-        fleet_three.execute('buy')
+        fleet_three.execute('buy', p2)
+        for shipp in fleet_three.ships:
+            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
+            for key in shipp.cargo.__dict__:
+                if key != 'cargo_max':
+                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
+            print("}")
+        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
+        for key in ultimantico.on_surface.__dict__:
+            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
+        print("}")
         self.assertEqual(p1.energy, 10240)
         self.assertEqual(p2.energy, 169760)
         self.assertEqual(ultimantico.on_surface.lithium, 940)
@@ -319,9 +355,9 @@ class FleetCase(unittest.TestCase):
                 ]
             )
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        print()
         fleet_two.execute('load', p1)
-        """for fleett in p1.fleets:
+        """print()
+        for fleett in p1.fleets:
             for shipp in fleett.ships:
                 print(shipp.name, ": {'fuel':", shipp.fuel, end='')
                 for key in shipp.cargo.__dict__:
@@ -375,6 +411,7 @@ class FleetCase(unittest.TestCase):
         game_engine.register(ship_2)
         p1 = player.Player()
         ultimantico = planet.Planet(
+            player = reference.Reference(p1),
             name = 'ultimantico',
             space_station = defaults.Defaults(
                 fuel_max = 1000000,
@@ -392,7 +429,7 @@ class FleetCase(unittest.TestCase):
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['load', 'unload'],
-                    transfers = {'unload':[['lithium', 60], ['silicon', 40], ['fuel', 40]], 'load':[['titanium', 60], ['people', 40]]},
+                    transfers = {'unload':[['lithium', 40], ['silicon', 60], ['fuel', 40]], 'load':[['titanium', 40], ['people', 60]]},
                     recipiants = {'load':ultimantico, 'unload':ultimantico},
                     location = location.LocationReference(ultimantico)
                     )
@@ -401,6 +438,7 @@ class FleetCase(unittest.TestCase):
         p1.fleets = [fleet_one]
         ultimantico.player = reference.Reference(p1)
         fleet_one.execute('load', p1)
+        """print()
         for shipp in fleet_one.ships:
             print(shipp.name, ": {'fuel':", shipp.fuel, end='')
             for key in shipp.cargo.__dict__:
@@ -410,7 +448,7 @@ class FleetCase(unittest.TestCase):
         print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
         for key in ultimantico.on_surface.__dict__:
             print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
+        print("}")"""
         self.assertEqual(ship_1.cargo.titanium, 20)
         self.assertEqual(ship_1.cargo.people, 30)
         self.assertEqual(ship_2.cargo.titanium, 20)
@@ -418,7 +456,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ultimantico.on_surface.titanium, 60)
         self.assertEqual(ultimantico.on_surface.people, 40)
         fleet_one.execute('unload', p1)
-        for shipp in fleet_one.ships:
+        """for shipp in fleet_one.ships:
             print(shipp.name, ": {'fuel':", shipp.fuel, end='')
             for key in shipp.cargo.__dict__:
                 if key != 'cargo_max':
@@ -427,7 +465,7 @@ class FleetCase(unittest.TestCase):
         print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
         for key in ultimantico.on_surface.__dict__:
             print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
+        print("}")"""
         self.assertEqual(ship_1.cargo.lithium, 30)
         self.assertEqual(ship_1.cargo.silicon, 20)
         self.assertEqual(ship_1.fuel, 30)
@@ -436,35 +474,255 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_2.fuel, 30)
         self.assertEqual(ultimantico.on_surface.lithium, 40)
         self.assertEqual(ultimantico.on_surface.silicon, 60)
-        self.assertEqual(ultimantico.space_station.fuel, 100020)
+        self.assertEqual(ultimantico.space_station.fuel, 100040)
+    
     
     def test_self_repair(self):
-        pass
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            repair_points = 3,
+            armor = 3,
+            max_armor = 10
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            repair_points = 3,
+            armor = 3,
+            max_armor = 10
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['self_repair'],
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('self_repair', p1)
     
     def test_repair(self):
-        pass
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            repair_bay_repair_points = 3,
+            armor = 3,
+            max_armor = 10
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            repair_bay_repair_points = 3,
+            armor = 13,
+            max_armor = 20
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['repair'],
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('repair', p1)
     
     def test_orbital_mining(self):
-        pass
-    
+        ultimantico = planet.Planet(
+            location=location.Location()
+            )
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['orbital_mining'],
+                    recipiants = {'orbital_mining': ultimantico},
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('orbital_mining', p1)
+    """
     def test_lay_mines(self):
-        pass
-    
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['lay_mines'],
+                    recipiants = {'lay_mines': ultimantico},
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('lay_mines', p1)
+    """
     def test_bomb(self):
-        pass
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            location=location.Location()
+            )
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['bomb'],
+                    recipiants = {'bomb': ultimantico},
+                    location = location.Location()
+                    )
+                ]
+            )
+        p2 = player.Player(fleets = [fleet_two])
+        p2.treaties[ultimantico.player.name].relation = 'enemy'
+        fleet_two.execute('bomb', p2)
     
     def test_colonize(self):
-        pass
-    
+        ultimantico = planet.Planet(
+            location=location.Location()
+            )
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            cargo = cargo.Cargo(people = 100, cargo_max = 200)
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            cargo = cargo.Cargo(people = 100, cargo_max = 200)
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['colonize'],
+                    recipiants = {'colonize': ultimantico},
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('colonize', p1)
+    """
     def test_piracy(self):
-        pass
-    
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['piracy'],
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('piracy', p1)
+    """
     def test_scrap(self):
-        pass
-    
+        ultimantico = planet.Planet(
+            location=location.Location()
+            )
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            cost = cost.Cost(
+                titanium = 10,
+                lithium = 10,
+                silicon = 10
+                )
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['scrap'],
+                    location = location.LocationReference(ultimantico)
+                    )
+                ],
+            location = location.LocationReference(ultimantico)
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('scrap', p1)
+    """
     def test_patrol(self):
-        pass
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['patrol'],
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('patrol', p1)
     
     def test_route(self):
-        pass
-    
+        ship_3 = ship.Ship(
+            location = location.Location(),
+            )
+        ship_4 = ship.Ship(
+            location = location.Location(),
+            )
+        game_engine.register(ship_3)
+        game_engine.register(ship_4)
+        fleet_two = fleet.Fleet(
+            ships = [ship_3, ship_4],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['route'],
+                    location = location.Location()
+                    )
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.execute('route', p1)
+    """

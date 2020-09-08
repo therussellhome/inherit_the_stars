@@ -75,15 +75,15 @@ class Ship(ShipDesign):
         pass
     
     def scrap(self, location):
-        #scrap algorithem
-        #t = self.cost.titatium * scrap_factor
-        #l = self.cost.lithium * scrap_factor
-        #s = self.cost.silicon * scrap_factor
-        Cargo = Cargo(titanium = t, lithium = l, silicon = s, cargo_makx = (t + l + s))
+        scrap_factor = 0.9
+        t = round(self.cost.titanium * scrap_factor)
+        l = round(self.cost.lithium * scrap_factor)
+        s = round(self.cost.silicon * scrap_factor)
+        cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
         if location not in game_engine.get('Planet/'):
-            game_engine.create_salvage(copy.copy(location), Cargo)
+            game_engine.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:
-            location.on_surface += cargo + Cargo
+            location.on_surface += cargoo + self.cargo
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
@@ -109,7 +109,7 @@ class Ship(ShipDesign):
     
     """ Bombs the planet if the planet is colonized """
     def bomb(self, p):
-        if p.colonized == True:
+        if p.is_valid:
             if self.bomb.percent_pop_kill * p.num_colonists < self.bomb.minimum_kill:
                 p.num_colonist -= self.bomb.minimum_kill
             else:
