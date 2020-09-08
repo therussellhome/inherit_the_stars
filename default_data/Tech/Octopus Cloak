@@ -1,0 +1,24 @@
+{
+    "name": "Octopus Cloak",
+    "category": "Cloak",
+    "description": "The best cloak.  If you don't know why it's called Octopus Cloak, search for octopus camouflage or Caribbean reef octopus.",
+    "race_requirements": "Kender",
+    "cost": {
+        "titanium": 1,
+        "lithium": 0,
+        "silicon": 4,
+        "energy": 1600,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 8,
+        "electronics": 10,
+        "__class__": "TechLevel"
+    },
+    "mass": 5,
+    "cloak": {
+        "percent": 75,
+        "__class__": "Cloak"
+    },
+    "__class__": "Tech"
+}

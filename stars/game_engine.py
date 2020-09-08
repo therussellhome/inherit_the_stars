@@ -32,21 +32,26 @@ class BaseClass:
     pass
 
 
-""" Get a referenced class by name """
+""" 
+Get a referenced class by name 
+reference can be 'Class/ObjName', 'Class/Id', or 'Class'
+"""
 def get(reference, create_new=False):
     global __registry
     # reference must be a string
     if not isinstance(reference, str):
         raise LookupError('None is not a valid reference')
     # get all of a type
-    if reference[-1:] == '/':
+    if '/' not in reference:
         objs = []
         for obj in __registry:
-            if obj.__class__.__name__ + '/' == reference:
+            if obj.__class__.__name__ == reference:
                 objs.append(obj)
         return objs
     # get object from registry
     for obj in __registry:
+        if reference == obj.__class__.__name__ + '/' + str(id(obj)):
+            return obj
         if hasattr(obj, 'name'):
             if reference == obj.__class__.__name__ + '/' + obj.name:
                 return obj
@@ -81,6 +86,7 @@ def load_list(save_type):
 def load_inspect(save_type, name, class_type):
     game_file = __game_dir / save_type / (name + '.zip')
     internals = []
+    class_type += '/'
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
             if info.filename.startswith(class_type):

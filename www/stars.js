@@ -3,6 +3,7 @@ let json_map = {};
 let charts = {};
 let game_mode = 'host';
 let current_screen = 'home';
+let current_submenu = null;
 
 // Initialize the fields from python
 function init() {
@@ -23,17 +24,27 @@ function init() {
 // force = true => add
 // force = false => remove
 function toggle(start, css_class, force = null) {
-    var children = [start];
-    while(children.length > 0) {
-        element = children.pop();
-        if(force == null) {
-            element.classList.toggle(css_class);
-        } else {
-            element.classList.toggle(css_class, force);
+    if(start != null) {
+        var children = [start];
+        while(children.length > 0) {
+            element = children.pop();
+            if(force == null) {
+                element.classList.toggle(css_class);
+            } else {
+                element.classList.toggle(css_class, force);
+            }
+            for(child of element.children) {
+                children.push(child);
+            }
         }
-        for(child of element.children) {
-            children.push(child);
-        }
+    }
+}
+
+function save_race() {
+    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
+        alert('cannot save, negitive avantage points');
+    } else {
+        post('race_editor', '?save');
     }
 }
 
@@ -64,6 +75,31 @@ function show_screen(show) {
     if(show) {
         toggle(document.getElementById('screen_' + show), 'hide', false);
         toggle(document.getElementById('button_' + show), 'selected', true);
+    }
+}
+
+// Show a given submenu, hide all others, highlight the clicked button
+function show_menu(show) {
+    if(current_submenu == show) {
+        show = null;
+    }
+    current_submenu = show;
+    // Hide all submenus
+    for(screen of document.getElementsByClassName('submenu')) {
+        toggle(screen, 'hide', true);
+    }
+    // Unselect all buttons
+    for(button of document.getElementsByClassName('button')) {
+        toggle(button, 'selected', false);
+    }
+    // Show selected sub-menu
+    if(show) {
+        button = document.getElementById('button_' + show);
+        menu = document.getElementById('submenu_' + show);
+        rect = button.getBoundingClientRect();
+        menu.style.top = (rect.top - 5).toString() + 'px';
+        toggle(button, 'selected', true);
+        toggle(menu, 'hide', false);
     }
 }
 
@@ -459,7 +495,7 @@ function format_gravity(value) {
 
 // Format temperature
 function format_temperature(value) {
-    return (value * 4 - 200).toString() + ' °C';
+    return (value * 2 - 50).toString() + ' °C';
 }
 
 // Format radiation
