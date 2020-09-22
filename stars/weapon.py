@@ -33,12 +33,12 @@ class Weapon(Defaults):
             power = self.power
             if self.is_beam:
                 power = self.power * (1 - target_ly / range_ly)
-            power_to_shield = min(power, shield)
-            power_to_armor = max((power - shield) * self.armor_multiplier, 0)
             if not self.is_beam:
-                difrence = min(power/4, power_to_shield)
-                power_to_shield -= diference
+                difrence = int(power/4)
+                power -= diference
                 power_to_armor += diference
+            power_to_shield = min(power, shield)
+            power_to_armor += max((power - shield) * self.armor_multiplier, 0)
             return (power_to_shield, power_to_armor)
         return (0, 0)
 
@@ -47,6 +47,6 @@ class Weapon(Defaults):
         if self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5) <= randint(0, 100):
             return 0
         damage = self.get_power(target_ly, shield, armor)
-        return (shield-damage[0], armor-damage[1])
+        return (damage[0], damage[1])
 
 Weapon.set_defaults(Weapon, __defaults)

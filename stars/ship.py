@@ -7,6 +7,7 @@ from .location import Location
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
 from . import stars_math
+from .expirence import Expirence
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -14,14 +15,17 @@ __defaults = {
     'battle_plan': [BattlePlan()],
     'initative': [0, 0, sys.maxsize],
     'armor': [10, 0, sys.maxsize],
+    'armor_damage': [0, 0, sys.maxsize],
     'shields': [0, 0, sys.maxsize],
+    'shields_damage': [0, 0, sys.maxsize],
     'max_distance': [0.0, 0.0, sys.maxsize],
     'damage_points': [0, 0, sys.maxsize],
     'repair_points': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
     'engines': [[]],
-    'cargo': [Cargo()]
+    'cargo': [Cargo()],
+    'expirence': [Expirence()]
 }
 
 
@@ -52,6 +56,7 @@ class Ship(ShipDesign):
             fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
         return fuel
     
+    """ TODO """
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
@@ -97,6 +102,7 @@ class Ship(ShipDesign):
             game_engine.create_salvage(copy.copy(location), Cargo)
         else:
             location.on_surface += cargo + Cargo
+        #ship goes bye bye
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
@@ -134,13 +140,12 @@ class Ship(ShipDesign):
                 p.num_facilities = 0
         return p
 
-    def calc_aparent_mass(self):
-        return 100
+    def calc_apparent_mass(self):
+        return mass# * (1 - self.cloak_percent) - self.cloak_KT
 
     def blow_up(self):
+        self.scrap(self.location
         pass
 
-    def calc_initative(self):
-        self.initative = 1
 
 Ship.set_defaults(Ship, __defaults)
