@@ -1,0 +1,25 @@
+Minesweeping after combat which is after move
+
+Your minefields won't hit neutrals
+
+Minefields are always evenly-distributed density throughout the system, so sweeping reduces density
+
+Penetrating scanning of a system shows all the minefields in it (owner, density)
+
+Density=
+mines are laid in mines per year; compute volume of system and  
+=number of times you roll did-you-hit-a-mine per terameter (10/90? 50/50?) 
+proportional to kT of ship?  % chance of hit=kT/10 or kT/100?
+(implement in ship, combat & in-system movement will call it)
+laying? integer per 1/100 of a year
+decay?
+sweeping?
+damage per mine?
+
+Heavy Cruiser 500kT w/ 500 armor moving 1tm (1pt per mine) max density =hits 400 mines; gravimetric cross-section=mass x 50 
+moves 0.5tm during a battle
+ 
+volume of system 4.2x10^27 km3 if 6.4x10^10 per mine then 6.5x10^16 mines for dense coverage?
+if laying with 12 components for 25 years = 300 x component's output
+
+SD 2000kT moving 1tm; in a dense minefield 

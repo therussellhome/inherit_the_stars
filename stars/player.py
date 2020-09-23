@@ -3,7 +3,7 @@ from . import game_engine
 from .defaults import Defaults
 from .energy_minister import EnergyMinister
 from .intel import Intel
-from .minister import Minister
+from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
@@ -12,16 +12,18 @@ from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
-    'intel': [{}], # map of intel objects
-    'ministers': [[Minister(name='default')]], # modifiable by the player
+    'intel': [{}], # map of intel objects indexed by object reference
+    'messages': [[]], # list of messages from oldest to newest
+    'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
     'tech_level': [TechLevel()],
     'next_tech_cost': [TechLevel()],
     'research_field': [''], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
-    'fleets': [[]]
+    'fleets': [[]],
 }
 
 """ A player in a game """
@@ -46,6 +48,54 @@ class Player(Defaults):
     def remove_fleet(self, fleet):
         self.fleets.remove(fleet)
     
+    """ Return the id for use as a temporary player token """
+    def token(self):
+        return str(id(self))
+
+    """ Add an intel report """
+    def add_intel(self, obj, **kwargs):
+        # Intentionally allowing this to fail if the object does not have a name attribute
+        reference = obj.__class__.__name__ + '/' + obj.name
+        if reference not in self.intel:
+            self.intel[reference] = Intel(reference=reference)
+        self.intel[reference].add_report(date=self.date, **kwargs)
+        # If seeing a new player then capture that
+        if 'player' in kwargs:
+            reference = 'Player/' + kwargs['player']
+            if reference not in self.intel:
+                self.intel[reference] = Intel(reference=reference)
+
+    """ Get intel about an object or objects """
+    def get_intel(self, reference):
+        if '/' in reference:
+            if reference in self.intel:
+                return self.intel[reference]
+            return Intel()
+        reports = []
+        for k, i in self.intel.items():
+            if k.starswith(reference + '/'):
+                reports.append(i)
+        return reports
+
+    """ Add a message """
+    def add_message(self, source, subject, body, link):
+        self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
+
+    """ Compute score based on intel """
+    def compute_score(self):
+        #TODO
+        pass
+
+    """ Get the minister for a given planet """
+    def get_minister(self, planet):
+        for m in self.planetary_ministers:
+            if planet in m.planets:
+                return m
+        for m in self.planetary_ministers:
+            if m.new_colony_minister:
+                return m
+        return self.planetary_ministers[0]
+
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
     def manage_economy(self):
@@ -56,7 +106,7 @@ class Player(Defaults):
         self.energy += self.energy_minister.unallocated_budget 
         # Get the list of planets
         planets = []
-        for planet in game_engine.get('Planet/'):
+        for planet in game_engine.get('Planet'):
             if planet.player.eq(self):
                 planets.append(planet)
         planets.sort(key=lambda x: x.on_planet.people)
@@ -89,7 +139,7 @@ class Player(Defaults):
     """ Research """
     def _do_research(self):
         budget = self.energy_minister.check_budget('research', self.energy)
-        if not self.race.lrt_generalized_research:
+        if not self.race.lrt_MadScientist:
             while budget > 0:
                 budget = self._research_in_field(self.research_field, budget)
                 if budget > 0:

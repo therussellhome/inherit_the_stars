@@ -4,19 +4,18 @@ from .defaults import Defaults
 __defaults = {
     'name': [''],
     'primary_race_trait': ['Melconians'],
-    'lrt_trader': [False],
-    'lrt_total_terraforming': [False],
-    'lrt_advanced_depot': [False],
-    'lrt_ultimate_recycling': [False],
-    'lrt_improved_fuel_efficiency': [False],
-    'lrt_improved_starbases': [False],
-    'lrt_generalized_research': [False],
-    'lrt_regenerating_shields': [False],
-    'lrt_bleeding_edge_technology': [False],
-    'lrt_no_antimatter_collecting_engines': [False],
-    'lrt_low_starting_popultion': [False],
-    'lrt_no_advanced_scanners': [False],
-    'lrt_cheap_engines': [False],
+    'lrt_Trader': [False],
+    'lrt_Bioengineer': [False],
+    'lrt_SpacedOut': [False],
+    'lrt_WasteNot': [False],
+    'lrt_Hypermiler': [False],
+    'lrt_McMansion': [False],
+    'lrt_MadScientist': [False],
+    'lrt_QuickHeal': [False],
+    'lrt_BleedingEdge': [False],
+    'lrt_Forager': [True],
+    'lrt_2ndSight': [True],
+    'lrt_JuryRigged': [False],
     'research_modifier_energy': [100, 50, 200],
     'research_modifier_weapons': [100, 50, 200],
     'research_modifier_propulsion': [100, 50, 200],
@@ -42,16 +41,17 @@ __defaults = {
     'hab_radiation_stop': [100, 0, 100],
     'hab_radiation_immune': [False],
     'growth_rate': [15, 1, 20],
-    'starting_pop': [250000, 150000, 300000],
+    'starting_colonists': [250, 175, 350],
     'population_max': [10000000, 0, 1000000000],
-    'starting_factories': [10, 0, 20],
-    'starting_mines': [10, 0, 20],
-    'starting_power_plants': [10, 0, 20],
-    'starting_defenses': [10, 0, 20],
-    'colonists_to_opperate_factory': [1000, 200, 5000],
-    'colonists_to_opperate_mine': [1000, 200, 5000],
-    'colonists_to_opperate_power_plant': [1000, 200, 5000],
-    'colonists_to_opperate_defense': [1000, 200, 5000],
+    'starting_factories': [10, 5, 20],
+    'starting_mines': [10, 5, 20],
+    'starting_power_plants': [10, 5, 20],
+    'starting_defenses': [10, 5, 20],
+    'cost_of_baryogenesis': [10000, 2000, 12000],
+    'colonists_to_operate_factory': [1000, 200, 5000],
+    'colonists_to_operate_mine': [1000, 200, 5000],
+    'colonists_to_operate_power_plant': [1000, 200, 5000],
+    'colonists_to_operate_defense': [1000, 200, 5000],
     'starting_energy': [50000, 25000, 100000],
     'starting_lithium': [500, 400, 700], 
     'starting_silicon': [500, 400, 700], 
@@ -62,8 +62,7 @@ __defaults = {
 class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
-        for key in kwargs:
-            self.__dict__[key] = kwargs[key]
+        super().__init__(**kwargs)
 
 
 Race.set_defaults(Race, __defaults)

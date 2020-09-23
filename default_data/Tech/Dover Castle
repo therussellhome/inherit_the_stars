@@ -1,0 +1,19 @@
+{
+    "name": "Dover Castle",
+    "category": "Armor",
+    "description": "armor",
+    "cost": {
+        "titanium": 6,
+        "lithium": 0,
+        "silicon": 0,
+        "energy": 1300,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 3,
+        "__class__": "TechLevel"
+    },
+    "mass": 56,
+    "armor": 75,
+    "__class__": "Tech"
+}

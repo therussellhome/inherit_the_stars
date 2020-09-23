@@ -17,15 +17,15 @@ class GameEngineTestCase(unittest.TestCase):
     def test_register_n_get(self):
         # Nothing in the register
         game_engine.unregister()
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 0)
         # Still nothing in the register
         t1 = _TestGameEngine(name='test_get1')
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 0)
         # t1 in the register
         game_engine.register(t1)
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
         # What is in the register is actually t1
         self.assertEqual(ts[0].name, t1.name)
@@ -35,7 +35,7 @@ class GameEngineTestCase(unittest.TestCase):
         # Add t2
         t2 = _TestGameEngine(name='test_get2')
         game_engine.register(t2)
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 2)
         self.assertEqual(ts[0].name, t1.name)
         self.assertEqual(ts[1].name, t2.name)
@@ -58,17 +58,17 @@ class GameEngineTestCase(unittest.TestCase):
         game_engine.register(t1)
         t2 = _TestGameEngine(name='test_unreg2')
         game_engine.register(t2)
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 2)
         # Specific object unregister
         game_engine.unregister(t1)
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].name, t2.name)
         # Unregister all
         game_engine.register(t1)
         game_engine.unregister()
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 0)
     
     def test_json(self):
@@ -90,12 +90,12 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertNotEqual(ts[0].name, t.name)
         self.assertEqual(ts[0].name, 'test_save')
         # Load and inspect
-        tl = game_engine.load_inspect('test', 'unittest', '_TestGameEngine/')
+        tl = game_engine.load_inspect('test', 'unittest', '_TestGameEngine')
         self.assertEqual(len(tl), 1)
         self.assertEqual(tl[0], 'test_save')
         # Load and register
         game_engine.load('test', 'unittest')
-        ts = game_engine.get('_TestGameEngine/')
+        ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].name, 'test_save')
         # Testing list has to be done after save
@@ -108,8 +108,8 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.load_defaults('Tech')
         self.assertGreater(len(ts), 0)
         self.assertEqual(ts[0].__class__.__name__, 'Tech')
-        ts = game_engine.get('Tech/')
+        ts = game_engine.get('Tech')
         self.assertEqual(len(ts), 0)
         ts = game_engine.load_defaults('Tech', True)
-        ts = game_engine.get('Tech/')
+        ts = game_engine.get('Tech')
         self.assertGreater(len(ts), 0)

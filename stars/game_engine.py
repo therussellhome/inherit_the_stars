@@ -32,34 +32,44 @@ class BaseClass:
     pass
 
 
-""" Get a referenced class by name """
+""" 
+Get a referenced class by name 
+reference can be 'Class/ObjName', 'Class/Id', or 'Class'
+"""
 def get(reference, create_new=False):
     global __registry
     # reference must be a string
     if not isinstance(reference, str):
         raise LookupError('None is not a valid reference')
     # get all of a type
-    if reference[-1:] == '/':
+    if '/' not in reference:
         objs = []
         for obj in __registry:
-            if obj.__class__.__name__ + '/' == reference:
+            if obj.__class__.__name__ == reference:
                 objs.append(obj)
         return objs
     # get object from registry
     for obj in __registry:
+        if reference == obj.__class__.__name__ + '/' + str(id(obj)):
+            return obj
         if hasattr(obj, 'name'):
             if reference == obj.__class__.__name__ + '/' + obj.name:
                 return obj
-    # create new object
+    # create and register new object
     if create_new:
         (classname, obj_name) = reference.split('/')
-        return __new(classname, None, name=obj_name)
+        obj = __new(classname, None, name=obj_name)
+        register(obj)
+        return obj
     return None
 
 
 """ Decode a string into an object """
-def from_json(string):
-	return json.loads(string, object_hook=__decode)
+def from_json(string, name='<Internal>'):
+    try:
+	    return json.loads(string, object_hook=__decode)
+    except Exception as e:
+        print('Decode error ' + str(e) + ' in ' + name + '\n' + string)
 
 
 """ Encode an object into a string """
@@ -81,6 +91,7 @@ def load_list(save_type):
 def load_inspect(save_type, name, class_type):
     game_file = __game_dir / save_type / (name + '.zip')
     internals = []
+    class_type += '/'
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
             if info.filename.startswith(class_type):
@@ -94,7 +105,7 @@ def load(save_type, name, register_objects=True):
     objs = []
     with ZipFile(game_file, 'r') as zipfile:
         for info in zipfile.infolist():
-            obj = from_json(zipfile.read(info))
+            obj = from_json(zipfile.read(info), str(info))
             objs.append(obj)
             if register_objects:
                 register(obj)
@@ -106,7 +117,7 @@ def load_defaults(save_type, register_objects=False):
     objs = []
     for fname in (__default_data / save_type).iterdir():
         with open(fname, 'r') as f:
-            obj = from_json(f.read())
+            obj = from_json(f.read(), str(fname))
             objs.append(obj)
             if register_objects:
                 register(obj)

@@ -60,16 +60,21 @@ class Defaults(game_engine.BaseClass):
     def reset_to_default(self):
         cls = object.__getattribute__(self, '__class__')
         defaults = cls.get_defaults(cls)
+        no_reset = getattr(cls, 'no_reset', [])
         for name in defaults:
-            object.__setattr__(self, name, copy.copy(defaults[name][0]))
+            if name not in no_reset:
+                object.__setattr__(self, name, copy.copy(defaults[name][0]))
 
 
 """ Store defaults on the class """
-def __set_defaults(cls, defaults):
+def __set_defaults(cls, defaults, no_reset=[]):
     cls.defaults = {}
     for parent in cls.__bases__:
         cls.defaults.update(getattr(parent, 'defaults', {}))
     cls.defaults.update(defaults)
+    cls.no_reset = no_reset
+    for parent in cls.__bases__:
+        cls.no_reset.extend(getattr(parent, 'no_reset', []))
 Defaults.set_defaults = __set_defaults
 
 

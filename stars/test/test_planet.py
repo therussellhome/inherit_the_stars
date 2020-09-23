@@ -102,7 +102,6 @@ class PlanetTestCase(unittest.TestCase):
     def test_auto_build(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25, 1)
-        self.planet.minister = reference.Reference('Minister', 'test_Minister')
         self.planet.mines = 25
         self.planet.power_plants = 3
         self.planet.factories = 2
