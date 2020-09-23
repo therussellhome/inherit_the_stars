@@ -31,6 +31,7 @@ class Weapon(Defaults):
         range_ly = self.range_tm * stars_math.TERAMETER_2_LIGHTYEAR 
         if target_ly < range_ly:
             power = self.power
+            power_to_armor = 0
             if self.is_beam:
                 power = self.power * (1 - target_ly / range_ly)
             if not self.is_beam:

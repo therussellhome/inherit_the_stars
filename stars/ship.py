@@ -97,11 +97,11 @@ class Ship(ShipDesign):
         #t = self.cost.titatium * scrap_factor
         #l = self.cost.lithium * scrap_factor
         #s = self.cost.silicon * scrap_factor
-        Cargo = Cargo(titanium = t, lithium = l, silicon = s, cargo_makx = (t + l + s))
+        cargo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s + self.cargo.cargo_max))
         if location not in game_engine.get('Planet/'):
-            game_engine.create_salvage(copy.copy(location), Cargo)
+            game_engine.create_salvage(copy.copy(location), cargo + self.cargo)
         else:
-            location.on_surface += cargo + Cargo
+            location.on_surface += cargo + self.cargo
         #ship goes bye bye
     
     """ Mines the planet if it is not colonized """
@@ -141,10 +141,10 @@ class Ship(ShipDesign):
         return p
 
     def calc_apparent_mass(self):
-        return mass# * (1 - self.cloak_percent) - self.cloak_KT
+        return self.mass# * (1 - self.cloak_percent) - self.cloak_KT
 
     def blow_up(self):
-        self.scrap(self.location
+        self.scrap(self.location)
         pass
 
 

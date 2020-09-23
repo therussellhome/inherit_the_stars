@@ -24,7 +24,8 @@ class Combat(Defaults):
         excape = False
         excape2 = False
         for ship in self.everybody:
-            if ship is not me and not me.player in ship.hidden_from: # and me.player.relashons(ship.player) == 'enemy':
+            #print(ship.hidden_from)
+            if not (ship is me) and not (me.player in ship.hidden_from): # and me.player.relashons(ship.player) == 'enemy':
                 if me.battle_plan.p_target == 'disengage' or len(me.ship.weapons) == 0:
                     dis = distance(me, ship)
                     if dis < closest_p:
@@ -95,7 +96,8 @@ class Combat(Defaults):
     
     def move(self, ship):
         move = self.calc_strategy_m(ship)
-        ship.ship.location = ship.ship.location.move(move[0], self.calc_speed(ship)*TERAMETER_2_LIGHTYEAR, ship.battle_plan.standoff*TERAMETER_2_LIGHTYEAR)
+        print(move[1])
+        ship.ship.location = ship.ship.location.move(move[0], self.calc_speed(ship)*TERAMETER_2_LIGHTYEAR, move[1], ship.battle_plan.standoff*TERAMETER_2_LIGHTYEAR)
         self.save_to_combat_log()
         pass
 
@@ -167,11 +169,15 @@ class Combat(Defaults):
             return None
 
     def fire(self, ship):
+        #print(ship)
         for weapon in ship.ship.weapons:
             ship_to_fire_at = self.calc_strategy_f(ship)
+            #print(ship_to_fire_at)
             if ship_to_fire_at:
+                #print(ship_to_fire_at.ship.__dict__)
                 damage = weapon.get_damage(distance(ship, ship_to_fire_at), ship_to_fire_at.ship.shields, ship_to_fire_at.ship.armor, ship.ship.scanner.range_visible(ship_to_fire_at.ship.calc_apparent_mass()), ship_to_fire_at.ship.ecm)
-                if damage == (0, 0):
+                #print(damage)
+                if damage == (0, 0) and ship.ship.location-ship_to_fire_at.ship.location <= wepon.ly_range:
                     ship_to_fire_at.ship.expirence.battle_expirence += 0.05
                 else:
                     ship.ship.expirence.battle_expirence += 0.1
@@ -217,10 +223,10 @@ class Combat(Defaults):
                 
     
     def turn(self):
-        everybody.sort(key=lambda ship: ship.ship.expirence.calc(self.date))
+        self.everybody.sort(key=lambda ship: ship.ship.expirence.calc(self.date))
         for ship in self.everybody:
             self.move(ship)
-        everybody.sort(key=lambda ship: ship.ship.expirence.calc(self.date), reverse=True)
+        self.everybody.sort(key=lambda ship: ship.ship.expirence.calc(self.date), reverse=True)
         for ship in self.everybody:
             self.fire(ship)
 
