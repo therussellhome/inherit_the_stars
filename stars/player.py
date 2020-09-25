@@ -24,6 +24,7 @@ __defaults = {
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],
+    'treaties': [{}],               
 }
 
 """ A player in a game """
