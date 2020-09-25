@@ -1,55 +1,120 @@
-draw_stars_zoom = 10;
+var camera, scene, renderer, stats, material;
+var mouseX = 0, mouseY = 0;
+
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
 
 // Draw the systems
 function draw_stars() {
-    div = document.getElementById('draw_stars');
     systems = json_map['render_stars']['systems'];
-    x_min = 0;
-    x_max = 0;
-    y_min = 0;
-    y_max = 0;
-    for(var i=0; i < systems.length; i++) {
-        x_min = Math.min(x_min, systems[i].x);
-        x_max = Math.max(x_max, systems[i].x);
-        y_min = Math.min(y_min, systems[i].y);
-        y_max = Math.max(y_max, systems[i].y);
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 2, 2000 );
+    camera.position.z = 100;
+
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
+
+    var geometry = new THREE.BufferGeometry();
+    var vertices = [];
+
+    var sprite = new THREE.TextureLoader().load( '/particle.png' );
+
+    for(var i=0; i<systems.length; i++) {
+        vertices.push(systems[i].x, systems[i].y, systems[i].z);
     }
-    for(child of div.children) {
-        div.removeChild(child);
-    }
-    div.style.width = Math.round((x_max - x_min) * draw_stars_zoom + 10).toString() + 'px';
-    div.style.height = Math.round((y_max - y_min) * draw_stars_zoom + 10).toString() + 'px';
-    for(var i=0; i < systems.length; i++) {
-        var star = document.createElement("div");
-        star.title = systems[i].name;
-        star.className = 'star';
-        star.style.left = Math.round((systems[i].x - x_min) * draw_stars_zoom).toString() + 'px';
-        star.style.top = Math.round((systems[i].y - y_min) * draw_stars_zoom).toString() + 'px';
-        star.addEventListener('click', function(event) {
-            alert(event.target.title);
-        }, true);
-        div.appendChild(star); 
-    }
+
+    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+    material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
+    material.color.setHSL( 1.0, 0.3, 0.7 );
+
+    var particles = new THREE.Points( geometry, material );
+    scene.add( particles );
+
+    //
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.getElementById('play_mode').appendChild( renderer.domElement );
+
+    //
+
+//    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+    document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+    //
+
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    animate();
 }
 
-draw_stars_pan_x = undefined;
-draw_stars_pan_y = undefined;
+function onWindowResize() {
 
-function draw_stars_pan_start(event) {
-    div = document.getElementById('draw_stars');
-    draw_stars_pan_x = div.offsetLeft - event.clientX;
-    draw_stars_pan_y = div.offsetTop - event.clientY;
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
 }
 
-document.addEventListener('mouseup', function() {
-    draw_stars_pan_x = undefined;
-    draw_stars_pan_y = undefined;
-}, true);
+function onDocumentMouseMove( event ) {
 
-document.addEventListener('mousemove', function(event) {
-    if(draw_stars_pan_x != undefined) {
-        div = document.getElementById('draw_stars');
-        div.style.left = (event.clientX + draw_stars_pan_x).toString() + 'px';
-        div.style.top = (event.clientY + draw_stars_pan_y).toString() + 'px';
+    mouseX = event.clientX - windowHalfX;
+    mouseY = event.clientY - windowHalfY;
+
+}
+
+function onDocumentTouchStart( event ) {
+
+    if ( event.touches.length == 1 ) {
+
+        event.preventDefault();
+
+        mouseX = event.touches[ 0 ].pageX - windowHalfX;
+        mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
     }
-}, true);
+
+}
+
+function onDocumentTouchMove( event ) {
+
+    if ( event.touches.length == 1 ) {
+
+        event.preventDefault();
+
+        mouseX = event.touches[ 0 ].pageX - windowHalfX;
+        mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+    }
+
+}
+
+function animate() {
+
+    requestAnimationFrame( animate );
+
+    render();
+}
+
+function render() {
+
+    var time = Date.now() * 0.00005;
+
+    camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+    camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+
+    camera.lookAt( scene.position );
+
+    var h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
+//    material.color.setHSL( h, 0.5, 0.5 );
+
+    renderer.render( scene, camera );
+
+}

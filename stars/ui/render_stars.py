@@ -25,6 +25,7 @@ class RenderStars(Defaults):
                 'x': s.location.x,
                 'y': s.location.y,
                 'z': s.location.z,
+                'gravity': s.planets[0].gravity,
             })
         # Get the player's intel
         games = game_engine.get('Game')

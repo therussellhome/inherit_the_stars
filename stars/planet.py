@@ -62,6 +62,10 @@ class Planet(Defaults):
             self.orbit_speed = uniform(0.01, 1.0)
         game_engine.register(self)
 
+    """ Check if the planet is colonized """
+    def is_colonized(self):
+        return self.player.is_valid
+
     """ Colonize the planet """
     # player is a Reference to Player
     # because minister names can change, minister is a string
