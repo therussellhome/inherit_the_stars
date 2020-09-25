@@ -1,10 +1,35 @@
 import unittest
 from .. import *
+from colorsys import hls_to_rgb
 
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25000, 1)
+
+    def test_orbit(self):
+        self.planet.age = 2097
+        self.assertEqual(self.planet.orbit(), )
+        
+    def test_get_color(self):
+        self.planet.radiation = 100
+        self.planet.temperature = -50
+        self.assertEqual(self.planet.get_color(), '#FF0000')
+        self.planet.temperature = 150
+        self.assertEqual(self.planet.get_color(), '#7F00FF')
+        self.planet.radiation = 0
+        self.assertEqual(self.planet.get_color(), '#7F40BF')
+        self.planet.radiation = 50
+        self.assertEqual(self.planet.get_color(), '#7F20DF')
+        self.planet.temperature = 75
+        self.assertEqual(self.planet.get_color(), '#4090BF')
+        self.planet.radiation = 100
+        self.assertEqual(self.planet.get_color(), '#00FF40')
+        #reset gravity, temperature and radiation so other functions don't have problems
+        self.planet.gravity = 50
+        self.planet.temperature = 50
+        self.planet.radiation = 50
+        self.assertEqual(self.planet.get_color(), '#20DF50')
 
     def test_colonize(self):
         self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', 25000, 1)

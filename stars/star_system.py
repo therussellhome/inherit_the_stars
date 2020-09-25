@@ -26,7 +26,7 @@ class StarSystem(Defaults):
     def create_system(self, player=None):
         planet_args = {
             'name': self.name + "'s " + 'Star',
-            'star_system': Reference(self)
+            'star_system': Reference(self),
         }
         num_planets = round(random() * 5)
         if player:
