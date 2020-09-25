@@ -133,7 +133,7 @@ class TestCombat(unittest.TestCase):
         c.add_ship(everybody[1], self.player2, battle_plan.BattlePlan(standoff = 0.2))
         a = c.everybody[0].ship.location.__dict__
         c.move(c.everybody[0])
-        print(c.everybody[0].ship.location.__dict__, a, location.Location(x = stars_math.TERAMETER_2_LIGHTYEAR / 20).__dict__)
+        #print(c.everybody[0].ship.location.__dict__, a, location.Location(x = stars_math.TERAMETER_2_LIGHTYEAR / 20).__dict__)
         self.assertEqual(c.everybody[0].ship.location - location.Location(x = stars_math.TERAMETER_2_LIGHTYEAR / 2), 0)
         c.move(c.everybody[1])
         self.assertEqual(c.everybody[1].ship.location - location.Location(x = stars_math.TERAMETER_2_LIGHTYEAR * 0.3), 0)

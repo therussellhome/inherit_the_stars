@@ -176,7 +176,7 @@ class Combat(Defaults):
             if ship_to_fire_at:
                 #print(ship_to_fire_at.ship.__dict__)
                 damage = weapon.get_damage(distance(ship, ship_to_fire_at), ship_to_fire_at.ship.shields, ship_to_fire_at.ship.armor, ship.ship.scanner.range_visible(ship_to_fire_at.ship.calc_apparent_mass()), ship_to_fire_at.ship.ecm)
-                #print(damage)
+                print(damage)
                 if damage == (0, 0) and ship.ship.location-ship_to_fire_at.ship.location <= wepon.ly_range:
                     ship_to_fire_at.ship.expirence.battle_expirence += 0.05
                 else:
