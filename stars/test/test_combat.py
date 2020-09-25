@@ -8,6 +8,8 @@ class TestCombat(unittest.TestCase):
         self.player2 = player.Player()
         self.player1.treaties[self.player2] = 'Enemy'
         self.player2.treaties[self.player1] = 'Enemy'
+        game_engine.repister(self.player1)
+        game_engine.repister(self.player2)
     
     def test_calc_strategy_m(self):
         everybody=[
