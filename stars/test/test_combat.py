@@ -248,11 +248,12 @@ class TestCombat(unittest.TestCase):
                     weapon.Weapon(
                         power=2,
                         range_tm=2,
+                        accuracy=200,
                         ),
                     weapon.Weapon(
                         power=1000,
                         range_tm=2,
-                        accuracy=0.0,
+                        accuracy=0,
                         ),
                     ],
                 engines = [engine.Engine(kt_exponent=2, speed_exponent=2, speed_divisor=9)],
@@ -263,6 +264,7 @@ class TestCombat(unittest.TestCase):
                 weapons=[weapon.Weapon(
                     power=2,
                     range_tm=2,
+                    accuracy=200,
                     armor_mutiplier=1)],
                 engines = [engine.Engine(kt_exponent=2, speed_exponent=2, speed_divisor=9)],
                 mass = 10,
@@ -318,7 +320,17 @@ class TestCombat(unittest.TestCase):
         c.fire(c.everybody[0])
     
     def test_all(self):
-        everybody=[ship.Ship(location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR, y=0, z=0)), ship.Ship(location=location.Location(x=0, y=0, z=0))]
+        everybody=[
+            ship.Ship(
+                location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR),
+                weapons=[weapon.Weapon(range_tm=0.1, power=1)],
+                scanner=scanner.Scanner(anti_cloak=50),
+                ),
+            ship.Ship(
+                weapons=[weapon.Weapon(range_tm=0.1, powel=1)],
+                #cloak_percent=100,
+                ),
+            ]
         c = combat.Combat()
         c.add_ship(everybody[0], self.player1, battle_plan.BattlePlan())
         c.add_ship(everybody[1], self.player2, battle_plan.BattlePlan())

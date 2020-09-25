@@ -26,7 +26,8 @@ __defaults = {
     'fuel_max': [0, 0, sys.maxsize],
     'engines': [[]],
     'cargo': [Cargo()],
-    'expirence': [Expirence()]
+    'expirence': [Expirence()],
+    'cloak_percent': [0.0, 0.0, 100.0],
 }
 
 
@@ -131,7 +132,7 @@ class Ship(ShipDesign):
         return p
 
     def calc_apparent_mass(self):
-        return self.mass# * (1 - self.cloak_percent) - self.cloak_KT
+        return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
 
     def blow_up(self):
         self.scrap(self.location)

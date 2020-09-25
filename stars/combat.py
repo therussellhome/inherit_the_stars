@@ -205,8 +205,9 @@ class Combat(Defaults):
     def fight(self):
         for ship in self.everybody:
             for ship2 in self.everybody:
-                if ship.player.treaties[ship2.player.name].relation == 'Enemy':
-                    ship.to_fire_at.appen(ship2)
+                if not ship.player is ship2.player:
+                    if ship.player.treaties[ship2.player.name].relation == 'Enemy':
+                        ship.to_fire_at.append(ship2)
         no_anti_cloak = copy(self.players)
         for ship in self.everybody:
             if ship.ship.scanner.anti_cloak > 0:
@@ -214,15 +215,20 @@ class Combat(Defaults):
         for ship in self.everybody:
             if ship.ship.calc_apparent_mass() == 0:
                 ship.hidden_from = no_anti_cloak
-        while True:
+        i=0
+        while 2048:
             self.turn()
             csf = []
-            for ship in self.evorybody:
+            for ship in self.everybody:
                 csf.append(len(ship.to_fire_at) == 0)
             if all(csf):
-                for ship in self.evorybody:
+                for ship in self.everybody:
                     ship.shields_damage = 0
                 break
+            i+=1
+#        if i == 2**10:
+#            for i in range(20):
+#                print('ERROR INFINIT LOOP ... ERROR INFINIT LOOP')
                 
     
     def turn(self):
