@@ -2,7 +2,9 @@ import sys
 from . import game_engine
 from random import randint
 from random import uniform
-from colorsys import hsv_to_rgb
+from math import sin
+from math import cos
+from colorsys import hls_to_rgb
 from .cargo import Cargo
 from .defaults import Defaults
 from .minerals import Minerals
@@ -63,26 +65,35 @@ class Planet(Defaults):
             self.mineral_concentration.silicon += modifier
         if 'orbit_speed' not in kwargs:
             self.orbit_speed = uniform(0.01, 1.0)
+        if 'age' not in kwargs:
+            self.age = randint(0, 3000)
         game_engine.register(self)
 
     """ Get the planets color """
     # return it in a hexdecimal string so the webpage can use it
     def get_color(self):
-        t = (min(100, max(0, self.temperature)) / 100) * .7
+        t = (min(100, max(0, self.temperature)) / 100) * .75
         r = .5 + (min(100, max(0, self.radiation)) * .005)
         color = hls_to_rgb(t, .5, r)
         color_string = '#' + format(color[0], 'X') + format(color[1], 'X') + format(color[2], 'X') 
-       return color_string
+        return color_string
     
-    """ Code the planet orbiting its star """
+    """ Code the planet orbiting its star """        
+    # t = years it takes planet to orbit, min 1 year, max 30 years
+    # m = the sun's gravity clicks
+    #TODO r = the distance from the sun
+    # a = the planet's angle
+    #TODO n = year 1/100
     def orbit(self):
-        # t = years it takes planet to orbit, min 1 year, max 30 years
-        # m = the sun's gravity clicks
-        #TODO r = the distance from the sun
-        #TODO b = year
+        if n < 1:
+            n += 1
+        else:
+            n = 1 + self.age
         m = max(self.sun_gravity, 1)
-        t = max(1, (((r**3)/m)**.5)*(30/.85)) 
-        a = b*(360/t) # a = the angle     
+        t = max(1, (((r ** 3)/m) ** .5) * (30/.85))
+        a = n * (360/(100 * t)) 
+        self.y = r * sin(a)
+        self.x = r * cos(a)
 
     """ Colonize the planet """
     # player is a Reference to Player
@@ -230,17 +241,15 @@ class Planet(Defaults):
                         keep_going = False
             if len(build_queue) == 0:
                 build_queue.push(self.auto_build())
-        
-        
-                    if self.remaining_production >= (10 + spend_t + spend_l + spend_s) and spend_e == o_spend_e and b_spend_e == 100 and minister.unblock:
-                        if spend_t  > 0 or spend_l > 0 or spend_s > 0:
-                            self.remaining_production - 10
-                            self.minerals.titanium += 1
-                            self.minerals.lithium += 1
-                            self.minerals.silicon += 1
-                            self.player.energy_minister.spend_budget('baryogenesis', b_spend_e)
-                    else:
-                        keep_going = False
+                if self.remaining_production >= (10 + spend_t + spend_l + spend_s) and spend_e == o_spend_e and b_spend_e == 100 and minister.unblock:
+                    if spend_t  > 0 or spend_l > 0 or spend_s > 0:
+                        self.remaining_production - 10
+                        self.minerals.titanium += 1
+                        self.minerals.lithium += 1
+                        self.minerals.silicon += 1
+                        self.player.energy_minister.spend_budget('baryogenesis', b_spend_e)
+                else:
+                    keep_going = False
             if len(build_queue) == 0:
                 build_queue.push(self.auto_build())
         

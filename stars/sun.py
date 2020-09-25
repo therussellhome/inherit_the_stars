@@ -1,5 +1,5 @@
 from .planet import Planet
-
+from colorsys import hls_to_rgb
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -23,7 +23,7 @@ class Sun(Planet):
         r = .5 + (min(100, max(0, self.radiation)) * .005)
         color = hls_to_rgb(t, .75, r)
         color_string = '#' + format(color[0], 'X') + format(color[1], 'X') + format(color[2], 'X') 
-       return color_string
+        return color_string
 
     """ Only Pa'anuri are allowed to colonize suns """
     def colonize(self, player, minister, population, factories):
