@@ -6,10 +6,13 @@ class TestCombat(unittest.TestCase):
     def setUp(self):
         self.player1 = player.Player()
         self.player2 = player.Player()
-        self.player1.treaties[self.player2] = 'Enemy'
-        self.player2.treaties[self.player1] = 'Enemy'
-        game_engine.repister(self.player1)
-        game_engine.repister(self.player2)
+        t = defaults.Defaults(relation = 'Enemy')
+        self.player1.name = '1'
+        self.player2.name = '2'
+        self.player1.treaties[self.player2.name] = t
+        self.player2.treaties[self.player1.name] = t
+        game_engine.register(self.player1)
+        game_engine.register(self.player2)
     
     def test_calc_strategy_m(self):
         everybody=[
@@ -241,10 +244,17 @@ class TestCombat(unittest.TestCase):
             ship.Ship(
                 armor=10,
                 location=location.Location(x=stars_math.TERAMETER_2_LIGHTYEAR),
-                weapons=[weapon.Weapon(
-                    power=2,
-                    range_tm=2,
-                    armor_mutiplier=1)],
+                weapons=[
+                    weapon.Weapon(
+                        power=2,
+                        range_tm=2,
+                        ),
+                    weapon.Weapon(
+                        power=1000,
+                        range_tm=2,
+                        accuracy=0.0,
+                        ),
+                    ],
                 engines = [engine.Engine(kt_exponent=2, speed_exponent=2, speed_divisor=9)],
                 mass = 10,
                 ),

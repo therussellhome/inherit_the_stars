@@ -177,7 +177,7 @@ class Combat(Defaults):
                 #print(ship_to_fire_at.ship.__dict__)
                 damage = weapon.get_damage(distance(ship, ship_to_fire_at), ship_to_fire_at.ship.shields, ship_to_fire_at.ship.armor, ship.ship.scanner.range_visible(ship_to_fire_at.ship.calc_apparent_mass()), ship_to_fire_at.ship.ecm)
                 #print(damage)
-                if damage == (0, 0) and ship.ship.location-ship_to_fire_at.ship.location <= wepon.ly_range:
+                if damage == (0, 0) and ship.ship.location-ship_to_fire_at.ship.location <= weapon.range_tm*TERAMETER_2_LIGHTYEAR:
                     ship_to_fire_at.ship.expirence.battle_expirence += 0.05
                 else:
                     ship.ship.expirence.battle_expirence += 0.1
@@ -205,7 +205,7 @@ class Combat(Defaults):
     def fight(self):
         for ship in self.everybody:
             for ship2 in self.everybody:
-                if ship.player.treaties[ship2.player] == 'Enemy':
+                if ship.player.treaties[ship2.player.name].relation == 'Enemy':
                     ship.to_fire_at.appen(ship2)
         no_anti_cloak = copy(self.players)
         for ship in self.everybody:
@@ -217,9 +217,11 @@ class Combat(Defaults):
         while True:
             self.turn()
             csf = []
-            for ship in evorybody:
+            for ship in self.evorybody:
                 csf.append(len(ship.to_fire_at) == 0)
             if all(csf):
+                for ship in self.evorybody:
+                    ship.shields_damage = 0
                 break
                 
     
