@@ -1,5 +1,5 @@
 {
-    "name": "Frigate"
+    "name": "Frigate",
     "category": "Hull",
     "description": "Ship hull with room for 4 components including engine.",
     "cost": {

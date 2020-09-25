@@ -1,5 +1,5 @@
 {
-    "name": "Scout"
+    "name": "Scout",
     "category": "Hull",
     "description": "Ship hull with room for 2 components including engine.",
     "cost": {

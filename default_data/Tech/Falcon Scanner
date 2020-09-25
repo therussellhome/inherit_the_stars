@@ -1,5 +1,5 @@
 {
-    "name": "Hawk Scanner",
+    "name": "Falcon Scanner",
     "category": "Scanner",
     "description": "The second-lowest-tech scanner.  It detects ships at a distance based on their apparent mass (which is affected by cloaking). This scanner can detect a 100kT ship at 75 light years, a 200kT ship at 150ly, and a 33kT ship at 25ly - EXCEPT it cannot see inside solar systems.",
     "cost": {
@@ -16,7 +16,7 @@
     },
     "mass": 2,
     "scanner": {
-	"normal": 75.0
+        "normal": 75.0,
         "__class__": "Scanner"
     },
     "__class__": "Tech"

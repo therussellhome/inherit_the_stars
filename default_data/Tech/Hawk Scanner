@@ -16,7 +16,7 @@
     },
     "mass": 4,
     "scanner": {
-	"normal": 50.0
+        "normal": 50.0,
         "__class__": "Scanner"
     },
     "__class__": "Tech"

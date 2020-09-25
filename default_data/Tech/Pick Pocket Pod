@@ -1,7 +1,7 @@
 {
     "name": "Pick Pocket Pod",
     "category": "Mech",
-    "description": "The Pick Pocket Pod allows you to steal minerals from other ships in the same location, Arrr!  Beware matey, that be close enough for them to fire upon ye."
+    "description": "The Pick Pocket Pod allows you to steal minerals from other ships in the same location, Arrr!  Beware matey, that be close enough for them to fire upon ye.",
     "race_requirements": "Kender",
     "cost": {
         "titanium": 6,

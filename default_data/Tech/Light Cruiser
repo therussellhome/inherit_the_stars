@@ -1,5 +1,5 @@
 {
-    "name": "Light Cruiser"
+    "name": "Light Cruiser",
     "category": "Hull",
     "description": "Ship hull with 12 general-purpose slots.",
     "cost": {

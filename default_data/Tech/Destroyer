@@ -1,5 +1,5 @@
 {
-    "name": "Destroyer"
+    "name": "Destroyer",
     "category": "Hull",
     "description": "Ship hull with 8 general-purpose slots.",
     "cost": {

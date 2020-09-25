@@ -62,8 +62,7 @@ __defaults = {
 class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
-        for key in kwargs:
-            self.__dict__[key] = kwargs[key]
+        super().__init__(**kwargs)
 
 
 Race.set_defaults(Race, __defaults)

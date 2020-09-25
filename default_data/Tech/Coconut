@@ -1,5 +1,5 @@
 {
-    "name": "Coconut"
+    "name": "Coconut",
     "category": "Hull",
     "description": "The Coconut is a mini-colonizer ship available only to Formic races.  The engine and colony module are built in.  It has no slots for adding other components.  The engine goes Hyper 6 for very little fuel, but fuel usage rises fairly quickly at higher speeds.",
     "race_requirements": "Formics",
