@@ -555,6 +555,21 @@
 
 
 <div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
+    </tr></table>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/></caption>
+    <caption>Energy<input id="current_energy_tech_level" disabled="true"/></caption>
+    <caption>Weapons<input id="current_weapons_tech_level" disabled="true"/></caption>
+    <caption>Propulsion<input id="current_propulsion_tech_level" disabled="true"/></caption>
+    <caption>Construction<input id="current_construction_tech_level" disabled="true"/></caption>
+    <caption>Electronics<input id="current_electronics_tech_level" disabled="true"/></caption>
+    <caption>Biotechnology<input id="current_biotechnology_tech_level" disabled="true"/></caption>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/></caption>
+    <!-- TODO put icons to skip to component sections -->
+    <table><tr>
+    <td>Component</td><td>Cost</td></tr>
+    </table>
 </div>
 
 
