@@ -80,7 +80,7 @@ class Ship(ShipDesign):
         l = round(self.cost.lithium * scrap_factor)
         s = round(self.cost.silicon * scrap_factor)
         cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
-        if location not in game_engine.get('Planet/'):
+        if location not in game_engine.get('Planet'):
             game_engine.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:
             location.on_surface += cargoo + self.cargo

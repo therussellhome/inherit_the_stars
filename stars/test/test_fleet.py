@@ -197,12 +197,16 @@ class FleetCase(unittest.TestCase):
             buy = sell,
             relation = 'team'
             )
-        p1 = player.Player(energy=90000)
-        p2 = player.Player(
-            treaties = {p1.name: treaty1},
-            energy = 90000
+        p1 = player.Player(
+            energy = 90000,
+            name = 'Alpha',
             )
-        p1.treaties = {p2.name: treaty2},
+        p2 = player.Player(
+            name = 'Beta',
+            energy = 90000,
+            )
+        p2.treaties[p1.name] = treaty1
+        p1.treaties[p2.name] = treaty2
         space_station = defaults.Defaults(
             fuel = 100000,
             trade = True,
