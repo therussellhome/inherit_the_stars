@@ -16,7 +16,7 @@ __defaults = {
     'armor': [10, 0, sys.maxsize],
     'shields': [0, 0, sys.maxsize],
     'max_distance': [0.0, 0.0, sys.maxsize],
-    'damage_points': [0, 0, sys.maxsize],
+    'damage_armor': [0, 0, sys.maxsize],
     'repair_points': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
@@ -71,6 +71,9 @@ class Ship(ShipDesign):
     def open_repair_bays(self):
         return self.repair_bay_repair_points
     
+    def damage_control(self):
+        return self.repair_points
+    
     def deploy_hyper_denial(self, player):
         pass
     
@@ -101,11 +104,8 @@ class Ship(ShipDesign):
     
     """ Repairs the ship if it needs it """
     def repair(self, amount):
-        if self.damage_points > 0:
-            self.damage_points -= amount
-    
-    def self_repair(self):
-        self.repair(self.repair_points)
+        if self.damage_armor > 0:
+            self.damage_armor -= amount
     
     """ Bombs the planet if the planet is colonized """
     def bomb(self, p):
