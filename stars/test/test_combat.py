@@ -6,6 +6,8 @@ class TestCombat(unittest.TestCase):
     def setUp(self):
         self.player1 = player.Player()
         self.player2 = player.Player()
+        self.player1.treaties[self.player2] = 'Enemy'
+        self.player2.treaties[self.player1] = 'Enemy'
     
     def test_calc_strategy_m(self):
         everybody=[
@@ -293,8 +295,8 @@ class TestCombat(unittest.TestCase):
         c.fire(c.everybody[1])
         self.assertEqual(c.everybody[0].ship.armor_damage, 9)
         c.fire(c.everybody[0])
-        self.assertEqual(c.everybody[1].ship.armor_damage, 10)
         try:
+            self.assertEqual(c.everybody[1].ship.armor_damage, 10)
             c.fire(c.everybody[1])
             s = 'ship exists'
         except:
@@ -308,5 +310,5 @@ class TestCombat(unittest.TestCase):
         c = combat.Combat()
         c.add_ship(everybody[0], self.player1, battle_plan.BattlePlan())
         c.add_ship(everybody[1], self.player2, battle_plan.BattlePlan())
-        #c.turn()
+        c.turn()
         c.fight()

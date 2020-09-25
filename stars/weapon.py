@@ -11,7 +11,7 @@ __defaults = {
     'is_beam': [True],
     'is_multishot': [False],
     'range_tm': [0.0, 0.0, sys.maxsize], # terameters
-    'accuracy': [100, 0, 100]
+    'accuracy': [100, 0, 200]
 }
 
 """ Represent 'a weapon' """
@@ -46,7 +46,7 @@ class Weapon(Defaults):
     """ Calculate the damage of firing the weapon at a ship """
     def get_damage(self, target_ly, shield, armor, visible_ly, ecm):
         if self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5) <= randint(0, 100):
-            return 0
+            return (0, 0)
         damage = self.get_power(target_ly, shield, armor)
         return (damage[0], damage[1])
 

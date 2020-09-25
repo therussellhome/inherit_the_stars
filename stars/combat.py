@@ -96,7 +96,7 @@ class Combat(Defaults):
     
     def move(self, ship):
         move = self.calc_strategy_m(ship)
-        print(move[1])
+        #print(move[1])
         ship.ship.location = ship.ship.location.move(move[0], self.calc_speed(ship)*TERAMETER_2_LIGHTYEAR, move[1], ship.battle_plan.standoff*TERAMETER_2_LIGHTYEAR)
         self.save_to_combat_log()
         pass
@@ -176,7 +176,7 @@ class Combat(Defaults):
             if ship_to_fire_at:
                 #print(ship_to_fire_at.ship.__dict__)
                 damage = weapon.get_damage(distance(ship, ship_to_fire_at), ship_to_fire_at.ship.shields, ship_to_fire_at.ship.armor, ship.ship.scanner.range_visible(ship_to_fire_at.ship.calc_apparent_mass()), ship_to_fire_at.ship.ecm)
-                print(damage)
+                #print(damage)
                 if damage == (0, 0) and ship.ship.location-ship_to_fire_at.ship.location <= wepon.ly_range:
                     ship_to_fire_at.ship.expirence.battle_expirence += 0.05
                 else:
@@ -191,6 +191,7 @@ class Combat(Defaults):
                                 ship3.to_fire_at.remove(ship_to_fire_at)
                             except:
                                 break
+                    self.everybody.remove(ship_to_fire_at)
                 ship_to_fire_at.to_fire_at.append(ship)
                 ship.hidden_from = []
             self.save_to_combat_log()
@@ -204,7 +205,7 @@ class Combat(Defaults):
     def fight(self):
         for ship in self.everybody:
             for ship2 in self.everybody:
-                if ship.player.treatys.realashon_with(ship2.player) == 'Enemy':
+                if ship.player.treaties[ship2.player] == 'Enemy':
                     ship.to_fire_at.appen(ship2)
         no_anti_cloak = copy(self.players)
         for ship in self.everybody:

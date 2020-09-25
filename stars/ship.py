@@ -8,6 +8,7 @@ from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
 from . import stars_math
 from .expirence import Expirence
+import copy
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -89,7 +90,7 @@ class Ship(ShipDesign):
         s = round(self.cost.silicon * scrap_factor)
         cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
         if location not in game_engine.get('Planet'):
-            game_engine.create_salvage(copy.copy(location), cargoo + self.cargo)
+            self.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:
             location.on_surface += cargoo + self.cargo
     
