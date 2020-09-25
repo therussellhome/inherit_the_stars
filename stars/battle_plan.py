@@ -5,8 +5,7 @@ __defaults = {
     'name': ['kill all'],
     'p_target': ['any'],
     's_target': ['any'],
-    'standoff': [0.0, 0.0, stars_math.TERAMETER_2_LIGHTYEAR],
-    'close_to': [0.0, 0, 0.60],
+    'standoff': [0.0, 0.0, 1.0],
     'wait_until_closed_to_fire': [False],
 }
 
