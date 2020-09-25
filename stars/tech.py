@@ -54,8 +54,21 @@ class Tech(Defaults):
 
     """ Determine if the item is available for a player's tech level """
     def is_available(self, player):
+        test = []
         if self.level.is_available(player.tech_level):
-            # TODO check race requirements
+            traits = player.race.list_traits()
+            for requirement in self.race_requirements:
+                if requirement[0] == '-':
+                    if requirement not in traits:
+                        test.append('pass')
+                    else:
+                        test.append('fail')
+                else:
+                    if requirement in traits:
+                        test.append('pass')
+                    else:
+                        test.append('fail')
+        if 'fail' not in test:
             return True
         return False
 
