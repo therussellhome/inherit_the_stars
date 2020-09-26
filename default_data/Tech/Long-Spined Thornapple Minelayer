@@ -1,0 +1,21 @@
+{
+    "name": "Long-Spined Thornapple Minelayer",
+    "category": "Depot",
+    "description": "Deploys a minefield for defending a star system.  This minelayer deploys up to 9 trillion mines per year.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "race_requirements": "-Aku'Ultan",
+    "cost": {
+        "titanium": 3,
+        "lithium": 11,
+        "silicon": 12,
+        "energy": 5000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 8,
+        "biotechnology": 16,
+        "__class__": "TechLevel"
+    },
+    "mass": 90,
+    "mines_laid": 9000000000000,
+    "__class__": "Tech"
+}

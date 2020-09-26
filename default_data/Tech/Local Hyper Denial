@@ -1,0 +1,21 @@
+{
+    "name": "Local Hyper Denial",
+    "category": "Depot",
+    "description": "Generates a hyper-denial field with a 60 light-year radius, which can damage the engines of enemy ships traveling through it and prevents them from traveling quickly.  It also detects any active engines within the field.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "race_requirements": "-Aku'Ultan",
+    "cost": {
+        "titanium": 17,
+        "lithium": 3,
+        "silicon": 26,
+        "energy": 6000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "propulsion": 7,
+        "electronics": 9,
+        "__class__": "TechLevel"
+    },
+    "mass": 48,
+    "hyperdenial": 60,
+    "__class__": "Tech"
+}

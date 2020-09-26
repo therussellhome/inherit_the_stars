@@ -1,0 +1,21 @@
+{
+    "name": "Mini Mineral Extraction Beam",
+    "category": "Depot",
+    "description": "Mines minerals from an uninhabited planet.",
+    "race_requirements": "SpacedOut",
+    "cost": {
+        "titanium": 4,
+        "lithium": 16,
+        "silicon": 10,
+        "energy": 5000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 1,
+        "__class__": "TechLevel"
+    },
+    "mass": 100,
+    "mining_rate": 1.25,
+    "mineral_depletion_factor": 0.01,
+    "__class__": "Tech"
+}
