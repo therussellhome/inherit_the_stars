@@ -558,18 +558,41 @@
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
     </tr></table>
-    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/></caption>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
     <caption>Energy<input id="current_energy_tech_level" disabled="true"/></caption>
     <caption>Weapons<input id="current_weapons_tech_level" disabled="true"/></caption>
     <caption>Propulsion<input id="current_propulsion_tech_level" disabled="true"/></caption>
     <caption>Construction<input id="current_construction_tech_level" disabled="true"/></caption>
     <caption>Electronics<input id="current_electronics_tech_level" disabled="true"/></caption>
     <caption>Biotechnology<input id="current_biotechnology_tech_level" disabled="true"/></caption>
-    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/></caption>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
     <!-- TODO put icons to skip to component sections -->
-    <table><tr>
-    <td>Component</td><td>Cost</td></tr>
+    <table>
+        <tr><th>Component Name</th><th>Tech Levels</th><th>Cost</th></tr>
+        <tr><th>Combat</th></tr>
+        <tr><td>Armor</td></tr>
+        <tr><td>Bombs</td></tr>
+        <tr><td>ECM</td></tr>
+        <tr><td>Shields</td></tr>
+        <tr><td>Beam Weapons</td></tr>
+        <tr><td>Missles</td></tr>
+        <tr><th>Construction</th></tr>
+        <tr><td>Depot</td></tr>
+        <tr><td>Hulls</td></tr>
+        <tr><td>Mech</td></tr>
+        <tr><th>Engines</th></tr>
+        <tr><th>Orbital</th></tr>
+        <tr><th>Planetary</th></tr>
+        <tr><th>Scanning</th></tr>
+        <tr><td>Cloaks</td></tr>
+        <tr><td>Scanners</td></tr>
     </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
+    <tr>
+        <td></td>
+        <td class="hfill"><select id="research_queue_item" onchange="post('research_minister')"/></td>
+    </tr>
 </div>
 
 
