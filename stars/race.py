@@ -63,6 +63,13 @@ class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+    def list_traits(self):
+        race_traits = [self.lrt_Trader, self.lrt_Bioengineer, self.lrt_SpacedOut, self.lrt_WasteNot, self.lrt_Hypermiler, self.lrt_McMansion, self.lrt_MadScientist, self.lrt_QuickHeal, self.lrt_BleedingEdge, self.lrt_Forager, self.lrt_2ndSight, self.lrt_JuryRigged]
+        traits = []
+        for trait in race_traits:
+            if trait:
+               traits.append(trait)
+        traits.append(self.primary_race_trait)
+        return traits
 
 Race.set_defaults(Race, __defaults)
