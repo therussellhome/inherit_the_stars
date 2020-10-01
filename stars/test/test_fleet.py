@@ -518,6 +518,12 @@ class FleetCase(unittest.TestCase):
             damage_armor = 7,
             armor = 20,
             )
+        shipp = ship.Ship(
+            location = location.Location(),
+            repair_points = 3,
+            damage_armor = 7,
+            armor = 20,
+            )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
@@ -529,6 +535,7 @@ class FleetCase(unittest.TestCase):
                     )
                 ]
             )
+        shipp.repair('a')
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('self_repair', p1)
     

@@ -113,6 +113,7 @@ class Ship(ShipDesign):
     
     """ Repairs the ship if it needs it """
     def repair(self, amount):
+        print(amount)
         if self.damage_armor > 0:
             self.damage_armor -= amount
     
