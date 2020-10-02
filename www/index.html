@@ -558,41 +558,141 @@
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
     </tr></table>
-    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
-    <caption>Energy<input id="current_energy_tech_level" disabled="true"/></caption>
-    <caption>Weapons<input id="current_weapons_tech_level" disabled="true"/></caption>
-    <caption>Propulsion<input id="current_propulsion_tech_level" disabled="true"/></caption>
-    <caption>Construction<input id="current_construction_tech_level" disabled="true"/></caption>
-    <caption>Electronics<input id="current_electronics_tech_level" disabled="true"/></caption>
-    <caption>Biotechnology<input id="current_biotechnology_tech_level" disabled="true"/></caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
+        <tr><td>Energy<input id="current_energy_tech_level" disabled="true"/></td></tr>
+        <tr><td>Weapons<input id="current_weapons_tech_level" disabled="true"/></td></tr>
+        <tr><td>Propulsion<input id="current_propulsion_tech_level" disabled="true"/></td></tr>
+        <tr><td>Construction<input id="current_construction_tech_level" disabled="true"/></td></tr>
+        <tr><td>Electronics<input id="current_electronics_tech_level" disabled="true"/></td></tr>
+        <tr><td>Biotechnology<input id="current_biotechnology_tech_level" disabled="true"/></td></tr></table>
     <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
-    <!-- TODO put icons to skip to component sections -->
     <table>
-        <tr><th>Component Name</th><th>Tech Levels</th><th>Cost</th></tr>
-        <tr><th>Combat</th></tr>
-        <tr><td>Armor</td></tr>
-        <tr><td>Bombs</td></tr>
-        <tr><td>ECM</td></tr>
-        <tr><td>Shields</td></tr>
-        <tr><td>Beam Weapons</td></tr>
-        <tr><td>Missles</td></tr>
-        <tr><th>Construction</th></tr>
-        <tr><td>Depot</td></tr>
-        <tr><td>Hulls</td></tr>
-        <tr><td>Mech</td></tr>
-        <tr><th>Engines</th></tr>
-        <tr><th>Orbital</th></tr>
-        <tr><th>Planetary</th></tr>
-        <tr><th>Scanning</th></tr>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_bombs"/>+ Bombs</caption>
+        <tr id='research_bomb_1'></tr>
+        <tr id='research_bomb_2'></tr>
+        <tr id='research_bomb_3'></tr>
+        <tr id='research_bomb_4'></tr>
+        <tr id='research_bomb_5'></tr>
+        <tr id='research_bomb_6'></tr>
+        <tr id='research_bomb_7'></tr>
+        <tr id='research_bomb_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Cloaks and ECM</caption>
         <tr><td>Cloaks</td></tr>
-        <tr><td>Scanners</td></tr>
+        <tr id='research_cloak_1'></tr>
+        <tr id='research_cloak_2'></tr>
+        <tr id='research_cloak_3'></tr>
+        <tr id='research_cloak_4'></tr>
+        <tr><td>ECM</td></tr>
+        <tr id='research_ecm_1'></tr>
+        <tr id='research_ecm_2'></tr>
+        <tr id='research_ecm_3'></tr>
+        <tr id='research_ecm_4'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_defense"/>+ Defense</caption>
+        <tr id='research_defense_1'></tr>
+        <tr id='research_defense_2'></tr>
+        <tr id='research_defense_3'></tr>
+        <tr id='research_defense_4'></tr>
+        <tr id='research_defense_5'></tr>
+        <tr id='research_defense_6'></tr>
+        <tr id='research_defense_7'></tr>
+        <tr id='research_defense_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_depot"/>+ Depot</caption>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_engines"/>+ Engines</caption>
+        <tr id='research_engine_1'></tr>
+        <tr id='research_engine_2'></tr>
+        <tr id='research_engine_3'></tr>
+        <tr id='research_engine_4'></tr>
+        <tr id='research_engine_5'></tr>
+        <tr id='research_engine_6'></tr>
+        <tr id='research_engine_7'></tr>
+        <tr id='research_engine_8'></tr>
+
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_hulls"/>+ Hulls</caption>
+        <tr id='research_hull_1'></tr>
+        <tr id='research_hull_2'></tr>
+        <tr id='research_hull_3'></tr>
+        <tr id='research_hull_4'></tr>
+        <tr id='research_hull_5'></tr>
+        <tr id='research_hull_6'></tr>
+        <tr id='research_hull_7'></tr>
+        <tr id='research_hull_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_mechanical"/>+ Mechanical</caption>
+        <tr id='research_mechanical_1'></tr>
+        <tr id='research_mechanical_2'></tr>
+        <tr id='research_mechanical_3'></tr>
+        <tr id='research_mechanical_4'></tr>
+        <tr id='research_mechanical_5'></tr>
+        <tr id='research_mechanical_6'></tr>
+        <tr id='research_mechanical_7'></tr>
+        <tr id='research_mechanical_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_orbital"/>+ Orbital</caption>
+        <tr id='research_orbital_1'></tr>
+        <tr id='research_orbital_2'></tr>
+        <tr id='research_orbital_3'></tr>
+        <tr id='research_orbital_4'></tr>
+        <tr id='research_orbital_5'></tr>
+        <tr id='research_orbital_6'></tr>
+        <tr id='research_orbital_7'></tr>
+        <tr id='research_orbital_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_planetary"/>+ Planetary</caption>
+        <tr id='research_planetary_1'></tr>
+        <tr id='research_planetary_2'></tr>
+        <tr id='research_planetary_3'></tr>
+        <tr id='research_planetary_4'></tr>
+        <tr id='research_planetary_5'></tr>
+        <tr id='research_planetary_6'></tr>
+        <tr id='research_planetary_7'></tr>
+        <tr id='research_planetary_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_scanners"/>+ Scanners</caption>
+        <tr id='research_scanner_1'></tr>
+        <tr id='research_scanner_2'></tr>
+        <tr id='research_scanner_3'></tr>
+        <tr id='research_scanner_4'></tr>
+        <tr id='research_scanner_5'></tr>
+        <tr id='research_scanner_6'></tr>
+        <tr id='research_scanner_7'></tr>
+        <tr id='research_scanner_8'></tr>
+    </table>
+    <table>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_weapons"/>+ Weapons</caption>
+        <tr id='research_weapon_1'></tr><!-- TODO get a research icon -->
+        <tr id='research_weapon_2'></tr>
+        <tr id='research_weapon_3'></tr>
+        <tr id='research_weapon_4'></tr>
+        <tr id='research_weapon_5'></tr>
+        <tr id='research_weapon_6'></tr>
+        <tr id='research_weapon_7'></tr>
+        <tr id='research_weapon_8'></tr>
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-    <tr>
-        <td></td>
-        <td class="hfill"><select id="research_queue_item" onchange="post('research_minister')"/></td>
-    </tr>
+        <tr><td><input id="research_queue_item_1" disabled="true"/></td><td></td></tr> <!-- TODO get a trash icon -->
+        <tr><td><input id="research_queue_item_2" disabled="true"/></td><td></td></tr>
+        <tr><td><input id="research_queue_item_3" disabled="true"/></td><td></td></tr>
+        <tr><td><input id="research_queue_item_4" disabled="true"/></td><td></td></tr>
+        <tr><td><input id="research_queue_item_5" disabled="true"/></td><td></td></tr>
+        <tr><td><input id="research_queue_item_6" disabled="true"/></td><td></td></tr>
+        <tr><td><input id="research_queue_item_7" disabled="true"/></td><td></td></tr>
+        <tr><td><input id="research_queue_item_8" disabled="true"/></td><td></td></tr>
+    </table>
 </div>
 
 
