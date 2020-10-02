@@ -198,21 +198,34 @@ class FleetCase(unittest.TestCase):
             relation = 'team'
             )
         p1 = player.Player(
+            energy_minister = energy_minister.EnergyMinister(
+                energy_minister_construction_percent = 0,
+                energy_minister_mattrans_percent = 0,
+                energy_minister_research_percent = 0,
+                ),
             energy = 90000,
             name = 'Alpha',
             )
         p2 = player.Player(
+            energy_minister = energy_minister.EnergyMinister(
+                energy_minister_construction_percent = 0,
+                energy_minister_mattrans_percent = 0,
+                energy_minister_research_percent = 0,
+                ),
             name = 'Beta',
             energy = 90000,
             )
         p2.treaties[p1.name] = treaty1
         p1.treaties[p2.name] = treaty2
+        game_engine.register(p1)
+        game_engine.register(p2)
         space_station = defaults.Defaults(
             fuel = 100000,
             trade = True,
             fuel_max = 500000
             )
         ultimantico = planet.Planet(
+            name = 'ultimantico',
             player = reference.Reference(p1),
             space_station = space_station,
             on_surface = cargo.Cargo(
@@ -222,24 +235,24 @@ class FleetCase(unittest.TestCase):
                 people = 1000,
                 cargo_max = 1000000000000
                 ),
-            location=location.Location()
+            location=location.Location(),
             )
         ship_7 = ship.Ship(
-            name = 'ship_7',
+            name = 'ship_1',
             location = location.Location(),
             cargo = cargo.Cargo(silicon=100, cargo_max=100),
             fuel = 10000,
             fuel_max = 10000
             )
         ship_8 = ship.Ship(
-            name = 'ship_8',
+            name = 'ship_3',
             location = location.Location(),
             cargo = cargo.Cargo(lithium=100, cargo_max=300),
             fuel = 10000,
             fuel_max = 30000
             )
         ship_6 = ship.Ship(
-            name = 'ship_6',
+            name = 'ship_2',
             location = location.Location(),
             cargo = cargo.Cargo(titanium=100, cargo_max=200),
             fuel = 10000,
@@ -250,39 +263,47 @@ class FleetCase(unittest.TestCase):
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['buy', 'sell'],
-                    transfers = {'buy':[['lithium', 60], ['silicon', 60]], 'sell':[['titanium', 40], ['fuel', 30000]]},
+                    transfers = {'buy':[['lithium', 50], ['silicon', 50]], 'sell':[['titanium', 40], ['fuel', 30000]]},
                     recipiants = {'buy':ultimantico, 'sell':ultimantico},
                     location = location.LocationReference(ultimantico)
                     )
                 ]
             )
         p2.fleets = [fleet_three]
+        p1.get_budget()
+        p2.get_budget()
         fleet_three.compile()
         fleet_three.returnn()
         """print()
-        for shipp in fleet_three.ships:
-            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-            for key in shipp.cargo.__dict__:
-                if key != 'cargo_max':
-                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-            print("}")
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")"""
-        fleet_three.execute('sell', p2)
-        for shipp in fleet_three.ships:
-            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-            for key in shipp.cargo.__dict__:
-                if key != 'cargo_max':
-                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-            print("}")
         print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
         for key in ultimantico.on_surface.__dict__:
             print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
         print("}")
-        self.assertEqual(p1.energy, 9820)
-        self.assertEqual(p2.energy, 170180)
+        for p in game_engine.get('Player'):
+            print(p.name, " : {'energy': ", p.energy, "}", sep='')
+            for f in p.fleets:
+                for s in f.ships:
+                    print(s.name, ": {'fuel':", s.fuel, end='')
+                    for key in s.cargo.__dict__:
+                        if key != 'cargo_max':
+                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
+                    print("}")"""
+        fleet_three.execute('sell', p2)
+        """print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
+        for key in ultimantico.on_surface.__dict__:
+            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
+        print("}")
+        for p in game_engine.get('Player'):
+            print(p.name, " : {'energy': ", p.energy, "}", sep='')
+            for f in p.fleets:
+                for s in f.ships:
+                    print(s.name, ": {'fuel':", s.fuel, end='')
+                    for key in s.cargo.__dict__:
+                        if key != 'cargo_max':
+                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
+                    print("}")"""
+        self.assertEqual(p1.energy, 29640)
+        self.assertEqual(p2.energy, 150360)
         self.assertEqual(ultimantico.on_surface.titanium, 1040)
         self.assertEqual(ultimantico.space_station.fuel, 130000)
         self.assertEqual(ship_6.cargo.titanium, 20)
@@ -292,26 +313,29 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_8.cargo.titanium, 30)
         self.assertEqual(ship_8.fuel, 0)
         fleet_three.execute('buy', p2)
-        for shipp in fleet_three.ships:
-            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-            for key in shipp.cargo.__dict__:
-                if key != 'cargo_max':
-                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-            print("}")
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
+        """print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
         for key in ultimantico.on_surface.__dict__:
             print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
         print("}")
-        self.assertEqual(p1.energy, 10240)
-        self.assertEqual(p2.energy, 169760)
-        self.assertEqual(ultimantico.on_surface.lithium, 940)
-        self.assertEqual(ultimantico.on_surface.silicon, 940)
-        self.assertEqual(ship_6.cargo.lithium, 40)
-        self.assertEqual(ship_6.cargo.silicon, 40)
-        self.assertEqual(ship_7.cargo.lithium, 20)
-        self.assertEqual(ship_7.cargo.silicon, 20)
-        self.assertEqual(ship_8.cargo.lithium, 60)
-        self.assertEqual(ship_8.cargo.silicon, 60)
+        for p in game_engine.get('Player'):
+            print(p.name, " : {'energy': ", p.energy, "}", sep='')
+            for f in p.fleets:
+                for s in f.ships:
+                    print(s.name, ": {'fuel':", s.fuel, end='')
+                    for key in s.cargo.__dict__:
+                        if key != 'cargo_max':
+                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
+                    print("}")"""
+        self.assertEqual(p1.energy, 30340)
+        self.assertEqual(p2.energy, 149660)
+        self.assertEqual(ultimantico.on_surface.lithium, 950)
+        self.assertEqual(ultimantico.on_surface.silicon, 950)
+        self.assertEqual(ship_6.cargo.lithium, 50)
+        self.assertEqual(ship_6.cargo.silicon, 50)
+        self.assertEqual(ship_7.cargo.lithium, 25)
+        self.assertEqual(ship_7.cargo.silicon, 25)
+        self.assertEqual(ship_8.cargo.lithium, 75)
+        self.assertEqual(ship_8.cargo.silicon, 75)
         
         
     def test_load_unload_fleet(self):
@@ -481,18 +505,18 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ultimantico.space_station.fuel, 100040)
     
     
-    '''def test_self_repair(self):
+    def test_self_repair(self):
         ship_3 = ship.Ship(
             location = location.Location(),
-            repair_points = 3,
-            armor = 3,
-            max_armor = 10
+            repair = 3,
+            damage_armor = 7,
+            armor = 10,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
-            repair_points = 3,
-            armor = 3,
-            max_armor = 10
+            repair = 3,
+            damage_armor = 7,
+            armor = 20,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -511,15 +535,15 @@ class FleetCase(unittest.TestCase):
     def test_repair(self):
         ship_3 = ship.Ship(
             location = location.Location(),
-            repair_bay_repair_points = 3,
-            armor = 3,
-            max_armor = 10
+            repair_bay = 3,
+            damage_armor = 7,
+            armor = 10,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
-            repair_bay_repair_points = 3,
-            armor = 13,
-            max_armor = 20
+            repair_bay = 3,
+            damage_armor = 7,
+            armor = 20,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -537,13 +561,18 @@ class FleetCase(unittest.TestCase):
     
     def test_orbital_mining(self):
         ultimantico = planet.Planet(
-            location=location.Location()
+            location=location.Location(),
+            titanium_left = 100000,
+            silicon_left = 100000,
+            lithium_left = 100000,
             )
         ship_3 = ship.Ship(
             location = location.Location(),
+            mining_rate = 1.6,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
+            mining_rate = 1.6,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -559,7 +588,7 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('orbital_mining', p1)
-    """
+    '''
     def test_lay_mines(self):
         ship_3 = ship.Ship(
             location = location.Location(),
@@ -581,7 +610,7 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('lay_mines', p1)
-    """
+    
     def test_bomb(self):
         p1 = player.Player()
         ultimantico = planet.Planet(

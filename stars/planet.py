@@ -138,6 +138,10 @@ class Planet(Defaults):
             self.on_surface.lithium += round(operate * minerals_per_mine)
             self.on_surface.silicon += round(operate * minerals_per_mine)
             #TODO reduce mineral concentration
+
+    def get_consentration(self, mineral):
+        if mineral in ['titanium', 'silicon', 'lithium']:
+            return 0.1 * ((getattr(self, mineral + '_left') / 10000) ** 2) + 0.1
     
     """ minister checks to see if you need to build more facilities """
     def auto_build(self):
