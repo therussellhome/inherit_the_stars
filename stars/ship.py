@@ -21,7 +21,6 @@ __defaults = {
     'shields_damage': [0, 0, sys.maxsize],
     'max_distance': [0.0, 0.0, sys.maxsize],
     'damage_armor': [0, 0, sys.maxsize],
-    'repair_points': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
     'engines': [[]],
@@ -75,10 +74,10 @@ class Ship(ShipDesign):
         pass
     
     def open_repair_bays(self):
-        return self.repair_bay_repair_points
+        return self.repair_bay
     
     def damage_control(self):
-        return self.repair_points
+        return self.repair
     
     def deploy_hyper_denial(self, player):
         pass
@@ -99,21 +98,16 @@ class Ship(ShipDesign):
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
-        if planet.colonized == False:
-            ti = planet.titanium - (self.rate * planet.titanium)
-            si = planet.silicon - (self.rate * planet.silicon)
-            li = planet.lithium - (self.rate * planet.lithium)
-            planet.on_surface.titanium += round((planet.titanium - ti) + .1)
-            planet.on_surface.silicon += round((planet.silicon - si) + .1)
-            planet.on_surface.lithium += round((planet.lithium - li) + .1)
-            planet.titanium = ti
-            planet.silicon = si
-            planet.lithium = li
-        return planet
+        if not planet.player.is_valid:
+            planet.on_surface.titanium += round(self.mining_rate * planet.get_consentration('titanium'))
+            planet.on_surface.silicon += round(self.mining_rate * planet.get_consentration('silicon'))
+            planet.on_surface.lithium += round(self.mining_rate * planet.get_consentration('lithium'))
+            planet.titanium_left -= round(self.mining_rate * planet.get_consentration('titanium'))
+            planet.silicon_left -= round(self.mining_rate * planet.get_consentration('silicon'))
+            planet.lithium_left -= round(self.mining_rate * planet.get_consentration('lithium'))
     
     """ Repairs the ship if it needs it """
-    def repair(self, amount):
-        print(amount)
+    def repair_self(self, amount):
         if self.damage_armor > 0:
             self.damage_armor -= amount
     

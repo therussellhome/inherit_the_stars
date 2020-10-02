@@ -508,19 +508,13 @@ class FleetCase(unittest.TestCase):
     def test_self_repair(self):
         ship_3 = ship.Ship(
             location = location.Location(),
-            repair_points = 3,
+            repair = 3,
             damage_armor = 7,
             armor = 10,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
-            repair_points = 3,
-            damage_armor = 7,
-            armor = 20,
-            )
-        shipp = ship.Ship(
-            location = location.Location(),
-            repair_points = 3,
+            repair = 3,
             damage_armor = 7,
             armor = 20,
             )
@@ -535,20 +529,19 @@ class FleetCase(unittest.TestCase):
                     )
                 ]
             )
-        shipp.repair('a')
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('self_repair', p1)
     
     def test_repair(self):
         ship_3 = ship.Ship(
             location = location.Location(),
-            repair_bay_repair_points = 3,
+            repair_bay = 3,
             damage_armor = 7,
             armor = 10,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
-            repair_bay_repair_points = 3,
+            repair_bay = 3,
             damage_armor = 7,
             armor = 20,
             )
@@ -565,16 +558,21 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('repair', p1)
-    '''
+    
     def test_orbital_mining(self):
         ultimantico = planet.Planet(
-            location=location.Location()
+            location=location.Location(),
+            titanium_left = 100000,
+            silicon_left = 100000,
+            lithium_left = 100000,
             )
         ship_3 = ship.Ship(
             location = location.Location(),
+            mining_rate = 1.6,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
+            mining_rate = 1.6,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -590,7 +588,7 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('orbital_mining', p1)
-    
+    '''
     def test_lay_mines(self):
         ship_3 = ship.Ship(
             location = location.Location(),

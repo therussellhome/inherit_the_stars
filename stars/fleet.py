@@ -372,23 +372,16 @@ class Fleet(Defaults):
     
     def distribute_repair(self, ships_here, repair_points):
         while repair_points > 0 and self.find_repair(ships_here) != False:
-            ship = self.find_repair(ships_here)
-            ship.repair(1)
+            self.find_repair(ships_here).repair_self(1)
             repair_points -= 1
     
     def find_repair(self, ships_here):
-        damage_ratio = []
+        repair_me = ships_here[0]
+        damage = 0
         for ship in ships_here:
-            damage_ratio.append([100 * (ship.armor - ship.damage_armor / ship.armor), ship])
-        damage = 100
-        worst = 0
-        for i in range(len(damage_ratio)):
-            if damage_ratio[i][0] <= damage:
-                damage = damage_ratio[i][0]
-                worst = i
-        if damage_ratio[worst][0] == 100:
-            return False
-        return damage_ratio[worst][1]
+            if damage < ship.damage_armor / ship.armor:
+                repair_me = ship
+        return repair_me
     
     def lay_mines(self, player):
         system = self.waypoints[0].recipiants['lay_mines']
