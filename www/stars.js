@@ -243,6 +243,11 @@ function shutdown() {
     }
 }
 
+function edit_treaty(player) {
+    player_name = player + '_name'
+    document.getElementById('show_treaty_with_') = document.getElementById(player_name)
+}
+
 // Create a slider
 function slider(element, form, min, max, step, formatter, units) {
     noUiSlider.create(element, {
