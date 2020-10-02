@@ -31,7 +31,8 @@ __defaults = {
     'planet_value': [0, -100, 100],
     'star_system': [Reference()],
     'penetrating_tech': [Facility()],
-    'scanner_tech': [Facility()]
+    'scanner_tech': [Facility()],
+    'remaining_minerals': [Minerals()],
 }
 
 
@@ -66,10 +67,10 @@ class Planet(Defaults):
     # player is a Reference to Player
     # because minister names can change, minister is a string
     # TODO change population to cargo_dump
-    def colonize(self, player, minister, population, factories=1, power_plants=1, mines=1):
+    def colonize(self, player, minister, cargo, factories=1, power_plants=1, mines=1):
         self.player = player
         self.minister = minister
-        self.on_surface.people = int(population)
+        self.on_surface += cargo
         #self.on_surface += cargo_dump
         self.factories += int(factories)
         self.power_plants += int(power_plants)
@@ -139,9 +140,9 @@ class Planet(Defaults):
             self.on_surface.silicon += round(operate * minerals_per_mine)
             #TODO reduce mineral concentration
 
-    def get_consentration(self, mineral):
+    def get_availability(self, mineral):
         if mineral in ['titanium', 'silicon', 'lithium']:
-            return 0.1 * ((getattr(self, mineral + '_left') / 10000) ** 2) + 0.1
+            return (((getattr(self.remaining_minerals, mineral) / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
     
     """ minister checks to see if you need to build more facilities """
     def auto_build(self):

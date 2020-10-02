@@ -65,7 +65,7 @@ class Ship(ShipDesign):
         return False
     
     def colonize(self, player, planet):
-        planet.colonize(player, copy.copy(player.colonize_minister), self.cargo, self.num_col_modules, self.num_col_modules, self.num_col_modules)
+        planet.colonize(player, copy.copy(player.get_minister(planet)), self.cargo, self.num_col_modules, self.num_col_modules, self.num_col_modules)
     
     def scan(self, player):
         pass
@@ -99,12 +99,12 @@ class Ship(ShipDesign):
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
         if not planet.player.is_valid:
-            planet.on_surface.titanium += round(self.mining_rate * planet.get_consentration('titanium'))
-            planet.on_surface.silicon += round(self.mining_rate * planet.get_consentration('silicon'))
-            planet.on_surface.lithium += round(self.mining_rate * planet.get_consentration('lithium'))
-            planet.titanium_left -= round(self.mining_rate * planet.get_consentration('titanium'))
-            planet.silicon_left -= round(self.mining_rate * planet.get_consentration('silicon'))
-            planet.lithium_left -= round(self.mining_rate * planet.get_consentration('lithium'))
+            planet.on_surface.titanium += round(self.mining_rate * planet.get_availability('titanium'))
+            planet.on_surface.silicon += round(self.mining_rate * planet.get_availability('silicon'))
+            planet.on_surface.lithium += round(self.mining_rate * planet.get_availability('lithium'))
+            planet.remaining_minerals.titanium -= round(self.mining_rate * planet.get_availability('titanium') * self.percent_wasted)
+            planet.remaining_minerals.silicon -= round(self.mining_rate * planet.get_availability('silicon') * self.percent_wasted)
+            planet.remaining_minerals.lithium -= round(self.mining_rate * planet.get_availability('lithium') * self.percent_wasted)
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):
