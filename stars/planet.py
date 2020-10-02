@@ -47,8 +47,11 @@ class Planet(Defaults):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Planet_' + str(id(self))
-        if 'temperature' not in kwargs and 'sun' in kwargs and 'distance' in kwargs:
-            self.temperature = round(self.distance * 0.35 + self.sun.temperature * 0.65 + randint(-15, 15))
+        if 'temperature' not in kwargs:
+            if 'sun' in kwargs and 'distance' in kwargs:
+                self.temperature = round(self.distance * 0.35 + self.sun.temperature * 0.65 + randint(-15, 15))
+            else:
+                self.temperature = randint(0, 100)
         if 'radiation' not in kwargs:
             if 'sun' in kwargs:
                 self.radiation = self.sun.radiation
@@ -78,6 +81,7 @@ class Planet(Defaults):
         t = (min(100, max(0, self.temperature)) / 100) * .75
         r = .5 + (min(100, max(0, self.radiation)) * .005)
         color = hls_to_rgb(t, .5, r)
+        color_string = '#' + format(int(color[0] * 255), 'X') + format(int(color[1] * 255), 'X') + format(int(color[2] * 255), 'X') 
         color_string = '#' + format(color[0], 'X') + format(color[1], 'X') + format(color[2], 'X') 
         return color_string
     
@@ -131,8 +135,6 @@ class Planet(Defaults):
         self._generate_energy()
         self._mine_minerals()
     
-=======
->>>>>>> e438643c9533e757ade5b2a3032f1ccc7dcc033e
     """ Grow the current population """
     def have_babies(self):
         # all population calculations are done using people but stored using kT (1000/kT)

@@ -211,9 +211,7 @@ function parse_json(url, json) {
     // Let objects update themselves
     var submit_event = document.createEvent("HTMLEvents");
     submit_event.initEvent("submit", false, false);
-    console.log('onsubmit_' + form);
     for(element of document.getElementsByClassName('onsubmit_' + form)) {
-        console.log('    ', element.id);
         element.dispatchEvent(submit_event);
     }
 }
@@ -602,7 +600,6 @@ function weapon_chart() {
                                 base = json_map['tech']['armor'] + json_map['tech']['shield'];
                                 value = parseInt(tooltipItem.value);
                                 label += Math.round(value / base * 100) + '%';
-                                console.log(base, value, label);
                             } else {
                                 label += tooltipItem.value;
                             }

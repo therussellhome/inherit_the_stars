@@ -68,13 +68,16 @@ class StarSystem(Defaults):
 
     """ planets/suns sorted by habitability (exclude already colonized) """
     def get_colonizable_planets(self, race):
+        pass
+        """
         planets = []
         if race.primary_race_trait == 'Pa\'anuri':
             if not self.planets[0].is_colonized:
                 planets.append(self.planets[0])
-        else
+        else:
             for p in self.planets[1:]:
                 if not p.is_colonized:
+        """
                     
 
 

@@ -2,14 +2,34 @@
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
 <script src="three.js"></script>
-<!--<script type="module">import * as THREE from './three.module.js';</script>-->
+<!-- 3d UI -->
+<script type="x-shader/x-vertex" id="vertexshader">
+attribute float size;
+attribute vec4 color;
+varying vec4 vColor;
+void main() {
+    vColor = color;
+	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+	gl_PointSize = size / -mvPosition.z;
+	gl_Position = projectionMatrix * mvPosition;
+}
+</script>
+<script type="x-shader/x-fragment" id="fragmentshader">
+varying vec4 vColor;
+void main() {
+    gl_FragColor = vec4( vColor );
+}
+</script>
+<script src="render_stars.js"></script>
+<!--  -->
 <link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
-<!-- Simple UI --><script src="render_stars.js"></script>
+<!--  -->
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 

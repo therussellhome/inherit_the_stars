@@ -25,8 +25,10 @@ class RenderStars(Defaults):
                 'x': s.location.x,
                 'y': s.location.y,
                 'z': s.location.z,
-                'gravity': s.planets[0].gravity,
+                'color': s.planets[0].get_color(),
+                'size': s.planets[0].gravity,
             })
+            print(s.name, s.planets[0].temperature, s.planets[0].get_color())
         # Get the player's intel
         games = game_engine.get('Game')
         if len(games) > 0:

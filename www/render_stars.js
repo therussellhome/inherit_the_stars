@@ -15,21 +15,46 @@ function draw_stars() {
     scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
 
     var geometry = new THREE.BufferGeometry();
-    var vertices = [];
+    var positions = [];
+    var sizes = [];
+    var colors = [];
 
     var sprite = new THREE.TextureLoader().load( '/particle.png' );
 
     for(var i=0; i<systems.length; i++) {
-        vertices.push(systems[i].x, systems[i].y, systems[i].z);
+        positions.push(systems[i].x, systems[i].y, systems[i].z);
+        sizes.push(systems[i].size + 200);
+        var color = new THREE.Color(systems[i].color);
+        colors.push(color.r, color.g, color.b, 1.0);
+        console.log(systems[i].name, systems[i].color, color.r, color.g, color.b);
     }
 
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
 
-    material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
-    material.color.setHSL( 1.0, 0.3, 0.7 );
+    material = new THREE.ShaderMaterial({
+		vertexShader: document.getElementById('vertexshader').textContent,
+		fragmentShader: document.getElementById('fragmentshader').textContent,
+        transparent: true
+    });
+//    material = new THREE.ShaderMaterial( {
+//            size: 35,
+//            sizeAttenuation: false,
+//            map: sprite,
+//	        uniforms: {
+//				color: { value: new THREE.Color( 0xffffff ) },
+//				pointTexture: { value: new THREE.TextureLoader().load( "/particle.png" ) }
+//			},
+//			vertexShader: document.getElementById( 'vertexshader' ).textContent,
+//			fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+//			alphaTest: 0.9
+//		} );
+//    material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
+//    material.color.setHSL( 1.0, 0.3, 0.7 );
 
-    var particles = new THREE.Points( geometry, material );
-    scene.add( particles );
+    var points = new THREE.Points(geometry, material);
+    scene.add(points);
 
     //
 
