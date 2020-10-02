@@ -1,10 +1,12 @@
-from defaults import Defaults
+from ..defaults import Defaults
+from .. import game_engine
+from sys import maxsize
 
 __defaults = {
-    'p1': [[]]
-    'p2': [[]]
-    'relation': [['enemy']]
-    'options_relation': [['team', 'nutal', 'enemy']]
+    'p1': [[]],
+    'p2': [[]],
+    'relation': [['enemy']],
+    'options_relation': [['team', 'nutal', 'enemy']],
     'coust_p1_to_p2_titanium': [100, 0, maxsize],
     'p1_is_selling_titanium': [False],
     'coust_p2_to_p1_titanium': [100, 0, maxsize],
@@ -53,7 +55,7 @@ class Treaty(Defaults):
         if action == 'revoc':
             self.relation = 'enemy'
         if action == 'propose':
-            game_engin.send_message(self.p1, self.p2, 'do you except ' + p1.name + '\'s treaty proposal?')
+            game_engine.send_message(self.p1, self.p2, 'do you except ' + p1.name + '\'s treaty proposal?')
         if self.relation == 'enemy':
             for key in self.__dict__:
                 self.__dict__[key] = False

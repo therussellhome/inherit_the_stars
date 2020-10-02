@@ -32,6 +32,7 @@ _handlers = {
     '/settings': settings.Settings(),
     '/shipyard': shipyard.Shipyard(),
     '/tech': tech.Tech(),
+    '/treaties': treaties.Treaty()
 }
 
 
