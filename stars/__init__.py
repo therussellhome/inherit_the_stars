@@ -29,4 +29,5 @@ __all__ = [
     'tech_level',
     'waypoint',
     'weapon',
+    'expirence',
 ]

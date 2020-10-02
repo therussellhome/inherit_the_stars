@@ -52,10 +52,10 @@ class Waypoint(Defaults):
     def move_to(self, fleet):
         self.fly_to = copy.copy(self.location)
         if self.standoff == 'No Standoff':
-            for planet in game_engine.get('Planet/'):
+            for planet in game_engine.get('Planet'):
                 if self.location is planet.location:
                     self.fly_to = planet.system.get_outer_system(fleet.location)
-            for ship in game_engine.get('Ship/'):
+            for ship in game_engine.get('Ship'):
                 if self.location is ship.location:
                     self.calc_intercept(fleet, ship)            
         else:

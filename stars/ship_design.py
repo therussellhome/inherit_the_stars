@@ -9,6 +9,7 @@ from .tech import Tech
 __defaults = {
     'hull': [Tech()],
     'components': [[]],
+    'is_starbase': [False]
 }
 
 
