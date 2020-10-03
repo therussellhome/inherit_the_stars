@@ -26,22 +26,22 @@ class TechTestCase(unittest.TestCase):
         p.tech_level.energy = 2
         self.assertTrue(t.is_available(p))
         # test the race requirements section
-        t.race_requirements = ['Kender']
+        t.race_requirements = 'Kender'
         p.race.primary_race_trait = 'TANSTAAFL'
         self.assertFalse(t.is_available(p))
-        t.race_requirements = ['Kender', 'lrt_SecondSight']
-        p.race.lrt_SecondSight = True
+        t.race_requirements = 'Kender 2ndSight'
+        p.race.lrt_2ndSight = True
         self.assertFalse(t.is_available(p))
-        t.race_requirements = ['TANSTAAFL']
+        t.race_requirements = 'TANSTAAFL'
         self.assertTrue(t.is_available(p))
-        t.race_requirements = ['lrt_Forager', 'lrt_HyperMiler']
+        t.race_requirements = 'Forager HyperMiler'
         p.race.lrt_Forager = True   
         self.assertFalse(t.is_available(p))
-        t.race_requirements = ['lrt_SecondSight']
+        t.race_requirements = '2ndSight'
         self.assertTrue(t.is_available(p))
-        t.race_requirements = ['-Akultan','lrt_SecondSight']
+        t.race_requirements = '-Akultan 2ndSight'
         self.assertTrue(t.is_available(p))
-        t.race_requirements = ['-Akultan','lrt_SecondSight', 'lrt_Trader']
+        t.race_requirements = '-Akultan 2ndSight Trader'
         self.assertFalse(t.is_available(p))
-        t.race_requirements = ['-TANSTAAFL','lrt_SecondSight', 'lrt_Forager']
+        t.race_requirements = '-TANSTAAFL 2ndSight Forager'
         self.assertFalse(t.is_available(p))

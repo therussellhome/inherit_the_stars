@@ -298,7 +298,7 @@ function gravity_chart(element_id, slider_id) {
         data = [];
         for(var i=0; i <= 100; i++) {
             labels.push(format_gravity(i));
-            data.push((100.0 - i) * 0.02);
+            data.push((100.0 - i) * 0.015 + 0.0025);
         }
         charts[element_id] = new Chart(chart, {
             type: 'line',
@@ -500,7 +500,7 @@ function format_temperature(value) {
 
 // Format radiation
 function format_radiation(value) {
-    return value.toString() + ' mR';
+    return ((value + 50) / 100).toString() + ' R';
 }
 
 // Post changes for tech

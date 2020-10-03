@@ -18,6 +18,7 @@ __all__ = [
     'planet', 
     'planetary_minister',
     'player', 
+    'race',
     'reference', 
     'scanner',
     'ship',

@@ -6,7 +6,7 @@ from .defaults import Defaults
 """ Default values (default, min, max)  """
 __defaults = {
     'name': [''],
-    'players': [[]],
+    'players': [[]], # References to players
     'autogen_turn': [True],
     'date': [3000.0, 0.0, sys.maxsize]
 }
