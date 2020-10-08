@@ -707,6 +707,68 @@
 
 
 <div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+    <table>
+        <tr>
+            <td>Existing</td>
+            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td><!--TODO get delete, save and copy icons-->
+        </tr>
+    </table>
+    <table class="hfill">
+            <tr>
+                <td>Design Name</td>
+                <td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post('shipyard')"/></td>
+            </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Hull</td>
+            <td>General</td>
+			<td>Orbital</td>
+			<td>Depot</td>
+		</tr>
+		<tr>
+			<td class="hfill"><select id="shipyard_hull" onchange="post('shipyard')" /></td>
+			<td><input disabled="true" id="shipyard_general_slots"/></td>
+			<td><input disabled="true" id="shipyard_orbital_slots"/></td>
+			<td><input disabled="true" id="shipyard_depot_slots"/></td>
+        </tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_bombs(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Bombs</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_cloaks_and ecm(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Cloaks and ECM</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_defense(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Defense</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_depot(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Depot</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_engines(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engines</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_mech(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Mech</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_scanners(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanners</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_orbital(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orbital</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_weapons(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
 </div>
 
 
