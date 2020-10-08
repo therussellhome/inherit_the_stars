@@ -4,6 +4,7 @@ from .reference import Reference
 from .location import Location
 from .sun import Sun
 from .planet import Planet
+from .cargo import Cargo
 
 
 __defaults = {
@@ -49,7 +50,7 @@ class StarSystem(Defaults):
         if player:
             self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
             self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
-            self.planets[home].colonize(player, None, player.race.starting_colonists, player.race.starting_factories)
+            self.planets[home].colonize(player, None, Cargo(people = player.race.starting_colonists), player.race.starting_factories, player.race.starting_power_plants, player.race.starting_mines)
             self.planets[home].power_plants = player.race.starting_power_plants
             self.planets[home].mines = player.race.starting_mines
 

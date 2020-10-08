@@ -4,11 +4,11 @@ from .. import *
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25000, 1)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', cargo.Cargo(people=25000), 1)
 
     def test_colonize(self):
-        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', 25000, 1)
-        self.assertEqual(self.planet.on_surface.people, 25000)
+        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', cargo.Cargo(people=25000), 1)
+        self.assertEqual(self.planet.on_surface.people, 50000)
         self.assertEqual(self.planet.factories, 2)
 
     def test_generate_energy(self):
@@ -101,7 +101,7 @@ class PlanetTestCase(unittest.TestCase):
     
     def test_auto_build(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25, 1)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', cargo.Cargo(people=25), 1)
         self.planet.mines = 25
         self.planet.power_plants = 3
         self.planet.factories = 2

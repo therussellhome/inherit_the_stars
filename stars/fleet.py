@@ -7,6 +7,7 @@ from .defaults import Defaults
 from .location import Location
 from .waypoint import Waypoint
 from .location import LocationReference
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
@@ -305,7 +306,13 @@ class Fleet(Defaults):
         if planet.player.is_valid:
             return
         for ship in self.ships:
-            ship.colonize(player, planet)
+            if ship.can_colonize:
+                ship.colonize(Reference(player), planet)
+        if planet.on_surface.people > 0:
+            for ship in self.ships:
+                if ship.can_colonize:
+                    ship.scrap(planet)
+                    self.ships.remove(ship)
     
     """ scraps the fleet """
     def scrap(self):
