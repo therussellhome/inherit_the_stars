@@ -306,13 +306,11 @@ class Fleet(Defaults):
         if planet.player.is_valid:
             return
         for ship in self.ships:
-            if ship.can_colonize:
+            if ship.can_colonize and ship.cargo.people > 0:
                 ship.colonize(Reference(player), planet)
-        if planet.on_surface.people > 0:
-            for ship in self.ships:
-                if ship.can_colonize:
-                    ship.scrap(planet)
-                    self.ships.remove(ship)
+                ship.scrap(planet)
+                self.ships.remove(ship)
+                break
     
     """ scraps the fleet """
     def scrap(self):

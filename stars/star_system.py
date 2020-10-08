@@ -27,7 +27,7 @@ class StarSystem(Defaults):
     def create_system(self, player=None):
         planet_args = {
             'name': self.name + "'s " + 'Star',
-            'star_system': Reference(self)
+            'star_system': Reference(self),
         }
         num_planets = round(random() * 5)
         if player:
@@ -50,7 +50,7 @@ class StarSystem(Defaults):
         if player:
             self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
             self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
-            self.planets[home].colonize(player, None, Cargo(people = player.race.starting_colonists), player.race.starting_factories, player.race.starting_power_plants, player.race.starting_mines)
+            self.planets[home].colonize(player, None, player.race.starting_colonists)
             self.planets[home].power_plants = player.race.starting_power_plants
             self.planets[home].mines = player.race.starting_mines
 
@@ -66,4 +66,20 @@ class StarSystem(Defaults):
         z = self.z + (z/dis)*stars_math.TERAMETER_2_LIGHTYEAR
         return Location(x=x, y=y, z=z)
         
+
+    """ planets/suns sorted by habitability (exclude already colonized) """
+    def get_colonizable_planets(self, race):
+        pass
+        """
+        planets = []
+        if race.primary_race_trait == 'Pa\'anuri':
+            if not self.planets[0].is_colonized:
+                planets.append(self.planets[0])
+        else:
+            for p in self.planets[1:]:
+                if not p.is_colonized:
+        """
+                    
+
+
 StarSystem.set_defaults(StarSystem, __defaults)

@@ -17,7 +17,7 @@ __defaults = {
     'upgrade_level': [0, 0, 100],
     'race_requirements': [''],
     'cost': [Cost()],
-    'cost_build_complete': [Cost()],
+    'cost_incomplete': [Cost()],
     'level': [TechLevel()],
     'mass': [0, 0, sys.maxsize],
     'cargo_max': [0, 0, sys.maxsize],
@@ -37,7 +37,8 @@ __defaults = {
     'hyperdenial': [HyperDenial()],
     'is_colonizer': [False],
     'is_trading_post': [False],
-    'facility_output': [0.0, 0.0, sys.maxsize],
+    'energy_output': [0.0, 0.0, sys.maxsize],
+    'factory_capacity': [0.0, 0.0, sys.maxsize],
     'mining_rate': [0.0, 0.0, sys.maxsize],
     'mineral_depletion_factor': [0.0, 0.0, 100],
     'mat_trans_energy': [0, 0, sys.maxsize],
@@ -56,22 +57,16 @@ class Tech(Defaults):
 
     """ Determine if the item is available for a player's tech level """
     def is_available(self, player):
-        test = []
-        if self.level.is_available(player.tech_level):
+        if not self.level.is_available(player.tech_level):
+            return False
+        if len(self.race_requirements) > 0:
             traits = player.race.list_traits()
-            for requirement in self.race_requirements:
+            for requirement in self.race_requirements.split(' '):
                 if requirement[0] == '-':
-                    if requirement not in traits:
-                        test.append('pass')
-                    else:
-                        test.append('fail')
-                else:
-                    if requirement in traits:
-                        test.append('pass')
-                    else:
-                        test.append('fail')
-        if 'fail' not in test:
-            return True
-        return False
+                    if requirement[1:] in traits:
+                        return False
+                elif requirement not in traits:
+                    return False
+        return True
 
 Tech.set_defaults(Tech, __defaults)

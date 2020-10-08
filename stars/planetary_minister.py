@@ -8,12 +8,12 @@ __defaults = {
     'factories': [25, 0, 100],
     'mines': [25, 0, 100],
     'defenses': [25, 0, 100],
-    'build_scanner_after_num_facilitys': [50, 0, sys.maxsize],
-    'build_penetrating_after_num_facilitys': [100, 0, sys.maxsize],
-    'build_mattrans_after_num_facilitys': [100, 0, sys.maxsize],
+    'build_scanner_after_num_facilities': [50, 0, sys.maxsize],
+    'build_penetrating_after_num_facilities': [100, 0, sys.maxsize],
+    'build_mattrans_after_num_facilities': [100, 0, sys.maxsize],
     'build_min_terraform': [1, 0, 100],
     'build_max_terraform': [100, 0, 100],
-    'unblock': [True],
+    'allow_baryogenesis': [True],
     'planets': [[]],
 }
 

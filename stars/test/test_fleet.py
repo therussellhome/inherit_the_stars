@@ -649,33 +649,6 @@ class FleetCase(unittest.TestCase):
             name = 'ultimantico',
             location = location.Location()
             )
-        ship_1 = ship.Ship(
-            location = location.Location(),
-            cargo = cargo.Cargo(people = 0, cargo_max = 200),
-            num_col_modules = 1,
-            )
-        ship_2 = ship.Ship(
-            location = location.Location(),
-            cargo = cargo.Cargo(people = 0, cargo_max = 200),
-            num_col_modules = 2,
-            )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
-        fleet_one = fleet.Fleet(
-            ships = [ship_1, ship_2],
-            waypoints = [
-                waypoint.Waypoint(
-                    actions = ['colonize'],
-                    recipiants = {'colonize': ultimantico},
-                    location = location.Location()
-                    )
-                ]
-            )
-        p2 = player.Player(
-            name = 'p2',
-            fleets = [fleet_one],
-            )
-        game_engine.register(p2)
         ship_3 = ship.Ship(
             location = location.Location(),
             cargo = cargo.Cargo(people = 100, cargo_max = 200),
@@ -684,7 +657,7 @@ class FleetCase(unittest.TestCase):
             )
         ship_4 = ship.Ship(
             location = location.Location(),
-            cargo = cargo.Cargo(people = 100, cargo_max = 200),
+            cargo = cargo.Cargo(people = 200, cargo_max = 200),
             num_col_modules = 2,
             can_colonize = True,
             )
@@ -707,11 +680,8 @@ class FleetCase(unittest.TestCase):
         game_engine.register(p1)
         game_engine.register(ultimantico)
         fleet_two.execute('colonize', p1)
-        self.assertEqual(ultimantico.on_surface.people, 300)
-        self.assertEqual(ultimantico.on_surface.lithium, 0)
-        self.assertEqual(ultimantico.on_surface.silicon, 0)
-        self.assertEqual(ultimantico.on_surface.titanium, 0)
-        self.assertEqual(ultimantico.on_surface.silicon, 0)
+        self.assertEqual(ultimantico.on_surface.people, 100)
+        self.assertEqual(ship_3 in fleet_two.ships, False)
         
     """
     def test_piracy(self):

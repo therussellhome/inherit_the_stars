@@ -2,12 +2,34 @@
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
+<script src="three.js"></script>
+<!-- 3d UI -->
+<script type="x-shader/x-vertex" id="vertexshader">
+attribute float size;
+attribute vec4 color;
+varying vec4 vColor;
+void main() {
+    vColor = color;
+	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+	gl_PointSize = size / -mvPosition.z;
+	gl_Position = projectionMatrix * mvPosition;
+}
+</script>
+<script type="x-shader/x-fragment" id="fragmentshader">
+varying vec4 vColor;
+void main() {
+    gl_FragColor = vec4( vColor );
+}
+</script>
+<script src="render_stars.js"></script>
+<!--  -->
 <link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
-<!-- Simple UI --><script src="render_stars.js"></script>
+<!--  -->
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
@@ -101,7 +123,7 @@
             <td>Player:</td>
             <td class="hfill">
                 <select id="launch_player" class="hfill" onchange="post('launch')"/>
-                <input id="player_token" disabled="true" class="onsubmit" style="display: none" onsubmit="launch_player(this)"/>
+                <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
             </td>
         </tr>
     </table><table class="hfill">
@@ -411,13 +433,13 @@
                 temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
                 radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">+ Habitability Charts</caption>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
@@ -509,7 +531,7 @@
 
 
 <div class="screen hide" id="screen_tech_browser" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
-    <iframe src="/tech" style="width: 100%; height: 99%"></iframe>
+    <iframe src="/tech.html" style="width: 100%; height: 99%"></iframe>
 </div></div>
 
 
@@ -526,8 +548,10 @@
 <!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
 
 
-<div class="hide onsubmit" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
-    <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none" onmousedown="draw_stars_pan_start(event)"></div>
+<div class="hide onsubmit_render_stars" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
+<!--
+    <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none; width: 100%; height: 100%"></div>
+-->
 </div>
 
 
@@ -591,6 +615,44 @@
 
 
 <div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
+    </tr></table>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
+    <caption>Energy<input id="current_energy_tech_level" disabled="true"/></caption>
+    <caption>Weapons<input id="current_weapons_tech_level" disabled="true"/></caption>
+    <caption>Propulsion<input id="current_propulsion_tech_level" disabled="true"/></caption>
+    <caption>Construction<input id="current_construction_tech_level" disabled="true"/></caption>
+    <caption>Electronics<input id="current_electronics_tech_level" disabled="true"/></caption>
+    <caption>Biotechnology<input id="current_biotechnology_tech_level" disabled="true"/></caption>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
+    <!-- TODO put icons to skip to component sections -->
+    <table>
+        <tr><th>Component Name</th><th>Tech Levels</th><th>Cost</th></tr>
+        <tr><th>Combat</th></tr>
+        <tr><td>Armor</td></tr>
+        <tr><td>Bombs</td></tr>
+        <tr><td>ECM</td></tr>
+        <tr><td>Shields</td></tr>
+        <tr><td>Beam Weapons</td></tr>
+        <tr><td>Missles</td></tr>
+        <tr><th>Construction</th></tr>
+        <tr><td>Depot</td></tr>
+        <tr><td>Hulls</td></tr>
+        <tr><td>Mech</td></tr>
+        <tr><th>Engines</th></tr>
+        <tr><th>Orbital</th></tr>
+        <tr><th>Planetary</th></tr>
+        <tr><th>Scanning</th></tr>
+        <tr><td>Cloaks</td></tr>
+        <tr><td>Scanners</td></tr>
+    </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
+    <tr>
+        <td></td>
+        <td class="hfill"><select id="research_queue_item" onchange="post('research_minister')"/></td>
+    </tr>
 </div>
 
 

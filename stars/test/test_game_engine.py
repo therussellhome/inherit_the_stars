@@ -48,9 +48,10 @@ class GameEngineTestCase(unittest.TestCase):
         # Create an object
         t0 = game_engine.get('_TestGameEngine/test_get0', True)
         self.assertEqual(t0.name, 'test_get0')
-        # Test errors
-        with self.assertRaises(LookupError):
-            game_engine.get(0)
+        # Test None
+        self.assertEqual(game_engine.get(None), None)
+        # Test random junk
+        self.assertEqual(game_engine.get(123), [])
 
     def test_unregister(self):
         game_engine.unregister()

@@ -49,7 +49,7 @@ class EnergyMinister(Defaults):
             self.unallocated_budget -= allocation
 
     """ Check if budget is available """
-    def check_budget(self, sub_category, request):
+    def check_budget(self, sub_category, request=sys.maxsize):
         return self.spend_budget(sub_category, request, True)
 
     """ Request to spend energy for a category """

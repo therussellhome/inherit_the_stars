@@ -45,6 +45,7 @@ class Weapon(Defaults):
 
     """ Calculate the damage of firing the weapon at a ship """
     def get_damage(self, target_ly, shield, armor, visible_ly, ecm):
+        #print(self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5))
         if self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5) <= randint(0, 100):
             return (0, 0)
         damage = self.get_power(target_ly, shield, armor)

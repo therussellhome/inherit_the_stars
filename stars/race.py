@@ -13,8 +13,8 @@ __defaults = {
     'lrt_MadScientist': [False],
     'lrt_QuickHeal': [False],
     'lrt_BleedingEdge': [False],
-    'lrt_Forager': [True],
-    'lrt_2ndSight': [True],
+    'lrt_Forager': [False],
+    'lrt_2ndSight': [False],
     'lrt_JuryRigged': [False],
     'research_modifier_energy': [100, 50, 200],
     'research_modifier_weapons': [100, 50, 200],
@@ -63,13 +63,33 @@ class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
     def list_traits(self):
-        race_traits = [self.lrt_Trader, self.lrt_Bioengineer, self.lrt_SpacedOut, self.lrt_WasteNot, self.lrt_Hypermiler, self.lrt_McMansion, self.lrt_MadScientist, self.lrt_QuickHeal, self.lrt_BleedingEdge, self.lrt_Forager, self.lrt_2ndSight, self.lrt_JuryRigged]
-        traits = []
-        for trait in race_traits:
-            if trait:
-               traits.append(trait)
-        traits.append(self.primary_race_trait)
+        traits = [self.primary_race_trait]
+        if self.lrt_Trader:
+            traits.append('Trader')
+        if self.lrt_Bioengineer:
+            traits.append('Bioengineer')
+        if self.lrt_SpacedOut:
+            traits.append('SpacedOut')
+        if self.lrt_WasteNot:
+            traits.append('WasteNot')
+        if self.lrt_Hypermiler:
+            traits.append('Hypermiler')
+        if self.lrt_McMansion:
+            traits.append('McMansion')
+        if self.lrt_MadScientist:
+            traits.append('MadScientist')
+        if self.lrt_QuickHeal:
+            traits.append('QuickHeal')
+        if self.lrt_BleedingEdge:
+            traits.append('BleedingEdge')
+        if self.lrt_Forager:
+            traits.append('Forager')
+        if self.lrt_2ndSight:
+            traits.append('2ndSight')
+        if self.lrt_JuryRigged:
+            traits.append('JuryRigged')
         return traits
 
 Race.set_defaults(Race, __defaults)
