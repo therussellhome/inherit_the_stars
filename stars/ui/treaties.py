@@ -45,6 +45,7 @@ __defaults = {
     'shared_p2_knowlage_of_hiper_dinile_and_system_defence': [False],
     'shared_p2_passcode_for_hiper_dinile': [False],
     'shared_p2_passcode_for_system_defence': [False],
+    'stautus': ['how to calculate this? hmmm']
 }
 
 class Treaty(Defaults):

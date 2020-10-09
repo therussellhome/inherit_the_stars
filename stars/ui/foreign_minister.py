@@ -276,7 +276,7 @@ class ForeignMinister(Player):
                 self.calc_ds('p2_to_p1_stargate', i, p, players[i], me)
                 self.calc_di('p1_to_p2_intel_sharing', i, p, players[i], me)
                 self.calc_di('p2_to_p1_intel_sharing', i, p, players[i], me)
-                setattr(me, 'foreign_d'+str(i+p)+'_negotiation', 'how to calculate this? hmmm')
+                setattr(me, 'foreign_d'+str(i+p)+'_negotiation', me.treaties[player[i].name].status)
         pass
 
 
