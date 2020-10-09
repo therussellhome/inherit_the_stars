@@ -5,6 +5,9 @@ from .scanner import Scanner
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'tech': [Tech()],
+    'quantity': [0, 0, sys.maxsize],
+
     'upgrade_path': [''],
     'upgrade_level': [0, 0, 100],
     'output_per_facility': [0.0, 0.0, sys.maxsize],
@@ -20,6 +23,11 @@ __defaults = {
 class Facility(Tech):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    def colonize(self, tech):
+        if self.quantity == 0:
+            self.tech = tech
+        self.quantity += 1
 
 
 Facility.set_defaults(Facility, __defaults)

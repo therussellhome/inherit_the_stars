@@ -13,8 +13,8 @@ __defaults = {
     'lrt_MadScientist': [False],
     'lrt_QuickHeal': [False],
     'lrt_BleedingEdge': [False],
-    'lrt_Forager': [True],
-    'lrt_2ndSight': [True],
+    'lrt_Forager': [False],
+    'lrt_2ndSight': [False],
     'lrt_JuryRigged': [False],
     'research_modifier_energy': [100, 50, 200],
     'research_modifier_weapons': [100, 50, 200],
@@ -64,5 +64,32 @@ class Race(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def list_traits(self):
+        traits = [self.primary_race_trait]
+        if self.lrt_Trader:
+            traits.append('Trader')
+        if self.lrt_Bioengineer:
+            traits.append('Bioengineer')
+        if self.lrt_SpacedOut:
+            traits.append('SpacedOut')
+        if self.lrt_WasteNot:
+            traits.append('WasteNot')
+        if self.lrt_Hypermiler:
+            traits.append('Hypermiler')
+        if self.lrt_McMansion:
+            traits.append('McMansion')
+        if self.lrt_MadScientist:
+            traits.append('MadScientist')
+        if self.lrt_QuickHeal:
+            traits.append('QuickHeal')
+        if self.lrt_BleedingEdge:
+            traits.append('BleedingEdge')
+        if self.lrt_Forager:
+            traits.append('Forager')
+        if self.lrt_2ndSight:
+            traits.append('2ndSight')
+        if self.lrt_JuryRigged:
+            traits.append('JuryRigged')
+        return traits
 
 Race.set_defaults(Race, __defaults)

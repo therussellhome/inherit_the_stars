@@ -38,9 +38,12 @@ reference can be 'Class/ObjName', 'Class/Id', or 'Class'
 """
 def get(reference, create_new=False):
     global __registry
+    # getting None returns None
+    if reference == None:
+        return None
     # reference must be a string
     if not isinstance(reference, str):
-        raise LookupError('None is not a valid reference')
+        reference = str(reference)
     # get all of a type
     if '/' not in reference:
         objs = []

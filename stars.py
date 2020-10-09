@@ -36,7 +36,10 @@ _handlers = {
 }
 
 
-class Httpd(http.server.BaseHTTPRequestHandler):
+class Httpd(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args):
+        super().__init__(*args, directory='./www')
+
     def do_POST(self):
         if self.path == '/shutdown':
             self.server._BaseServer__shutdown_request = True
@@ -59,7 +62,7 @@ class Httpd(http.server.BaseHTTPRequestHandler):
                 response_str = '{}'
             print('    resp = ', response_str)
             self.wfile.write(response_str.encode())
-
+"""
     def do_GET(self):
         get = Path('.') / 'www' / re.sub('\?.*', '', self.path).split('/')[-1]
         if not get.exists() or get.is_dir():
@@ -68,6 +71,7 @@ class Httpd(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(f.read())
+"""
 
 with socketserver.TCPServer(("", 0), Httpd) as httpd:
     address = 'http://' + socket.gethostname() + ':' + str(httpd.server_address[1])

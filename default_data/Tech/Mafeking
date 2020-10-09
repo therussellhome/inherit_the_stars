@@ -1,0 +1,19 @@
+{
+    "name": "Mafeking",
+    "category": "ECM",
+    "description": "Projects electronic decoys to draw enemy fire away from your ship in battle.",
+    "cost": {
+        "titanium": 1,
+        "silicon": 5,
+        "energy": 2000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 4,
+        "electronics": 10,
+        "__class__": "TechLevel"
+    },
+    "mass": 2,
+    "ecm": 20,
+    "__class__": "Tech"
+}

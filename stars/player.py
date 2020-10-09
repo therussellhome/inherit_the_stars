@@ -96,7 +96,11 @@ class Player(Defaults):
             if m.new_colony_minister:
                 return m
         return self.planetary_ministers[0]
-
+    
+    """ Calles the energy mineister and tells him to alocat the budget """
+    def get_budget(self):
+        self.energy_minister.allocate_budget(self.energy)
+    
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
     def manage_economy(self):
@@ -119,7 +123,7 @@ class Player(Defaults):
         for planet in planets:
             planet.generate_resources()
         # Allocated energy
-        self.energy_minister.allocate_budget(self.energy)
+        self.get_budget()
         # Existing build queue
         for planet in planets:
             planet.do_construction(False)
