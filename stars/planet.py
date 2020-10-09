@@ -127,10 +127,10 @@ class Planet(Defaults):
     def raise_shields(self):
         if self.player.is_valid:
             facility = self.facilities['Defense']
-            workers = self.player.get_minister(self.name).defense / 100 * self.on_surface.people * 1000
+            workers = self.player.get_minister(self.name).defenses / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_defense
             operate = min([facility.quantity, workers / colonists_to_operate_facility])
-            return operate * facility.tech.shields
+            return operate * facility.tech.shield
     
     """ power plants make energy """
     def generate_energy(self):

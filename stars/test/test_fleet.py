@@ -615,23 +615,108 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('lay_mines', p1)
-    
+    '''
     def test_bomb(self):
-        p1 = player.Player()
+        p1 = player.Player(
+            name = 'p1',
+            planetary_ministers = [
+                planetary_minister.PlanetaryMinister(
+                    name = 'New Colony Minister',
+                    new_colony_minister = True,
+                    ),
+                planetary_minister.PlanetaryMinister(
+                    name = 'target',
+                    defenses = 97,
+                    power_plants = 1,
+                    factories = 1,
+                    mines = 1,
+                    ),
+                ],
+            )
+        game_engine.register(p1)
         ultimantico = planet.Planet(
             player = reference.Reference(p1),
-            location = location.Location()
+            on_surface = cargo.Cargo(
+                people = 200
+                ),
+            location = location.Location(),
+            facilities = {
+                'Defense': facility.Facility(
+                    quantity = 200,
+                    tech = tech.Tech(shields = 600)
+                    ),
+                },
             )
+        game_engine.register(ultimantico)
+        p1.planetary_ministers[1].planets.append(ultimantico.name)
         ship_3 = ship.Ship(
             location = location.Location(),
-            )
-        ship_4 = ship.Ship(
-            location = location.Location(),
+            bombs = [
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                bomb.Bomb(
+                    percent_pop_kill = 0.2,
+                    minimum_pop_kill = 0,
+                    shield_kill = 20,
+                    max_defense = 85,
+                    ),
+                ],
             )
         game_engine.register(ship_3)
-        game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_3],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['bomb'],
@@ -640,10 +725,13 @@ class FleetCase(unittest.TestCase):
                     )
                 ]
             )
-        p2 = player.Player(fleets = [fleet_two])
-        p2.treaties[ultimantico.player.name].relation = 'enemy'
+        p2 = player.Player(fleets = [fleet_two], name = 'p2')
+        game_engine.register(p2)
+        p2.treaties[p1.name] = defaults.Defaults(relation = 'enemy')
         fleet_two.execute('bomb', p2)
-    '''
+        self.assertLess(ultimantico.on_surface.people, 100, 'NOTE: this will somtimes fail as it is statistical in nature')
+        self.assertLess(ultimantico.facilities['Defense'].quantity, 100, 'NOTE: this will somtimes fail as it is statistical in nature')
+    
     def test_colonize(self):
         ultimantico = planet.Planet(
             name = 'ultimantico',
@@ -704,7 +792,7 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('piracy', p1)
-    """'''
+    """
     def test_scrap(self):
         ultimantico = planet.Planet(
             location=location.Location()
@@ -715,25 +803,39 @@ class FleetCase(unittest.TestCase):
                 titanium = 10,
                 lithium = 10,
                 silicon = 10
+                ),
+            cargo = cargo.Cargo(
+                people = 100
                 )
             )
         ship_4 = ship.Ship(
             location = location.Location(),
+            cargo = cargo.Cargo(
+                titanium = 10,
+                lithium = 10,
+                silicon = 10
+                ),
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
+        game_engine.register(ultimantico)
         fleet_two = fleet.Fleet(
             ships = [ship_3, ship_4],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['scrap'],
-                    location = location.LocationReference(ultimantico)
+                    recipiants = {'scrap': ultimantico},
+                    location = location.Location(),
                     )
                 ],
             location = location.LocationReference(ultimantico)
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('scrap', p1)
+        self.assertEqual(ultimantico.on_surface.people, 100)
+        self.assertEqual(ultimantico.on_surface.titanium, 19)
+        self.assertEqual(ultimantico.on_surface.silicon, 19)
+        self.assertEqual(ultimantico.on_surface.lithium, 19)
     """
     def test_patrol(self):
         ship_3 = ship.Ship(
@@ -755,7 +857,7 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('patrol', p1)
-    
+    '''
     def test_route(self):
         ship_3 = ship.Ship(
             location = location.Location(),
@@ -777,4 +879,4 @@ class FleetCase(unittest.TestCase):
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('route', p1)
     """
-'''
+#'''

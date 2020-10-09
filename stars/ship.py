@@ -87,16 +87,15 @@ class Ship(ShipDesign):
     def create_salvage(self, location, cargo):
         pass
     
-    def scrap(self, location):
-        scrap_factor = 0.9
+    def scrap(self, planet, location, scrap_factor=0.9):
         t = round(self.cost.titanium * scrap_factor)
         l = round(self.cost.lithium * scrap_factor)
         s = round(self.cost.silicon * scrap_factor)
         cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
-        if location not in game_engine.get('Planet'):
+        if planet not in game_engine.get('Planet'):
             self.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:
-            location.on_surface += cargoo + self.cargo
+            planet.on_surface += cargoo + self.cargo
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
@@ -114,24 +113,16 @@ class Ship(ShipDesign):
             self.damage_armor -= amount
     
     """ Bombs the planet if the planet is colonized """
-    def bomb(self, p):
-        if p.is_valid:
-            if self.bomb.percent_pop_kill * p.num_colonists < self.bomb.minimum_kill:
-                p.num_colonist -= self.bomb.minimum_kill
-            else:
-                p.num_colonists *= self.bomb.percent_pop_kill
-            p.num_facilities -= self.bomb.percent_facilities_kill
-            if p.num_colonists < 0:
-                p.num_colonists = 0
-            if p.num_facilities < 0:
-                p.num_facilities = 0
-        return p
+    def bomb(self, planet, shields, pop):
+        for bomb in self.bombs:
+            planet.facilities['Defense'].quantity -= bomb.kill_shield_facilities(pop, shields)
+            planet.on_surface.people -= bomb.kill_population(pop, shields)
 
     def calc_apparent_mass(self):
         return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
 
     def blow_up(self):
-        self.scrap(self.location)
+        self.scrap(self.location, self.location)
         pass
 
 

@@ -308,14 +308,20 @@ class Fleet(Defaults):
         for ship in self.ships:
             if ship.can_colonize and ship.cargo.people > 0:
                 ship.colonize(Reference(player), planet)
-                ship.scrap(planet)
+                ship.scrap(planet, self.location)
                 self.ships.remove(ship)
                 break
     
     """ scraps the fleet """
     def scrap(self):
-        for ship in self.ships:
-            ship.scrap(self.location)
+        try:
+            planet = self.waypoints[0].recipiants['scrap']
+            for ship in self.ships:
+                ship.scrap(planet, self.location)
+        except:
+            planet = self.location
+            for ship in self.ships:
+                ship.scrap(planet, self.location)
     
     def check_self(self, recipiant, player):
         if recipiant in player.fleets:
@@ -412,9 +418,13 @@ class Fleet(Defaults):
     
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
-        if planet in game_engine.get('Planet/') and planet.player != player and planet.player.is_valid and player.treaties[planet.player.name].relation == 'enemy':
+        shields = planet.raise_shields()
+        pop = planet.on_surface.people
+        print(shields, pop)
+        if planet in game_engine.get('Planet') and planet.player.is_valid and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
             for ship in self.ships:
-                ship.bomb(planet)
+                ship.bomb(planet, shields, pop)
+        print(planet.raise_shields(), planet.on_surface.people)
     
     """ runs all of the actions """
     def execute(self, action, player):
