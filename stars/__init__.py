@@ -9,6 +9,7 @@ __all__ = [
     'energy_minister', 
     'engine',
     'fleet',
+    'game', 
     'game_engine', 
     'hyperdenial',
     'intel',

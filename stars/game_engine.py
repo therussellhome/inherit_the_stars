@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from zipfile import ZipFile, ZipInfo
 
 
 """ Base directory for saved games, races, etc """
@@ -8,7 +7,8 @@ __game_dir = Path.home() / 'Inherit!'
 __default_data = Path(__file__).parent.parent / 'default_data'
 
 
-""" Registry of all game objects """
+
+""" Registry of all registered classes and objects """
 __registry = []
 
 
@@ -84,60 +84,45 @@ def to_json(obj):
 def load_list(save_type):
     files = []
     for f in (__game_dir / save_type).iterdir():
-        # strip the .zip
-        files.append(f.name[0:-4])
+        files.append(f.name)
     files.sort()
     return files
 
 
-""" Load game from zip file """
-def load_inspect(save_type, name, class_type):
-    game_file = __game_dir / save_type / (name + '.zip')
-    internals = []
-    class_type += '/'
-    with ZipFile(game_file, 'r') as zipfile:
-        for info in zipfile.infolist():
-            if info.filename.startswith(class_type):
-                internals.append(info.filename[len(class_type):])
-    return internals
-
-
-""" Load game from zip file """
-def load(save_type, name, register_objects=True):
-    game_file = __game_dir / save_type / (name + '.zip')
-    objs = []
-    with ZipFile(game_file, 'r') as zipfile:
-        for info in zipfile.infolist():
-            obj = from_json(zipfile.read(info), str(info))
-            objs.append(obj)
-            if register_objects:
-                register(obj)
-    return objs
+""" Load from file, object self registration is assumed """
+def load(save_type, name):
+    file_name = __game_dir / save_type / name
+    with open(file_name, 'r') as f:
+        obj = from_json(f.read(), str(file_name))
+        return obj
 
 
 """ Load tech from loose files """
-def load_defaults(save_type, register_objects=False):
+def load_defaults(save_type):
     objs = []
-    for fname in (__default_data / save_type).iterdir():
-        with open(fname, 'r') as f:
-            obj = from_json(f.read(), str(fname))
+    for file_name in (__default_data / save_type).iterdir():
+        with open(file_name, 'r') as f:
+            obj = from_json(f.read(), str(file_name))
             objs.append(obj)
-            if register_objects:
-                register(obj)
     return objs
 
 
-""" Save game to zip file """
-def save(save_type, name, objs=None):
-    global __registry
-    if not objs:
-        objs = __registry
-    game_file = __game_dir / save_type / (name + '.zip')
-    game_file.parent.mkdir(parents=True, exist_ok=True)
-    with ZipFile(game_file, 'w') as zipfile:
-        for obj in objs:
-            name = obj.__class__.__name__ + '/' + getattr(obj, 'name', str(id(obj)))
-            zipfile.writestr(ZipInfo(name), to_json(obj))
+""" Save game and player files """
+def save_game():
+    # Fail if there is not a game loaded
+    game = get('Game')[0]
+    save('host', game.name, game)
+    for p in game.players:
+        save('games', game.name + ' - ' + p.name, p)
+
+
+""" Save object to file """
+def save(save_type, name, obj):
+    dir_name = __game_dir / save_type
+    dir_name.mkdir(parents=True, exist_ok=True)
+    file_name = dir_name / name
+    with open(file_name, 'w') as f:
+        f.write(to_json(obj))
 
 
 """ Custom encoder to handle classes """
