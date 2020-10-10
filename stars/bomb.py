@@ -5,7 +5,7 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'percent_pop_kill': [0, 0, 100],
+    'percent_pop_kill': [0.0, 0.0, 100.0],
     'minimum_pop_kill': [0, 0, sys.maxsize],
     'shield_kill': [0, 0, sys.maxsize],
     'max_defense': [100, 1, 1000],
@@ -35,6 +35,7 @@ class Bomb(Defaults):
     def kill_population(self, population, shield_strength):
         if self.percent_defense(population, shield_strength) >= randint(0, 100):
             return 0
-        return max(self.minimum_pop_kill, self.percent_pop_kill / 100.0 * population)
+        print(max(self.minimum_pop_kill/100, self.percent_pop_kill / 10.0 * population))
+        return max(self.minimum_pop_kill/100, self.percent_pop_kill / 10.0 * population)
 
 Bomb.set_defaults(Bomb, __defaults)

@@ -129,7 +129,8 @@ class Planet(Defaults):
             facility = self.facilities['Defense']
             workers = self.player.get_minister(self.name).defenses / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_defense
-            operate = min([facility.quantity, workers / colonists_to_operate_facility])
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            print(workers, colonists_to_operate_facility, operate, facility.tech.shield)
             return operate * facility.tech.shield
     
     """ power plants make energy """
@@ -138,7 +139,7 @@ class Planet(Defaults):
             facility = self.facilities['Power']
             workers = self.player.get_minister(self.name).power_plants / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_power_plant
-            operate = min([facility.quantity, workers / colonists_to_operate_facility])
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
             self.player.energy += operate * facility.tech.energy_output
     
     """ calculates max production capasity """
@@ -147,8 +148,8 @@ class Planet(Defaults):
             facility = self.facilities['Factory']
             workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_factory
-            operate = min([facility.quantity, workers / colonists_to_operate_facility])
-            self.production = operate * facility.tech.production_capacity
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            self.production = (operate + 1) * facility.tech.production_capacity
     
     """ mines mine the minerals """
     def _mine_minerals(self):

@@ -288,20 +288,7 @@ class FleetCase(unittest.TestCase):
                         if key != 'cargo_max':
                             print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
                     print("}")"""
-        fleet_three.execute('sell', p2)
-        """print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
-        for p in game_engine.get('Player'):
-            print(p.name, " : {'energy': ", p.energy, "}", sep='')
-            for f in p.fleets:
-                for s in f.ships:
-                    print(s.name, ": {'fuel':", s.fuel, end='')
-                    for key in s.cargo.__dict__:
-                        if key != 'cargo_max':
-                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
-                    print("}")"""
+        fleet_three.execute('sell', p2) #do stuff
         self.assertEqual(p1.energy, 29640)
         self.assertEqual(p2.energy, 150360)
         self.assertEqual(ultimantico.on_surface.titanium, 1040)
@@ -312,20 +299,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_7.fuel, 0)
         self.assertEqual(ship_8.cargo.titanium, 30)
         self.assertEqual(ship_8.fuel, 0)
-        fleet_three.execute('buy', p2)
-        """print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
-        for p in game_engine.get('Player'):
-            print(p.name, " : {'energy': ", p.energy, "}", sep='')
-            for f in p.fleets:
-                for s in f.ships:
-                    print(s.name, ": {'fuel':", s.fuel, end='')
-                    for key in s.cargo.__dict__:
-                        if key != 'cargo_max':
-                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
-                    print("}")"""
+        fleet_three.execute('buy', p2) #do stuff
         self.assertEqual(p1.energy, 30340)
         self.assertEqual(p2.energy, 149660)
         self.assertEqual(ultimantico.on_surface.lithium, 950)
@@ -401,13 +375,6 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_4.cargo.titanium, 45)
         self.assertEqual(ship_4.cargo.people, 30)
         fleet_two.execute('unload', p1)
-        """for fleett in p1.fleets:
-            for shipp in fleett.ships:
-                print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-                for key in shipp.cargo.__dict__:
-                    if key != 'cargo_max':
-                        print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-                print("}")"""
         self.assertEqual(ship_1.cargo.lithium, 20)
         self.assertEqual(ship_1.cargo.silicon, 30)
         self.assertEqual(ship_1.fuel, 20)
@@ -484,16 +451,6 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ultimantico.on_surface.titanium, 60)
         self.assertEqual(ultimantico.on_surface.people, 40)
         fleet_one.execute('unload', p1)
-        """for shipp in fleet_one.ships:
-            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-            for key in shipp.cargo.__dict__:
-                if key != 'cargo_max':
-                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-            print("}")
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")"""
         self.assertEqual(ship_1.cargo.lithium, 30)
         self.assertEqual(ship_1.cargo.silicon, 20)
         self.assertEqual(ship_1.fuel, 30)
@@ -618,6 +575,9 @@ class FleetCase(unittest.TestCase):
     '''
     def test_bomb(self):
         p1 = player.Player(
+            race = race.Race(
+                colonists_to_operate_defense = 1,
+                ),
             name = 'p1',
             planetary_ministers = [
                 planetary_minister.PlanetaryMinister(
@@ -643,7 +603,7 @@ class FleetCase(unittest.TestCase):
             facilities = {
                 'Defense': facility.Facility(
                     quantity = 200,
-                    tech = tech.Tech(shields = 600)
+                    tech = tech.Tech(shield = 600)
                     ),
                 },
             )
