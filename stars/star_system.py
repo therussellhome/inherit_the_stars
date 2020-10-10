@@ -1,4 +1,5 @@
 from random import random, randint
+from . import game_engine
 from .defaults import Defaults
 from .reference import Reference
 from .location import Location
@@ -22,6 +23,7 @@ class StarSystem(Defaults):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'System ' + str(id(self))
+        game_engine.register(self)
 
     """ create planets """
     def create_system(self, player=None):

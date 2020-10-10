@@ -5,18 +5,25 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'game_id': [''],
     'name': [''],
-    'players': [[]], # References to players
     'autogen_turn': [True],
-    'date': [3000.0, 0.0, sys.maxsize]
+    'date': [0.0, 0.0, sys.maxsize],
+    'load_key': [''], # used to validate the player file
+    'players': [[]], # all players for the game, these are updated/overwritten when the players are loaded from file
+    'systems': [[]], # all systems - suns and planets are part of systems
+    'wormholes': [[]], # all wormholes
+    'space_rocks': [[]], # all comets/mineral packets/salvage
 }
 
 
 """ Class defining a game and everything in it """
 class Game(Defaults):
-    """ Initialize defaults """
+    """ Initialize defaults and register self """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        game_engine.register(self)
+
 
     """ Generate a turn """
     def generate_turn(self):

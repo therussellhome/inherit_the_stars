@@ -11,7 +11,7 @@ class _TestGameEngine(game_engine.BaseClass):
 
 class GameEngineTestCase(unittest.TestCase):
     def onSetup():
-        self.ut_file = Path.home() / 'Inherit!' / 'test' / 'unittest.zip'
+        self.ut_file = Path.home() / 'Inherit!' / 'test' / 'unittest'
         self.ut_file.unlink(missing_ok=True)
 
     def test_register_n_get(self):
@@ -82,23 +82,14 @@ class GameEngineTestCase(unittest.TestCase):
         game_engine.unregister()
         t = _TestGameEngine(name='test_save')
         game_engine.register(t)
-        game_engine.save('test', 'unittest')
+        game_engine.save('test', 'unittest', t)
         game_engine.unregister()
         # Names have been changed to protect the guilty
         t.name = 'test_load'
-        # Load without registering
-        ts = game_engine.load('test', 'unittest', False)
-        self.assertNotEqual(ts[0].name, t.name)
-        self.assertEqual(ts[0].name, 'test_save')
-        # Load and inspect
-        tl = game_engine.load_inspect('test', 'unittest', '_TestGameEngine')
-        self.assertEqual(len(tl), 1)
-        self.assertEqual(tl[0], 'test_save')
-        # Load and register
-        game_engine.load('test', 'unittest')
-        ts = game_engine.get('_TestGameEngine')
-        self.assertEqual(len(ts), 1)
-        self.assertEqual(ts[0].name, 'test_save')
+        # Load
+        ts = game_engine.load('test', 'unittest')
+        self.assertNotEqual(ts.name, t.name)
+        self.assertEqual(ts.name, 'test_save')
         # Testing list has to be done after save
         l = game_engine.load_list('test')
         self.assertEqual(len(l), 1)
@@ -109,8 +100,3 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.load_defaults('Tech')
         self.assertGreater(len(ts), 0)
         self.assertEqual(ts[0].__class__.__name__, 'Tech')
-        ts = game_engine.get('Tech')
-        self.assertEqual(len(ts), 0)
-        ts = game_engine.load_defaults('Tech', True)
-        ts = game_engine.get('Tech')
-        self.assertGreater(len(ts), 0)
