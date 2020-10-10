@@ -110,23 +110,13 @@ void main() {
 
 <div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Launch</td>
+        <td class="hfill" style="font-size: 200%">Launch</td>
+        <td><img class="button" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
     </tr></table>
+    <select id="launch_game" class="hfill" size="25" onchange="post('launch')" style="background: transparent; color: white"/>
+    <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
+    <!-- TODO move to host screen
     <table class="hfill">
-        <tr>
-            <td>Game:</td>
-            <td class="hfill" colspan="2"><select id="launch_game" class="hfill" onchange="post('launch')"/></td>
-            <td rowspan="3"><img class="button" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
-        </tr><tr>
-            <td class="hfill" colspan="2">Auto Generate: <input id="launch_autogen" type="checkbox" onchange="post('launch')"/></td>
-        </tr><tr>
-            <td>Player:</td>
-            <td class="hfill">
-                <select id="launch_player" class="hfill" onchange="post('launch')"/>
-                <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
-            </td>
-        </tr>
-    </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
         <tr>
             <td class="hfill"><input id="launch_player01" disabled="true" class="hfill"/></td>
@@ -197,6 +187,7 @@ void main() {
             <td style="text-align: right"><img class="button" id="button_generate_now" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
         </tr>
     </table>
+    -->
 </div>
 
 

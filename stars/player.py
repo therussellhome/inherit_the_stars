@@ -13,6 +13,7 @@ from .fleet import Fleet
 """ Default values (default, min, max)  """
 __defaults = {
     'date': [0.0, 0.0, sys.maxsize],
+    'load_key': [''], # used to validate the player file
     'race': [Race()],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
@@ -24,6 +25,7 @@ __defaults = {
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],
+    'tech': [[]], # tech tree
     'treaties': [{}],               
 }
 
@@ -33,7 +35,11 @@ class Player(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            self.name = 'Player ' + str(id(self))
+            if 'race' in kwargs:
+                self.name = self.race.name
+            else:
+                self.name = 'Player ' + str(id(self))
+        game_engine.register(self)
     
     """ calles fleets to do actions """
     def ship_action(self, action):
