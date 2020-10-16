@@ -34,4 +34,11 @@ class Cost(Minerals):
         return c
 
 
+    def __mul__(self, other):
+        m = super().__mul__(other)
+        c = Cost(**m.__dict__)
+        c.energy = self.energy * other
+        return c
+
+
 Cost.set_defaults(Cost, __defaults)

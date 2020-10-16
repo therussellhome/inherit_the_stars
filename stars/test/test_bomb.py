@@ -19,8 +19,8 @@ class BombTestCase(unittest.TestCase):
 
     def test_kill_pop(self):
         b = bomb.Bomb(minimum_pop_kill=123)
-        self.assertEqual(b.kill_population(1000000, 0), 123)
+        self.assertEqual(b.kill_population(1000000, 0), 1230)
         b = bomb.Bomb(percent_pop_kill=10)
-        self.assertEqual(b.kill_population(1000000, 0), 100000)
+        self.assertEqual(b.kill_population(1000000, 0), 1000000)
         b = bomb.Bomb(percent_pop_kill=10, max_defense=115)
         self.assertEqual(b.kill_population(1000000, 999999999999), 0)

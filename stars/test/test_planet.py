@@ -5,7 +5,32 @@ from colorsys import hls_to_rgb
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25000, 1)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default')
+
+    def test_orbit(self):
+        return #TODO orbit not finished
+        self.planet.age = 2097
+        self.assertEqual(self.planet.orbit(), )
+        
+    def test_get_color(self):
+        self.planet.radiation = 100
+        self.planet.temperature = -50
+        self.assertEqual(self.planet.get_color(), '#FF0000')
+        self.planet.temperature = 150
+        self.assertEqual(self.planet.get_color(), '#7F00FF')
+        self.planet.radiation = 0
+        self.assertEqual(self.planet.get_color(), '#7F40BF')
+        self.planet.radiation = 50
+        self.assertEqual(self.planet.get_color(), '#7F20DF')
+        self.planet.temperature = 75
+        self.assertEqual(self.planet.get_color(), '#2097DF')
+        self.planet.radiation = 100
+        self.assertEqual(self.planet.get_color(), '#009FFF')
+        #reset gravity, temperature and radiation so other functions don't have problems
+        self.planet.gravity = 50
+        self.planet.temperature = 50
+        self.planet.radiation = 50
+        self.assertEqual(self.planet.get_color(), '#20DF50')
 
     def test_orbit(self):
         return #TODO orbit not finished
@@ -34,7 +59,7 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_colonize(self):
         return #TODO
-        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', 25000, 1)
+        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default')
         self.assertEqual(self.planet.on_surface.people, 25000)
         self.assertEqual(self.planet.factories, 2)
 
@@ -129,7 +154,7 @@ class PlanetTestCase(unittest.TestCase):
     def test_auto_build(self):
         return #TODO
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25, 1)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default')
         self.planet.mines = 25
         self.planet.power_plants = 3
         self.planet.factories = 2

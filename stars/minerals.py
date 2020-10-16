@@ -38,4 +38,12 @@ class Minerals(Defaults):
         return m
 
 
+    def __mul__(self, other):
+        m = Minerals()
+        m.titanium = self.titanium * other
+        m.lithium = self.lithium * other
+        m.silicon = self.silicon * other
+        return m
+
+
 Minerals.set_defaults(Minerals, __defaults)
