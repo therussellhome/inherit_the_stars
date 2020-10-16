@@ -8,6 +8,7 @@ __all__ = [
     'defaults', 
     'energy_minister', 
     'engine',
+    'facility',
     'fleet',
     'game', 
     'game_engine', 

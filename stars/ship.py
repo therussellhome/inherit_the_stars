@@ -1,4 +1,5 @@
 import sys
+from .reference import Reference
 from .engine import Engine
 from .cargo import Cargo
 from . import game_engine
@@ -27,6 +28,7 @@ __defaults = {
     'cargo': [Cargo()],
     'expirence': [Expirence()],
     'cloak_percent': [0.0, 0.0, 100.0],
+    'player': [Reference()]
 }
 
 
@@ -66,7 +68,8 @@ class Ship(ShipDesign):
         return False
     
     def colonize(self, player, planet):
-        planet.colonize(player, copy.copy(player.colonize_minister), self.cargo, self.num_col_modules, self.num_col_modules, self.num_col_modules)
+        planet.colonize(player, copy.copy(player.get_minister(planet)), self.cargo.people)
+        self.cargo.people = 0
     
     def scan(self, player):
         pass
@@ -86,26 +89,25 @@ class Ship(ShipDesign):
     def create_salvage(self, location, cargo):
         pass
     
-    def scrap(self, location):
-        scrap_factor = 0.9
+    def scrap(self, planet, location, scrap_factor=0.9):
         t = round(self.cost.titanium * scrap_factor)
         l = round(self.cost.lithium * scrap_factor)
         s = round(self.cost.silicon * scrap_factor)
         cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
-        if location not in game_engine.get('Planet'):
+        if planet not in game_engine.get('Planet'):
             self.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:
-            location.on_surface += cargoo + self.cargo
+            planet.on_surface += cargoo + self.cargo
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
         if not planet.player.is_valid:
-            planet.on_surface.titanium += round(self.mining_rate * planet.get_consentration('titanium'))
-            planet.on_surface.silicon += round(self.mining_rate * planet.get_consentration('silicon'))
-            planet.on_surface.lithium += round(self.mining_rate * planet.get_consentration('lithium'))
-            planet.titanium_left -= round(self.mining_rate * planet.get_consentration('titanium'))
-            planet.silicon_left -= round(self.mining_rate * planet.get_consentration('silicon'))
-            planet.lithium_left -= round(self.mining_rate * planet.get_consentration('lithium'))
+            planet.on_surface.titanium += round(self.mining_rate * planet.get_availability('titanium'))
+            planet.on_surface.silicon += round(self.mining_rate * planet.get_availability('silicon'))
+            planet.on_surface.lithium += round(self.mining_rate * planet.get_availability('lithium'))
+            planet.remaining_minerals.titanium -= round(self.mining_rate * planet.get_availability('titanium') * self.percent_wasted)
+            planet.remaining_minerals.silicon -= round(self.mining_rate * planet.get_availability('silicon') * self.percent_wasted)
+            planet.remaining_minerals.lithium -= round(self.mining_rate * planet.get_availability('lithium') * self.percent_wasted)
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):
@@ -113,24 +115,19 @@ class Ship(ShipDesign):
             self.damage_armor -= amount
     
     """ Bombs the planet if the planet is colonized """
-    def bomb(self, p):
-        if p.is_valid:
-            if self.bomb.percent_pop_kill * p.num_colonists < self.bomb.minimum_kill:
-                p.num_colonist -= self.bomb.minimum_kill
-            else:
-                p.num_colonists *= self.bomb.percent_pop_kill
-            p.num_facilities -= self.bomb.percent_facilities_kill
-            if p.num_colonists < 0:
-                p.num_colonists = 0
-            if p.num_facilities < 0:
-                p.num_facilities = 0
-        return p
+    def bomb(self, planet, shields, pop):
+        facility_kill = 0
+        pop_kill = 0
+        for bomb in self.bombs:
+            facility_kill += bomb.kill_shield_facilities(pop, shields)
+            pop_kill += bomb.kill_population(pop, shields)
+        return facility_kill, pop_kill
 
     def calc_apparent_mass(self):
         return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
 
     def blow_up(self):
-        self.scrap(self.location)
+        self.scrap(self.location, self.location)
         pass
 
 
