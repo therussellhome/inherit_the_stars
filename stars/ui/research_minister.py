@@ -29,14 +29,14 @@ class ResearchMinister(Player):
         self.research_current_propulsion_tech_level = max(research_current_propulsion_tech_level, 0)
         self.research_current_construction_tech_level = max(research_current_construction_tech_level, 0)
         self.research_current_biotechnology_tech_level = max(research_current_biotechnology_tech_level, 0)
-        self.research_queue_item_1 = 
-        self.research_queue_item_2 = 
-        self.research_queue_item_3 = 
-        self.research_queue_item_4 = 
-        self.research_queue_item_5 = 
-        self.research_queue_item_6 = 
-        self.research_queue_item_7 = 
-        self.research_queue_item_8 = 
+        self.research_queue_item_1 = '' 
+        self.research_queue_item_2 = ''
+        self.research_queue_item_3 = ''
+        self.research_queue_item_4 = ''
+        self.research_queue_item_5 = ''
+        self.research_queue_item_6 = ''
+        self.research_queue_item_7 = ''
+        self.research_queue_item_8 = ''
     def calc_cost(self):
         energy_cost = research_modifier_energy * ((player.energy_tech_level ** 3) * 8 + 150)
         weapons_cost = research_modifier_weapons * ((player.weapons_tech_level ** 3) * 8 + 150) 
