@@ -1,15 +1,15 @@
 import sys
-from .reference import Reference
-from .engine import Engine
-from .cargo import Cargo
+import copy
+from . import stars_math
 from . import game_engine
+from .cargo import Cargo
 from random import randint
+from .engine import Engine
 from .location import Location
+from .expirence import Expirence
+from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from . import stars_math
-from .expirence import Expirence
-import copy
 
 """ Default values (default, min, max)  """
 __defaults = {

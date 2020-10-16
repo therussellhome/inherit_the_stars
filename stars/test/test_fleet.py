@@ -618,7 +618,7 @@ class FleetCase(unittest.TestCase):
             facilities = {
                 'Defense': facility.Facility(
                     quantity = 20,
-                    tech = tech.Tech(shield = 600)
+                    tech = tech.Tech(shields = 600)
                     ),
                 },
             )
