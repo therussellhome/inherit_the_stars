@@ -81,7 +81,6 @@ class StarSystem(Defaults):
             for p in self.planets[1:]:
                 if not p.is_colonized:
         """
-                    
 
 
 StarSystem.set_defaults(StarSystem, __defaults)
