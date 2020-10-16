@@ -10,7 +10,7 @@
         "__class__": "Cost"
     },
     "level": {
-        "weapons": 26,
+        "weapons": 25,
         "propulsion": 6,
         "__class__": "TechLevel"
     },

@@ -2,7 +2,7 @@
     "name": "Chernobyl",
     "category": "Bomb",
     "description": "Bombs an enemy planet from orbit. Smart bombs are better at penetrating planetary defenses but kill only a percentage of inhabitants.",
-    "race_requirements": "-Gaerhule"
+    "race_requirements": "-Gaerhule",
     "cost": {
         "titanium": 1,
         "lithium": 30,
@@ -11,7 +11,7 @@
         "__class__": "Cost"
     },
     "level": {
-        "weapons": 26,
+        "weapons": 25,
         "biotechnology": 17,
         "__class__": "TechLevel"
     },
