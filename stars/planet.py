@@ -92,24 +92,12 @@ class Planet(Defaults):
     """ Colonize the planet """
     # player is a Reference to Player
     # because minister names can change, minister is a string
-    def colonize(self, player, minister, population, create_facilities=True):
+    def colonize(self, player, minister):
         self.player = player
         self.minister = minister
-        self.on_surface.people = int(population)
-        if create_facilities:
-            self.facilities['Power'].colonize(self._get_facility_upgrade('Power'))
-            self.facilities['Factory'].colonize(self._get_facility_upgrade('Factory'))
-            self.facilities['Mine'].colonize(self._get_facility_upgrade('Mine'))
-    
-    """ Return the highest facility of the specified type """
-    def _get_facility_upgrade(self, facility_type):
-        #TODO this should reference player's tech tree
-        return
-        #best = Tech()
-        for f in game_engine.get('Tech'):
-            if f.category == 'Facility' and f.upgrade_path == facility_type and f.upgrade_level > best.upgrade_level and f.is_available(self.player):
-                best = f
-        return best
+        self.facilities['Power'].colonize(player)
+        self.facilities['Factory'].colonize(player)
+        self.facilities['Mine'].colonize(player)
     
     """ Grow the current population """
     def have_babies(self):
