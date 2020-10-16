@@ -5,7 +5,7 @@ from colorsys import hls_to_rgb
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25000)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default')
 
     def test_orbit(self):
         return #TODO orbit not finished
@@ -59,7 +59,7 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_colonize(self):
         return #TODO
-        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default', 25000)
+        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default')
         self.assertEqual(self.planet.on_surface.people, 25000)
         self.assertEqual(self.planet.factories, 2)
 
@@ -154,7 +154,7 @@ class PlanetTestCase(unittest.TestCase):
     def test_auto_build(self):
         return #TODO
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default', 25)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default')
         self.planet.mines = 25
         self.planet.power_plants = 3
         self.planet.factories = 2

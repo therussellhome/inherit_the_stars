@@ -52,9 +52,8 @@ class StarSystem(Defaults):
         if player:
             self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
             self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
-            self.planets[home].colonize(player, None, player.race.starting_colonists)
-            self.planets[home].power_plants = player.race.starting_power_plants
-            self.planets[home].mines = player.race.starting_mines
+            self.planets[home].colonize(player, 'Default')
+            self.planets[home].on_surface.population = player.race.starting_colonists
 
     """ returns the outer system coorenets """
     def get_outer_system(self, location):

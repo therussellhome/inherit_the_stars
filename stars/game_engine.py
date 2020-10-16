@@ -107,15 +107,6 @@ def load_defaults(save_type):
     return objs
 
 
-""" Save game and player files """
-def save_game():
-    # Fail if there is not a game loaded
-    game = get('Game')[0]
-    save('host', game.name, game)
-    for p in game.players:
-        save('games', game.name + ' - ' + p.name, p)
-
-
 """ Save object to file """
 def save(save_type, name, obj):
     dir_name = __game_dir / save_type
