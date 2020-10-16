@@ -130,7 +130,7 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).defenses / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_defense
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            print(workers, colonists_to_operate_facility, operate, facility.tech.shield)
+            #print(workers, colonists_to_operate_facility, operate, facility.tech.shield)
             return operate * facility.tech.shield
     
     """ power plants make energy """

@@ -1,4 +1,5 @@
 import sys
+from .reference import Reference
 from .engine import Engine
 from .cargo import Cargo
 from . import game_engine
@@ -27,6 +28,7 @@ __defaults = {
     'cargo': [Cargo()],
     'expirence': [Expirence()],
     'cloak_percent': [0.0, 0.0, 100.0],
+    'player': [Reference()]
 }
 
 
@@ -114,9 +116,12 @@ class Ship(ShipDesign):
     
     """ Bombs the planet if the planet is colonized """
     def bomb(self, planet, shields, pop):
+        facility_kill = 0
+        pop_kill = 0
         for bomb in self.bombs:
-            planet.facilities['Defense'].quantity -= bomb.kill_shield_facilities(pop, shields)
-            planet.on_surface.people -= bomb.kill_population(pop, shields)
+            facility_kill += bomb.kill_shield_facilities(pop, shields)
+            pop_kill += bomb.kill_population(pop, shields)
+        return facility_kill, pop_kill
 
     def calc_apparent_mass(self):
         return self.mass * (1 - self.cloak_percent)# - self.cloak_KT

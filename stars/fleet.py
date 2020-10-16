@@ -418,13 +418,19 @@ class Fleet(Defaults):
     
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
-        shields = planet.raise_shields()
-        pop = planet.on_surface.people
-        print(shields, pop)
         if planet in game_engine.get('Planet') and planet.player.is_valid and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
+            shields = planet.raise_shields()
+            pop = planet.on_surface.people
+            facility_kill = 0
+            pop_kill = 0
+            print(planet.facilities['Defense'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
             for ship in self.ships:
-                ship.bomb(planet, shields, pop)
-        print(planet.raise_shields(), planet.on_surface.people)
+                f_kill, p_kill = ship.bomb(planet, shields, pop)
+                facility_kill += f_kill
+                pop_kill += p_kill
+            planet.facilities['Defense'].quantity -= round(facility_kill / 100)
+            planet.on_surface.people -= round(pop_kill / 1000)
+            print(planet.facilities['Defense'].quantity, planet.on_surface.people)
     
     """ runs all of the actions """
     def execute(self, action, player):
