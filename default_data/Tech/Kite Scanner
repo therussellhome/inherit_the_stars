@@ -1,0 +1,23 @@
+{
+    "name": "Kite Scanner",
+    "category": "Scanner",
+    "description": "No, it's not named after the toy, it's named after a bird.  Look it up!  This scanner detects ships at a distance based on their apparent mass (which is affected by cloaking). This scanner can detect a 100kT ship at 125 light years, a 200kT ship at 250ly, and a 20kT ship at 25ly - EXCEPT it cannot see inside solar systems.",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 1800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 0,
+        "electronics": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 3,
+    "scanner": {
+        "normal": 125.0,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

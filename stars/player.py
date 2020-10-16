@@ -1,29 +1,32 @@
 import sys
 from . import game_engine
-from .cost import Cost
 from .defaults import Defaults
 from .energy_minister import EnergyMinister
 from .intel import Intel
-from .minister import Minister
+from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
 from .tech_level import TechLevel
+from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
     'date': [0.0, 0.0, sys.maxsize],
+    'load_key': [''], # used to validate the player file
     'race': [Race()],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
-    'ministers': [[Minister(name='default')]], # modifiable by the player
+    'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
     'tech_level': [TechLevel()],
     'next_tech_cost': [TechLevel()],
     'research_field': [''], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
-    'fleets': [[]]
+    'fleets': [[]],
+    'tech': [[]], # tech tree
+    'treaties': [{}],               
 }
 
 """ A player in a game """
@@ -32,7 +35,25 @@ class Player(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            self.name = 'Player ' + str(id(self))
+            if 'race' in kwargs:
+                self.name = self.race.name
+            else:
+                self.name = 'Player ' + str(id(self))
+        game_engine.register(self)
+    
+    """ calles fleets to do actions """
+    def ship_action(self, action):
+        for fleet in self.fleets:
+            fleet.execute(action, self)
+    
+    def create_fleet(self, **kwargs):
+        self.fleets.append(Fleet(**kwargs))
+    
+    def add_fleet(self, fleet):
+        self.fleets.append(fleet)
+    
+    def remove_fleet(self, fleet):
+        self.fleets.remove(fleet)
     
     """ Return the id for use as a temporary player token """
     def token(self):
@@ -72,6 +93,20 @@ class Player(Defaults):
         #TODO
         pass
 
+    """ Get the minister for a given planet """
+    def get_minister(self, planet):
+        for m in self.planetary_ministers:
+            if planet in m.planets:
+                return m
+        for m in self.planetary_ministers:
+            if m.new_colony_minister:
+                return m
+        return self.planetary_ministers[0]
+    
+    """ Calles the energy mineister and tells him to alocat the budget """
+    def get_budget(self):
+        self.energy_minister.allocate_budget(self.energy)
+    
     """ Build/research/other economic funcitions """
     # All non-ship / non-intel parts of take turn
     def manage_economy(self):
@@ -94,7 +129,7 @@ class Player(Defaults):
         for planet in planets:
             planet.generate_resources()
         # Allocated energy
-        self.energy_minister.allocate_budget(self.energy)
+        self.get_budget()
         # Existing build queue
         for planet in planets:
             planet.do_construction(False)
@@ -115,7 +150,7 @@ class Player(Defaults):
     """ Research """
     def _do_research(self):
         budget = self.energy_minister.check_budget('research', self.energy)
-        if not self.race.lrt_generalized_research:
+        if not self.race.lrt_MadScientist:
             while budget > 0:
                 budget = self._research_in_field(self.research_field, budget)
                 if budget > 0:

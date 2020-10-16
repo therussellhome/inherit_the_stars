@@ -5,21 +5,30 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'game_id': [''],
     'name': [''],
-    'players': [[]],
     'autogen_turn': [True],
-    'date': [3000.0, 0.0, sys.maxsize]
+    'date': [0.0, 0.0, sys.maxsize],
+    'load_key': [''], # used to validate the player file
+    'players': [[]], # all players for the game, these are updated/overwritten when the players are loaded from file
+    'systems': [[]], # all systems - suns and planets are part of systems
+    'wormholes': [[]], # all wormholes
+    'space_rocks': [[]], # all comets/mineral packets/salvage
 }
 
 
 """ Class defining a game and everything in it """
 class Game(Defaults):
-    """ Initialize defaults """
+    """ Initialize defaults and register self """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        game_engine.register(self)
+
 
     """ Generate a turn """
     def generate_turn(self):
+        first = self.players.pop(0)
+        self.players.append(first)
         fleets = game_engine.get('Fleet')
         fleets.sort(key=lambda x: x.initiative, reverse=True)
         game_engine.hyper_denials = []
@@ -30,9 +39,14 @@ class Game(Defaults):
         # TODO anomolies & mystery trader
         # Movment and scaning in hundredths of a turn
         for time_in in range(100):
+            # Execute fleet preactions
+            for preaction in Fleet.preactions:
+                for player in game_engine.get('Player/'):
+                    player.ship_action(preaction)
+            game_engine.hyper_denials = []
             # Fleet movement in initiative order
-            for fleet in reversed(fleets):
-                fleet.move(time_in/100)
+            for player in game_engine.get('Player/'):
+                player.ship_action('move')
             # Mineral packet movement
             for packet in game_engine.get('MineralPacket'):
                 packet.move()
@@ -41,6 +55,20 @@ class Game(Defaults):
                 planet.calculate_scanning()
             for station in game_engine.get('SpaceStation'):
                 station.calculate_scanning()
+            for player in game_engine.get('Player/'):
+                player.ship_action('scan')
+            for packet in game_engine.get('MineralPackets/'):
+                packet.calculate_scanning()
+            # Player build/research/other economic funcitions
+            for player in game_engine.get('Player/'):
+                player.manage_economy()
+            # Execute combat
+            for system in game_engine.get('StarSystem/'):
+                system.combat()
+            # Execute fleet actions in action order and reverse initiativve
+            for action in Fleet.actions:
+                for player in game_engine.get('Player/'):
+                    fleet.execute(action)
             for fleet in fleets:
                 fleet.calculate_scanning()
             for packet in game_engine.get('MineralPackets'):

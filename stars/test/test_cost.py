@@ -1,7 +1,6 @@
 import unittest
 from .. import *
 
-
 class CostTestCase(unittest.TestCase):
     def test_add(self):
         c1 = cost.Cost(energy=123, silicon=2)

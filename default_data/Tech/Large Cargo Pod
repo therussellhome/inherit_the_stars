@@ -1,0 +1,19 @@
+{
+    "name": "Large Cargo Pod",
+    "category": "Mech",
+    "description": "adds 250kT to your ship's cargo capacity",
+    "cost": {
+        "titanium": 10,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 1800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 8,
+        "__class__": "TechLevel"
+    },
+    "mass": 22,
+    "cargo_max": 250,
+    "__class__": "Tech"
+}

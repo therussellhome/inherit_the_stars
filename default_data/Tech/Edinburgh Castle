@@ -1,0 +1,19 @@
+{
+    "name": "Edinburgh Castle",
+    "category": "Armor",
+    "description": "lowest-tech armor",
+    "cost": {
+        "titanium": 5,
+        "lithium": 0,
+        "silicon": 0,
+        "energy": 1000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 60,
+    "armor": 50,
+    "__class__": "Tech"
+}

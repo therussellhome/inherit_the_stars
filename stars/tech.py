@@ -17,7 +17,7 @@ __defaults = {
     'upgrade_level': [0, 0, 100],
     'race_requirements': [''],
     'cost': [Cost()],
-    'cost_build_complete': [Cost()],
+    'cost_incomplete': [Cost()],
     'level': [TechLevel()],
     'mass': [0, 0, sys.maxsize],
     'cargo_max': [0, 0, sys.maxsize],
@@ -32,12 +32,15 @@ __defaults = {
     'engines': [[]], # engine.Engine()
     'shipyard': [0, 0, sys.maxsize],
     'repair': [0, 0, sys.maxsize],
+    'mines_laid': [0, 0, sys.maxsize],
     'fuel_generation': [0, 0, sys.maxsize],
     'hyperdenial': [HyperDenial()],
-    'special_type': [''],
-    'colonizer': [False],
-    'facility_output': [0.0, 0.0, sys.maxsize],
-    'mineral_depletion_rate': [0, 0, 100],
+    'is_colonizer': [False],
+    'is_trading_post': [False],
+    'energy_output': [0.0, 0.0, sys.maxsize],
+    'factory_capacity': [0.0, 0.0, sys.maxsize],
+    'mining_rate': [0.0, 0.0, sys.maxsize],
+    'mineral_depletion_factor': [0.0, 0.0, 100],
     'mat_trans_energy': [0, 0, sys.maxsize],
     'slots_general': [0, 0, sys.maxsize],
     'slots_depot': [0, 0, sys.maxsize],
@@ -54,9 +57,16 @@ class Tech(Defaults):
 
     """ Determine if the item is available for a player's tech level """
     def is_available(self, player):
-        if self.level.is_available(player.tech_level):
-            # TODO check race requirements
-            return True
-        return False
+        if not self.level.is_available(player.tech_level):
+            return False
+        if len(self.race_requirements) > 0:
+            traits = player.race.list_traits()
+            for requirement in self.race_requirements.split(' '):
+                if requirement[0] == '-':
+                    if requirement[1:] in traits:
+                        return False
+                elif requirement not in traits:
+                    return False
+        return True
 
 Tech.set_defaults(Tech, __defaults)
