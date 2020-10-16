@@ -1,0 +1,19 @@
+{
+    "name": "Gideon",
+    "category": "ECM",
+    "description": "Projects electronic decoys to draw enemy fire away from your ship in battle.",
+    "cost": {
+        "titanium": 2,
+        "silicon": 7,
+        "energy": 2000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 16,
+        "electronics": 22,
+        "__class__": "TechLevel"
+    },
+    "mass": 2,
+    "ecm": 50,
+    "__class__": "Tech"
+}
