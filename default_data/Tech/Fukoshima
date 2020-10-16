@@ -2,7 +2,7 @@
     "name": "Fukoshima",
     "category": "Bomb",
     "description": "Bombs an enemy planet from orbit. Smart bombs are better at penetrating planetary defenses but kill only a percentage of inhabitants.",
-    "race_requirements": "-Gaerhule"
+    "race_requirements": "-Gaerhule",
     "cost": {
         "titanium": 1,
         "lithium": 36,

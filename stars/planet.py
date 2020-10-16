@@ -115,9 +115,9 @@ class Planet(Defaults):
     def raise_shields(self):
         if self.player.is_valid:
             facility = self.facilities['Defense']
-            workers = self.player.get_minister(self.name).defense / 100 * self.on_surface.people * 1000
+            workers = self.player.get_minister(self.name).defenses / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_defense
-            operate = min([facility.quantity, workers / colonists_to_operate_facility])
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
             return operate * facility.tech.shields
     
     """ power plants make energy """
@@ -126,7 +126,7 @@ class Planet(Defaults):
             facility = self.facilities['Power']
             workers = self.player.get_minister(self.name).power_plants / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_power_plant
-            operate = min([facility.quantity, workers / colonists_to_operate_facility])
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
             self.player.energy += operate * facility.tech.energy_output
     
     """ calculates max production capasity """
@@ -135,8 +135,8 @@ class Planet(Defaults):
             facility = self.facilities['Factory']
             workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_factory
-            operate = min([facility.quantity, workers / colonists_to_operate_facility])
-            self.production = operate * facility.tech.production_capacity
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            self.production = (operate + 1) * facility.tech.production_capacity
     
     """ mines mine the minerals """
     def _mine_minerals(self):
@@ -151,9 +151,9 @@ class Planet(Defaults):
             self.on_surface.silicon += round(operate * minerals_per_mine)
             #TODO reduce mineral concentration
 
-    def get_consentration(self, mineral):
+    def get_availability(self, mineral):
         if mineral in ['titanium', 'silicon', 'lithium']:
-            return 0.1 * ((getattr(self, mineral + '_left') / 10000) ** 2) + 0.1
+            return (((getattr(self.remaining_minerals, mineral) / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
     
     """ minister checks to see if you need to build more facilities """
     def auto_build(self):

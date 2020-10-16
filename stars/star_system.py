@@ -5,6 +5,7 @@ from .reference import Reference
 from .location import Location
 from .sun import Sun
 from .planet import Planet
+from .cargo import Cargo
 
 
 __defaults = {
@@ -79,7 +80,6 @@ class StarSystem(Defaults):
             for p in self.planets[1:]:
                 if not p.is_colonized:
         """
-                    
 
 
 StarSystem.set_defaults(StarSystem, __defaults)

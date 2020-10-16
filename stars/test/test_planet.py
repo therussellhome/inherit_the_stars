@@ -32,6 +32,31 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.radiation = 50
         self.assertEqual(self.planet.get_color(), '#20DF50')
 
+    def test_orbit(self):
+        return #TODO orbit not finished
+        self.planet.age = 2097
+        self.assertEqual(self.planet.orbit(), )
+        
+    def test_get_color(self):
+        self.planet.radiation = 100
+        self.planet.temperature = -50
+        self.assertEqual(self.planet.get_color(), '#FF0000')
+        self.planet.temperature = 150
+        self.assertEqual(self.planet.get_color(), '#7F00FF')
+        self.planet.radiation = 0
+        self.assertEqual(self.planet.get_color(), '#7F40BF')
+        self.planet.radiation = 50
+        self.assertEqual(self.planet.get_color(), '#7F20DF')
+        self.planet.temperature = 75
+        self.assertEqual(self.planet.get_color(), '#2097DF')
+        self.planet.radiation = 100
+        self.assertEqual(self.planet.get_color(), '#009FFF')
+        #reset gravity, temperature and radiation so other functions don't have problems
+        self.planet.gravity = 50
+        self.planet.temperature = 50
+        self.planet.radiation = 50
+        self.assertEqual(self.planet.get_color(), '#20DF50')
+
     def test_colonize(self):
         return #TODO
         self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default')
