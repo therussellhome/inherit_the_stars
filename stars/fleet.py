@@ -306,7 +306,7 @@ class Fleet(Defaults):
         if planet.player.is_valid:
             return
         for ship in self.ships:
-            if ship.can_colonize and ship.cargo.people > 0:
+            if ship.colonizer and ship.cargo.people > 0:
                 ship.colonize(Reference(player), planet)
                 ship.scrap(planet, self.location)
                 self.ships.remove(ship)
@@ -423,14 +423,14 @@ class Fleet(Defaults):
             pop = planet.on_surface.people
             facility_kill = 0
             pop_kill = 0
-            print(planet.facilities['Defense'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
+            #print(planet.facilities['Defense'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
             for ship in self.ships:
                 f_kill, p_kill = ship.bomb(planet, shields, pop)
                 facility_kill += f_kill
                 pop_kill += p_kill
-            planet.facilities['Defense'].quantity -= round(facility_kill / 100)
-            planet.on_surface.people -= round(pop_kill / 1000)
-            print(planet.facilities['Defense'].quantity, planet.on_surface.people)
+            planet.facilities['Defense'].quantity -= round(facility_kill)
+            planet.on_surface.people -= round(pop_kill)
+            #print(planet.facilities['Defense'].quantity, planet.on_surface.people)
     
     """ runs all of the actions """
     def execute(self, action, player):

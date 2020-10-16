@@ -1255,14 +1255,12 @@ class FleetCase(unittest.TestCase):
         ship_3 = ship.Ship(
             location = location.Location(),
             cargo = cargo.Cargo(people = 100, cargo_max = 200),
-            num_col_modules = 1,
-            can_colonize = True,
+            colonizer = True,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
             cargo = cargo.Cargo(people = 200, cargo_max = 200),
-            num_col_modules = 2,
-            can_colonize = True,
+            colonizer = True,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -1283,7 +1281,7 @@ class FleetCase(unittest.TestCase):
         game_engine.register(p1)
         game_engine.register(ultimantico)
         fleet_two.execute('colonize', p1)
-        self.assertEqual(ultimantico.on_surface.people, 100)
+        self.assertEqual(ultimantico.on_surface.people, 200)
         self.assertEqual(ship_3 in fleet_two.ships, False)
         
     """

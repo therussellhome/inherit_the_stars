@@ -68,8 +68,8 @@ class Ship(ShipDesign):
         return False
     
     def colonize(self, player, planet):
-        planet.colonize(player, copy.copy(player.get_minister(planet)), self.cargo.people)
-        self.cargo.people = 0
+        planet.colonize(player, copy.copy(player.get_minister(planet)))
+        planet.on_surface += self.cargo
     
     def scan(self, player):
         pass

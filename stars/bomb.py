@@ -29,13 +29,13 @@ class Bomb(Defaults):
     def kill_shield_facilities(self, population, shield_strength):
         if self.percent_defense(population, shield_strength) >= randint(0, 100):
             return 0
-        return self.shield_kill
+        return self.shield_kill / 100
 
     """ Calculate the number of colonists to kill """
     def kill_population(self, population, shield_strength):
         if self.percent_defense(population, shield_strength) >= randint(0, 100):
             return 0
-        #print(max(self.minimum_pop_kill * 10, self.percent_pop_kill * 10.0 * population))
-        return max(self.minimum_pop_kill * 10, self.percent_pop_kill * 10.0 * population)# /100 per hundreth, *1,000 for population
+        #print(max(self.minimum_pop_kill / 100, self.percent_pop_kill / 100 * population))
+        return max(self.minimum_pop_kill / 100, self.percent_pop_kill / 100 * population)
 
 Bomb.set_defaults(Bomb, __defaults)
