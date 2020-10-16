@@ -19,8 +19,11 @@ class ReferenceTestCase(unittest.TestCase):
     def test_create(self):
         r = reference.Reference('_TestReference', 'ref 2')
         self.assertEqual(r.name, 'ref 2')
-        r = reference.Reference(reference='_TestReference/ref 2')
+        r = reference.Reference(__class='_TestReference', __name='ref 2')
         self.assertEqual(r.name, 'ref 2')
+        t = _TestReference(name='ref 3')
+        r = reference.Reference(t)
+        self.assertEqual(r.name, 'ref 3')
 
     def test_throw(self):
         r = reference.Reference('_TestRef', 'ref 3')
