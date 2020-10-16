@@ -1,0 +1,28 @@
+{
+    "name": "Hurricane Andrew",
+    "category": "Bomb",
+    "description": "A bomb specifically for destroying planetary shields. Kills very few colonists. Planetary shields defend against these at the same rate as smart bombs.",
+    "cost": {
+        "titanium": 2,
+        "lithium": 15,
+        "silicon": 18,
+        "energy": 700,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 5,
+        "electronics": 8,
+        "__class__": "TechLevel"
+    },
+    "mass": 120,
+    "bombs": [
+        {
+            "percent_pop_kill": 0.2,
+            "minimum_pop_kill": 0,
+            "shield_kill": 20,
+            "max_defense": 85,
+            "__class__": "Bomb"
+        }
+    ],
+    "__class__": "Tech"
+}

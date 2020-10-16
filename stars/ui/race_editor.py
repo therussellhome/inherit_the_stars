@@ -284,7 +284,7 @@ class RaceEditor(Defaults):
             r = Race()
             for key in Race.defaults:
                 setattr(r, key, getattr(self, 'race_editor_' + key))
-            game_engine.save('races', self.race_editor_name, [r])
+            game_engine.save('races', self.race_editor_name, r)
 
 
 for key in Race.defaults:

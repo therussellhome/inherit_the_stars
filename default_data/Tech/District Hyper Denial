@@ -1,7 +1,7 @@
 {
     "name": "District Hyper Denial",
     "category": "Depot",
-    "description": "Generates a hyper-denial field with a 135 light-year radius, which can damage the engines of enemy ships traveling through it and prevents them from traveling quickly.  It also detects any active engines within the field.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "description": "Generates a hyper-denial field with a 135 light-year radius, which can damage the engines of enemy ships traveling through it and prevents them from traveling quickly.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
     "race_requirements": "SpacedOut, -Aku'Ultan",
     "cost": {
         "titanium": 26,
