@@ -552,6 +552,19 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ultimantico.remaining_minerals.silicon, 39977)
     '''
     def test_lay_mines(self):
+        ultimantico = planet.Planet(
+            location = location.Location(),
+            remaining_minerals = minerals.Minerals(
+                titanium = 40000,
+                silicon = 40000,
+                lithium = 40000,
+                ),
+            )
+        system = star_system.StarSystem(
+            
+            )
+            gravity = 50,
+            )
         ship_3 = ship.Ship(
             location = location.Location(),
             )
@@ -572,6 +585,8 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('lay_mines', p1)
+        self.assertEqual(ultimantico.mines, 39977)
+        
     '''
     def test_bomb(self):
         p1 = player.Player(
