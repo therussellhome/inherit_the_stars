@@ -554,11 +554,7 @@ class FleetCase(unittest.TestCase):
     def test_lay_mines(self):
         ultimantico = planet.Planet(
             location = location.Location(),
-            remaining_minerals = minerals.Minerals(
-                titanium = 40000,
-                silicon = 40000,
-                lithium = 40000,
-                ),
+            ),
             )
         system = star_system.StarSystem(
             
