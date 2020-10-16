@@ -251,7 +251,7 @@ class RaceEditor(Defaults):
         self.options_race_editor_file_to_load = game_engine.load_list('races')
         self.options_race_editor_file_to_load.insert(0, '')
         if self.race_editor_file_to_load != '':
-            objs = game_engine.load('races', self.race_editor_file_to_load, False)
+            objs = [game_engine.load('races', self.race_editor_file_to_load)]
             # populate self
             for r in objs:
                 if r.__class__.__name__ == 'Race' and r.name == self.race_editor_file_to_load:
