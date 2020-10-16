@@ -1,5 +1,6 @@
+from .treaties import Treaty
 from .player import Player
-from .game import Players
+from sys import maxsize
 
 
 """ Default values (default, min, max)  """
@@ -32,9 +33,9 @@ __defaults = {
     "foreign_d2_cost_p1_to_p2_fuel": [''],
     "foreign_d2_cost_p2_to_p1_fuel": [''],
     "foreign_d2_cost_p1_to_p2_stargate": [''],
+    "foreign_d2_cost_p2_to_p1_stargate": [''],
     'foreign_d2_p1_to_p2_safe_passage': [False],
     'foreign_d2_p2_to_p1_safe_passage': [False],
-    "foreign_d2_cost_p2_to_p1_stargate": [''],
     "foreign_d2_p1_to_p2_intel_sharing": [False],
     "foreign_d2_p2_to_p1_intel_sharing": [False],
     "foreign_d2_negotiation": [''],
@@ -259,8 +260,8 @@ __defaults = {
     "foreign_d15_p1_to_p2_intel_sharing": [False],
     "foreign_d15_p2_to_p1_intel_sharing": [False],
     "foreign_d15_negotiation": [''],
-    'foreign_p1': [[]],
-    'foreign_p2': [[]],
+    'foreign_p1': [''],
+    'foreign_p2': [''],
     'foreign_relation': [['nutral']],
     'foreign_options_relation': [['team', 'nutral', 'enemy']],
     'foreign_cost_p1_to_p2_titanium': [100, 0, maxsize],
@@ -305,16 +306,16 @@ __defaults = {
 """ """
 class ForeignMinister(Player):
     
-    def calc_ds(self, var, i, offset, player, me):
+    def calc_ds(self, var, i, player, me):
         l = var.split('_')
         d = ''
         if not getattr(me.treaties[player.name], l[0]+'_is_selling_'+l[3]):
             d = '-'
         else:
             d = getattr(me.treaties[player.name], 'cost_'+var)
-        setattr(self, 'foreign_d'+str(i+offset)+'_cost_'+var, d)
+        setattr(self, 'foreign_d'+str(i+1)+'_cost_'+var, d)
     
-    def calc_di(self, var, i, offset, player, me):
+    def calc_di(self, var, i, player, me):
         lispt = ['planet_report', 'scanner_report_of_enemies', 'scanner_report_of_nutals', 'scanner_report_of_teammates', 'scanner_report_of_intersteler_objects', 'fleet_reports', 'intel_of_defences']
         l = var.split('_')
         d = []
@@ -325,7 +326,7 @@ class ForeignMinister(Player):
             v = True
         elif not any(d):
             v = False
-        setattr(self, 'foreign_d'+str(i+offset)+'_'+var, v)
+        setattr(self, 'foreign_d'+str(i+1)+'_'+var, v)
     
     
     """ Interact with UI """
@@ -340,28 +341,24 @@ class ForeignMinister(Player):
                 setattr(self, key, 'foreign_'+key)
             me.pending_treaties[foreign_p2] = treety
         """ set display values """
-        p = 1
-        for i in range(len(game_engine.players)):
-            if me == game_engine.players[i]:
-                p -= 1
-            else:
-                setattr(self, 'foreign_player'+str(i+p)+'_name', players[i].name)
-                setattr(self, 'foreign_d'+str(i+p)+'_relation', me.treaties[players[i].name].relation)
-                self.calc_ds('p1_to_p2_lithium', i, p, players[i], me)
-                self.calc_ds('p2_to_p1_lithium', i, p, players[i], me)
-                self.calc_ds('p1_to_p2_silicon', i, p, players[i], me)
-                self.calc_ds('p2_to_p1_silicon', i, p, players[i], me)
-                self.calc_ds('p1_to_p2_titanium', i, p, players[i], me)
-                self.calc_ds('p2_to_p1_titanium', i, p, players[i], me)
-                self.calc_ds('p1_to_p2_fuel', i, p, players[i], me)
-                self.calc_ds('p2_to_p1_fuel', i, p, players[i], me)
-                self.calc_ds('p1_to_p2_stargate', i, p, players[i], me)
-                self.calc_ds('p2_to_p1_stargate', i, p, players[i], me)
-                setattr(self, 'foreign_d'+str(i+p)+'_p1_to_p2_safe_passage', me.treaties[players[i].name].p1_to_p2_safe_passage)
-                setattr(self, 'foreign_d'+str(i+p)+'_p2_to_p1_safe_passage', me.treaties[players[i].name].p2_to_p1_safe_passage)
-                self.calc_di('p1_to_p2_intel_sharing', i, p, players[i], me)
-                self.calc_di('p2_to_p1_intel_sharing', i, p, players[i], me)
-                setattr(self, 'foreign_d'+str(i+p)+'_negotiation', me.treaties[players[i].name].status)
+        for i in range(len(me.seen_players)):
+            setattr(self, 'foreign_player'+str(i+1)+'_name', players[i].name)
+            setattr(self, 'foreign_d'+str(i+1)+'_relation', me.treaties[players[i].name].relation)
+            self.calc_ds('p1_to_p2_lithium', i, players[i], me)
+            self.calc_ds('p2_to_p1_lithium', i, players[i], me)
+            self.calc_ds('p1_to_p2_silicon', i, players[i], me)
+            self.calc_ds('p2_to_p1_silicon', i, players[i], me)
+            self.calc_ds('p1_to_p2_titanium', i, players[i], me)
+            self.calc_ds('p2_to_p1_titanium', i, players[i], me)
+            self.calc_ds('p1_to_p2_fuel', i, players[i], me)
+            self.calc_ds('p2_to_p1_fuel', i, players[i], me)
+            self.calc_ds('p1_to_p2_stargate', i, players[i], me)
+            self.calc_ds('p2_to_p1_stargate', i, players[i], me)
+            setattr(self, 'foreign_d'+str(i+1)+'_p1_to_p2_safe_passage', me.treaties[players[i].name].p1_to_p2_safe_passage)
+            setattr(self, 'foreign_d'+str(i+1)+'_p2_to_p1_safe_passage', me.treaties[players[i].name].p2_to_p1_safe_passage)
+            self.calc_di('p1_to_p2_intel_sharing', i, players[i], me)
+            self.calc_di('p2_to_p1_intel_sharing', i, players[i], me)
+            setattr(self, 'foreign_d'+str(i+1)+'_negotiation', me.treaties[players[i].name].status)
         pass
 
 

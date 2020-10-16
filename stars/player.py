@@ -12,6 +12,7 @@ from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'seen_players': [[]],
     'date': [0.0, 0.0, sys.maxsize],
     'load_key': [''], # used to validate the player file
     'race': [Race()],
@@ -67,6 +68,7 @@ class Player(Defaults):
             self.intel[reference] = Intel(reference=reference)
         self.intel[reference].add_report(date=self.date, **kwargs)
         # If seeing a new player then capture that
+        # TODO put player name in seen_players
         if 'player' in kwargs:
             reference = 'Player/' + kwargs['player']
             if reference not in self.intel:
