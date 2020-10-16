@@ -16,8 +16,10 @@ __defaults = {
     "foreign_d1_cost_p2_to_p1_fuel": [''],
     "foreign_d1_cost_p1_to_p2_stargate": [''],
     "foreign_d1_cost_p2_to_p1_stargate": [''],
-    "foreign_d1_p1_to_p2_intel_sharing": [''],
-    "foreign_d1_p2_to_p1_intel_sharing": [''],
+    'foreign_d1_p1_to_p2_safe_passage': [False],
+    'foreign_d1_p2_to_p1_safe_passage': [False],
+    "foreign_d1_p1_to_p2_intel_sharing": [False],
+    "foreign_d1_p2_to_p1_intel_sharing": [False],
     "foreign_d1_negotiation": [''],
     "foreign_player2_name": [''],
     "foreign_d2_relation": [''],
@@ -30,9 +32,11 @@ __defaults = {
     "foreign_d2_cost_p1_to_p2_fuel": [''],
     "foreign_d2_cost_p2_to_p1_fuel": [''],
     "foreign_d2_cost_p1_to_p2_stargate": [''],
+    'foreign_d2_p1_to_p2_safe_passage': [False],
+    'foreign_d2_p2_to_p1_safe_passage': [False],
     "foreign_d2_cost_p2_to_p1_stargate": [''],
-    "foreign_d2_p1_to_p2_intel_sharing": [''],
-    "foreign_d2_p2_to_p1_intel_sharing": [''],
+    "foreign_d2_p1_to_p2_intel_sharing": [False],
+    "foreign_d2_p2_to_p1_intel_sharing": [False],
     "foreign_d2_negotiation": [''],
     "foreign_player3_name": [''],
     "foreign_d3_relation": [''],
@@ -46,8 +50,10 @@ __defaults = {
     "foreign_d3_cost_p2_to_p1_fuel": [''],
     "foreign_d3_cost_p1_to_p2_stargate": [''],
     "foreign_d3_cost_p2_to_p1_stargate": [''],
-    "foreign_d3_p1_to_p2_intel_sharing": [''],
-    "foreign_d3_p2_to_p1_intel_sharing": [''],
+    'foreign_d3_p1_to_p2_safe_passage': [False],
+    'foreign_d3_p2_to_p1_safe_passage': [False],
+    "foreign_d3_p1_to_p2_intel_sharing": [False],
+    "foreign_d3_p2_to_p1_intel_sharing": [False],
     "foreign_d3_negotiation": [''],
     "foreign_player4_name": [''],
     "foreign_d4_relation": [''],
@@ -61,8 +67,10 @@ __defaults = {
     "foreign_d4_cost_p2_to_p1_fuel": [''],
     "foreign_d4_cost_p1_to_p2_stargate": [''],
     "foreign_d4_cost_p2_to_p1_stargate": [''],
-    "foreign_d4_p1_to_p2_intel_sharing": [''],
-    "foreign_d4_p2_to_p1_intel_sharing": [''],
+    'foreign_d4_p1_to_p2_safe_passage': [False],
+    'foreign_d4_p2_to_p1_safe_passage': [False],
+    "foreign_d4_p1_to_p2_intel_sharing": [False],
+    "foreign_d4_p2_to_p1_intel_sharing": [False],
     "foreign_d4_negotiation": [''],
     "foreign_player5_name": [''],
     "foreign_d5_relation": [''],
@@ -76,8 +84,10 @@ __defaults = {
     "foreign_d5_cost_p2_to_p1_fuel": [''],
     "foreign_d5_cost_p1_to_p2_stargate": [''],
     "foreign_d5_cost_p2_to_p1_stargate": [''],
-    "foreign_d5_p1_to_p2_intel_sharing": [''],
-    "foreign_d5_p2_to_p1_intel_sharing": [''],
+    'foreign_d5_p1_to_p2_safe_passage': [False],
+    'foreign_d5_p2_to_p1_safe_passage': [False],
+    "foreign_d5_p1_to_p2_intel_sharing": [False],
+    "foreign_d5_p2_to_p1_intel_sharing": [False],
     "foreign_d5_negotiation": [''],
     "foreign_player6_name": [''],
     "foreign_d6_relation": [''],
@@ -91,8 +101,10 @@ __defaults = {
     "foreign_d6_cost_p2_to_p1_fuel": [''],
     "foreign_d6_cost_p1_to_p2_stargate": [''],
     "foreign_d6_cost_p2_to_p1_stargate": [''],
-    "foreign_d6_p1_to_p2_intel_sharing": [''],
-    "foreign_d6_p2_to_p1_intel_sharing": [''],
+    'foreign_d6_p1_to_p2_safe_passage': [False],
+    'foreign_d6_p2_to_p1_safe_passage': [False],
+    "foreign_d6_p1_to_p2_intel_sharing": [False],
+    "foreign_d6_p2_to_p1_intel_sharing": [False],
     "foreign_d6_negotiation": [''],
     "foreign_player7_name": [''],
     "foreign_d7_relation": [''],
@@ -106,8 +118,10 @@ __defaults = {
     "foreign_d7_cost_p2_to_p1_fuel": [''],
     "foreign_d7_cost_p1_to_p2_stargate": [''],
     "foreign_d7_cost_p2_to_p1_stargate": [''],
-    "foreign_d7_p1_to_p2_intel_sharing": [''],
-    "foreign_d7_p2_to_p1_intel_sharing": [''],
+    'foreign_d7_p1_to_p2_safe_passage': [False],
+    'foreign_d7_p2_to_p1_safe_passage': [False],
+    "foreign_d7_p1_to_p2_intel_sharing": [False],
+    "foreign_d7_p2_to_p1_intel_sharing": [False],
     "foreign_d7_negotiation": [''],
     "foreign_player8_name": [''],
     "foreign_d8_relation": [''],
@@ -121,8 +135,10 @@ __defaults = {
     "foreign_d8_cost_p2_to_p1_fuel": [''],
     "foreign_d8_cost_p1_to_p2_stargate": [''],
     "foreign_d8_cost_p2_to_p1_stargate": [''],
-    "foreign_d8_p1_to_p2_intel_sharing": [''],
-    "foreign_d8_p2_to_p1_intel_sharing": [''],
+    'foreign_d8_p1_to_p2_safe_passage': [False],
+    'foreign_d8_p2_to_p1_safe_passage': [False],
+    "foreign_d8_p1_to_p2_intel_sharing": [False],
+    "foreign_d8_p2_to_p1_intel_sharing": [False],
     "foreign_d8_negotiation": [''],
     "foreign_player9_name": [''],
     "foreign_d9_relation": [''],
@@ -136,8 +152,10 @@ __defaults = {
     "foreign_d9_cost_p2_to_p1_fuel": [''],
     "foreign_d9_cost_p1_to_p2_stargate": [''],
     "foreign_d9_cost_p2_to_p1_stargate": [''],
-    "foreign_d9_p1_to_p2_intel_sharing": [''],
-    "foreign_d9_p2_to_p1_intel_sharing": [''],
+    'foreign_d9_p1_to_p2_safe_passage': [False],
+    'foreign_d9_p2_to_p1_safe_passage': [False],
+    "foreign_d9_p1_to_p2_intel_sharing": [False],
+    "foreign_d9_p2_to_p1_intel_sharing": [False],
     "foreign_d9_negotiation": [''],
     "foreign_player10_name": [''],
     "foreign_d10_relation": [''],
@@ -151,8 +169,10 @@ __defaults = {
     "foreign_d10_cost_p2_to_p1_fuel": [''],
     "foreign_d10_cost_p1_to_p2_stargate": [''],
     "foreign_d10_cost_p2_to_p1_stargate": [''],
-    "foreign_d10_p1_to_p2_intel_sharing": [''],
-    "foreign_d10_p2_to_p1_intel_sharing": [''],
+    'foreign_d10_p1_to_p2_safe_passage': [False],
+    'foreign_d10_p2_to_p1_safe_passage': [False],
+    "foreign_d10_p1_to_p2_intel_sharing": [False],
+    "foreign_d10_p2_to_p1_intel_sharing": [False],
     "foreign_d10_negotiation": [''],
     "foreign_player11_name": [''],
     "foreign_d11_relation": [''],
@@ -166,8 +186,10 @@ __defaults = {
     "foreign_d11_cost_p2_to_p1_fuel": [''],
     "foreign_d11_cost_p1_to_p2_stargate": [''],
     "foreign_d11_cost_p2_to_p1_stargate": [''],
-    "foreign_d11_p1_to_p2_intel_sharing": [''],
-    "foreign_d11_p2_to_p1_intel_sharing": [''],
+    'foreign_d11_p1_to_p2_safe_passage': [False],
+    'foreign_d11_p2_to_p1_safe_passage': [False],
+    "foreign_d11_p1_to_p2_intel_sharing": [False],
+    "foreign_d11_p2_to_p1_intel_sharing": [False],
     "foreign_d11_negotiation": [''],
     "foreign_player12_name": [''],
     "foreign_d12_relation": [''],
@@ -181,8 +203,10 @@ __defaults = {
     "foreign_d12_cost_p2_to_p1_fuel": [''],
     "foreign_d12_cost_p1_to_p2_stargate": [''],
     "foreign_d12_cost_p2_to_p1_stargate": [''],
-    "foreign_d12_p1_to_p2_intel_sharing": [''],
-    "foreign_d12_p2_to_p1_intel_sharing": [''],
+    'foreign_d12_p1_to_p2_safe_passage': [False],
+    'foreign_d12_p2_to_p1_safe_passage': [False],
+    "foreign_d12_p1_to_p2_intel_sharing": [False],
+    "foreign_d12_p2_to_p1_intel_sharing": [False],
     "foreign_d12_negotiation": [''],
     "foreign_player13_name": [''],
     "foreign_d13_relation": [''],
@@ -196,8 +220,10 @@ __defaults = {
     "foreign_d13_cost_p2_to_p1_fuel": [''],
     "foreign_d13_cost_p1_to_p2_stargate": [''],
     "foreign_d13_cost_p2_to_p1_stargate": [''],
-    "foreign_d13_p1_to_p2_intel_sharing": [''],
-    "foreign_d13_p2_to_p1_intel_sharing": [''],
+    'foreign_d13_p1_to_p2_safe_passage': [False],
+    'foreign_d13_p2_to_p1_safe_passage': [False],
+    "foreign_d13_p1_to_p2_intel_sharing": [False],
+    "foreign_d13_p2_to_p1_intel_sharing": [False],
     "foreign_d13_negotiation": [''],
     "foreign_player14_name": [''],
     "foreign_d14_relation": [''],
@@ -211,8 +237,10 @@ __defaults = {
     "foreign_d14_cost_p2_to_p1_fuel": [''],
     "foreign_d14_cost_p1_to_p2_stargate": [''],
     "foreign_d14_cost_p2_to_p1_stargate": [''],
-    "foreign_d14_p1_to_p2_intel_sharing": [''],
-    "foreign_d14_p2_to_p1_intel_sharing": [''],
+    'foreign_d14_p1_to_p2_safe_passage': [False],
+    'foreign_d14_p2_to_p1_safe_passage': [False],
+    "foreign_d14_p1_to_p2_intel_sharing": [False],
+    "foreign_d14_p2_to_p1_intel_sharing": [False],
     "foreign_d14_negotiation": [''],
     "foreign_player15_name": [''],
     "foreign_d15_relation": [''],
@@ -226,9 +254,51 @@ __defaults = {
     "foreign_d15_cost_p2_to_p1_fuel": [''],
     "foreign_d15_cost_p1_to_p2_stargate": [''],
     "foreign_d15_cost_p2_to_p1_stargate": [''],
-    "foreign_d15_p1_to_p2_intel_sharing": [''],
-    "foreign_d15_p2_to_p1_intel_sharing": [''],
+    'foreign_d15_p1_to_p2_safe_passage': [False],
+    'foreign_d15_p2_to_p1_safe_passage': [False],
+    "foreign_d15_p1_to_p2_intel_sharing": [False],
+    "foreign_d15_p2_to_p1_intel_sharing": [False],
     "foreign_d15_negotiation": [''],
+    'foreign_p1': [[]],
+    'foreign_p2': [[]],
+    'foreign_relation': [['nutral']],
+    'foreign_options_relation': [['team', 'nutral', 'enemy']],
+    'foreign_cost_p1_to_p2_titanium': [100, 0, maxsize],
+    'foreign_p1_is_selling_titanium': [False],
+    'foreign_cost_p2_to_p1_titanium': [100, 0, maxsize],
+    'foreign_p2_is_selling_titanium': [False],
+    'foreign_cost_p1_to_p2_silicon': [100, 0, maxsize],
+    'foreign_p1_is_selling_silicon': [False],
+    'foreign_cost_p2_to_p1_silicon': [100, 0, maxsize],
+    'foreign_p2_is_selling_silicon': [False],
+    'foreign_cost_p1_to_p2_lithium': [100, 0, maxsize],
+    'foreign_p1_is_selling_lithium': [False],
+    'foreign_cost_p2_to_p1_lithium': [100, 0, maxsize],
+    'foreign_p2_is_selling_lithium': [False],
+    'foreign_cost_p1_to_p2_fuel': [100, 0, maxsize],
+    'foreign_p1_is_selling_fuel': [False],
+    'foreign_cost_p2_to_p1_fuel': [100, 0, maxsize],
+    'foreign_p2_is_selling_fuel': [False],
+    'foreign_cost_p1_to_p2_stargate': [5000, 0, maxsize],
+    'foreign_p1_is_selling_stargate': [False],
+    'foreign_cost_p2_to_p1_stargate': [5000, 0, maxsize],
+    'foreign_p2_is_selling_stargate': [False],
+    'foreign_p1_to_p2_safe_passage': [False],
+    'foreign_p2_to_p1_safe_passage': [False],
+    'foreign_shared_p1_planet_reports': [False],
+    'foreign_shared_p1_scanner_report_of_enemies': [False],
+    'foreign_shared_p1_scanner_report_of_nutals': [False],
+    'foreign_shared_p1_scanner_report_of_teammates': [False],
+    'foreign_shared_p1_scanner_report_of_intersteler_objects': [False],
+    'foreign_shared_p1_fleet_reports': [False],
+    'foreign_shared_p1_intel_of_defences': [False],
+    'foreign_shared_p2_planet_reports': [False],
+    'foreign_shared_p2_scanner_report_of_enemies': [False],
+    'foreign_shared_p2_scanner_report_of_nutals': [False],
+    'foreign_shared_p2_scanner_report_of_teammates': [False],
+    'foreign_shared_p2_scanner_report_of_unowned_things': [False],
+    'foreign_shared_p2_fleet_reports': [False],
+    'foreign_shared_p2_knowlage_of_hiper_dinile_and_system_defence': [False],
 }
 
 
@@ -245,25 +315,38 @@ class ForeignMinister(Player):
         setattr(self, 'foreign_d'+str(i+offset)+'_cost_'+var, d)
     
     def calc_di(self, var, i, offset, player, me):
-        lisp = ['planet_report', 'scanner_report_of_enemies', 'scanner_report_of_nutals', 'scanner_report_of_teammates', 'scanner_report_of_intersteler_objects', 'fleet_reports', 'knowlage_of_hiper_dinile_and_system_defence', 'passcode_for_hiper_dinile', 'passcode_for_system_defence']
+        lispt = ['planet_report', 'scanner_report_of_enemies', 'scanner_report_of_nutals', 'scanner_report_of_teammates', 'scanner_report_of_intersteler_objects', 'fleet_reports', 'intel_of_defences']
         l = var.split('_')
         d = []
-        for t in lisp:
-            d.append(getattr(player.treaties[player], 'shared_'+l[0]+t))
-        v = all(d)+any(d)
+        v = None
+        for t in lispt:
+            d.append(getattr(me.treaties[player.name], 'shared_'+l[0]+t))
+        if all(d):
+            v = True
+        elif not any(d):
+            v = False
         setattr(self, 'foreign_d'+str(i+offset)+'_'+var, v)
     
     
     """ Interact with UI """
     def _post(self, action, me):
+        if action == 'revert':
+            self.reset_to_default()
+            for key in me.treaties[foreign_p2].__dict__:
+                setattr(self, 'foreign_'+key, me.treaties[foreign_p2].key)
+        if action == 'propose':
+            treety = treaty()
+            for key in treety.__dict__:
+                setattr(self, key, 'foreign_'+key)
+            me.pending_treaties[foreign_p2] = treety
         """ set display values """
         p = 1
         for i in range(len(game_engine.players)):
             if me == game_engine.players[i]:
                 p -= 1
             else:
-                setattr(me, 'foreign_player'+str(i+p)+'_name', players[i].name)
-                setattr(me, 'foreign_d'+str(i+p)+'_relation', me.treaties[players[i].name].relation)
+                setattr(self, 'foreign_player'+str(i+p)+'_name', players[i].name)
+                setattr(self, 'foreign_d'+str(i+p)+'_relation', me.treaties[players[i].name].relation)
                 self.calc_ds('p1_to_p2_lithium', i, p, players[i], me)
                 self.calc_ds('p2_to_p1_lithium', i, p, players[i], me)
                 self.calc_ds('p1_to_p2_silicon', i, p, players[i], me)
@@ -274,9 +357,11 @@ class ForeignMinister(Player):
                 self.calc_ds('p2_to_p1_fuel', i, p, players[i], me)
                 self.calc_ds('p1_to_p2_stargate', i, p, players[i], me)
                 self.calc_ds('p2_to_p1_stargate', i, p, players[i], me)
+                setattr(self, 'foreign_d'+str(i+p)+'_p1_to_p2_safe_passage', me.treaties[players[i].name].p1_to_p2_safe_passage)
+                setattr(self, 'foreign_d'+str(i+p)+'_p2_to_p1_safe_passage', me.treaties[players[i].name].p2_to_p1_safe_passage)
                 self.calc_di('p1_to_p2_intel_sharing', i, p, players[i], me)
                 self.calc_di('p2_to_p1_intel_sharing', i, p, players[i], me)
-                setattr(me, 'foreign_d'+str(i+p)+'_negotiation', me.treaties[player[i].name].status)
+                setattr(self, 'foreign_d'+str(i+p)+'_negotiation', me.treaties[players[i].name].status)
         pass
 
 
