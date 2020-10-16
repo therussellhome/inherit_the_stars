@@ -1,6 +1,8 @@
 from .. import game_engine
 from ..defaults import Defaults 
 
+#TODO THIS IS A COPY OF THE OLD LAUNCH THAT NEEDS TO BE CONVERTED FOR HOST
+
 
 """ Default values (default, min, max)  """
 __defaults = {
