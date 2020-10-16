@@ -505,3 +505,34 @@ Fleet.actions = [
     'patrol',
     'route',
 ]
+""" In-system movment mine interaction """
+''' Aryon:
+    """ protect self first then help other ships """
+        mines = system.mines
+        track = []
+        for i in range(len(self.ships)):
+            sweep = self.ships[i].sweep_mines(mines)
+            attract = self.ships[i].attract_mines(mines)
+            track.append([sweep-attract, sweep, attract, self.ships[i]])
+        track.sort(reverse = True)
+        sweep = 0
+        for tracked in track:
+            sweep += tracked[1] 
+            sweep, attack = max(0, sweep - tracked[2]), max(0, tracked[2] - sweep)
+            system.sweep(tracked[2]-attack)
+            tracked[3].hit_mines(attack, system)
+        system.sweep(sweep)
+'''
+''' Tiernan:
+    """ evenly distributed protection """
+        mines = system.mines
+        sweep = 0
+        attract = 0
+        for ship in self.ships:
+            sweep += self.ship.sweep_mines(mines)
+            attract += self.ship.attract_mines(mines)
+        system.sweep(sweep)
+        attack = max(0, attract - sweep)/attract
+        for ship in self.ships:
+            ship.hit_mines(round(ship.attract_mines(mines) * attack), system)
+'''
