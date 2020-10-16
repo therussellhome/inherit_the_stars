@@ -7,6 +7,7 @@ from .defaults import Defaults
 from .location import Location
 from .waypoint import Waypoint
 from .location import LocationReference
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
