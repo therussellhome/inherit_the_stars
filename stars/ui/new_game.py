@@ -136,7 +136,9 @@ class NewGame(Defaults):
             for s in game.systems:
                 if not s in homes:
                     s.create_system()
-            game_engine.save_game()
+            game_engine.save('host', game.name, game)
+            for p in game.players:
+                save('games', game.name + ' - ' + p.name, p)
 
     """ Calculate the number of systems based on the size and density """
     def calc_num_systems(self, x, y, z, density):
