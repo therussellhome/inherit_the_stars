@@ -25,6 +25,6 @@ class Sun(Planet):
     def colonize(self, player, minister):
         if player.race.primary_race_trait != 'Pa\'anuri':
             return
-        super().colonize(player, minister, population)
+        super().colonize(player, minister)
 
 Sun.set_defaults(Sun, __defaults)
