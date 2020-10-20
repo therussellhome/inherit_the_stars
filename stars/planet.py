@@ -1,15 +1,16 @@
 import sys
-from random import randint
-from random import uniform
-from . import game_engine
 from math import sin
 from math import cos
+from random import randint
+from random import uniform
 from colorsys import hls_to_rgb
-from .cargo import Cargo
+from . import game_engine
 from .cost import Cost
+from .cargo import Cargo
 from .defaults import Defaults
 from .minerals import Minerals
 from .facility import Facility
+from .location import Location
 from .reference import Reference
 
 
@@ -24,6 +25,7 @@ __defaults = {
     'on_surface': [Cargo()],
     'player': [Reference()],
     'minister': [''],
+    'location': [Location()],
     'planet_value': [0, -100, 100],
     'star_system': [Reference()],
 }
@@ -83,6 +85,7 @@ class Planet(Defaults):
             n += 1
         else:
             n = 1 + self.age
+        r = self.distance
         m = max(self.sun_gravity, 1)
         t = max(1, (((r ** 3)/m) ** .5) * (30/.85))
         a = n * (360/(100 * t)) 

@@ -119,7 +119,9 @@ class Fleet(Defaults):
     
     """ evenly distributes the fuel between the ships """
     def return_fuel(self):
-        check = [[ship.fuel / ship.fuel_max, ship] for ship in self.ships]
+        check = []
+        for ship in self.ships:
+            check.append([ship.fuel / ship.fuel_max, ship])
         least = 1
         lest = 0
         for i in range(len(check)):

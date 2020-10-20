@@ -75,7 +75,7 @@ class Ship(ShipDesign):
         pass
     
     def lay_mines(self, player, system):
-        pass
+        system.mines[player.name] += self.mines_laid
     
     def open_repair_bays(self):
         return self.repair_bay
