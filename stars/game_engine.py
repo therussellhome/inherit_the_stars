@@ -83,7 +83,9 @@ def to_json(obj):
 """ List files in the game dir """
 def load_list(save_type):
     files = []
-    for f in (__game_dir / save_type).iterdir():
+    dir_name = __game_dir / save_type
+    dir_name.mkdir(parents=True, exist_ok=True)
+    for f in dir_name.iterdir():
         files.append(f.name)
     files.sort()
     return files
