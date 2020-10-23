@@ -17,7 +17,11 @@ __defaults = {
 class Shipyard(Player):
     """ Interact with UI """
     def _post(self, action, me):
-        pass
+        self.shipyard_existing_designs = me.existing_designs[0]
+        self.shipyard_hull = me.hulls[0]
+        self.shipyard_general_slots = max(0, self.shipyard_general_slots)
+        self.shipyard_orbital_slots = max(0, self.shipyard_orbital_slots)
+        self.shipyard_depot_slots = max(0, self.shipyard_depot_slots)
     def shipyard_bombs(self):
         pass
     def shipyard_cloaks_and_ecm(self):
