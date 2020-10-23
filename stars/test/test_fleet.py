@@ -628,6 +628,18 @@ class FleetCase(unittest.TestCase):
                 planet.Planet(
                     gravity = 50,
                     ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
                 ],
             )
         ship_3 = ship.Ship(
@@ -653,6 +665,11 @@ class FleetCase(unittest.TestCase):
         p1.fleets = [fleet_two]
         fleet_two.execute('lay_mines', p1)
         self.assertEqual(system.mines[p1.name], 1000000000000)
+        print('dencity', 1000000000000 / (100 ** 3))
+        print('sweep', system.sweep_mines(120, 1, 0.3, 'caltorez'))
+        print('hit', system.mines_hit(300, 100, 'caltorez'))
+        system.mines_decay()
+        self.assertEqual(system.mines['caltorez'], 985000000000)
         
     def test_bomb(self):
         p1 = player.Player(
