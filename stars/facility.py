@@ -23,7 +23,7 @@ class Facility(Tech):
     def upgrade_available(self, player):
         best = self.tech
         for t in player.tech:
-            if t.is_availale(player) and t.upgrade_path == best.upgrade_path and t.upgrade_level > best.upgrade_level:
+            if t.is_available(player) and t.upgrade_path == best.upgrade_path and t.upgrade_level > best.upgrade_level:
                 best = t
         if best == self.tech:
             return None

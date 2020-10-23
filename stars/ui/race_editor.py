@@ -23,7 +23,7 @@ def calc_habr_cost(start, stop): #not temperature
 
 
 class RaceEditor(Defaults):
-
+    
     """ calulate the cost of race traits """
     def calc_race_trait_cost(self):
         aps = 0
@@ -243,7 +243,7 @@ class RaceEditor(Defaults):
             overall_hab *= hab / 100.0
         overall_hab = 100.0 * max(overall_hab, 0.001)
         self.race_editor_habitability_message = str(round(overall_hab, 1)) + '% of planets should be habitable for you'
-
+    
     def post(self, action):
         if action == 'reset':
             self.reset_to_default()
@@ -251,7 +251,7 @@ class RaceEditor(Defaults):
         self.options_race_editor_file_to_load = game_engine.load_list('races')
         self.options_race_editor_file_to_load.insert(0, '')
         if self.race_editor_file_to_load != '':
-            objs = game_engine.load('races', self.race_editor_file_to_load, False)
+            objs = [game_engine.load('races', self.race_editor_file_to_load)]
             # populate self
             for r in objs:
                 if r.__class__.__name__ == 'Race' and r.name == self.race_editor_file_to_load:
