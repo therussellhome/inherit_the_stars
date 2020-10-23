@@ -1,5 +1,5 @@
 from .treaties import Treaty
-from .uiplayer import UiPlayer
+from .playerui import PlayerUI
 from sys import maxsize
 
 
@@ -293,9 +293,57 @@ __defaults = {
 
 
 """ """
-class ForeignMinister(UiPlayer):
-    
-    def calc_ds(self, var, i, treaty, me):
+class ForeignMinister(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
+        if not self.player:
+            return
+        print(self.foreign_cost_p1_to_p2_lithium)
+        print(self.__dict__)
+        try:
+            self.player.treaties['p2'].p2
+        except:
+            self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, shared_p2_general_intel=True)
+            self.player.pending_treaties['p2']=self.player.treaties['p2']
+        print('Hello everybody i\'m p2')
+        self.options_foreign_p2 = []
+        self.options_foreign_p2.append('p2')
+        if action == 'revert':
+            #self.reset_to_default()
+            for key in self.player.treaties[foreign_p2].__dict__:
+                setattr(self, 'foreign_'+key, self.player.treaties[foreign_p2].key)
+        if action == 'propose':
+            #print('propose')
+            treety = Treaty()
+            for key in treety.__dict__:
+                setattr(treety, key, 'foreign_'+key)
+            self.player.pending_treaties[foreign_p2] = treety
+            if foreign_p2 == 'p2':
+                self.player.treaties['p2']=self.player.pending_treaties['p2']
+        """ set display values """
+        i = 0
+        treaties=self.player.treaties
+        for z in self.player.treaties:
+            i += 1
+            setattr(self, 'foreign_player'+str(i)+'_name', treaties[z].p2)
+            setattr(self, 'foreign_d'+str(i)+'_relation', treaties[z].relation)
+            self.calc_ds('p1_to_p2_lithium', i, treaties[z])
+            self.calc_ds('p2_to_p1_lithium', i, treaties[z])
+            self.calc_ds('p1_to_p2_silicon', i, treaties[z])
+            self.calc_ds('p2_to_p1_silicon', i, treaties[z])
+            self.calc_ds('p1_to_p2_titanium', i, treaties[z])
+            self.calc_ds('p2_to_p1_titanium', i, treaties[z])
+            self.calc_ds('p1_to_p2_fuel', i, treaties[z])
+            self.calc_ds('p2_to_p1_fuel', i, treaties[z])
+            self.calc_ds('p1_to_p2_stargate', i, treaties[z])
+            self.calc_ds('p2_to_p1_stargate', i, treaties[z])
+            setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_safe_passage', treaties[z].p1_to_p2_safe_passage)
+            setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_safe_passage', treaties[z].p2_to_p1_safe_passage)
+            setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_intel_sharing', treaties[z].shared_p1_general_intel)
+            setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_intel_sharing', treaties[z].shared_p2_general_intel)
+            setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[treaties[z].p2].stautus)
+
+    def calc_ds(self, var, i, treaty):
         l = var.split('_')
         d = ''
         if not getattr(treaty, l[0]+'_is_selling_'+l[3]):
@@ -303,55 +351,6 @@ class ForeignMinister(UiPlayer):
         else:
             d = getattr(treaty, 'cost_'+var)
         setattr(self, 'foreign_d'+str(i)+'_cost_'+var, d)
-    
-    
-    
-    """ Interact with UI """
-    def _post(self, action, me):
-        print(self.foreign_cost_p1_to_p2_lithium)
-        print(self.__dict__)
-        try:
-            me.treaties['p2'].p2
-        except:
-            me.treaties['p2']=Treaty(p1=me.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, shared_p2_general_intel=True)
-            me.pending_treaties['p2']=me.treaties['p2']
-        print('Hello everybody i\'m p2')
-        self.options_foreign_p2 = []
-        self.options_foreign_p2.append('p2')
-        if action == 'revert':
-            #self.reset_to_default()
-            for key in me.treaties[foreign_p2].__dict__:
-                setattr(self, 'foreign_'+key, me.treaties[foreign_p2].key)
-        if action == 'propose':
-            #print('propose')
-            treety = Treaty()
-            for key in treety.__dict__:
-                setattr(treety, key, 'foreign_'+key)
-            me.pending_treaties[foreign_p2] = treety
-            if foreign_p2 == 'p2':
-                me.treaties['p2']=me.pending_treaties['p2']
-        """ set display values """
-        i = 0
-        treaties=me.treaties
-        for z in me.treaties:
-            i += 1
-            setattr(self, 'foreign_player'+str(i)+'_name', treaties[z].p2)
-            setattr(self, 'foreign_d'+str(i)+'_relation', treaties[z].relation)
-            self.calc_ds('p1_to_p2_lithium', i, treaties[z], me)
-            self.calc_ds('p2_to_p1_lithium', i, treaties[z], me)
-            self.calc_ds('p1_to_p2_silicon', i, treaties[z], me)
-            self.calc_ds('p2_to_p1_silicon', i, treaties[z], me)
-            self.calc_ds('p1_to_p2_titanium', i, treaties[z], me)
-            self.calc_ds('p2_to_p1_titanium', i, treaties[z], me)
-            self.calc_ds('p1_to_p2_fuel', i, treaties[z], me)
-            self.calc_ds('p2_to_p1_fuel', i, treaties[z], me)
-            self.calc_ds('p1_to_p2_stargate', i, treaties[z], me)
-            self.calc_ds('p2_to_p1_stargate', i, treaties[z], me)
-            setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_safe_passage', treaties[z].p1_to_p2_safe_passage)
-            setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_safe_passage', treaties[z].p2_to_p1_safe_passage)
-            setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_intel_sharing', treaties[z].shared_p1_general_intel)
-            setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_intel_sharing', treaties[z].shared_p2_general_intel)
-            setattr(self, 'foreign_d'+str(i)+'_negotiation', me.pending_treaties[treaties[z].p2].stautus)
 
 
-ForeignMinister.set_defaults(ForeignMinister, __defaults, no_reset=[])
+ForeignMinister.set_defaults(ForeignMinister, __defaults)

@@ -84,8 +84,8 @@ __defaults = {
 
 """ Represent Open Game action """
 class NewGame(Defaults):
-    """ Interact with UI """
-    def post(self, action):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of races
