@@ -27,7 +27,8 @@ __defaults = {
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],
     'tech': [[]], # tech tree
-    'treaties': [{}],               
+    'treaties': [{}],
+    'pending_treaties': [{}],
 }
 
 """ A player in a game """

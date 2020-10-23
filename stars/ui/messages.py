@@ -1,5 +1,5 @@
 import sys
-from .player import Player
+from .uiplayer import UiPlayer
 
 
 """ Default values (default, min, max)  """
@@ -11,7 +11,7 @@ __defaults = {
 
 
 """ Components of score are precomputed as part of turn generation """
-class Messages(Player):
+class Messages(UiPlayer):
     """ Interact with UI """
     def _post(self, action, me):
         # Bound the msg index

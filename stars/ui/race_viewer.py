@@ -1,4 +1,4 @@
-from .player import Player
+from .uiplayer import UiPlayer
 
 
 """ Default values (default, min, max)  """
@@ -7,7 +7,7 @@ __defaults = {
 
 
 """ """
-class RaceViewer(Player):
+class RaceViewer(UiPlayer):
     """ Interact with UI """
     def _post(self, action, me):
         pass

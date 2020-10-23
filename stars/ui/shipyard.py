@@ -1,4 +1,4 @@
-from .player import Player
+from .uiplayer import UiPlayer
 import sys
 
 
@@ -14,7 +14,7 @@ __defaults = {
 
 
 """ """
-class Shipyard(Player):
+class Shipyard(UiPlayer):
     """ Interact with UI """
     def _post(self, action, me):
         pass
