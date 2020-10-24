@@ -1,5 +1,6 @@
 import copy
 from . import game_engine
+from .location import Location
 
 """ 
 Class for the players view of the galaxy 
@@ -17,7 +18,10 @@ class Intel(game_engine.BaseClass):
     def add_report(self, **kwargs):
         report = {}
         for key in kwargs:
-            report[key] = copy.copy(kwargs[key])
+            if key == 'location':
+                report[key] = Location(x=kwargs[key].x, y=kwargs[key].y, z=kwargs[key].z)
+            else:
+                report[key] = copy.copy(kwargs[key])
         if 'date' not in report:
             report['date'] = self.latest['date']
         # ignore old reports
