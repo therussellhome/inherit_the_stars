@@ -45,7 +45,8 @@ __defaults = {
 
 """ Display information about a tech item or ship design """
 class Tech(Defaults):
-    def post(self, action):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         tech = game_engine.get('Tech/' + action, False)
         if tech == None:
             self.reset_to_default()

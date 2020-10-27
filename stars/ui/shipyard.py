@@ -1,4 +1,4 @@
-from .uiplayer import UiPlayer
+from .playerui import PlayerUI
 import sys
 
 
@@ -14,10 +14,9 @@ __defaults = {
 
 
 """ """
-class Shipyard(UiPlayer):
-    """ Interact with UI """
-    def _post(self, action, me):
-        pass
+class Shipyard(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
     def shipyard_bombs(self):
         pass
     def shipyard_cloaks_and_ecm(self):
@@ -37,4 +36,4 @@ class Shipyard(UiPlayer):
     def shipyard_weapons(self):
         pass
 
-Shipyard.set_defaults(Shipyard, __defaults, no_reset=[])
+Shipyard.set_defaults(Shipyard, __defaults)

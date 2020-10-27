@@ -1,4 +1,4 @@
-from .uiplayer import UiPlayer
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -7,10 +7,9 @@ __defaults = {
 
 
 """ """
-class Settings(UiPlayer):
-    """ Interact with UI """
-    def _post(self, action, me):
-        pass
+class Settings(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
 
 
-Settings.set_defaults(Settings, __defaults, no_reset=[])
+Settings.set_defaults(Settings, __defaults)

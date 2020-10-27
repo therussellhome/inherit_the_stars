@@ -77,6 +77,7 @@ class GameEngineTestCase(unittest.TestCase):
         json = game_engine.to_json(t1)
         t2 = game_engine.from_json(json)
         self.assertEqual(t1.name, t2.name)
+        self.assertEqual(game_engine.from_json('this is bad json and is supposed to print'), None)
 
     def test_load_save_list(self):
         game_engine.unregister()

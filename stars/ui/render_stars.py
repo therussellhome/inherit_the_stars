@@ -1,5 +1,4 @@
-from .. import game_engine
-from ..defaults import Defaults 
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -7,35 +6,27 @@ __defaults = {
     'systems': [[]],
     'planets': [[]],
     'ships': [[]],
-    # Shared with other forms and used to identify player
-    'player_token': [''],
 }
 
 
 """ Represent Open Game action """
-class RenderStars(Defaults):
-    """ Interact with UI """
-    def post(self, action):
-        # Always reset to default
-        self.reset_to_default()
+class RenderStars(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
+        if not self.player:
+            print('no player')
+            return
         # Copy all systems
-        for s in game_engine.get('StarSystem'):
+        self.systems = []
+        for s in self.player.get_intel('Sun'):
             self.systems.append({
-                'name': s.name, 
-                'x': s.location.x,
-                'y': s.location.y,
-                'z': s.location.z,
-                'color': s.planets[0].get_color(),
-                'size': s.planets[0].gravity,
+                'name': s.get('name'), 
+                'x': s.get('location').x,
+                'y': s.get('location').y,
+                'z': s.get('location').z,
+                'color': s.get('color'),
+                'size': s.get('size'),
             })
-            print(s.name, s.planets[0].temperature, s.planets[0].get_color())
-        # Get the player's intel
-        games = game_engine.get('Game')
-        if len(games) > 0:
-            for p in games[0].players:
-                if self.player_token == str(id(p)):
-                    print('TODO')
-                    # do stuff
             
 
 RenderStars.set_defaults(RenderStars, __defaults)
