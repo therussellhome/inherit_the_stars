@@ -933,7 +933,7 @@ void main() {
     <td></td><td></td><td></td>
     </tr><tr>
     <td colspan="2"><fieldset><input type="radio" name="relation" id="foreign_relation" value="team">teammate     <input type="radio" name="relation" id="foreign_relation" value="neutral" checked>neutral</fieldset></td>
-    <td>declare war</td>
+    <td><img class="button button_s" title="declare war" src="/battles.png" onclick="post('foreign_minister', '?declare_war')"/>declare war</td>
     </tr><tr>
     <td>Li</td>
     <td>Sell <input id="foreign_p1_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p1_to_p2_lithium" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/KT</td>
