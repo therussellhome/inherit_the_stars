@@ -44,7 +44,7 @@ class Ship(ShipDesign):
         if len(self.engines) == 0:
             return 0
         fuel = 0
-        mass_per_engine = self.mass/len(self.engines)
+        mass_per_engine = self.calc_mass()/len(self.engines)
         for engine in self.engines:
             fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
         return fuel
@@ -61,7 +61,7 @@ class Ship(ShipDesign):
     def speed_is_damaging(self, speed, num_denials):
         if len(self.engines) == 0:
             return True
-        mass_per_engine = self.mass/len(self.engines)
+        mass_per_engine = self.calc_mass()/len(self.engines)
         for engine in self.engines:
             if engine.tachometer(speed, mass_per_engine, num_denials) >= 100:
                 return True
@@ -72,7 +72,8 @@ class Ship(ShipDesign):
         planet.on_surface += self.cargo
     
     def scan(self, player):
-        pass
+        self.scanner.scan_planets(player, self.location)
+        self.scanner.scan_ships(player, self.location)
     
     def lay_mines(self, player, system):
         system.mines[player.name] += self.mines_laid
@@ -125,7 +126,13 @@ class Ship(ShipDesign):
 
     def calc_apparent_mass(self):
         return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
-
+    
+    def calc_mass(self):
+        mass = self.mass + self.cargo.silicon + self.cargo.titanium + self.cargo.lithium
+        if self.player.is_valid and self.player.race.lrt_trader:
+            mass = self.mass
+        return mass + self.cargo.people
+    
     def blow_up(self):
         self.scrap(self.location, self.location)
         pass

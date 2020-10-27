@@ -13,9 +13,6 @@ from .reference import Reference
 """ Default values (default, min, max)  """
 __defaults = {
     'waypoints': [[]],
-    'anti_cloak_scanner': [0, 0, sys.maxsize],
-    'normal_scanner': [0, 0, sys.maxsize],
-    'pennetrating_scaner': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
@@ -71,7 +68,7 @@ class Fleet(Defaults):
                 self.move(player)
             else:
                 return
-        while self.test_fuel(speed, num_denials, distance) and self.test_damage(speed, num_denials):
+        while self.test_fuel(speed, num_denials, distance) or self.test_damage(speed, num_denials):
             speed -= 1
             distance_at_hyper = (speed**2)/100
             if distance_to_waypoint < distance_at_hyper:
@@ -453,8 +450,7 @@ class Fleet(Defaults):
                 recipiant = self.waypoints[0].recipiants['sell']
                 if recipiant in game_engine.get('Planet') and recipiant.space_station.trade:
                     self.sell(recipiant, player)
-            elif action == 'deploy_hyper_denial' and self.waypoints[1].deploy_hyper_denial_time > 0:
-                self.waypoints[1].deploy_hyper_denial_time -= 1
+            elif action == 'deploy_hyper_denial':
                 self.deploy_hyper_denial(player)
             elif action == 'merge':
                 self.merge(player)

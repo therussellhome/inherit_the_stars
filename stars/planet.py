@@ -21,7 +21,7 @@ __defaults = {
     'radiation': [50, -50, 150],
     'gravity': [50, -50, 150],
     'facilities': [{'Power': Facility(), 'Factory': Facility(), 'Mine': Facility(), 'Defense': Facility(), 'Scanner': Facility()}],
-    'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
+    'remaining_minerals': [Minerals()],
     'on_surface': [Cargo()],
     'player': [Reference()],
     'minister': [''],
@@ -48,12 +48,10 @@ class Planet(Defaults):
             self.radiation = randint(0, 100)
         if 'gravity' not in kwargs:
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
-        if 'mineral_concentration' not in kwargs:
-            # TODO randomize concentrations
-            modifier = self.gravity - 50
-            self.mineral_concentration.titanium += modifier
-            self.mineral_concentration.lithium += modifier
-            self.mineral_concentration.silicon += modifier
+        if 'remaining_minerals' not in kwargs:
+            self.remaining_minerals.titanium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+            self.remaining_minerals.lithium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+            self.remaining_minerals.silicon += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
         if 'orbit_speed' not in kwargs:
             self.orbit_speed = uniform(0.01, 1.0)
         if 'age' not in kwargs:
