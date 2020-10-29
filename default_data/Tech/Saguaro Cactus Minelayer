@@ -1,0 +1,21 @@
+{
+    "name": "Saguaro Cactus Minelayer",
+    "category": "Depot",
+    "description": "Deploys a minefield for defending a star system.  This minelayer deploys up to 5 trillion mines per year.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "race_requirements": "-Aku'Ultan",
+    "cost": {
+        "titanium": 2,
+        "lithium": 10,
+        "silicon": 10,
+        "energy": 4750,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 6,
+        "biotechnology": 11,
+        "__class__": "TechLevel"
+    },
+    "mass": 80,
+    "mines_laid": 5000000000000,
+    "__class__": "Tech"
+}

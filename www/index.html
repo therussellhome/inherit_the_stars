@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html style="height: 100%"><head>
+<meta charset="utf-8"/>
+<link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<!-- javascript libraries -->
+<link href="nouislider.css" rel="stylesheet">
+<script src="nouislider.js"></script>
+<script src="chart.js"></script>
+<script src="three.js"></script>
+<!-- 3d UI -->
+<script type="x-shader/x-vertex" id="vertexshader">
+attribute float size;
+attribute vec4 color;
+varying vec4 vColor;
+void main() {
+    vColor = color;
+	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+	gl_PointSize = size / -mvPosition.z;
+	gl_Position = projectionMatrix * mvPosition;
+}
+</script>
+<script type="x-shader/x-fragment" id="fragmentshader">
+varying vec4 vColor;
+void main() {
+    gl_FragColor = vec4( vColor );
+}
+</script>
+<script src="render_stars.js"></script>
+<!--  -->
+<link href="stars.css" rel="stylesheet">
+<script src="stars.js"></script>
+<!--  -->
+<title>Inherit the Stars!</title>
+</head><body id="index_html" onload="init()">
+
+
+<div class="sidebar" id="sidebar_host"><table style="height: 100%">
+    <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
+    <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
+    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
+    <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
+</table></div>
+
+
+<div class="submenu hide" id="submenu_home" onmouseleave="show_menu(null)">
+    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+</div>
+    
+
+<div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
+    <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
+    <tr><td><img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/></tr></td>
+    <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
+    <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
+    <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
+    <tr><td><img class="button" id="button_game" title="Game" src="/launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
+</table></div>
+
+
+<div class="submenu hide" id="submenu_home2" onmouseleave="show_menu(null)">
+    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+</div>
+    
+
+<div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
+    <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
+    <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
+    <img class="button" id="button_interstellar" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
+    <img class="button" id="button_battles" title="Battles" src="/battles.png" onclick="show_screen('battles')"/>
+</div>
+    
+
+<div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
+    <img class="button" id="button_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
+    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="/planetary_minister.png" onclick="show_screen('planetary_minister')"/>
+    <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
+    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
+</div>
+    
+
+<div class="submenu hide" id="submenu_admirality" onmouseleave="show_menu(null)">
+    <img class="button" id="button_shipyard" title="Shipyard" src="/shipyard.png" onclick="show_screen('shipyard')"/>
+    <img class="button" id="button_plans" title="Operational Plans" src="/plans.png" onclick="show_screen('plans')"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_game" onmouseleave="show_menu(null)">
+    <img class="button" id="button_score" title="Score" src="/score.png" onclick="show_screen('score')"/>
+    <img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/>
+    <img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="play_generate()"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_help_menu" onmouseleave="show_menu(null)">
+    <img class="button" id="button_race_viewer" title="Race" src="/race.png" onclick="show_screen('race_viewer')"/>
+    <img class="button" id="button_tech_browser" title="Technology" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/>
+</div>
+
+
+<div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
+    <div style="font-size: 600%">INHERIT THE</div>
+    <div style="font-size: 1050%">STARS!</div>
+</div>
+
+
+<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
+    <table class="topbar hfill"><tr>
+        <td class="hfill" style="font-size: 200%">Launch</td>
+        <td><img class="button" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
+    </tr></table>
+    <select id="launch_game" class="hfill" size="25" onchange="post('launch')" style="background: transparent; color: white"/>
+    <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
+    <!-- TODO move to host screen
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
+        <tr>
+            <td class="hfill"><input id="launch_player01" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player01_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player02" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player02_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player03" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player03_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player04" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player04_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player05" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player05_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player06" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player06_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player07" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player07_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player08" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player08_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player09" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player09_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player10" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player10_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player11" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player11_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player12" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player12_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player13" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player13_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player14" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player14_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player15" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player15_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_player16" disabled="true" class="hfill"/></td>
+            <td><input id="launch_player16_status" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td class="hfill"><input id="launch_loaded_autogen" disabled="true" class="hfill"/></td>
+            <td style="text-align: right"><img class="button" id="button_generate_now" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
+        </tr>
+    </table>
+    -->
+</div>
+
+
+<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">New Game</td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td>Game Name</td>
+            <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
+            <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">
+            + Galaxy
+            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="new_game_num_systems"/>
+        </caption>
+        <tr>
+            <td>Diameter: X axis</td>
+            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Diameter: Y axis</td>
+            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Diameter: Z axis</td>
+            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>System Density</td>
+            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 1, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Player Separation</td>
+            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 25, 2000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
+        <tr>
+            <td>Player 1</td>
+            <td class="hfill"><select id="new_game_player01" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 2</td>
+            <td class="hfill"><select id="new_game_player02" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 3</td>
+            <td class="hfill"><select id="new_game_player03" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 4</td>
+            <td class="hfill"><select id="new_game_player04" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 5</td>
+            <td class="hfill"><select id="new_game_player05" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 6</td>
+            <td class="hfill"><select id="new_game_player06" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 7</td>
+            <td class="hfill"><select id="new_game_player07" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 8</td>
+            <td class="hfill"><select id="new_game_player08" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 9</td>
+            <td class="hfill"><select id="new_game_player09" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 10</td>
+            <td class="hfill"><select id="new_game_player10" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 11</td>
+            <td class="hfill"><select id="new_game_player11" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 12</td>
+            <td class="hfill"><select id="new_game_player12" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 13</td>
+            <td class="hfill"><select id="new_game_player13" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 14</td>
+            <td class="hfill"><select id="new_game_player14" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 15</td>
+            <td class="hfill"><select id="new_game_player15" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>Player 16</td>
+            <td class="hfill"><select id="new_game_player16" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
+        <tr>
+            <td colspan="2">Public Scores After</td>
+            <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="2">Delay Victory Until</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_after" onload="slider(this, 'new_game', 10, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="3" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Select Victory Conditions</td>
+        </tr><tr style="height: 1em"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_enemies" onchange="post('new_game')"/></td>
+            <td>Enemies Left</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_enemies_left" onload="slider(this, 'new_game', 0, 15, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_score" onchange="post('new_game')"/></td>
+            <td>Score</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_score_number" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_tech" onchange="post('new_game')"/></td>
+            <td>Tech levels</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_tech_levels" onload="slider(this, 'new_game', 10, 300, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_planets" onchange="post('new_game')"/></td>
+            <td>Colonize</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_planets_number" onload="slider(this, 'new_game', 50, 1000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' planets')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_energy" onchange="post('new_game')"/></td>
+            <td>Energy Budget</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_energy_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_minerals" onchange="post('new_game')"/></td>
+            <td>Surface Minerals</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_minerals_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' kT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_production" onchange="post('new_game')"/></td>
+            <td>Production</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_production_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_ships" onchange="post('new_game')"/></td>
+            <td>Total Ships</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_ships_number" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_shipsofthewall" onchange="post('new_game')"/></td>
+            <td>Ships of the Wall</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_shipsofthewall_number" onload="slider(this, 'new_game', 50, 1000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td><input type="checkbox" id="new_game_victory_starbases" onchange="post('new_game')"/></td>
+            <td>Starbases</td>
+            <td class="hfill"><div class="onload" id="new_game_victory_starbases_number" onload="slider(this, 'new_game', 10, 100, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="2">Winner Must Meet</td>
+            <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' victory conditions')"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
+        <tr>
+            <td>Technology Tree</td>
+            <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Race Editor</td>
+        <td class="hfill" style="text-align: right">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+    </tr></table><table class="hfill">
+        <tr>
+            <td>Load Existing</td>
+            <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
+            <td rowspan="2"><img class="button" title="Save" src="/race.png" onclick="save_race()"/></td>
+        </tr><tr>
+            <td>Race Name</td>
+            <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
+        <tr>
+            <td>Primary Racial Trait</td>
+            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="2" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Lesser Racial Traits</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_Trader" type="checkbox" onchange="post('race_editor')"/> Trader</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_Bioengineer" type="checkbox" onchange="post('race_editor')"/> Bioengineer</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_SpacedOut" type="checkbox" onchange="post('race_editor')"/> SpacedOut</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_WasteNot" type="checkbox" onchange="post('race_editor')"/> WasteNot</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_Hypermiler" type="checkbox" onchange="post('race_editor')"/> Hypermiler</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_McMansion" type="checkbox" onchange="post('race_editor')"/> McMansion</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_MadScientist" type="checkbox" onchange="post('race_editor')"/> MadScientist</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_QuickHeal" type="checkbox" onchange="post('race_editor')"/> QuickHeal</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_BleedingEdge" type="checkbox" onchange="post('race_editor')"/> BleedingEdge</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_Forager" type="checkbox" onchange="post('race_editor')"> Forager</input></td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_2ndSight" type="checkbox" onchange="post('race_editor')"/> 2ndSight</td>
+        </tr><tr>
+            <td colspan="2"><input id="race_editor_lrt_JuryRigged" type="checkbox" onchange="post('race_editor')"/> JuryRigged</td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">
+            + Habitability
+            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="race_editor_habitability_message"/>
+        </caption>
+        <tr>
+            <td>Gravity</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"/></td>
+            <td>Immune <input id="race_editor_hab_gravity_immune" type="checkbox" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Temperature</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_temperature" onload="slider2(this, 'race_editor', 0, 100, 2, format_temperature)"/></td>
+            <td>Immune <input id="race_editor_hab_temperature_immune" type="checkbox" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Radiation</td>
+            <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_radiation" onload="slider2(this, 'race_editor', 0, 100, 2, format_radiation)"/></td>
+            <td>Immune <input id="race_editor_hab_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Growth Rate</td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
+        <caption onclick="toggle(this.parentElement, 'collapse'); 
+                gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
+                temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
+                radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">+ Habitability Charts</caption>
+        <tr>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
+        </tr>
+        <tr>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
+        </tr>
+        <tr>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
+        <tr>
+            <td>colonists to operate mine</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_mine" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>colonists to operate factory</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_factory" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>colonists to operate power plant</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_power_plant" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>colonists to operate defense</td>
+            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_defense" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Energy per colonist</td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175, 350, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ',000 people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>cost of baryogenesis</td>
+            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 2000, 12000, 500, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ')"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
+        <tr>
+            <td></td>
+            <td style="text-align: center">Research Cost</td>
+            <td style="text-align: center">Starting Level</td>
+        </tr>
+        <tr>
+            <td>Energy Research</td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Weapons Research</td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Propulsion Research</td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Construction Research</td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Electronics Research</td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Biotechnology Research</td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
+        <tr>
+            <td>starting mines</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_mines" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting factories</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' factories')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting power plants</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
+        </tr><tr class="slider_padding"></tr>
+            <td>starting defenses</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting energy</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 25000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' YJ')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting lithium</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting silicon</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting titanium</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+    </table>
+</div>
+
+</td></tr></table>
+
+
+<div class="screen hide" id="screen_tech_browser" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
+    <iframe src="/tech.html" style="width: 100%; height: 99%"></iframe>
+</div></div>
+
+
+<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
+    <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
+</div></div>
+
+
+<div class="screen overlay_message hide" id="screen_shutdown" style="font-size: 300%">
+    Thank you for playing
+</div>
+
+
+<!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
+
+
+<div class="hide onsubmit_render_stars" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
+<!--
+    <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none; width: 100%; height: 100%"></div>
+-->
+</div>
+
+
+<!-- PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS -->
+
+
+<div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
+    <input id="messages_index" class="hidden" disabled="true"/>
+    <table class="topbar hfill"><tr>
+        <td class="hfill" style="font-size: 200%">Messages</td>
+        <td><img class="button" title="Close" src="/close.png" onclick="show_screen(null)"/></td>
+    </tr></table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
+        <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
+    </table><table class="hfill">
+        <tr>
+            <td><img class="button button_s" title="Prev" src="/prev.png" onclick="post('messages', '?prev')"/></td>
+            <td class="hfill"></td>
+            <td><img class="button button_s" title="Trash" src="/trash.png" onclick="post('messages', '?trash')"/></td>
+            <td><img class="button button_s" title="Next" src="/next.png" onclick="post('messages', '?next')"/></td>
+        </tr>
+    </table><table class="hfill">
+        <tr>
+            <td colspan="3" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+        </tr><tr>
+            <td rowspan="2"><input id="messages_from_icon" disabled="true" style="font-size: 200%"/></td>
+            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+            <td rowspan="2"><img class="button button_s" title="GoTo" src="/goto.png" onclick="message_goto()"/></td>
+        </tr><tr>
+            <td><input id="messages_date" disabled="true" style="font-size: 75%"/></td>
+        </tr><tr>
+            <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+</div>
+
+
+<div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
+</div>
+
+
+<div class="screen hide onload" id="screen_interstellar" style="width: 600px" onload="post('interstellar')">
+</div>
+
+
+<div class="screen hide onload" id="screen_battles" style="width: 600px" onload="post('battles')">
+</div>
+
+
+<div class="screen hide onload" id="screen_energy_minister" style="width: 600px" onload="post('energy_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_planetary_minister" style="width: 600px" onload="post('planetary_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
+    </tr></table>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
+    <caption>Energy<input id="current_energy_tech_level" disabled="true"/></caption>
+    <caption>Weapons<input id="current_weapons_tech_level" disabled="true"/></caption>
+    <caption>Propulsion<input id="current_propulsion_tech_level" disabled="true"/></caption>
+    <caption>Construction<input id="current_construction_tech_level" disabled="true"/></caption>
+    <caption>Electronics<input id="current_electronics_tech_level" disabled="true"/></caption>
+    <caption>Biotechnology<input id="current_biotechnology_tech_level" disabled="true"/></caption>
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
+    <!-- TODO put icons to skip to component sections -->
+    <table>
+        <tr><th>Component Name</th><th>Tech Levels</th><th>Cost</th></tr>
+        <tr><th>Combat</th></tr>
+        <tr><td>Armor</td></tr>
+        <tr><td>Bombs</td></tr>
+        <tr><td>ECM</td></tr>
+        <tr><td>Shields</td></tr>
+        <tr><td>Beam Weapons</td></tr>
+        <tr><td>Missles</td></tr>
+        <tr><th>Construction</th></tr>
+        <tr><td>Depot</td></tr>
+        <tr><td>Hulls</td></tr>
+        <tr><td>Mech</td></tr>
+        <tr><th>Engines</th></tr>
+        <tr><th>Orbital</th></tr>
+        <tr><th>Planetary</th></tr>
+        <tr><th>Scanning</th></tr>
+        <tr><td>Cloaks</td></tr>
+        <tr><td>Scanners</td></tr>
+    </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
+    <tr>
+        <td></td>
+        <td class="hfill"><select id="research_queue_item" onchange="post('research_minister')"/></td>
+    </tr>
+</div>
+
+
+<div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
+</div>
+
+
+<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+</div>
+
+
+<div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
+</div>
+
+
+<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Score</td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td></td>
+            <td><input id="score_player01" disabled="true" class="vertical"/></td>
+            <td><input id="score_player02" disabled="true" class="vertical"/></td>
+            <td><input id="score_player03" disabled="true" class="vertical"/></td>
+            <td><input id="score_player04" disabled="true" class="vertical"/></td>
+            <td><input id="score_player05" disabled="true" class="vertical"/></td>
+            <td><input id="score_player06" disabled="true" class="vertical"/></td>
+            <td><input id="score_player07" disabled="true" class="vertical"/></td>
+            <td><input id="score_player08" disabled="true" class="vertical"/></td>
+            <td><input id="score_player09" disabled="true" class="vertical"/></td>
+            <td><input id="score_player10" disabled="true" class="vertical"/></td>
+            <td><input id="score_player11" disabled="true" class="vertical"/></td>
+            <td><input id="score_player12" disabled="true" class="vertical"/></td>
+            <td><input id="score_player13" disabled="true" class="vertical"/></td>
+            <td><input id="score_player14" disabled="true" class="vertical"/></td>
+            <td><input id="score_player15" disabled="true" class="vertical"/></td>
+            <td><input id="score_player16" disabled="true" class="vertical"/></td>
+        </tr>
+        <tr>
+            <td>Planets</td>
+            <td><input id="score_planets01" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets02" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets03" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets04" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets05" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets06" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets07" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets08" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets09" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets10" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets11" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets12" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets13" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets14" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets15" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_planets16" disabled="true" style="width: 5em"/></td>
+        </tr>
+        <tr>
+            <td>Ships</td>
+            <td><input id="score_ships01" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships02" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships03" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships04" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships05" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships06" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships07" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships08" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships09" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships10" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships11" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships12" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships13" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships14" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships15" disabled="true" style="width: 5em"/></td>
+            <td><input id="score_ships16" disabled="true" style="width: 5em"/></td>
+        </tr>
+    </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"/></caption>
+        <tr>
+            <td>TODO</td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+</div>
+
+
+<div class="screen hide onload" id="screen_race_viewer" style="width: 600px" onload="post('race_viewer')">
+</div>
+
+
+</body></html>

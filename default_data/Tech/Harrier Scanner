@@ -1,0 +1,23 @@
+{
+    "name": "Harrier Scanner",
+    "category": "Scanner",
+    "description": "This scanner detects ships at a distance based on their apparent mass (which is affected by cloaking). This scanner can detect a 100kT ship at 200 light years, a 200kT ship at 400ly, and a 20kT ship at 40ly - EXCEPT it cannot see inside solar systems.",
+    "cost": {
+        "titanium": 2,
+        "lithium": 0,
+        "silicon": 5,
+        "energy": 2400,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 4,
+        "electronics": 8,
+        "__class__": "TechLevel"
+    },
+    "mass": 5,
+    "scanner": {
+        "normal": 200.0,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

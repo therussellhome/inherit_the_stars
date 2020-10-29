@@ -1,0 +1,27 @@
+{
+    "name": "Tadpole 5",
+    "category": "Engine",
+    "description": "The worst engine: cannot go more than 25 light years per year unless mass per engine is low.",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 1,
+        "energy": 300,
+        "__class__": "Cost"
+    },
+    "level": {
+        "propulsion": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 4,
+    "engines": [
+        {
+            "kt_exponent": 1.5,
+            "speed_divisor": 10,
+            "speed_exponent": 3.0,
+            "antimatter_siphon": 0,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}

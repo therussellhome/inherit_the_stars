@@ -1,0 +1,89 @@
+{
+    "name": "Test Component",
+    "category": "Orbital",
+    "description": "a component\nstuff",
+    "upgrade_path": "",
+    "upgrade_level": 0,
+    "race_requirements": "-Aku'Ultan",
+    "is_end_item": false,
+    "cost": {
+        "titanium": 100,
+        "lithium": 100,
+        "silicon": 100,
+        "energy": 100,
+        "__class__": "Cost"
+    },
+    "cost_build_complete": {
+        "titanium": 0,
+        "lithium": 0,
+        "silicon": 0,
+        "energy": 0,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 3,
+        "weapons": 0,
+        "propulsion": 0,
+        "construction": 10,
+        "electronics": 5,
+        "biotechnology": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 100,
+    "cargo_max": 200,
+    "fuel_max": 1000,
+    "shield": 100,
+    "armor": 200,
+    "ecm": 20,
+    "weapons": [
+        {
+            "power": 100,
+            "range_tm": 0.3,
+            "armor_multiplier": 0,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__class__": "Weapon"
+        }
+    ],
+    "bombs": [
+        {
+            "percent_pop_kill": 0,
+            "minimum_pop_kill": 0,
+            "shield_kill": 0,
+            "max_defense": 0,
+            "dirty_temperature": 0.0,
+            "dirty_radiation": 0.0,
+            "dirty_gravity": 0.0,
+            "__class__": "Bomb"
+        }
+    ],
+    "scanner": {
+        "anti_cloak": 50.0,
+        "penetrating": 100.0,
+        "normal": 200.0,
+        "__class__": "Scanner"
+    },
+    "cloak": 50,
+    "engines": [
+        {
+            "kt_exponent": 1.5,
+            "speed_divisor": 10.0,
+            "speed_exponent": 5.0,
+            "antimatter_siphon": 0.0,
+            "__class__": "Engine"
+        }
+    ],
+    "shipyard": 0,
+    "repair": 0,
+    "fuel_generation": 0,
+    "hyperdenial": 0,
+    "colonizer": false,
+    "facility_output": 0.0,
+    "mineral_depletion_rate": 0,
+    "mat_trans_energy": 0,
+    "slots_general": 0,
+    "slots_depot": 0,
+    "slots_orbital": 0,
+    "__class__": "Tech"
+}

@@ -1,0 +1,26 @@
+{
+    "name": "Sputnik",
+    "category": "Starbase",
+    "description": "Smallest starbase hull with 24 general purpose slots and 1 orbital slot, which can be used for a shipyard, particle accelerator (to make antimatter fuel for ships), or other orbital component.",
+      "cost": {
+        "titanium": 12,
+        "lithium": 0,
+        "silicon": 17,
+        "energy": 4000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 100,
+    "armor": 100,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__class__": "Scanner"
+    },
+    "repair": 25,
+    "slots_general": 24,
+    "slots_orbital": 1,
+    "__class__": "Tech"
+}
