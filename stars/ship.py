@@ -129,8 +129,9 @@ class Ship(ShipDesign):
     
     def calc_mass(self):
         mass = self.mass + self.cargo.silicon + self.cargo.titanium + self.cargo.lithium
-        if self.player.is_valid and self.player.race.lrt_trader:
-            mass = self.mass
+        #TODO check if crew is trader
+        #if self.player.is_valid and self.player.race.lrt_trader:
+        #    mass = self.mass
         return mass + self.cargo.people
     
     def blow_up(self):

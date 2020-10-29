@@ -75,6 +75,8 @@ class Fleet(Defaults):
                 distance = distance_to_waypoint
             else:
                 distance = distance_at_hyper
+            if speed == 0:
+                return
         self.location = self.location.move(self.waypoints[1].fly_to, distance)
         self.burn_fuel(speed, num_denials, self.waypoints[1].fly_to, distance)
         self.returnn()
