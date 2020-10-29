@@ -128,6 +128,7 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).power_plants / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_power_plant
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            print(operate)
             self.player.energy += operate * facility.tech.energy_output
     
     """ calculates max production capasity """
@@ -137,20 +138,20 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_factory
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            print(operate)
             self.production = (operate + 1) * facility.tech.production_capacity
     
     """ mines mine the minerals """
     def _mine_minerals(self):
         if self.player.is_valid:
-            allocation = self.player.get_minister(self.name).mines / 100
-            minerals_per_mine = self.mine_tech.facility_output
-            colonists_to_operate_mine = self.player.race.colonists_to_operate_mine
-            operate = min([self.power_plants, allocation * self.effort / colonists_to_operate_mine])
-            #TODO apply mineral concentration
-            self.on_surface.titanium += round(operate * minerals_per_mine)
-            self.on_surface.lithium += round(operate * minerals_per_mine)
-            self.on_surface.silicon += round(operate * minerals_per_mine)
-            #TODO reduce mineral concentration
+            facility = self.facilities['Mine']
+            workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
+            colonists_to_operate_facility = self.player.race.colonists_to_operate_mine
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            print(operate)
+            for mineral in ['silicon', 'titanium', 'lithium']:
+                setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * self.get_availability(mineral)))
+                setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * self.get_availability(mineral) * facilicy.tech.mineral_depletion_factor))
 
     def get_availability(self, mineral):
         if mineral in ['titanium', 'silicon', 'lithium']:

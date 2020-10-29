@@ -194,7 +194,7 @@ class Fleet(Defaults):
     
     """ executes the unload function """
     def unload(self, recipiant, player):
-        if not self.check_self(recipiant, player):
+        if not self.check_self(recipiant, player) and not recipiant.is_colonized():
             return
         self.compile()
         if recipiant in player.fleets:
@@ -347,7 +347,7 @@ class Fleet(Defaults):
     
     """ executes the load function """
     def load(self, recipiant, player):
-        if not self.check_self(recipiant, player):
+        if not self.check_self(recipiant, player) and not recipiant.is_colonized():
             return
         self.compile()
         if recipiant in player.fleets:
@@ -408,7 +408,7 @@ class Fleet(Defaults):
     
     def orbital_mining(self):
         planet = self.waypoints[0].recipiants['orbital_mining']
-        if planet not in game_engine.get('Planet') or planet.on_surface.people != 0:
+        if planet not in game_engine.get('Planet'):
             return
         for ship in self.ships:
             ship.orbital_mining(planet)
@@ -419,7 +419,7 @@ class Fleet(Defaults):
     
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
-        if planet in game_engine.get('Planet') and planet.player.is_valid and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
+        if planet in game_engine.get('Planet') and planet.is_colonized() and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
             shields = planet.raise_shields()
             pop = planet.on_surface.people
             facility_kill = 0

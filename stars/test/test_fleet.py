@@ -661,9 +661,6 @@ class FleetCase(unittest.TestCase):
                 lithium = 40000,
                 ),
             gravity = 50,
-            on_surface = cargo.Cargo(
-                people = 1,
-                ),
             )
         ship_3 = ship.Ship(
             location = location.Location(),
@@ -682,8 +679,6 @@ class FleetCase(unittest.TestCase):
                 ]
             )
         p1 = player.Player(fleets = [fleet_two])
-        fleet_two.execute('orbital_mining', p1)
-        ultimantico.on_surface.people = 0
         fleet_two.execute('orbital_mining', p1)
         self.assertEqual(ultimantico.on_surface.titanium, 16)
         self.assertEqual(ultimantico.on_surface.lithium, 16)

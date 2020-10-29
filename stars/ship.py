@@ -102,7 +102,7 @@ class Ship(ShipDesign):
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
-        if not planet.player.is_valid:
+        if not planet.is_colonized:
             planet.on_surface.titanium += round(self.mining_rate * planet.get_availability('titanium'))
             planet.on_surface.silicon += round(self.mining_rate * planet.get_availability('silicon'))
             planet.on_surface.lithium += round(self.mining_rate * planet.get_availability('lithium'))

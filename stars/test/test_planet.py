@@ -5,7 +5,7 @@ from colorsys import hls_to_rgb
 class PlanetTestCase(unittest.TestCase):
     def setUp(self):
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'default')
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
     def test_orbit(self):
         return #TODO orbit not finished
@@ -56,24 +56,54 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.temperature = 50
         self.planet.radiation = 50
         self.assertEqual(self.planet.get_color(), '#20DF50')
-
-    def test_colonize(self):
-        return #TODO
-        self.planet.colonize(reference.Reference('Player', 'test_colonize'), 'default')
-        self.assertEqual(self.planet.on_surface.people, 25000)
-        self.assertEqual(self.planet.factories, 2)
 
     def test_generate_energy(self):
-        # TODO
-        pass
-
+        play = player.Player(
+            name = 'test_colonize',
+            race = race.Race(
+                scrap_rate = 90,
+                colonists_to_operate_power_plant = 100,
+                ),
+            energy = 0,
+            )
+        self.planet.colonize(reference.Reference(play), 'New Colony Minister')
+        self.planet.on_surface.people = 40
+        self.planet.facilities['Power'].quantity = 100
+        self.planet.generate_energy()
+        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
+        self.assertEqual(play.energy, 10000)
+    
     def test_calc_max_production_capacity(self):
         # TODO
         pass
 
     def test_mine_minerals(self):
-        # TODO
-        pass
+        return # TODO
+        play = player.Player(
+            name = 'test_colonize',
+            race = race.Race(
+                scrap_rate = 90,
+                colonists_to_operate_mine = 100,
+                ),
+            energy = 0,
+            )
+        self.planet.colonize(reference.Reference(play), 'New Colony Minister')
+        self.planet.on_surface = cargo.Cargo(people = 40)
+        self.planet.remaining_minerals = minerals(titanium=10000, silicon=10000, lithium=10000)
+        self.planet.facilities['Mine'] = tech.Tech(
+            quantity = 100,
+            mineral_depletion_factor = 1.3,
+            )
+        self.planet._mine_minerals()
+        self.assertEqual(self.planet.on_surface.titanium, 0)
+        self.assertEqual(self.planet.on_surface.lithium, 0)
+        self.assertEqual(self.planet.on_surface.silicon, 0)
+        self.assertEqual(self.remaining_minerals.titanium, 10000)
+        self.assertEqual(self.remaining_minerals.lithium, 10000)
+        self.assertEqual(self.remaining_minerals.silicon, 10000)
+        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
     def test_calc_planet_value(self):
         self.__calcplanet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)

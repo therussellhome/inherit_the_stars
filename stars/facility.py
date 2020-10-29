@@ -31,7 +31,7 @@ class Facility(Tech):
 
 
     def upgrade_cost(self, player, tech):
-        scrap = self.tech.cost * (self.quantity * player.scrap_rate / 100)
+        scrap = self.tech.cost * self.quantity * (player.race.scrap_rate / 100)
         cost = tech.cost * self.quantity
         return cost - scrap
         
