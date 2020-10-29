@@ -79,7 +79,7 @@ class PlanetTestCase(unittest.TestCase):
         pass
 
     def test_mine_minerals(self):
-        return # TODO
+        #return # TODO
         play = player.Player(
             name = 'test_colonize',
             race = race.Race(
@@ -90,7 +90,7 @@ class PlanetTestCase(unittest.TestCase):
             )
         self.planet.colonize(reference.Reference(play), 'New Colony Minister')
         self.planet.on_surface = cargo.Cargo(people = 40)
-        self.planet.remaining_minerals = minerals(titanium=10000, silicon=10000, lithium=10000)
+        self.planet.remaining_minerals = minerals.Minerals(titanium=10000, silicon=10000, lithium=10000)
         self.planet.facilities['Mine'] = tech.Tech(
             quantity = 100,
             mineral_depletion_factor = 1.3,
