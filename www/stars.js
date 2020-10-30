@@ -232,8 +232,10 @@ function host_generate() {
 // Render the stars, planets, etc
 function render_stars() {
     if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('systems')) {
-            draw_stars();
+        if(json_map['render_stars'].hasOwnProperty('suns')) {
+            if(json_map['render_stars']['suns'].length > 0) {
+                draw_stars();
+            }
         }
     }
 }
