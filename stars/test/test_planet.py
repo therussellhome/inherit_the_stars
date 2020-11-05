@@ -75,11 +75,10 @@ class PlanetTestCase(unittest.TestCase):
         self.assertEqual(play.energy, 10000)
     
     def test_calc_max_production_capacity(self):
-        # TODO
-        pass
+        self.planet.calc_production()
+        self.assertEqual(self.planet.production, 100)
 
     def test_mine_minerals(self):
-        #return # TODO
         play = player.Player(
             name = 'test_colonize',
             race = race.Race(
@@ -137,6 +136,9 @@ class PlanetTestCase(unittest.TestCase):
         self.assertEqual(self.planet.calc_planet_value(race), expect)
 
     def test_have_babies(self):
+        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet.have_babies()
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
         self.__calcplanet_value_expect(50, 50, 50, 0, 100, 0, 100, 0, 100, 100)
         self.planet.player.race.growth_rate = 10
         self.planet.player.race.maximum_population = 10000000

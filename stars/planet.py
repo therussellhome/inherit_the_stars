@@ -78,8 +78,8 @@ class Planet(Defaults):
     # a = the planet's angle
     #TODO n = year 1/100
     def orbit(self):
-        return #TODO orbit not finished
-        if n < 1:
+        #return #TODO orbit not finished
+        """if n < 1:
             n += 1
         else:
             n = 1 + self.age
@@ -89,6 +89,7 @@ class Planet(Defaults):
         a = n * (360/(100 * t)) 
         self.y = r * sin(a)
         self.x = r * cos(a)
+        #"""
 
     """ Colonize the planet """
     # player is a Reference to Player
@@ -128,7 +129,6 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).power_plants / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_power_plant
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            print(operate)
             self.player.energy += operate * facility.tech.energy_output
     
     """ calculates max production capasity """
@@ -138,7 +138,6 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_factory
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            print(operate)
             self.production = (operate + 1) * facility.tech.production_capacity
     
     """ mines mine the minerals """
@@ -176,15 +175,26 @@ class Planet(Defaults):
             power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.power_plants) / self.on_surface.people) - (minister.power_plants / 100)
             mine_percent = ((self.player.race.colonists_to_operate_mine * self.mines) / self.on_surface.people) - (minister.mines / 100)
             defense_percent = ((self.player.race.colonists_to_operate_defense * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
-            check = [[factory_percent, self.factory_tech], [power_plant_percent, self.power_plant_tech], [mine_percent, self.mine_tech], [defense_percent, self.defense_tech]]
-            print(check)
+            check = [[factory_percent, self.facilities['Factory']], [power_plant_percent, self.facilities['Power']], [mine_percent, self.facilities['Mine']], [defense_percent, self.facilities['Defense']]]
+            #print(check)
             least = 1
             lest = 0
             for i in range(len(check)):
                 if check[i][0] <= least:
                     least = check[i][0]
                     lest = i
-            return check[lest][1]
+            return check[lest][1].build_prep()
+    
+    """ checks for upgrades """"""
+    def auto_upgrade(self):
+        if not self.player.is_valid:
+            return
+        for facility in self.facilities:
+            upgrade = facility.upgrade_available(self.player)
+            if upgrade:
+                facility.cost_incomeplete = facility.upgrade_cost(self.player, upgrade)
+                return facility
+            #"""
     
     """ build stuff in build queue """
     def do_construction(self, auto_build=False, allow_baryogenesis=False):
@@ -214,7 +224,7 @@ class Planet(Defaults):
                         spend = min([int(self.production / 2), getattr(item.cost_incomplete, mineral), max_baryogenesis])
                         self.production -= spend * 2
                         setattr(item.cost_incomplete, mineral, getattr(item.cost_incomplete, mineral) - spend)
-                        self.player.energy_minister.spend_budget('baryogenesis', spend * self.player.race.cost_of_baryogenesis )
+                        self.player.energy_minister.spend_budget('baryogenesis', spend * self.player.race.cost_of_baryogenesis)
             if item.cost_incomplete == zero_cost:
                 self.build_queue.pop(0)
                 #TODO do something with the item
