@@ -30,6 +30,7 @@ __all__ = [
     'sun',
     'tech', 
     'tech_level',
+    'treaties',
     'waypoint',
     'weapon',
     'expirence',

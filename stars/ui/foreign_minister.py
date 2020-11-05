@@ -1,4 +1,4 @@
-from .treaties import Treaty
+from ..treaties import Treaty
 from .playerui import PlayerUI
 from sys import maxsize
 
