@@ -78,8 +78,9 @@ class Planet(Defaults):
     # a = the planet's angle
     #TODO n = year 1/100
     def orbit(self):
-        #return #TODO orbit not finished
-        """if n < 1:
+        return #TODO orbit not finished
+        """
+        if n < 1:
             n += 1
         else:
             n = 1 + self.age
@@ -185,7 +186,8 @@ class Planet(Defaults):
                     lest = i
             return check[lest][1].build_prep()
     
-    """ checks for upgrades """"""
+    """ checks for upgrades """
+    #"""
     def auto_upgrade(self):
         if not self.player.is_valid:
             return
@@ -194,7 +196,7 @@ class Planet(Defaults):
             if upgrade:
                 facility.cost_incomeplete = facility.upgrade_cost(self.player, upgrade)
                 return facility
-            #"""
+    #"""
     
     """ build stuff in build queue """
     def do_construction(self, auto_build=False, allow_baryogenesis=False):
