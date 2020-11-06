@@ -28,6 +28,7 @@ __defaults = {
     'location': [Location()],
     'planet_value': [0, -100, 100],
     'star_system': [Reference()],
+    'factory_capacity': [0, 0, sys.maxsize]
 }
 
 
@@ -74,22 +75,22 @@ class Planet(Defaults):
     """ Code the planet orbiting its star """        
     # t = years it takes planet to orbit, min 1 year, max 30 years
     # m = the sun's gravity clicks
-    #TODO r = the distance from the sun
-    # a = the planet's angle
-    #TODO n = year 1/100
-    def orbit(self):
-        return #TODO orbit not finished
-        """
-        if n < 1:
-            n += 1
+    # r = the distance from the sun
+    # angle = the planet's angle
+    #TODO date = year in 1/100
+    #def orbit(self):
+    #    return #TODO orbit not finished
+    """
+        if date < 1:
+            date += 1
         else:
-            n = 1 + self.age
+            date = 1 + self.age
         r = self.distance
         m = max(self.sun_gravity, 1)
         t = max(1, (((r ** 3)/m) ** .5) * (30/.85))
-        a = n * (360/(100 * t)) 
-        self.y = r * sin(a)
-        self.x = r * cos(a)
+        angle = date * (360/(100 * t)) 
+        self.y = r * sin(angle)
+        self.x = r * cos(angle)
         #"""
 
     """ Colonize the planet """
@@ -139,7 +140,7 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_factory
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            self.production = (operate + 1) * facility.tech.production_capacity
+            self.factory_capacity = (operate + 1) * facility.tech.factory_capacity
     
     """ mines mine the minerals """
     def _mine_minerals(self):
@@ -151,7 +152,7 @@ class Planet(Defaults):
             print(operate)
             for mineral in ['silicon', 'titanium', 'lithium']:
                 setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * self.get_availability(mineral)))
-                setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * self.get_availability(mineral) * facilicy.tech.mineral_depletion_factor))
+                setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * self.get_availability(mineral) * facility.tech.mineral_depletion_factor))
 
     def get_availability(self, mineral):
         if mineral in ['titanium', 'silicon', 'lithium']:
@@ -161,22 +162,25 @@ class Planet(Defaults):
     def auto_build(self):
         if not self.player.is_valid:
             return
+        #facility = self.auto_upgrade()
+        #if facility != None:
+        #    return facility
         minister = self.player.get_minister(self.name)
     #TODO    scanner_tech = self.player.max_tech('planetary_scanner')
     #TODO    penetrating_tech = self.player.max_tech('planetary_penetrating')
         num_facilities = (self.factories + self.power_plants + self.mines + self.defenses)
         if minister.build_penetrating_after_num_facilities <= num_facilities: # and self.penetrating_tech != penetrating_tech:
     #TODO        self.penetrating_tech = penetrating_tech
-            return self.penetrating_tech
+            return 'self.penetrating_tech'
         elif minister.build_scanner_after_num_facilities <= num_facilities: # and self.scanner_tech != scanner_tech:
     #TODO        self.scanner_tech = scanner_tech
-            return self.scanner_tech
+            return 'self.scanner_tech'
         else:
-            factory_percent = ((self.player.race.colonists_to_operate_factory * self.factories) / self.on_surface.people) - (minister.factories / 100)
-            power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.power_plants) / self.on_surface.people) - (minister.power_plants / 100)
-            mine_percent = ((self.player.race.colonists_to_operate_mine * self.mines) / self.on_surface.people) - (minister.mines / 100)
-            defense_percent = ((self.player.race.colonists_to_operate_defense * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
-            check = [[factory_percent, self.facilities['Factory']], [power_plant_percent, self.facilities['Power']], [mine_percent, self.facilities['Mine']], [defense_percent, self.facilities['Defense']]]
+            factory_percent = ((self.player.race.colonists_to_operate_factory * self.facilities['Factory'].quantity) / self.on_surface.people) - (minister.factories / 100)
+            power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.facilities['Power'].quantity) / self.on_surface.people) - (minister.power_plants / 100)
+            mine_percent = ((self.player.race.colonists_to_operate_mine * self.facilities['Mine'].quantity) / self.on_surface.people) - (minister.mines / 100)
+            defense_percent = ((self.player.race.colonists_to_operate_defense * self.facilities['Defense'].quantity) / self.on_surface.people) - (minister.defenses / 100)
+            check = [[factory_percent, 'Factory'], [power_plant_percent, 'Power'], [mine_percent, 'Mine'], [defense_percent, 'Defense']]
             #print(check)
             least = 1
             lest = 0
@@ -184,18 +188,20 @@ class Planet(Defaults):
                 if check[i][0] <= least:
                     least = check[i][0]
                     lest = i
-            return check[lest][1].build_prep()
+            self.facilities[check[lest][1]].build_prep()
+            return self.facilities[check[lest][1]]
     
     """ checks for upgrades """
-    #"""
+    """
     def auto_upgrade(self):
         if not self.player.is_valid:
-            return
+            return None
         for facility in self.facilities:
             upgrade = facility.upgrade_available(self.player)
             if upgrade:
                 facility.cost_incomeplete = facility.upgrade_cost(self.player, upgrade)
                 return facility
+        return None
     #"""
     
     """ build stuff in build queue """

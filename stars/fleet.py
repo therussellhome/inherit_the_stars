@@ -452,11 +452,11 @@ class Fleet(Defaults):
                 self.load(self.waypoints[0].recipiants['load'], player)
             elif action == 'buy':
                 recipiant = self.waypoints[0].recipiants['buy']
-                if recipiant in game_engine.get('Planet') and recipiant.space_station.trade:
+                if recipiant in game_engine.get('Planet') and recipiant.space_station.is_trading_post:
                     self.buy(recipiant, player)
             elif action == 'sell':
                 recipiant = self.waypoints[0].recipiants['sell']
-                if recipiant in game_engine.get('Planet') and recipiant.space_station.trade:
+                if recipiant in game_engine.get('Planet') and recipiant.space_station.is_trading_post:
                     self.sell(recipiant, player)
             elif action == 'deploy_hyper_denial':
                 self.deploy_hyper_denial(player)

@@ -1,6 +1,7 @@
 import sys
 from .cost import Cost
 from .tech import Tech
+import copy
 
 
 """ Default values (default, min, max)  """
@@ -17,7 +18,6 @@ class Facility(Tech):
     
     def build_prep(self):
         self.cost_incomplete = copy.copy(self.tech.cost)
-        return self
     
     def colonize(self, player):
         if self.quantity == 0:

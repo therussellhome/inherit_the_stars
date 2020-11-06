@@ -34,6 +34,17 @@ class Defaults(game_engine.BaseClass):
                 pass
             return copy.copy(default[0])
         return object.__getattribute__(self, name)
+    
+    """ prints the entire __dict in a readable way so you can debug if somthing is wrong """
+    def debug_display(self, depth=0):
+        print('{', 'class: ', self.__class__, sep='')
+        for attribute in self.__dict__:
+            try:
+                print('    '*(depth+1), str(attribute), ": ", sep='', end='')
+                self.__dict__[attribute].debug_display(depth+1)
+            except:
+                print(getattr(self, attribute))
+        print('    '*depth, '}', sep='')
 
     """ Bulk update values """
     def update(self, **kwargs):
