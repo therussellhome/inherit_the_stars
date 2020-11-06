@@ -28,7 +28,6 @@ __defaults = {
     'starting_tech_construction': [0, 0, 25],
     'starting_tech_electronics': [0, 0, 25],
     'starting_tech_biotechnology': [0, 0, 25],
-    'energy_per_colonist': [5, 1, 20],
     'hab_gravity': [0, 0, 100],
     'hab_gravity_stop': [100, 0, 100],
     'hab_gravity_immune': [False],
@@ -39,17 +38,18 @@ __defaults = {
     'hab_radiation_stop': [100, 0, 100],
     'hab_radiation_immune': [False],
     'growth_rate': [15, 1, 20],
-    'starting_colonists': [250, 175, 350],
     'population_max': [10000000, 0, 1000000000],
-    'starting_factories': [10, 5, 20],
-    'starting_mines': [10, 5, 20],
-    'starting_power_plants': [10, 5, 20],
-    'starting_defenses': [10, 5, 20],
-    'cost_of_baryogenesis': [10000, 2000, 12000],
+    'starting_colonists': [250000, 175000, 350000],
     'colonists_to_operate_factory': [1000, 200, 5000],
     'colonists_to_operate_mine': [1000, 200, 5000],
     'colonists_to_operate_power_plant': [1000, 200, 5000],
     'colonists_to_operate_defense': [1000, 200, 5000],
+    'energy_per_colonist': [5, 1, 20],
+    'cost_of_baryogenesis': [10000, 2000, 12000],
+    'starting_factories': [10, 5, 20],
+    'starting_mines': [10, 5, 20],
+    'starting_power_plants': [10, 5, 20],
+    'starting_defenses': [10, 5, 20],
     'starting_energy': [50000, 25000, 100000],
     'starting_lithium': [200, 200, 700], 
     'starting_silicon': [200, 200, 700], 
@@ -58,28 +58,49 @@ __defaults = {
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 667, 
-    'Kender': 674, 
-    'Formics': 470, 
-    'Gaerhule': 520, 
-    'Halleyforms': 588, 
-    'Pa\'anuri': 670, 
-    'Melconians': 496, 
-    'TAANSTAFL': 719, 
-    'Patryns': 604,
+    'Aku\'Ultani': 1267, 
+    'Kender': 1274, 
+    'Formics': 1070, 
+    'Gaerhule': 1120, 
+    'Halleyforms': 1188, 
+    'Pa\'anuri': 1270, 
+    'Melconians': 1096, 
+    'TAANSTAFL': 1319, 
+    'Patryns': 1204,
     'Trader': -126,
     'Bioengineer': -122,
+    '2ndSight': -99,
     'SpacedOut': -81,
     'WasteNot': -76,
     'Hypermiler': -66,
+    'Forager': -56,
     'McMansion': -55,
     'MadScientist': 10,
     'QuickHeal': 14,
     'BleedingEdge': 28,
-    'Forager': -56,
-    '2ndSight': -99,
     'JuryRigged': 109,
 }
+
+economy_costs = (
+        'factory_cost_per_click': 5, 
+        'mine_slope': 100,
+        'power_plant_slope': 100,
+        'defense_slope': 100,
+        'energy_slope': 100,
+        'population_slope': .8,
+        'baryogenesis_invert_slope': 100,
+        'per_start_factory': 5,
+        'per_start_mine': 3,
+        'per_start_power_plant': 5,
+        'per_start_defense': 2,
+        'per_1000_start_energy': 1,
+        'start_titanium_per_p': 5,
+        'start_lithium_per_p': 5,
+        'start_silicon_per_p': 5,
+        }
+
+
+immunity_cost = {'grav_immunity_cost': 400, 'temp_immunity_cost': 450, 'rad_immunity_cost': 405}
 
 """ Storage class for race parameters """
 class Race(Defaults):
@@ -152,12 +173,42 @@ class Race(Defaults):
 
     """ Advantage points for economy settings """
     def _calc_points_economy(self):
-        p = 0
-        return p
+        ap = 0
+        ap -= (5000 - self.colonists_to_operate_factory) / (100 / factory_cost_per_click)
+        ap -= round(20 - (1000 / self.colonists_to_operate_mine) * mine_slope)
+        ap -= round(20 - (1000 / self.colonists_to_operate_power_plant) * power_plant_slope)
+        ap -= round(20 - (1000 / self.colonists_to_operate_defense) * defense_slope)
+        #print(ap)
+        ap -= energy_slope * self.energy_per_colonist - energy_slope
+        #print(ap)
+        """Assuming starting_colonists increments are multiples of 5000, no need to round""" 
+        ap -= population_slope * (self.starting_colonists - 175000) / 1000
+        ap -= (12000 - self.cost_of_baryogenesis) / baryogenesis_invert_slope
+        ap -= self.starting_factories * per_start_factory
+        ap -= self.starting_mines * per_start_mine
+        ap -= self.starting_power_plants * per_start_power_plant
+        ap -= self.starting_defenses * per_start_defense
+        ap -= self.starting_energy / 1000 * per_1000_start_energy
+        ap -= self.starting_titanium / start_titanium_per_p
+        ap -= self.starting_lithium / start_lithium_per_p
+        ap -= self.starting_silicon / start_silicon_per_p
+        return ap
 
     """ Advantage points for habitability settings """
     def _calc_points_habitability(self):
         p = 0
+        # Cost of gravity range
+            grav_range = self.hab_gravity_stop - self.hab_gravity + 1
+            grav_dis = abs( (self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
+            p -= grav_range * 5 - 300 - grav_dis
+        # Cost of temperature range
+            temp_range = self.hab_temperature_stop - self.hab_temperature + 1
+            temp_dis = abs( (self.hab_temperature + self.hab_temperatue_stop) / 2 - 50)
+            p -= temp_range * 5 - 300 - temp_dis * 2
+        # Cost of radiation range
+            rad_range = self.hab_radiation_stop - self.hab_radiation + 1
+            rad_dis = abs( (self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
+            p -= rad_range * 5 - 300 - rad_dis
         return p
 
     """ What percent of planets are habitable """

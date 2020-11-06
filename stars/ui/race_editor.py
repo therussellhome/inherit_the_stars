@@ -21,19 +21,19 @@ __defaults = {
 #added to each primary race trait 170 pts for starting energy & minerals, 150 pts for starting facilities
 cost_factors = {
     'per_factory': -5,
-    'per mine': -3,
-    'per power plant': -5,
-    'per defense': -2,
-    'per 1000 energy': -1,
-    'per 5 titanium': -1,
-    'per 5 lithium': -1,
-    'per 5 silicon': -1,
+    'per_mine': -3,
+    'per_power_plant': -5,
+    'per_defense': -2,
+    'per_1000_energy': -1,
+    'per_5_titanium': -1,
+    'per_5_lithium': -1,
+    'per_5_silicon': -1,
 }
     
 
 cost_of_growthrate = [-7091, -5673, -4256, -2839, -1422, -838, -403, -119, 40, 150, 201, 252, 303, 355, 406, 457, 509, 560, 611, 664]
 
-
+# Tiernan said to use this for temperature and leave out the *2 for dis for the others.  
 def calc_habr_cost(start, stop): #not temperature
     size = stop - start + 1
     dis = abs((start+stop)/2 - 50)
@@ -169,28 +169,17 @@ class RaceEditor(Defaults):
 
     def calc_economy_cost(self):
         ap = 0
-        c = round((self.race_editor_colonists_to_operate_factory/1000)**(-0.5)*1000-1000)
-        #print(c)
-        ap -= c
-        c = round((self.race_editor_colonists_to_operate_mine/1000)**(-0.5)*500-500)
-        #print(c)
-        ap -= c
-        c = round((self.race_editor_colonists_to_operate_power_plant/1000)**(-0.5)*1000-1000)
-        #print(c)
-        ap -= c
-        c = (1000/self.race_editor_colonists_to_operate_defense)*100-100
-        #print(c)
-        ap -= c
-        c = round(log(self.race_editor_energy_per_colonist*0.1, 2)*1000)
-        if self.race_editor_energy_per_colonist < 10:
-            c /= 2
-        #print(c)
-        ap -= c+500
+        ap -= (5000 - self.race_editor_colonists_to_operate_factory) / 20
+        ap -= round(20 - (1000 / self.race_editor_colonists_to_operate_mine) * 100)
+        ap -= round(20 - (1000 / self.race_editor_colonists_to_operate_power_plant) * 100)
+        ap -= round(20 - (1000 / self.race_editor_colonists_to_operate_defense) * 100)
         #print(ap)
-        #Is starting pop counting colonists in KT and does it matter? What about colonists to operate?
-        ap -= (self.race_editor_starting_colonists-250)/1.25
-        ap -= (10000-self.race_editor_cost_of_baryogenesis)/100
-        return -ap
+        ap -= 100 * self.race_editor_energy_per_colonist - 100
+        #print(ap)
+        """Assuming starting_colonists increments are multiples of 5000, no need to round""" 
+        ap -= .8 * (self.race_editor_starting_colonists - 175000) / 1000
+        ap -= (12000 - self.race_editor_cost_of_baryogenesis) / 100
+        return ap
 
     def calc_hab_cost(self):
         ap = 0
