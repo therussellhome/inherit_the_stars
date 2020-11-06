@@ -35,8 +35,9 @@ class Defaults(game_engine.BaseClass):
             return copy.copy(default[0])
         return object.__getattribute__(self, name)
     
-    """ prints the entire __dict in a readable way so you can debug if somthing is wrong """
+    """ prints the entire __dict__ in a readable way so you can debug if somthing is wrong """
     def debug_display(self, depth=0):
+        #TODO REMOVE=(add '#' at the begining of all lines of this function and those pertaining to this function) before release, after finished all tests
         print('{', 'class: ', self.__class__, sep='')
         for attribute in self.__dict__:
             try:
