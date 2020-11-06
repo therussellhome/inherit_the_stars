@@ -413,6 +413,12 @@ class Fleet(Defaults):
         for ship in self.ships:
             ship.orbital_mining(planet)
     
+    def patrol(self, player):
+        pass #TODO
+    
+    def piracy(self, player):
+        pass #TODO
+    
     def scan(self, player):
         for ship in self.ships:
             ship.scan(player)
@@ -474,6 +480,10 @@ class Fleet(Defaults):
                 self.self_repair()
             elif action == 'bomb':
                 self.bomb(player)
+            elif action == 'patrol':
+                self.patrol(player)
+            elif action == 'piracy'or action == 'pre_piracy':
+                self.piracy(player)
             
 Fleet.set_defaults(Fleet, __defaults)
 
@@ -503,7 +513,6 @@ Fleet.actions = [
     'load',
     'transfer',
     'patrol',
-    'route',
 ]
 """ In-system movment mine interaction """
 ''' Aryon:
@@ -513,7 +522,7 @@ Fleet.actions = [
         for i in range(len(self.ships)):
             sweep = self.ships[i].sweep_mines(mines)
             attract = self.ships[i].attract_mines(mines)
-            track.append([sweep-attract, sweep, attract, self.ships[i]])
+            track.append([sweep-attract, copy.copy(sweep), attract, self.ships[i]])
         track.sort(reverse = True)
         sweep = 0
         for tracked in track:
@@ -529,8 +538,8 @@ Fleet.actions = [
         sweep = 0
         attract = 0
         for ship in self.ships:
-            sweep += self.ship.sweep_mines(mines)
-            attract += self.ship.attract_mines(mines)
+            sweep += ship.sweep_mines(mines)
+            attract += ship.attract_mines(mines)
         system.sweep(sweep)
         attack = max(0, attract - sweep)/attract
         for ship in self.ships:
