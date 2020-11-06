@@ -181,19 +181,21 @@ function parse_json(url, json) {
                 for(var i = 0; i < element.length; i++) {
                     options.push(element.options[i].text);
                 }
-                for(opt_text of json['options_' + key]) {
-                    if(!options.includes(opt_text)) {
-                        var new_option = document.createElement("option");
-                        new_option.text = opt_text;
-                        element.add(new_option); 
+                if(json.hasOwnProperty('options_' + key)) {
+                    for(opt_text of json['options_' + key]) {
+                        if(!options.includes(opt_text)) {
+                            var new_option = document.createElement("option");
+                            new_option.text = opt_text;
+                            element.add(new_option); 
+                        }
+                        options.splice(options.indexOf(opt_text), 1);
                     }
-                    options.splice(options.indexOf(opt_text), 1);
-                }
-                for(var i = 0; i < options.length; i++) {
-                    for(var j = 0; j < element.length; j++) {
-                        if(element.options[j].text == options[i]) {
-                            element.remove(j);
-                            break;
+                    for(var i = 0; i < options.length; i++) {
+                        for(var j = 0; j < element.length; j++) {
+                            if(element.options[j].text == options[i]) {
+                                element.remove(j);
+                                break;
+                            }
                         }
                     }
                 }

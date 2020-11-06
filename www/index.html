@@ -2,6 +2,8 @@
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<!-- icons -->
+<link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
@@ -193,13 +195,13 @@ void main() {
 
 <div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">New Game</td>
+        <td class="hfill" style="font-size: 200%">New Game</td>
+        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create')"/></td>
     </tr></table>
     <table class="hfill">
         <tr>
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
-            <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">
@@ -354,16 +356,17 @@ void main() {
 
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Race Editor</td>
-        <td class="hfill" style="text-align: right">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        <td class="hfill" style="font-size: 200%">Race Editor</td>
+        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"/></td>
     </tr></table><table class="hfill">
         <tr>
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
-            <td rowspan="2"><img class="button" title="Save" src="/race.png" onclick="save_race()"/></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
@@ -553,26 +556,25 @@ void main() {
     <input id="messages_index" class="hidden" disabled="true"/>
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Messages</td>
-        <td><img class="button" title="Close" src="/close.png" onclick="show_screen(null)"/></td>
+        <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"/></td>
     </tr></table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
         <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
     </table><table class="hfill">
         <tr>
-            <td><img class="button button_s" title="Prev" src="/prev.png" onclick="post('messages', '?prev')"/></td>
+            <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"/></td>
             <td class="hfill"></td>
-            <td><img class="button button_s" title="Trash" src="/trash.png" onclick="post('messages', '?trash')"/></td>
-            <td><img class="button button_s" title="Next" src="/next.png" onclick="post('messages', '?next')"/></td>
+            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"/></td>
+            <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"/></td>
+            <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"/></td>
         </tr>
     </table><table class="hfill">
         <tr>
-            <td colspan="3" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+            <td rowspan="2"><img class="button" src="/ministers.png"/></td>
+            <td colspan="2" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
         </tr><tr>
-            <td rowspan="2"><input id="messages_from_icon" disabled="true" style="font-size: 200%"/></td>
-            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
-            <td rowspan="2"><img class="button button_s" title="GoTo" src="/goto.png" onclick="message_goto()"/></td>
-        </tr><tr>
+            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 75%"/></td>
             <td><input id="messages_date" disabled="true" style="font-size: 75%"/></td>
         </tr><tr>
             <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>

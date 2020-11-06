@@ -102,6 +102,15 @@ a {
 a:visited {
     color: magenta;
 }
+i.button {
+    font-size: 200%;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    opacity: 0.6;
+}
+i.button:hover {
+    opacity: 1.0;
+}
 table {
     border: 0;
 }
