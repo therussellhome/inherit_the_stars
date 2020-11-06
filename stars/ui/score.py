@@ -1,4 +1,4 @@
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -59,15 +59,17 @@ __defaults = {
 
 
 """ Components of score are precomputed as part of turn generation """
-class Score(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
+class Score(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
+        if not self.player:
+            return
         # Show self first
-        my_reference = 'Player/' + me.name
-        self.copy_score(1, me.get_intel(my_reference))
-        self.set(1, 'player', me.name)
+        my_reference = 'PlayerUI/' + self.player.name
+        self.copy_score(1, self.player.get_intel(my_reference))
+        self.set(1, 'player', self.player.name)
         i = 2
-        for intel in me.get_intel('Player'):
+        for intel in self.player.get_intel('PlayerUI'):
             if intel.reference != my_reference:
                 self.copy_score(i, intel)
                 i += 1
