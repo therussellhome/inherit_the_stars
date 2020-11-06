@@ -4,11 +4,12 @@ from .player import Player
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'research_current_energy_tech_level': [0, 0, 25],
-    'research_current_weapons_tech_level': [0, 0, 25],
-    'research_current_propulsion_tech_level': [0, 0, 25],
-    'research_current_construction_tech_level': [0, 0, 25],
-    'research_current_biotechnology_tech_level': [0, 0, 25],
+    'research_current_energy_tech_level': [0, 0, sys.maxsize],
+    'research_current_weapons_tech_level': [0, 0, sys.maxsize],
+    'research_current_propulsion_tech_level': [0, 0, sys.maxsize],
+    'research_current_construction_tech_level': [0, 0, sys.maxsize],
+    'research_current_biotechnology_tech_level': [0, 0, sys.maxsize],
+    'research_weapons': [[]],
     'research_queue_item_1': [''],
     'research_queue_item_2': [''],
     'research_queue_item_3': [''],
@@ -30,6 +31,7 @@ class ResearchMinister(Player):
         self.research_current_construction_tech_level = max(min(research_current_construction_tech_level, 25), 0)
         self.research_current_electronics_tech_level = max(min(research_current_electronics_tech_level, 25), 0)
         self.research_current_biotechnology_tech_level = max(min(research_current_biotechnology_tech_level, 25), 0)
+        self.research_weapons = ['<td>weapon 1</td>', '<td>weapon 2</td>']
         self.research_queue_item_1 = me.research_queue[0] 
         self.research_queue_item_2 = me.research_queue[1] 
         self.research_queue_item_3 = me.research_queue[2] 

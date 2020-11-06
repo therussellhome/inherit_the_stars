@@ -201,10 +201,13 @@ function parse_json(url, json) {
                 }
                 element.value = json[key];
             } else if(element.nodeName == 'TABLE') {
+                console.log('TABLE ' + key);
                 while(element.rows.length > 0) {
+                    console.log('  delete ' + element.rows[0].innerHTML);
                     element.deleteRow(0);
                 }
                 for(row of json[key]) {
+                    console.log('  insert ' + row);
                     r = element.insertRow(-1);
                     r.innerHTML = row;
                 }

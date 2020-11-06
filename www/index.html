@@ -618,13 +618,10 @@ void main() {
         <tr><td>Construction<input id="research_current_construction_tech_level" disabled="true"/></td></tr>
         <tr><td>Electronics<input id="research_current_electronics_tech_level" disabled="true"/></td></tr>
         <tr><td>Biotechnology<input id="research_current_biotechnology_tech_level" disabled="true"/></td></tr></table>
+    <!--
     <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
-    <table class='onsubmit_research' onsubmit='research_bombs(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_bombs"/>+ Bombs</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_cloaks_and_ecm(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Cloaks and ECM</caption>
+    <table class='onsubmit_research' onsubmit='research_(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Electronics</caption>
         <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
     </table>
     <table class='onsubmit_research' onsubmit='research_defense(this)'>
@@ -659,9 +656,9 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_scanners"/>+ Scanners</caption>
         <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
     </table>
-    <table class='onsubmit_research' onsubmit='research_weapons(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_weapons"/>+ Weapons</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    -->
+    <table id='research_weapons'>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
@@ -682,13 +679,14 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+<!--
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%"><img id="button_shipyard" title="Shipyard" src="/shipyard.png"/>Shipyard</td></tr>
     </table>
     <table>
         <tr>
             <td>Existing</td>
-            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td><!--TODO get delete, save and copy icons-->
+            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td>TODO get delete, save and copy icons
         </tr>
     </table>
     <table class="hfill">
@@ -756,6 +754,7 @@ void main() {
         <td colspan="2"><input id="shipyard_checkbox_9" type="checkbox" onchange="post('shipyard')"/> Show all</td>
         <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
     </table>
+-->
 </div>
 
 
