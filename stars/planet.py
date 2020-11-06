@@ -131,7 +131,7 @@ class Planet(Defaults):
             workers = self.player.get_minister(self.name).power_plants / 100 * self.on_surface.people * 1000
             colonists_to_operate_facility = self.player.race.colonists_to_operate_power_plant
             operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            self.player.energy += operate * facility.tech.energy_output
+            self.player.energy += operate * facility.tech.energy_output / 100
     
     """ calculates max production capasity """
     def calc_production(self):
@@ -170,11 +170,11 @@ class Planet(Defaults):
     #TODO    penetrating_tech = self.player.max_tech('planetary_penetrating')
         num_facilities = (self.factories + self.power_plants + self.mines + self.defenses)
         if minister.build_penetrating_after_num_facilities <= num_facilities: # and self.penetrating_tech != penetrating_tech:
-    #TODO        self.penetrating_tech = penetrating_tech
-            return 'self.penetrating_tech'
+            self.penetrating_tech = 'penetrating_tech'
+            return self.penetrating_tech
         elif minister.build_scanner_after_num_facilities <= num_facilities: # and self.scanner_tech != scanner_tech:
-    #TODO        self.scanner_tech = scanner_tech
-            return 'self.scanner_tech'
+            self.scanner_tech = 'scanner_tech'
+            return self.scanner_tech
         else:
             factory_percent = ((self.player.race.colonists_to_operate_factory * self.facilities['Factory'].quantity) / self.on_surface.people) - (minister.factories / 100)
             power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.facilities['Power'].quantity) / self.on_surface.people) - (minister.power_plants / 100)
@@ -189,7 +189,7 @@ class Planet(Defaults):
                     least = check[i][0]
                     lest = i
             self.facilities[check[lest][1]].build_prep()
-            return self.facilities[check[lest][1]]
+            return self.facilities[check[lest][1]]#Reference()#?
     
     """ checks for upgrades """
     """

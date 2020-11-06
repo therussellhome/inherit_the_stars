@@ -179,19 +179,19 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.power_plants = 50
         self.planet.factories = 2
         self.planet.defenses = 4
-        self.assertEqual(self.planet.auto_build(), 'self.scanner_tech')
+        self.assertEqual(self.planet.auto_build(), self.planet.scanner_tech)
         self.planet.mines = 25
         self.planet.power_plants = 47
         self.planet.factories = 25
         self.planet.defenses = 4
-        self.assertEqual(self.planet.auto_build(), 'self.penetrating_tech')
+        self.assertEqual(self.planet.auto_build(), self.planet.penetrating_tech)
         self.planet.mines = 25
         self.planet.power_plants = 3
         self.planet.factories = 2
         self.planet.defenses = 4
         #self.planet.auto_build().debug_display()
         #self.planet.facilities['Factory'].debug_display()
-        self.assertEqual(self.planet.auto_build(), self.planet.facilities['Factory'], 'This error does not seem logical')#'FIX ME'
+        self.assertEqual(self.planet.auto_build() is self.planet.facilities['Factory'], True, 'This error does not seem logical')#'FIX ME'
         self.planet.mines = 2
         self.planet.power_plants = 5
         self.planet.factories = 2
