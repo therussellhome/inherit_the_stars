@@ -200,6 +200,14 @@ function parse_json(url, json) {
                     }
                 }
                 element.value = json[key];
+            } else if(element.nodeName == 'TABLE') {
+                while(element.rows.length > 0) {
+                    element.deleteRow(0);
+                }
+                for(row of json[key]) {
+                    r = element.insertRow(-1);
+                    r.innerHTML = row;
+                }
             } else if(element.matches('[type="checkbox"]')) {
                 element.checked = json[key];
             } else {
