@@ -21,8 +21,8 @@ __defaults = {
     'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
     'tech_level': [TechLevel()],
-    'next_tech_cost': [TechLevel()],
-    'research_field': [''], # modifiable by the player
+    'research_partial': [TechLevel()],
+    'research_queue': [[]], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],

@@ -196,7 +196,7 @@ void main() {
 <div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">New Game</td>
-        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create')"/></td>
+        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create')"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>
@@ -357,7 +357,7 @@ void main() {
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Race Editor</td>
-        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"/></td>
+        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
     </tr></table><table class="hfill">
         <tr>
             <td>Load Existing</td>
@@ -556,18 +556,18 @@ void main() {
     <input id="messages_index" class="hidden" disabled="true"/>
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Messages</td>
-        <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"/></td>
+        <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
         <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
     </table><table class="hfill">
         <tr>
-            <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"/></td>
+            <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"></i></td>
             <td class="hfill"></td>
-            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"/></td>
-            <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"/></td>
-            <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"/></td>
+            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"></i></td>
+            <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"></i></td>
+            <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"></i></td>
         </tr>
     </table><table class="hfill">
         <tr>
@@ -609,15 +609,26 @@ void main() {
 
 <div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
+        <td><img title="Research Minister" src="/research_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Research Minister</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
-        <tr><td>Energy<input id="research_current_energy_tech_level" disabled="true"/></td></tr>
-        <tr><td>Weapons<input id="research_current_weapons_tech_level" disabled="true"/></td></tr>
-        <tr><td>Propulsion<input id="research_current_propulsion_tech_level" disabled="true"/></td></tr>
-        <tr><td>Construction<input id="research_current_construction_tech_level" disabled="true"/></td></tr>
-        <tr><td>Electronics<input id="research_current_electronics_tech_level" disabled="true"/></td></tr>
-        <tr><td>Biotechnology<input id="research_current_biotechnology_tech_level" disabled="true"/></td></tr></table>
+    <table class="hfill"><tr style="font-size: 150%">
+        <td title="Energy"><i class="fab fa-react" style="color: cyan"></i><input id="research_level_energy" disabled="true" class="tech_level"/></td>
+        <td style="width: 0.9em"></td>
+        <td title="Weapons"><i class="fas fa-bomb" style="color: red"></i><input id="research_level_weapons" disabled="true" class="tech_level"/></td>
+        <td style="width: 0.9em"></td>
+        <td title="Propulsion"><i class="fas fa-tachometer-alt" style="color: white"></i><input id="research_level_propulsion" disabled="true" class="tech_level"/></td>
+        <td style="width: 0.9em"></td>
+        <td title="Construction"><i class="fas fa-wrench" style="color: silver"></i><input id="research_level_construction" disabled="true" class="tech_level"/></td>
+        <td style="width: 0.9em"></td>
+        <td title="Electronics"><i class="fas fa-plug" style="color: yellow"></i><input id="research_level_electronics" disabled="true" class="tech_level"/></td>
+        <td style="width: 0.9em"></td>
+        <td title="Biotechnology"><i class="fas fa-seedling" style="color: green"></i><input id="research_level_biotechnology" disabled="true" class="tech_level"/></td>
+    </tr></table>
+    <table class="hfill" id="research_queue">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
+    </table>    
     <!--
     <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
     <table class='onsubmit_research' onsubmit='research_(this)'>
@@ -657,19 +668,8 @@ void main() {
         <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
     </table>
     -->
-    <table id='research_weapons'>
+    <table id="research_weapons" class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
-    </table>
-    <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-        <tr><td><input id="research_queue_item_1" disabled="true"/></td><td></td></tr> <!-- TODO get a trash icon -->
-        <tr><td><input id="research_queue_item_2" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_3" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_4" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_5" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_6" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_7" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_8" disabled="true"/></td><td></td></tr>
     </table>
 </div>
 

@@ -68,16 +68,16 @@ def get(reference, create_new=False):
 
 
 """ Decode a string into an object """
-def from_json(string, name='<Internal>'):
+def from_json(raw, name='<Internal>'):
     try:
-	    return json.loads(string, object_hook=__decode)
+        return json.loads(raw, object_hook=__decode)
     except Exception as e:
-        print('Decode error ' + str(e) + ' in ' + name + '\n' + string)
+        print('Decode error ' + str(e) + ' in ' + name + '\n' + raw)
 
 
 """ Encode an object into a string """
 def to_json(obj):
-	return json.dumps(obj, default=__encode)
+    return json.dumps(obj, indent='    ', default=__encode)
 
 
 """ List files in the game dir """

@@ -1,23 +1,18 @@
 import sys
 from .playerui import PlayerUI
+from ..reference import Reference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'research_current_energy_tech_level': [0, 0, sys.maxsize],
-    'research_current_weapons_tech_level': [0, 0, sys.maxsize],
-    'research_current_propulsion_tech_level': [0, 0, sys.maxsize],
-    'research_current_construction_tech_level': [0, 0, sys.maxsize],
-    'research_current_biotechnology_tech_level': [0, 0, sys.maxsize],
+    'research_level_energy': [0, 0, sys.maxsize],
+    'research_level_weapons': [0, 0, sys.maxsize],
+    'research_level_propulsion': [0, 0, sys.maxsize],
+    'research_level_construction': [0, 0, sys.maxsize],
+    'research_level_electronics': [0, 0, sys.maxsize],
+    'research_level_biotechnology': [0, 0, sys.maxsize],
+    'research_queue': [[]],
     'research_weapons': [[]],
-    'research_queue_item_1': [''],
-    'research_queue_item_2': [''],
-    'research_queue_item_3': [''],
-    'research_queue_item_4': [''],
-    'research_queue_item_5': [''],
-    'research_queue_item_6': [''],
-    'research_queue_item_7': [''],
-    'research_queue_item_8': [''],
 }
 
 
@@ -25,22 +20,49 @@ __defaults = {
 class ResearchMinister(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        self.research_current_energy_tech_level = max(min(research_current_energy_tech_level, 25), 0)  
-        self.research_current_weapons_tech_level = max(min(research_current_weapons_tech_level, 25), 0)
-        self.research_current_propulsion_tech_level = max(min(research_current_propulsion_tech_level, 25), 0)
-        self.research_current_construction_tech_level = max(min(research_current_construction_tech_level, 25), 0)
-        self.research_current_electronics_tech_level = max(min(research_current_electronics_tech_level, 25), 0)
-        self.research_current_biotechnology_tech_level = max(min(research_current_biotechnology_tech_level, 25), 0)
-        self.research_weapons = ['<td>weapon 1</td>', '<td>weapon 2</td>']
-        return
-        self.research_queue_item_1 = me.research_queue[0] 
-        self.research_queue_item_2 = me.research_queue[1] 
-        self.research_queue_item_3 = me.research_queue[2] 
-        self.research_queue_item_4 = me.research_queue[3] 
-        self.research_queue_item_5 = me.research_queue[4] 
-        self.research_queue_item_6 = me.research_queue[5] 
-        self.research_queue_item_7 = me.research_queue[6] 
-        self.research_queue_item_8 = me.research_queue[7] 
+        if not self.player:
+            return
+        # Add to research queue
+        if action.startswith('add='):
+            tech_add = Reference('Tech', action[4:])
+            self.player.research_queue.append(tech_add)
+        # Remove from research queue
+        if action.startswith('del='):
+            for t in self.player.research_queue:
+                if t.name == action[4:]:
+                    self.player.research_queue.remove(t)
+                    break
+        # Current tech levels
+        self.research_level_energy = self.player.tech_level.energy
+        self.research_level_weapons = self.player.tech_level.weapons
+        self.research_level_propulsion = self.player.tech_level.propulsion
+        self.research_level_construction = self.player.tech_level.construction
+        self.research_level_electronics = self.player.tech_level.electronics
+        self.research_level_biotechnology = self.player.tech_level.biotechnology
+        # Research queue
+        research_queue = []
+        for t in self.player.research_queue:
+            research_queue.append(t.name)
+            # TODO handle tech with ' and " in its name
+            self.research_queue.append('<td class="hfill"><div class="iframe" onclick="toggle_iframe(this.nextElementSibling)"></div>' \
+                    + '<iframe class="tech" scrolling="no" src="tech.html?' + t.name + '&' + self.player_token + '"></iframe></td>' \
+                    + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + t.name + '\')"></i></td>')
+        # Sort tech by cost
+        research_tech = []
+        for t in self.player.tech:
+            cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.research_partial)
+            if cost > 0 and t.name not in research_queue:
+                # TODO handle tech with ' and " in its name
+                row = '<td class="hfill"><div class="iframe" onclick="toggle_iframe(this.nextElementSibling)"></div>' \
+                    + '<iframe class="tech" scrolling="no" src="tech.html?' + t.name + '&' + self.player_token + '"></iframe></td>' \
+                    + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + t.name + '\')"></i></td>'
+                research_tech.append((cost, t.category, row))
+        research_tech.sort(key = lambda x: x[0])
+        # Sort components into categories
+        for t in research_tech:
+            if t[1] in ['Bomb', 'Missile', 'Beam']:
+                self.research_weapons.append(t[2])
+
     def calc_cost(self, field):
         if field == 'energy':
             return round(research_modifier_energy * ((player.energy_tech_level ** 3) * 8 + 150))

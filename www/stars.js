@@ -203,13 +203,10 @@ function parse_json(url, json) {
                         }
                         element.value = json[key];
                     } else if(element.nodeName == 'TABLE') {
-                        console.log('TABLE ' + key);
                         while(element.rows.length > 0) {
-                            console.log('  delete ' + element.rows[0].innerHTML);
                             element.deleteRow(0);
                         }
                         for(row of json[key]) {
-                            console.log('  insert ' + row);
                             r = element.insertRow(-1);
                             r.innerHTML = row;
                         }
@@ -246,7 +243,9 @@ function host_generate() {
 function render_stars() {
     if(json_map.hasOwnProperty('render_stars')) {
         if(json_map['render_stars'].hasOwnProperty('systems')) {
-            draw_stars();
+            if(json_map['render_stars']['suns'].length > 0) {
+                draw_stars();
+            }
         }
     }
 }
@@ -529,26 +528,50 @@ function format_radiation(value) {
     return ((value + 50) / 100).toString() + ' R';
 }
 
+// Display the tech iframe
+function tech_iframe(element) {
+    iframe = element.parentElement.lastElementChild;
+    toggle(iframe, 'hide');
+    iframe.contentWindow.document.body.addEventListener('resize', tech_iframe_resize.bind(iframe))
+}
+
+function toggle_iframe(iframe) {
+    full_height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    if(iframe.style.height == full_height) {
+        iframe.style.height = '60px';
+    } else {
+        iframe.style.height = full_height;
+    }
+}
+
 // Post changes for tech
 function post_tech() {
+    //document.body.removeEventListener('resize', post_tech)
     post('tech', decodeURI(document.location.search))
 }
 
 // Render the tech display page
 function tech_display() {
-    for(screen of document.getElementsByClassName('tech')) {
-        screen.classList.toggle('hide', true);
-    }
-    toggle(document.body, 'hide', false);
+    chart_cnt = 0;
     if((json_map['tech']['armor'] != 0) || (json_map['tech']['shield'] != 0) || (json_map['tech']['ecm_chart_data'].length != 0) || (json_map['tech']['weapon_chart_data'].length != 0)) {
-        document.getElementById('combat').classList.toggle('hide', false);
+        toggle(document.getElementById('combat'), 'hide', false);
+        weapon_chart();
+        chart_cnt++;
     }
-    if(json_map['tech']['scanner_chart_data'].length != 0) {
-        document.getElementById('scanner').classList.toggle('hide', false);
+    if((json_map['tech']['scanner_chart_data'][0] > 1) || (json_map['tech']['scanner_chart_data'][1] > 1) || (json_map['tech']['scanner_chart_data'][2] > 1) || (json_map['tech']['scanner_chart_data'][3] > 1)) {
+        toggle(document.getElementById('scanner'), 'hide', false);
+        scanner_chart();
+        chart_cnt++;
     }
     if(json_map['tech']['engine_chart_data'].length != 0) {
-        document.getElementById('engine').classList.toggle('hide', false);
+        toggle(document.getElementById('engine'), 'hide', false);
+        engine_chart();
+        chart_cnt++;
     }
+    chart_width = Math.min(275, 550 / chart_cnt - 20 * chart_cnt);
+    document.getElementById('weapon_chart').style.width = chart_width + 'px';
+    document.getElementById('scanner_chart').style.width = chart_width + 'px';
+    document.getElementById('engine_chart').style.width = chart_width + 'px';
 }
 
 // Create a chart for weapon curve
