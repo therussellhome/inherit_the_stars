@@ -210,7 +210,7 @@ i.ti {
 }
 
 i.li:before {
-    content: 'li ';
+    content: 'Li ';
 }
 i.li {
     color: lightgreen;
