@@ -16,12 +16,12 @@ __defaults = {
     'lrt_Forager': [False],
     'lrt_2ndSight': [False],
     'lrt_JuryRigged': [False],
-    'research_modifier_energy': [100, 50, 200],
-    'research_modifier_weapons': [100, 50, 200],
-    'research_modifier_propulsion': [100, 50, 200],
-    'research_modifier_construction': [100, 50, 200],
-    'research_modifier_electronics': [100, 50, 200],
-    'research_modifier_biotechnology': [100, 50, 200],
+    'research_modifier_energy': [500, 250, 1000],
+    'research_modifier_weapons': [500, 250, 1000],
+    'research_modifier_propulsion': [500, 250, 1000],
+    'research_modifier_construction': [500, 250, 1000],
+    'research_modifier_electronics': [500, 250, 1000],
+    'research_modifier_biotechnology': [500, 250, 1000],
     'starting_tech_energy': [0, 0, 25],
     'starting_tech_weapons': [0, 0, 25],
     'starting_tech_propulsion': [0, 0, 25],
@@ -37,7 +37,7 @@ __defaults = {
     'hab_radiation': [0, 0, 100],
     'hab_radiation_stop': [100, 0, 100],
     'hab_radiation_immune': [False],
-    'growth_rate': [15, 1, 20],
+    'growth_rate': [15, 5, 20],
     'population_max': [10000000, 0, 1000000000],
     'starting_colonists': [250000, 175000, 350000],
     'colonists_to_operate_factory': [1000, 200, 5000],
@@ -58,15 +58,15 @@ __defaults = {
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 1267, 
-    'Kender': 1274, 
-    'Formics': 1070, 
-    'Gaerhule': 1120, 
-    'Halleyforms': 1188, 
-    'Pa\'anuri': 1270, 
-    'Melconians': 1096, 
-    'TAANSTAFL': 1319, 
-    'Patryns': 1204,
+    'Aku\'Ultani': 2467, 
+    'Kender': 2474, 
+    'Formics': 2270, 
+    'Gaerhule': 2320, 
+    'Halleyforms': 2388, 
+    'Pa\'anuri': 2470, 
+    'Melconians': 2296, 
+    'TAANSTAFL': 2519, 
+    'Patryns': 2404,
     'Trader': -126,
     'Bioengineer': -122,
     '2ndSight': -99,
@@ -81,7 +81,10 @@ trait_cost = {
     'JuryRigged': 109,
 }
 
+
 economy_costs = (
+        'research_modifier_slope': 12.5,
+        'growthrate_cost_per_click': 120,
         'factory_cost_per_click': 5, 
         'mine_slope': 100,
         'power_plant_slope': 100,
@@ -165,15 +168,13 @@ class Race(Defaults):
             self.research_modifier_electronics,
             self.research_modifier_biotechnology]
         for m in researchmodifiers: 
-            if m > 100:
-            p += (m / 100 - 1) ** 2 * 20 + (m / 100 - 1) * 30
-        elif m < 100:
-            p -= (m / 50 - 2) ** 2 * 20 - (m / 50 - 2) * 30
+            p -= round( (1000 - m) / research_modifier_slope)
         return p
 
     """ Advantage points for economy settings """
     def _calc_points_economy(self):
         ap = 0
+        ap -= (self.growth_rate - 5) * growthrate_cost_per_click
         ap -= (5000 - self.colonists_to_operate_factory) / (100 / factory_cost_per_click)
         ap -= round(20 - (1000 / self.colonists_to_operate_mine) * mine_slope)
         ap -= round(20 - (1000 / self.colonists_to_operate_power_plant) * power_plant_slope)
