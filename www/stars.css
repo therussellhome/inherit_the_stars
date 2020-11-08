@@ -15,24 +15,21 @@
     color: white;
     padding-right: 150px;
 }
-#tech_html {
-    background-color: rgba(0, 0, 0, 1);
-    font-family: sans-serif;
-    margin: 0;
-    color: white;
-    width: 550px;
-}
-div.iframe {
+div.tech_expand {
     position: absolute;
     width: 50%;
     height: 60px;
     z-index: 9;
     cursor: pointer;
 }
-iframe.tech {
+div.tech {
     width: 550px;
     height: 60px;
     border: 0;
+    border-bottom: 1px solid white;
+    overflow-x: hidden; 
+    overflow-y: hidden; 
+    font-weight: normal;
 }
 table.tech {
     #margin-left: 1em;
@@ -152,6 +149,12 @@ tr.slider_padding {
 td {
     white-space: nowrap;
 }
+td.tech_title {
+    text-align: center;
+}
+td.tech_value {
+    text-align: right;
+}
 input:disabled {
     color: white;
     background-color: transparent;
@@ -192,6 +195,18 @@ i {
     padding-right: 0.5em; 
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
+}
+
+/* Expand section */
+div.fa-angle-double-up, div.fa-angle-double-down {
+    width: 100%;
+    border-top: 1px dotted silver;
+    border-bottom: 1px dotted silver;
+    padding: 2px;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: silver;
+    cursor: pointer;
 }
 
 /* Cost & Weight Fields */

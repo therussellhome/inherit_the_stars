@@ -60,16 +60,7 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
                 response_str = '{}'
             #print('    resp = ', response_str)
             self.wfile.write(response_str.encode())
-"""
-    def do_GET(self):
-        get = Path('.') / 'www' / re.sub('\?.*', '', self.path).split('/')[-1]
-        if not get.exists() or get.is_dir():
-            get = Path('.') / 'www' / 'index.html'
-        with open(get, 'rb') as f:
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(f.read())
-"""
+
 
 with socketserver.TCPServer(("", 0), Httpd) as httpd:
     address = 'http://' + socket.gethostname() + ':' + str(httpd.server_address[1])

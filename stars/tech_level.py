@@ -49,19 +49,19 @@ class TechLevel(Defaults):
         return cost
 
     """ Format the tech level for HTML """
-    def to_html(self):
+    def to_html(self, show_zero=False):
         html = ''
-        if self.energy > 0:
+        if self.energy > 0 or show_zero:
             html += '<i class="fa-react" title="Energy"> ' + str(self.energy) + '</i>'
-        if self.weapons> 0:
+        if self.weapons> 0 or show_zero:
             html += '<i class="fa-bomb" title="Weapons"> ' + str(self.weapons) + '</i>'
-        if self.propulsion > 0:
+        if self.propulsion > 0 or show_zero:
             html += '<i class="fa-tachometer-alt" title="Propulsion"> ' + str(self.propulsion) + '</i>'
-        if self.construction > 0:
+        if self.construction > 0 or show_zero:
             html += '<i class="fa-wrench" title="Construction"> ' + str(self.construction) + '</i>'
-        if self.electronics > 0:
+        if self.electronics > 0 or show_zero:
             html += '<i class="fa-plug" title="Electronics"> ' + str(self.electronics) + '</i>'
-        if self.biotechnology > 0:
+        if self.biotechnology > 0 or show_zero:
             html += '<i class="fa-seedling" title="Biotechnology"> ' + str(self.biotechnology) + '</i>'
         return html
 
