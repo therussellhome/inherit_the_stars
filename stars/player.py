@@ -12,6 +12,7 @@ from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'seen_players': [[]],
     'date': [0.0, 0.0, sys.maxsize],
     'load_key': [''], # used to validate the player file
     'race': [Race()],
@@ -20,13 +21,14 @@ __defaults = {
     'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
     'tech_level': [TechLevel()],
-    'next_tech_cost': [TechLevel()],
-    'research_field': [''], # modifiable by the player
+    'research_partial': [TechLevel()],
+    'research_queue': [[]], # modifiable by the player
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],
     'tech': [[]], # tech tree
-    'treaties': [{}],               
+    'treaties': [{}],
+    'pending_treaties': [{}],
 }
 
 """ A player in a game """
@@ -67,6 +69,7 @@ class Player(Defaults):
             self.intel[reference] = Intel(reference=reference)
         self.intel[reference].add_report(date=self.date, **kwargs)
         # If seeing a new player then capture that
+        # TODO put player name in seen_players
         if 'player' in kwargs:
             reference = 'Player/' + kwargs['player']
             if reference not in self.intel:
@@ -80,9 +83,16 @@ class Player(Defaults):
             return Intel()
         reports = []
         for k, i in self.intel.items():
-            if k.starswith(reference + '/'):
+            if k.startswith(reference + '/'):
                 reports.append(i)
         return reports
+
+    """ 'Recieve' intel reports """
+    def calc_intel(self):
+        # First run includes all of the stars
+        if len(self.intel) == 0:
+            for s in game_engine.get('Sun'):
+                self.add_intel(s, name=s.name, location=s.location, color=s.get_color(), size=s.gravity)
 
     """ Add a message """
     def add_message(self, source, subject, body, link):

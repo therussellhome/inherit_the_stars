@@ -1,4 +1,4 @@
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -7,10 +7,9 @@ __defaults = {
 
 
 """ """
-class Generate(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
-        pass
+class Generate(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
 
 
-Generate.set_defaults(Generate, __defaults, no_reset=[])
+Generate.set_defaults(Generate, __defaults)

@@ -1,4 +1,4 @@
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -7,10 +7,9 @@ __defaults = {
 
 
 """ """
-class Planets(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
-        pass
+class Planets(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
 
 
-Planets.set_defaults(Planets, __defaults, no_reset=[])
+Planets.set_defaults(Planets, __defaults)

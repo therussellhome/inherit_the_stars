@@ -1,4 +1,8 @@
 import sys
+from random import randint
+from random import uniform
+from . import game_engine
+from . import stars_math
 from math import sin
 from math import cos
 from random import randint
@@ -8,6 +12,7 @@ from . import game_engine
 from .cost import Cost
 from .cargo import Cargo
 from .defaults import Defaults
+from .location import Location
 from .minerals import Minerals
 from .facility import Facility
 from .location import Location
@@ -16,6 +21,7 @@ from .reference import Reference
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'location': [Location()],
     'distance': [50, 0, 100],
     'temperature': [50, -50, 150],
     'radiation': [50, -50, 150],
@@ -52,6 +58,9 @@ class Planet(Defaults):
             self.remaining_minerals.titanium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
             self.remaining_minerals.lithium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
             self.remaining_minerals.silicon += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+        if 'location' not in kwargs:
+            distance_ly = self.distance / 100 * stars_math.TERAMETER_2_LIGHTYEAR
+            self.location = Location(reference=self.star_system, offset=distance_ly, lat=0)
         if 'orbit_speed' not in kwargs:
             self.orbit_speed = uniform(0.01, 1.0)
         if 'age' not in kwargs:
