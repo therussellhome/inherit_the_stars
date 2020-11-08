@@ -58,15 +58,15 @@ __defaults = {
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 2467, 
-    'Kender': 2474, 
-    'Formics': 2270, 
-    'Gaerhule': 2320, 
-    'Halleyforms': 2388, 
-    'Pa\'anuri': 2470, 
-    'Melconians': 2296, 
-    'TAANSTAFL': 2519, 
-    'Patryns': 2404,
+    'Aku\'Ultani': 2767, 
+    'Kender': 2774, 
+    'Formics': 2570, 
+    'Gaerhule': 2620, 
+    'Halleyforms': 2688, 
+    'Pa\'anuri': 2770, 
+    'Melconians': 2596, 
+    'TAANSTAFL': 2819, 
+    'Patryns': 2704,
     'Trader': -126,
     'Bioengineer': -122,
     '2ndSight': -99,
@@ -103,7 +103,13 @@ economy_costs = {
 }
 
 
-immunity_cost = {'grav_immunity_cost': 400, 'temp_immunity_cost': 450, 'rad_immunity_cost': 405}
+habitability_cost = {
+    'range_cost_per_click': 5,
+    'immunity_fee': 50, #times number of immunities squared
+    'grav_immunity_cost': 400, 
+    'temp_immunity_cost': 450, 
+    'rad_immunity_cost': 405,
+}
 
 """ Storage class for race parameters """
 class Race(Defaults):
@@ -168,7 +174,7 @@ class Race(Defaults):
             self.research_modifier_electronics,
             self.research_modifier_biotechnology]
         for m in researchmodifiers: 
-            p -= round( (1000 - m) / research_modifier_slope)
+            p -= round((1000 - m) / research_modifier_slope)
         return p
 
     """ Advantage points for economy settings """
@@ -198,20 +204,32 @@ class Race(Defaults):
     """ Advantage points for habitability settings """
     def _calc_points_habitability(self):
         p = 0
-        """
+        immunities = 0
+        if self.hab_gravity_immune:
+            immunities += 1
+            p -= grav_immunity_cost
+        else:
         # Cost of gravity range
             grav_range = self.hab_gravity_stop - self.hab_gravity + 1
-            grav_dis = abs( (self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
-            p -= grav_range * 5 - 300 - grav_dis
+            grav_dis = abs((self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
+            p -= grav_range * range_cost_per_click - 300 - grav_dis
+        if self.hab_temperature_immune:
+            immunities += 1
+            p -= temp_immunity_cost
+        else:
         # Cost of temperature range
             temp_range = self.hab_temperature_stop - self.hab_temperature + 1
-            temp_dis = abs( (self.hab_temperature + self.hab_temperatue_stop) / 2 - 50)
-            p -= temp_range * 5 - 300 - temp_dis * 2
+            temp_dis = abs((self.hab_temperature + self.hab_temperatue_stop) / 2 - 50)
+            p -= temp_range * range_cost_per_click - 300 - temp_dis * 2
+        if self.hab_radiation_immune:
+            immunities += 1
+            p -= rad_immunity_cost
+        else:
         # Cost of radiation range
             rad_range = self.hab_radiation_stop - self.hab_radiation + 1
-            rad_dis = abs( (self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
-            p -= rad_range * 5 - 300 - rad_dis
-        """
+            rad_dis = abs((self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
+            p -= rad_range * range_cost_per_click - 300 - rad_dis
+        p -= (immunities ** 2) * immunity_fee + immunities * 5
         return p
 
     """ What percent of planets are habitable """
