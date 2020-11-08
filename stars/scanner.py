@@ -22,9 +22,9 @@ class Scanner(Defaults):
     def range_visible(self, apparent_mass):
         visible_at = 0
         if apparent_mass > 0:
-            visible_at = min(visible_at, self.penetrating)
+            visible_at = max(visible_at, self.penetrating)
             ly_per_kt = self.normal / 100.0
-            visible_at = min(visible_at, apparent_mass * ly_per_kt)
+            visible_at = max(visible_at, apparent_mass * ly_per_kt)
         return visible_at
 
     def __add__(self, other):

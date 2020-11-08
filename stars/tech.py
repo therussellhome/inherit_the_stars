@@ -1,4 +1,5 @@
 import sys
+from . import game_engine
 from .cloak import Cloak
 from .cost import Cost
 from .defaults import Defaults
@@ -54,13 +55,14 @@ class Tech(Defaults):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
             self.name = 'Tech the GM made up himself ' + str(id(self))
+        game_engine.register(self)
 
     """ Determine if the item is available for a player's tech level """
-    def is_available(self, player):
-        if not self.level.is_available(player.tech_level):
+    def is_available(self, level=None, race=None):
+        if level and self.level.is_available(level):
             return False
-        if len(self.race_requirements) > 0:
-            traits = player.race.list_traits()
+        if race and len(self.race_requirements) > 0:
+            traits = race.list_traits()
             for requirement in self.race_requirements.split(' '):
                 if requirement[0] == '-':
                     if requirement[1:] in traits:

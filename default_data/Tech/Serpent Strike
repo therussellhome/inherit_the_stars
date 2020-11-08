@@ -1,6 +1,6 @@
 {
     "name": "Serpent Strike",
-    "category": "Missle",
+    "category": "Missile",
     "description": "A more powerful missle, but the same accuracy as the previous missle.  If you want better accuracy, don't fire from that far away. (the same as Plague of Gnats but cheaper to build)",
     "race_requirements": "Aku'Ultan",
     "cost": {

@@ -1,6 +1,6 @@
 {
     "name": "Plague of Darkness",
-    "category": "Missle",
+    "category": "Missile",
     "description": "More powerful than Plague of Boils and more than 2/3 as powerful as Plague of Locusts, with more than double the accuracy, which can make up for it not being a capital ship missle; almost twice as powerful as Plague of Hail.",
     "cost": {
         "titanium": 40,
