@@ -82,33 +82,33 @@ trait_cost = {
 }
 
 
-economy_costs = (
-        'research_modifier_slope': 12.5,
-        'growthrate_cost_per_click': 120,
-        'factory_cost_per_click': 5, 
-        'mine_slope': 100,
-        'power_plant_slope': 100,
-        'defense_slope': 100,
-        'energy_slope': 100,
-        'population_slope': .8,
-        'baryogenesis_invert_slope': 100,
-        'per_start_factory': 5,
-        'per_start_mine': 3,
-        'per_start_power_plant': 5,
-        'per_start_defense': 2,
-        'per_1000_start_energy': 1,
-        'start_titanium_per_p': 5,
-        'start_lithium_per_p': 5,
-        'start_silicon_per_p': 5,
+economy_costs = {
+    'research_modifier_slope': 12.5,
+    'growthrate_cost_per_click': 120,
+    'factory_cost_per_click': 5, 
+    'mine_slope': 100,
+    'power_plant_slope': 100,
+    'defense_slope': 100,
+    'energy_slope': 100,
+    'population_slope': .8,
+    'baryogenesis_invert_slope': 100,
+    'per_start_factory': 5,
+    'per_start_mine': 3,
+    'per_start_power_plant': 5,
+    'per_start_defense': 2,
+    'per_1000_start_energy': 1,
+    'start_titanium_per_p': 5,
+    'start_lithium_per_p': 5,
+    'start_silicon_per_p': 5,
 }
 
 
 habitability_cost = {
-        'range_cost_per_click': 5,
-        'immunity_fee': 50, #times number of immunities squared
-        'grav_immunity_cost': 400, 
-        'temp_immunity_cost': 450, 
-        'rad_immunity_cost': 405,
+    'range_cost_per_click': 5,
+    'immunity_fee': 50, #times number of immunities squared
+    'grav_immunity_cost': 400, 
+    'temp_immunity_cost': 450, 
+    'rad_immunity_cost': 405,
 }
 
 """ Storage class for race parameters """
