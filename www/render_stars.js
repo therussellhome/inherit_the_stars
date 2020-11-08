@@ -4,9 +4,10 @@ var mouseX = 0, mouseY = 0;
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
-// Draw the systems
+// Draw the suns & planets
 function draw_stars() {
-    systems = json_map['render_stars']['systems'];
+    suns = json_map['render_stars']['suns'];
+    planets = json_map['render_stars']['planets'];
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 2, 2000 );
     camera.position.z = 100;
@@ -19,23 +20,34 @@ function draw_stars() {
     var sizes = [];
     var colors = [];
 
-    var sprite = new THREE.TextureLoader().load( '/particle.png' );
-
-    for(var i=0; i<systems.length; i++) {
-        positions.push(systems[i].x, systems[i].y, systems[i].z);
-        sizes.push(systems[i].size + 200);
-        var color = new THREE.Color(systems[i].color);
+    for(var i=0; i<suns.length; i++) {
+        positions.push(suns[i].x, suns[i].y, suns[i].z);
+        sizes.push(suns[i].size + 200);
+        var color = new THREE.Color(suns[i].color);
         colors.push(color.r, color.g, color.b, 1.0);
-        console.log(systems[i].name, systems[i].color, color.r, color.g, color.b);
+        console.log(suns[i].name, suns[i].size + 200, suns[i].color, color.r, color.g, color.b);
+    }
+
+    for(var i=0; i<planets.length; i++) {
+        positions.push(planets[i].x, planets[i].y, planets[i].z);
+        sizes.push(planets[i].size + 20);
+        var color = new THREE.Color(planets[i].color);
+        colors.push(color.r, color.g, color.b, 1.0);
+        console.log(planets[i].name, planets[i].size + 50, planets[i].color, color.r, color.g, color.b);
     }
 
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
 
+    var sprite = new THREE.TextureLoader().load( '/particle.png' );
     material = new THREE.ShaderMaterial({
 		vertexShader: document.getElementById('vertexshader').textContent,
 		fragmentShader: document.getElementById('fragmentshader').textContent,
+	        uniforms: {
+				color: { value: new THREE.Color( 0xffffff ) },
+				pointTexture: { value: new THREE.TextureLoader().load( "/particle.png" ) }
+			},
         transparent: true
     });
 //    material = new THREE.ShaderMaterial( {
