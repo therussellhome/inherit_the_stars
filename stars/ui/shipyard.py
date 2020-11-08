@@ -1,5 +1,5 @@
 import sys
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -14,9 +14,9 @@ __defaults = {
 
 
 """ """
-class Shipyard(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
+class Shipyard(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         self.shipyard_existing_designs = me.existing_designs[0]
         self.shipyard_hull = me.hulls[0]
         self.shipyard_general_slots = max(0, self.shipyard_general_slots)
@@ -41,4 +41,4 @@ class Shipyard(Player):
     def shipyard_weapons(self):
         pass
 
-Shipyard.set_defaults(Shipyard, __defaults, no_reset=[])
+Shipyard.set_defaults(Shipyard, __defaults)

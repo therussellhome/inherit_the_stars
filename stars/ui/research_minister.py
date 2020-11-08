@@ -1,5 +1,5 @@
 import sys
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -21,9 +21,9 @@ __defaults = {
 
 
 """ """
-class ResearchMinister(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
+class ResearchMinister(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         self.research_current_energy_tech_level = max(min(research_current_energy_tech_level, 25), 0)  
         self.research_current_weapons_tech_level = max(min(research_current_weapons_tech_level, 25), 0)
         self.research_current_propulsion_tech_level = max(min(research_current_propulsion_tech_level, 25), 0)
@@ -74,4 +74,4 @@ class ResearchMinister(Player):
     def research_weapons(self):
         pass
 
-ResearchMinister.set_defaults(ResearchMinister, __defaults, no_reset=[])
+ResearchMinister.set_defaults(ResearchMinister, __defaults)

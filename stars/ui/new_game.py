@@ -84,8 +84,8 @@ __defaults = {
 
 """ Represent Open Game action """
 class NewGame(Defaults):
-    """ Interact with UI """
-    def post(self, action):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of races
@@ -138,7 +138,7 @@ class NewGame(Defaults):
                     s.create_system()
             game_engine.save('host', game.name, game)
             for p in game.players:
-                save('games', game.name + ' - ' + p.name, p)
+                game_engine.save('games', game.name + ' - ' + p.name, p)
 
     """ Calculate the number of systems based on the size and density """
     def calc_num_systems(self, x, y, z, density):
