@@ -121,7 +121,6 @@ class NewGame(Defaults):
                     system_names.append(name.strip())
             game.systems = self.create_systems(self.new_game_num_systems, system_names, self.new_game_x, self.new_game_y, self.new_game_z)
             # Create players and their home systems
-            player_objs = []
             homes = self.generate_home_systems(len(players), game.systems, self.new_game_player_distance)
             for i in range(0, len(players)):
                 # Protect against other objects in a race file
@@ -136,6 +135,9 @@ class NewGame(Defaults):
             for s in game.systems:
                 if not s in homes:
                     s.create_system()
+            for p in game.players:
+                p.calc_intel()
+            # save to file
             game_engine.save('host', game.name, game)
             for p in game.players:
                 game_engine.save('games', game.name + ' - ' + p.name, p)

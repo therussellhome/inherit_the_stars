@@ -165,54 +165,62 @@ function post(form, action = '') {
 // Update the fields and the cache
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
-    // Store the entire response to the cache
-    json_map[form] = json;
-    for(key in json) {
-        element = document.getElementById(key);
-        if(element != null) {
-            if(element.nodeName == 'DIV') {
-                value = [json[key]];
-                if(json.hasOwnProperty(key + '_stop')) {
-                    value.push(json[key + '_stop']);
-                }
-                element.noUiSlider.set(value);
-            } else if(element.nodeName == 'SELECT') {
-                var options = []
-                for(var i = 0; i < element.length; i++) {
-                    options.push(element.options[i].text);
-                }
-                for(opt_text of json['options_' + key]) {
-                    if(!options.includes(opt_text)) {
-                        var new_option = document.createElement("option");
-                        new_option.text = opt_text;
-                        element.add(new_option); 
-                    }
-                    options.splice(options.indexOf(opt_text), 1);
-                }
-                for(var i = 0; i < options.length; i++) {
-                    for(var j = 0; j < element.length; j++) {
-                        if(element.options[j].text == options[i]) {
-                            element.remove(j);
-                            break;
+    try {
+        // Store the entire response to the cache
+        json_map[form] = json;
+        for(key in json) {
+            try {
+                element = document.getElementById(key);
+                if(element != null) {
+                    if(element.nodeName == 'DIV') {
+                        value = [json[key]];
+                        if(json.hasOwnProperty(key + '_stop')) {
+                            value.push(json[key + '_stop']);
                         }
+                        element.noUiSlider.set(value);
+                    } else if(element.nodeName == 'SELECT') {
+                        var options = []
+                        for(var i = 0; i < element.length; i++) {
+                            options.push(element.options[i].text);
+                        }
+                        for(opt_text of json['options_' + key]) {
+                            if(!options.includes(opt_text)) {
+                                var new_option = document.createElement("option");
+                                new_option.text = opt_text;
+                                element.add(new_option); 
+                            }
+                            options.splice(options.indexOf(opt_text), 1);
+                        }
+                        for(var i = 0; i < options.length; i++) {
+                            for(var j = 0; j < element.length; j++) {
+                                if(element.options[j].text == options[i]) {
+                                    element.remove(j);
+                                    break;
+                                }
+                            }
+                        }
+                        element.value = json[key];
+                    } else if(element.matches('[type="checkbox"]')) {
+                        element.checked = json[key];
+                    } else {
+                        element.value = json[key];
+                    }
+                    if(json.hasOwnProperty('disabled_' + key)) {
+                        element.disabled = json['disabled_' + key];
                     }
                 }
-                element.value = json[key];
-            } else if(element.matches('[type="checkbox"]')) {
-                element.checked = json[key];
-            } else {
-                element.value = json[key];
-            }
-            if(json.hasOwnProperty('disabled_' + key)) {
-                element.disabled = json['disabled_' + key];
+            } catch(e) {
+                console.log(form, key, e);
             }
         }
-    }
-    // Let objects update themselves
-    var submit_event = document.createEvent("HTMLEvents");
-    submit_event.initEvent("submit", false, false);
-    for(element of document.getElementsByClassName('onsubmit_' + form)) {
-        element.dispatchEvent(submit_event);
+        // Let objects update themselves
+        var submit_event = document.createEvent("HTMLEvents");
+        submit_event.initEvent("submit", false, false);
+        for(element of document.getElementsByClassName('onsubmit_' + form)) {
+            element.dispatchEvent(submit_event);
+        }
+    } catch(e) {
+        console.log(form, e);
     }
 }
 

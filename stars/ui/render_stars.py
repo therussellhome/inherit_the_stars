@@ -6,8 +6,6 @@ __defaults = {
     'systems': [[]],
     'planets': [[]],
     'ships': [[]],
-    # Shared with other forms and used to identify player
-    'player_token': [''],
 }
 
 
@@ -15,19 +13,20 @@ __defaults = {
 class RenderStars(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
+        if not self.player:
+            print('no player')
+            return
         # Copy all systems
         self.systems = []
-        return #TODO get from player object
-        for s in game_engine.get('StarSystem'):
+        for s in self.player.get_intel('Sun'):
             self.systems.append({
-                'name': s.name, 
-                'x': s.location.x,
-                'y': s.location.y,
-                'z': s.location.z,
-                'color': s.planets[0].get_color(),
-                'size': s.planets[0].gravity,
+                'name': s.get('name'), 
+                'x': s.get('location').x,
+                'y': s.get('location').y,
+                'z': s.get('location').z,
+                'color': s.get('color'),
+                'size': s.get('size'),
             })
-            print(s.name, s.planets[0].temperature, s.planets[0].get_color())
             
 
 RenderStars.set_defaults(RenderStars, __defaults)

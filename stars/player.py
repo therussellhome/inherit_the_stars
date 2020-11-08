@@ -83,9 +83,16 @@ class Player(Defaults):
             return Intel()
         reports = []
         for k, i in self.intel.items():
-            if k.starswith(reference + '/'):
+            if k.startswith(reference + '/'):
                 reports.append(i)
         return reports
+
+    """ 'Recieve' intel reports """
+    def calc_intel(self):
+        # First run includes all of the stars
+        if len(self.intel) == 0:
+            for s in game_engine.get('Sun'):
+                self.add_intel(s, name=s.name, location=s.location, color=s.get_color(), size=s.gravity)
 
     """ Add a message """
     def add_message(self, source, subject, body, link):
