@@ -1,6 +1,6 @@
 {
     "name": "Plague of Hail",
-    "category": "Missle",
+    "category": "Missile",
     "description": "More powerful than Plague on Livestock and 3/5 as powerful as Plague of Boils, with more than double the accuracy, which can help to make up for it not being a capital ship missle; almost twice as powerful as Plague of Flies.",
     "cost": {
         "titanium": 34,

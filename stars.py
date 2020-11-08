@@ -7,31 +7,31 @@ import socketserver
 import urllib.parse
 import webbrowser
 from pathlib import Path
-from stars import game_engine
+from stars import * # This is needed or json decode will not work correctly
 from stars.ui import *
 
 
 """ Map of post handlers """
 _handlers = {
-    '/battles': battles.Battles(),
-    '/energy_minister': energy_minister.EnergyMinister(),
-    '/fleets': fleets.Fleets(),
-    '/foreign_minister': foreign_minister.ForeignMinister(),
-    '/generate': generate.Generate(),
-    '/launch': launch.Launch(),
-    '/messages': messages.Messages(),
-    '/new_game': new_game.NewGame(),
-    '/planetary_minister': planetary_minister.PlanetaryMinister(),
-    '/planets': planets.Planets(),
-    '/plans': plans.Plans(),
-    '/race_editor': race_editor.RaceEditor(),
-    '/race_viewer': race_viewer.RaceViewer(),
-    '/render_stars': render_stars.RenderStars(),
-    '/research_minister': research_minister.ResearchMinister(),
-    '/score': score.Score(),
-    '/settings': settings.Settings(),
-    '/shipyard': shipyard.Shipyard(),
-    '/tech': tech.Tech(),
+    '/battles': battles.Battles,
+    '/energy_minister': energy_minister.EnergyMinister,
+    '/fleets': fleets.Fleets,
+    '/foreign_minister': foreign_minister.ForeignMinister,
+    '/generate': generate.Generate,
+    '/launch': launch.Launch,
+    '/messages': messages.Messages,
+    '/new_game': new_game.NewGame,
+    '/planetary_minister': planetary_minister.PlanetaryMinister,
+    '/planets': planets.Planets,
+    '/plans': plans.Plans,
+    '/race_editor': race_editor.RaceEditor,
+    '/race_viewer': race_viewer.RaceViewer,
+    '/render_stars': render_stars.RenderStars,
+    '/research_minister': research_minister.ResearchMinister,
+    '/score': score.Score,
+    '/settings': settings.Settings,
+    '/shipyard': shipyard.Shipyard,
+    '/tech': tech.Tech,
 }
 
 
@@ -48,29 +48,19 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
                 form, action = self.path.split('?')
                 action = urllib.parse.unquote(action)
             length = int(self.headers['content-length'])
-            json = game_engine.from_json(self.rfile.read(length).decode('utf-8'))
+            post_str = self.rfile.read(length).decode('utf-8')
+            json = game_engine.from_json(post_str)
             response = _handlers.get(form, None)
             self.send_response(200)
             self.end_headers()
-            print('    post = ', json)
+            #print('    post = ', post_str)
             if response:
-                _handlers[form].update(**json)
-                _handlers[form].post(action)
-                response_str = game_engine.to_json(response)
+                response_str = game_engine.to_json(response(action, **json))
             else:
                 response_str = '{}'
-            print('    resp = ', response_str)
+            #print('    resp = ', response_str)
             self.wfile.write(response_str.encode())
-"""
-    def do_GET(self):
-        get = Path('.') / 'www' / re.sub('\?.*', '', self.path).split('/')[-1]
-        if not get.exists() or get.is_dir():
-            get = Path('.') / 'www' / 'index.html'
-        with open(get, 'rb') as f:
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(f.read())
-"""
+
 
 with socketserver.TCPServer(("", 0), Httpd) as httpd:
     address = 'http://' + socket.gethostname() + ':' + str(httpd.server_address[1])
