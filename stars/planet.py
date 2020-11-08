@@ -5,13 +5,17 @@ from . import game_engine
 from . import stars_math
 from math import sin
 from math import cos
+from random import randint
+from random import uniform
 from colorsys import hls_to_rgb
-from .cargo import Cargo
+from . import game_engine
 from .cost import Cost
+from .cargo import Cargo
 from .defaults import Defaults
 from .location import Location
 from .minerals import Minerals
 from .facility import Facility
+from .location import Location
 from .reference import Reference
 
 
@@ -23,10 +27,11 @@ __defaults = {
     'radiation': [50, -50, 150],
     'gravity': [50, -50, 150],
     'facilities': [{'Power': Facility(), 'Factory': Facility(), 'Mine': Facility(), 'Defense': Facility(), 'Scanner': Facility()}],
-    'mineral_concentration': [Minerals(titanium=100.0, lithium=100.0, silicon=100.0)],
+    'remaining_minerals': [Minerals()],
     'on_surface': [Cargo()],
     'player': [Reference()],
     'minister': [''],
+    'location': [Location()],
     'planet_value': [0, -100, 100],
     'star_system': [Reference()],
 }
@@ -49,12 +54,10 @@ class Planet(Defaults):
             self.radiation = randint(0, 100)
         if 'gravity' not in kwargs:
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
-        if 'mineral_concentration' not in kwargs:
-            # TODO randomize concentrations
-            modifier = self.gravity - 50
-            self.mineral_concentration.titanium += modifier
-            self.mineral_concentration.lithium += modifier
-            self.mineral_concentration.silicon += modifier
+        if 'remaining_minerals' not in kwargs:
+            self.remaining_minerals.titanium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+            self.remaining_minerals.lithium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+            self.remaining_minerals.silicon += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
         if 'location' not in kwargs:
             distance_ly = self.distance / 100 * stars_math.TERAMETER_2_LIGHTYEAR
             self.location = Location(reference=self.star_system, offset=distance_ly, lat=0)
@@ -85,15 +88,18 @@ class Planet(Defaults):
     #TODO n = year 1/100
     def orbit(self):
         return #TODO orbit not finished
+        """
         if n < 1:
             n += 1
         else:
             n = 1 + self.age
+        r = self.distance
         m = max(self.sun_gravity, 1)
         t = max(1, (((r ** 3)/m) ** .5) * (30/.85))
         a = n * (360/(100 * t)) 
         self.y = r * sin(a)
         self.x = r * cos(a)
+        #"""
 
     """ Colonize the planet """
     # player is a Reference to Player
@@ -147,15 +153,14 @@ class Planet(Defaults):
     """ mines mine the minerals """
     def _mine_minerals(self):
         if self.player.is_valid:
-            allocation = self.player.get_minister(self.name).mines / 100
-            minerals_per_mine = self.mine_tech.facility_output
-            colonists_to_operate_mine = self.player.race.colonists_to_operate_mine
-            operate = min([self.power_plants, allocation * self.effort / colonists_to_operate_mine])
-            #TODO apply mineral concentration
-            self.on_surface.titanium += round(operate * minerals_per_mine)
-            self.on_surface.lithium += round(operate * minerals_per_mine)
-            self.on_surface.silicon += round(operate * minerals_per_mine)
-            #TODO reduce mineral concentration
+            facility = self.facilities['Mine']
+            workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
+            colonists_to_operate_facility = self.player.race.colonists_to_operate_mine
+            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
+            print(operate)
+            for mineral in ['silicon', 'titanium', 'lithium']:
+                setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * self.get_availability(mineral)))
+                setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * self.get_availability(mineral) * facilicy.tech.mineral_depletion_factor))
 
     def get_availability(self, mineral):
         if mineral in ['titanium', 'silicon', 'lithium']:
@@ -180,15 +185,27 @@ class Planet(Defaults):
             power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.power_plants) / self.on_surface.people) - (minister.power_plants / 100)
             mine_percent = ((self.player.race.colonists_to_operate_mine * self.mines) / self.on_surface.people) - (minister.mines / 100)
             defense_percent = ((self.player.race.colonists_to_operate_defense * self.defenses) / self.on_surface.people) - (minister.defenses / 100)
-            check = [[factory_percent, self.factory_tech], [power_plant_percent, self.power_plant_tech], [mine_percent, self.mine_tech], [defense_percent, self.defense_tech]]
-            print(check)
+            check = [[factory_percent, self.facilities['Factory']], [power_plant_percent, self.facilities['Power']], [mine_percent, self.facilities['Mine']], [defense_percent, self.facilities['Defense']]]
+            #print(check)
             least = 1
             lest = 0
             for i in range(len(check)):
                 if check[i][0] <= least:
                     least = check[i][0]
                     lest = i
-            return check[lest][1]
+            return check[lest][1].build_prep()
+    
+    """ checks for upgrades """
+    #"""
+    def auto_upgrade(self):
+        if not self.player.is_valid:
+            return
+        for facility in self.facilities:
+            upgrade = facility.upgrade_available(self.player)
+            if upgrade:
+                facility.cost_incomeplete = facility.upgrade_cost(self.player, upgrade)
+                return facility
+    #"""
     
     """ build stuff in build queue """
     def do_construction(self, auto_build=False, allow_baryogenesis=False):
@@ -218,7 +235,7 @@ class Planet(Defaults):
                         spend = min([int(self.production / 2), getattr(item.cost_incomplete, mineral), max_baryogenesis])
                         self.production -= spend * 2
                         setattr(item.cost_incomplete, mineral, getattr(item.cost_incomplete, mineral) - spend)
-                        self.player.energy_minister.spend_budget('baryogenesis', spend * self.player.race.cost_of_baryogenesis )
+                        self.player.energy_minister.spend_budget('baryogenesis', spend * self.player.race.cost_of_baryogenesis)
             if item.cost_incomplete == zero_cost:
                 self.build_queue.pop(0)
                 #TODO do something with the item

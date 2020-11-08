@@ -13,9 +13,6 @@ from .reference import Reference
 """ Default values (default, min, max)  """
 __defaults = {
     'waypoints': [[]],
-    'anti_cloak_scanner': [0, 0, sys.maxsize],
-    'normal_scanner': [0, 0, sys.maxsize],
-    'pennetrating_scaner': [0, 0, sys.maxsize],
     'fuel': [0, 0, sys.maxsize],
     'fuel_max': [0, 0, sys.maxsize],
     'ships': [[]],
@@ -71,13 +68,15 @@ class Fleet(Defaults):
                 self.move(player)
             else:
                 return
-        while self.test_fuel(speed, num_denials, distance) and self.test_damage(speed, num_denials):
+        while self.test_fuel(speed, num_denials, distance) or self.test_damage(speed, num_denials):
             speed -= 1
             distance_at_hyper = (speed**2)/100
             if distance_to_waypoint < distance_at_hyper:
                 distance = distance_to_waypoint
             else:
                 distance = distance_at_hyper
+            if speed == 0:
+                return
         self.location = self.location.move(self.waypoints[1].fly_to, distance)
         self.burn_fuel(speed, num_denials, self.waypoints[1].fly_to, distance)
         self.returnn()
@@ -119,7 +118,9 @@ class Fleet(Defaults):
     
     """ evenly distributes the fuel between the ships """
     def return_fuel(self):
-        check = [[ship.fuel / ship.fuel_max, ship] for ship in self.ships]
+        check = []
+        for ship in self.ships:
+            check.append([ship.fuel / ship.fuel_max, ship])
         least = 1
         lest = 0
         for i in range(len(check)):
@@ -193,7 +194,7 @@ class Fleet(Defaults):
     
     """ executes the unload function """
     def unload(self, recipiant, player):
-        if not self.check_self(recipiant, player):
+        if not self.check_self(recipiant, player) and not recipiant.is_colonized():
             return
         self.compile()
         if recipiant in player.fleets:
@@ -306,7 +307,7 @@ class Fleet(Defaults):
         if planet.player.is_valid:
             return
         for ship in self.ships:
-            if ship.can_colonize and ship.cargo.people > 0:
+            if ship.colonizer and ship.cargo.people > 0:
                 ship.colonize(Reference(player), planet)
                 ship.scrap(planet, self.location)
                 self.ships.remove(ship)
@@ -346,7 +347,7 @@ class Fleet(Defaults):
     
     """ executes the load function """
     def load(self, recipiant, player):
-        if not self.check_self(recipiant, player):
+        if not self.check_self(recipiant, player) and not recipiant.is_colonized():
             return
         self.compile()
         if recipiant in player.fleets:
@@ -407,10 +408,16 @@ class Fleet(Defaults):
     
     def orbital_mining(self):
         planet = self.waypoints[0].recipiants['orbital_mining']
-        if planet not in game_engine.get('Planet') or planet.on_surface.people != 0:
+        if planet not in game_engine.get('Planet'):
             return
         for ship in self.ships:
             ship.orbital_mining(planet)
+    
+    def patrol(self, player):
+        pass #TODO
+    
+    def piracy(self, player):
+        pass #TODO
     
     def scan(self, player):
         for ship in self.ships:
@@ -418,19 +425,19 @@ class Fleet(Defaults):
     
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
-        if planet in game_engine.get('Planet') and planet.player.is_valid and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
+        if planet in game_engine.get('Planet') and planet.is_colonized() and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
             shields = planet.raise_shields()
             pop = planet.on_surface.people
             facility_kill = 0
             pop_kill = 0
-            print(planet.facilities['Defense'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
+            #print(planet.facilities['Defense'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
             for ship in self.ships:
                 f_kill, p_kill = ship.bomb(planet, shields, pop)
                 facility_kill += f_kill
                 pop_kill += p_kill
-            planet.facilities['Defense'].quantity -= round(facility_kill / 100)
-            planet.on_surface.people -= round(pop_kill / 1000)
-            print(planet.facilities['Defense'].quantity, planet.on_surface.people)
+            planet.facilities['Defense'].quantity -= round(facility_kill)
+            planet.on_surface.people -= round(pop_kill)
+            #print(planet.facilities['Defense'].quantity, planet.on_surface.people)
     
     """ runs all of the actions """
     def execute(self, action, player):
@@ -451,8 +458,7 @@ class Fleet(Defaults):
                 recipiant = self.waypoints[0].recipiants['sell']
                 if recipiant in game_engine.get('Planet') and recipiant.space_station.trade:
                     self.sell(recipiant, player)
-            elif action == 'deploy_hyper_denial' and self.waypoints[1].deploy_hyper_denial_time > 0:
-                self.waypoints[1].deploy_hyper_denial_time -= 1
+            elif action == 'deploy_hyper_denial':
                 self.deploy_hyper_denial(player)
             elif action == 'merge':
                 self.merge(player)
@@ -474,6 +480,10 @@ class Fleet(Defaults):
                 self.self_repair()
             elif action == 'bomb':
                 self.bomb(player)
+            elif action == 'patrol':
+                self.patrol(player)
+            elif action == 'piracy'or action == 'pre_piracy':
+                self.piracy(player)
             
 Fleet.set_defaults(Fleet, __defaults)
 
@@ -503,5 +513,35 @@ Fleet.actions = [
     'load',
     'transfer',
     'patrol',
-    'route',
 ]
+""" In-system movment mine interaction """
+''' Aryon:
+    """ protect self first then help other ships """
+        mines = system.mines
+        track = []
+        for i in range(len(self.ships)):
+            sweep = self.ships[i].sweep_mines(mines)
+            attract = self.ships[i].attract_mines(mines)
+            track.append([sweep-attract, copy.copy(sweep), attract, self.ships[i]])
+        track.sort(reverse = True)
+        sweep = 0
+        for tracked in track:
+            sweep += tracked[1] 
+            sweep, attack = max(0, sweep - tracked[2]), max(0, tracked[2] - sweep)
+            system.sweep(tracked[2]-attack)
+            tracked[3].hit_mines(attack, system)
+        system.sweep(sweep)
+'''
+''' Tiernan:
+    """ evenly distributed protection """
+        mines = system.mines
+        sweep = 0
+        attract = 0
+        for ship in self.ships:
+            sweep += ship.sweep_mines(mines)
+            attract += ship.attract_mines(mines)
+        system.sweep(sweep)
+        attack = max(0, attract - sweep)/attract
+        for ship in self.ships:
+            ship.hit_mines(round(ship.attract_mines(mines) * attack), system)
+'''
