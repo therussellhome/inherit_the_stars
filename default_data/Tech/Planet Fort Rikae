@@ -1,0 +1,21 @@
+{
+    "name": "Planet Fort Rikae",
+    "category": "Planetary",
+    "description": "Planetary shields take population to maintain them, so you want better shields not just more.  They can spread themselves thinner as your population increases, but that lowers protection.",
+    "upgrade_path": "Shield",
+    "upgrade_level": 7,
+    "race_requirements": "Gaerhule",
+    "cost": {
+        "titanium": 4,
+        "lithium": 0,
+        "silicon": 4,
+        "energy": 800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 10,
+        "__class__": "TechLevel"
+    },
+    "shield": 1250,
+    "__class__": "Tech"
+}

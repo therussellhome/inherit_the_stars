@@ -4,7 +4,7 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'shipyard_existing_designs': [[]],
+    'shipyard_existing_designs': [''],
     'shipyard_hull': ['Scout'],
     'shipyard_general_slots': [0, 0, sys.maxsize],
     'shipyard_orbital_slots': [0, 0, sys.maxsize],

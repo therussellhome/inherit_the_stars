@@ -1,0 +1,20 @@
+{
+    "name": "Mine III",
+    "category": "Planetary",
+    "description": "Wastes less than a third as much as Mine I. All mines output the same; lower tech mines decrease mineral availability more quickly.",
+    "upgrade_path": "Mine",
+    "upgrade_level": 3,
+    "cost": {
+        "titanium": 0,
+        "lithium": 1,
+        "silicon": 0,
+        "energy": 100,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 9,
+        "__class__": "TechLevel"
+    },
+    "mineral_depletion_factor": 1.09,
+    "__class__": "Tech"
+}

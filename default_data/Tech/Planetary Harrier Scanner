@@ -1,0 +1,25 @@
+{
+    "name": "Planetary Harrier Scanner",
+    "category": "Planetary",
+    "description": "A scanner to build on your planet to detect ships and other objects in space",
+    "upgrade_path": "Scanner",
+    "upgrade_level": 4,
+    "cost": {
+        "titanium": 12,
+        "lithium": 0,
+        "silicon": 30,
+        "energy": 14400,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 4,
+        "electronics": 8,
+        "__class__": "TechLevel"
+    },
+    "scanner": {
+        "normal": 400.0,
+        "penetrating": 0.000105702977392
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

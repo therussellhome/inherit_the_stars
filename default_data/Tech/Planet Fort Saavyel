@@ -1,0 +1,21 @@
+{
+    "name": "Planet Fort Saavyel",
+    "category": "Planetary",
+    "description": "Planetary shields take population to maintain them, so you want better shields not just more.  They can spread themselves thinner as your population increases, but that lowers protection.",
+    "upgrade_path": "Shield",
+    "upgrade_level": 5,
+    "race_requirements": "Gaerhule",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 600,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 6,
+        "__class__": "TechLevel"
+    },
+    "shield": 750,
+    "__class__": "Tech"
+}
