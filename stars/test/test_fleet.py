@@ -339,7 +339,7 @@ class FleetCase(unittest.TestCase):
         game_engine.register(p2)
         space_station = defaults.Defaults(
             fuel = 100000,
-            trade = True,
+            is_trading_post = True,
             fuel_max = 500000
             )
         ultimantico = planet.Planet(
