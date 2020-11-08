@@ -2,6 +2,7 @@
 let json_map = {};
 let charts = {};
 let game_mode = 'host';
+let player_tech = false;
 let current_screen = 'home';
 let current_submenu = null;
 
@@ -183,23 +184,33 @@ function parse_json(url, json) {
                         for(var i = 0; i < element.length; i++) {
                             options.push(element.options[i].text);
                         }
-                        for(opt_text of json['options_' + key]) {
-                            if(!options.includes(opt_text)) {
-                                var new_option = document.createElement("option");
-                                new_option.text = opt_text;
-                                element.add(new_option); 
+                        if(json.hasOwnProperty('options_' + key)) {
+                            for(opt_text of json['options_' + key]) {
+                                if(!options.includes(opt_text)) {
+                                    var new_option = document.createElement("option");
+                                    new_option.text = opt_text;
+                                    element.add(new_option); 
+                                }
+                                options.splice(options.indexOf(opt_text), 1);
                             }
-                            options.splice(options.indexOf(opt_text), 1);
-                        }
-                        for(var i = 0; i < options.length; i++) {
-                            for(var j = 0; j < element.length; j++) {
-                                if(element.options[j].text == options[i]) {
-                                    element.remove(j);
-                                    break;
+                            for(var i = 0; i < options.length; i++) {
+                                for(var j = 0; j < element.length; j++) {
+                                    if(element.options[j].text == options[i]) {
+                                        element.remove(j);
+                                        break;
+                                    }
                                 }
                             }
                         }
                         element.value = json[key];
+                    } else if(element.nodeName == 'TABLE') {
+                        while(element.rows.length > 0) {
+                            element.deleteRow(0);
+                        }
+                        for(row of json[key]) {
+                            r = element.insertRow(-1);
+                            r.innerHTML = row;
+                        }
                     } else if(element.matches('[type="checkbox"]')) {
                         element.checked = json[key];
                     } else {
@@ -518,134 +529,208 @@ function format_radiation(value) {
     return ((value + 50) / 100).toString() + ' R';
 }
 
-// Post changes for tech
-function post_tech() {
-    post('tech', decodeURI(document.location.search))
+// Get the tech data
+function tech_post() {
+    if((player_tech == false) && (document.getElementById('player_token').value != '')) {
+        post('tech');
+    } else {
+        tech_display();
+    }
+}
+
+// Render the tech display
+function tech_display() {
+    if(document.getElementById('player_token').value != '') {
+        player_tech = true;
+    }
+    var template = document.getElementById('tech_template');
+    for(var div of document.getElementsByClassName('tech_template')) {
+        var component = div.innerHTML;
+        div.innerHTML = template.innerHTML;
+        // Overview
+        if(json_map['tech']['overview'].hasOwnProperty(component)) {
+            var overview = div.getElementsByClassName('tech_overview')[0];
+            for(var row of json_map['tech']['overview'][component]) {
+                overview.insertRow(-1).innerHTML = row;
+            }
+        }
+        // Show charts
+        var chart_cnt = 0;
+        if(json_map['tech']['combat'].hasOwnProperty(component)) {
+            chart_cnt++;
+            div.getElementsByClassName('tech_combat')[0].style.display = 'inline-table';
+        }
+        if(json_map['tech']['sensor'].hasOwnProperty(component)) {
+            chart_cnt++;
+            div.getElementsByClassName('tech_sensor')[0].style.display = 'inline-table';
+        }
+        if(json_map['tech']['engine'].hasOwnProperty(component)) {
+            console.log(json_map['tech']['engine'].hosOwnProperty(component));
+            chart_cnt++;
+            div.getElementsByClassName('tech_engine')[0].style.display = 'inline-table';
+        }
+        // Size and render charts
+        var chart_width = Math.min(275, 550 / chart_cnt - 20 * chart_cnt);
+        if(json_map['tech']['combat'].hasOwnProperty(component)) {
+            var chart_element = div.getElementsByClassName('tech_combat_chart')[0];
+            chart_element.style.width = chart_width + 'px';
+            combat_chart(chart_element, json_map['tech']['combat'][component]);
+        }
+        if(json_map['tech']['sensor'].hasOwnProperty(component)) {
+            var chart_element = div.getElementsByClassName('tech_sensor_chart')[0];
+            chart_element.style.width = chart_width + 'px';
+            sensor_chart(chart_element, json_map['tech']['sensor'][component]);
+        }
+        if(json_map['tech']['engine'].hasOwnProperty(component)) {
+            var chart_element = div.getElementsByClassName('tech_engine_chart')[0];
+            chart_element.style.width = chart_width + 'px';
+            engine_chart(chart_element, json_map['tech']['engine'][component]);
+        }
+        // Guts
+        if(json_map['tech']['guts'].hasOwnProperty(component)) {
+            var guts = div.getElementsByClassName('tech_guts')[0];
+            for(var row of json_map['tech']['guts'][component]) {
+                guts.insertRow(-1).innerHTML = row;
+            }
+        }        
+    }
+    toggle(document.body, 'tech_template', false);
+}
+
+// Expand the tech display
+function tech_expand(div, expand_guts) {
+    if(expand_guts != null) {
+        var guts = div.getElementsByClassName('tech_guts')[0];
+        guts.classList.toggle('hide');
+        expand_guts.classList.toggle('fa-angle-double-up');
+        expand_guts.classList.toggle('fa-angle-double-down');
+        if(div.style.height != '60px') {
+            div.style.height = '60px'
+            div.style.height = div.scrollHeight + 'px'
+        }
+    } else {
+        if((div.style.height != '60px') && (div.style.height != '')) {
+            div.style.height = '60px'
+        } else {
+            div.style.height = div.scrollHeight + 'px'
+        }
+    }
 }
 
 // Render the tech display page
-function tech_display() {
-    for(screen of document.getElementsByClassName('tech')) {
-        screen.classList.toggle('hide', true);
-    }
-    toggle(document.body, 'hide', false);
+function tech_display_old() {
+    chart_cnt = 0;
     if((json_map['tech']['armor'] != 0) || (json_map['tech']['shield'] != 0) || (json_map['tech']['ecm_chart_data'].length != 0) || (json_map['tech']['weapon_chart_data'].length != 0)) {
-        document.getElementById('combat').classList.toggle('hide', false);
+        toggle(document.getElementById('combat'), 'hide', false);
+        weapon_chart();
+        chart_cnt++;
     }
-    if(json_map['tech']['scanner_chart_data'].length != 0) {
-        document.getElementById('scanner').classList.toggle('hide', false);
+    if((json_map['tech']['scanner_chart_data'][0] > 1) || (json_map['tech']['scanner_chart_data'][1] > 1) || (json_map['tech']['scanner_chart_data'][2] > 1) || (json_map['tech']['scanner_chart_data'][3] > 1)) {
+        toggle(document.getElementById('scanner'), 'hide', false);
+        scanner_chart();
+        chart_cnt++;
     }
     if(json_map['tech']['engine_chart_data'].length != 0) {
-        document.getElementById('engine').classList.toggle('hide', false);
+        toggle(document.getElementById('engine'), 'hide', false);
+        engine_chart();
+        chart_cnt++;
     }
+    chart_width = Math.min(275, 550 / chart_cnt - 20 * chart_cnt);
+    document.getElementById('weapon_chart').style.width = chart_width + 'px';
+    document.getElementById('scanner_chart').style.width = chart_width + 'px';
+    document.getElementById('engine_chart').style.width = chart_width + 'px';
 }
 
-// Create a chart for weapon curve
-function weapon_chart() {
-    chart = document.getElementById('weapon_chart');
-    if(chart.offsetParent === null) {
-        return;
+// Create a chart for combat defense/weapon curves
+function combat_chart(chart, data) {
+    labels = [];
+    firepower_data = [];
+    armor_data = [];
+    shield_data = [];
+    ecm_data = [];
+    for(var i=0; i < 100; i++) {
+        labels.push(i / 100);
+        firepower_data.push(data['firepower'][i]);
+        armor_data.push(data['armor'][i]);
+        shield_data.push(data['shield'][i]);
+        ecm_data.push(data['ecm'][i]);
     }
-    if(!charts.hasOwnProperty('weapon_chart')) {
-        labels = [];
-        armor_data = [];
-        shield_data = [];
-        data = [];
-        for(var i=0; i < 100; i++) {
-            labels.push(i / 100);
-            armor_data.push(json_map['tech']['armor']);
-            shield_data.push(json_map['tech']['shield'] + json_map['tech']['armor']);
-            data.push(0);
-        }
-        charts['weapon_chart'] = new Chart(chart, {
-            type: 'line',
-            data: { 
-                labels: labels,
-                datasets: [
-                    { 
-                        label: 'Firepower',
-                        borderColor: 'red',
-                        backgroundColor: '#ff000055',
-                        fill: false,
-                        data: data
-                    },
-                    { 
-                        label: 'Armor',
-                        borderColor: 'gray',
-                        backgroundColor: '#99999955',
-                        fill: 'origin',
-                        data: armor_data
-                    },
-                    { 
-                        label: 'Shield',
-                        borderColor: 'cyan',
-                        backgroundColor: '#00ffff55',
-                        fill: '-1',
-                        data: shield_data
-                    },
-                    { 
-                        label: 'ECM',
-                        borderColor: 'yellow',
-                        backgroundColor: '#ffff0055',
-                        fill: false,
-                        data: data
-                    }
-                ]
-            },
-            options: { 
-                legend: {display: false},
-                elements: {point: {radius: 1}},
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                    callbacks: {
-                        title: function(tooltipItems, data) {
-                            return 'Range: ' + tooltipItems[0].label + ' Tm';
-                        },
-                        label: function(tooltipItem, data) {
-                            var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
-                            if(tooltipItem.datasetIndex == 0) {
-                                label += Math.round(tooltipItem.value);
-                            } else if(tooltipItem.datasetIndex == 2) {
-                                label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
-                            } else if(tooltipItem.datasetIndex == 3) {
-                                base = json_map['tech']['armor'] + json_map['tech']['shield'];
-                                value = parseInt(tooltipItem.value);
-                                label += Math.round(value / base * 100) + '%';
-                            } else {
-                                label += tooltipItem.value;
-                            }
-                            return label;
-                        }
-                    }
+    charts['weapon_chart'] = new Chart(chart, {
+        type: 'line',
+        data: { 
+            labels: labels,
+            datasets: [
+                { 
+                    label: 'Firepower',
+                    borderColor: 'red',
+                    backgroundColor: '#ff000055',
+                    fill: false,
+                    data: firepower_data
                 },
-                scales: { 
-                    x: {
-                        gridLines: {display: false}
+                { 
+                    label: 'Armor',
+                    borderColor: 'gray',
+                    backgroundColor: '#99999955',
+                    fill: 'origin',
+                    data: armor_data
+                },
+                { 
+                    label: 'Shield',
+                    borderColor: 'cyan',
+                    backgroundColor: '#00ffff55',
+                    fill: '-1',
+                    data: shield_data
+                },
+                { 
+                    label: 'ECM',
+                    borderColor: 'yellow',
+                    backgroundColor: '#ffff0055',
+                    fill: false,
+                    data: ecm_data
+                }
+            ]
+        },
+        options: { 
+            legend: {display: false},
+            elements: {point: {radius: 1}},
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                position: 'nearest',
+                titleFontSize: 10,
+                bodyFontSize: 10,
+                callbacks: {
+                    title: function(tooltipItems, data) {
+                        return 'Range: ' + tooltipItems[0].label + ' Tm';
                     },
-                    y: {
-                        gridLines: {display: false}
+                    label: function(tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
+                        if(tooltipItem.datasetIndex == 0) {
+                            label += Math.round(tooltipItem.value);
+                        } else if(tooltipItem.datasetIndex == 2) {
+                            label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
+                        } else if(tooltipItem.datasetIndex == 3) {
+                            base = json_map['tech']['armor'] + json_map['tech']['shield'];
+                            value = parseInt(tooltipItem.value);
+                            label += Math.round(value / base * 100) + '%';
+                        } else {
+                            label += tooltipItem.value;
+                        }
+                        return label;
                     }
                 }
+            },
+            scales: { 
+                x: {
+                    gridLines: {display: false}
+                },
+                y: {
+                    gridLines: {display: false}
+                }
             }
-        });
-    }
-    json_ecm = json_map['tech']['ecm_chart_data'];
-    ecm_data = [];
-    for(var i=0; i <= json_ecm.length; i++) {
-        ecm_data.push(json_ecm[i]);
-    }
-    charts['weapon_chart'].data.datasets[3].data = ecm_data;
-    json_weapon = json_map['tech']['weapon_chart_data'];
-    weapon_data = [];
-    for(var i=0; i <= json_weapon.length; i++) {
-        weapon_data.push(json_weapon[i]);
-    }
-    charts['weapon_chart'].data.datasets[0].data = weapon_data;
-    charts['weapon_chart'].update('resize');
+        }
+    });
+//    charts['weapon_chart'].update('resize');
 }
 
 // Create a chart for scanner curve

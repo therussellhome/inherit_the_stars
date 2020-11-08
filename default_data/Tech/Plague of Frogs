@@ -1,6 +1,6 @@
 {
     "name": "Plague of Frogs",
-    "category": "Missle",
+    "category": "Missile",
     "description": "More than twice as powerful as Plague of Blood, with significantly better accuracy.",
     "cost": {
         "titanium": 18,

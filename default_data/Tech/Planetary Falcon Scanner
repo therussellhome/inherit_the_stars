@@ -1,0 +1,24 @@
+{
+    "name": "Planetary Falcon Scanner",
+    "category": "Planetary",
+    "description": "A scanner to build on your planet to detect ships and other objects in space",
+    "upgrade_path": "Scanner",
+    "upgrade_level": 2,
+    "cost": {
+        "titanium": 12,
+        "lithium": 0,
+        "silicon": 12,
+        "energy": 5400,
+        "__class__": "Cost"
+    },
+    "level": {
+        "electronics": 2,
+        "__class__": "TechLevel"
+    },
+    "scanner": {
+        "normal": 150.0,
+        "penetrating": 0.000105702977392,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

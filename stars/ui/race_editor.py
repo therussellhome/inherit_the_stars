@@ -41,7 +41,7 @@ class RaceEditor(Defaults):
             setattr(race, key, getattr(self, 'race_editor_' + key))
 
         """ calculate and aply the cost of habitablility """
-        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) 
+        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
             + '% of planets should be habitable for you'
         if self.race_editor_hab_gravity_immune:
             self.race_editor_hab_gravity = 0

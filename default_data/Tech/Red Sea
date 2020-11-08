@@ -1,6 +1,6 @@
 {
     "name": "Red Sea",
-    "category": "Missle",
+    "category": "Missile",
     "description": "Not as powerful as Plague on Firstborn but more than twice as accurate and nearly as long a range.",
     "cost": {
         "titanium": 52,
@@ -10,7 +10,7 @@
         "__class__": "Cost"
     },
     "level": {
-        "weapons": 26,
+        "weapons": 25,
         "propulsion": 6,
         "__class__": "TechLevel"
     },

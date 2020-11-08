@@ -35,9 +35,9 @@ class Weapon(Defaults):
             if self.is_beam:
                 power = self.power * (1 - target_ly / range_ly)
             if not self.is_beam:
-                difrence = int(power/4)
-                power -= diference
-                power_to_armor += diference
+                difference = int(power/4)
+                power -= difference
+                power_to_armor += difference
             power_to_shield = min(power, shield)
             power_to_armor += max((power - shield) * self.armor_multiplier, 0)
             return (power_to_shield, power_to_armor)

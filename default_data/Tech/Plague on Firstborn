@@ -1,6 +1,6 @@
 {
     "name": "Plague on Firstborn",
-    "category": "Missle",
+    "category": "Missile",
     "description": "The most powerful missle and the most accurate at its range but still only 40% accurate.  Capital ship missles do double damage if the target ship has no remaining shields.",
     "cost": {
         "titanium": 67,

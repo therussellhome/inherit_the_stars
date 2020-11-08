@@ -277,9 +277,9 @@ __defaults = {
     'foreign_p1_is_selling_lithium': [False],
     'foreign_cost_p2_to_p1_lithium': [100, 0, maxsize],
     'foreign_p2_is_selling_lithium': [False],
-    'foreign_cost_p1_to_p2_fuel': [5, 0, maxsize],
+    'foreign_cost_p1_to_p2_fuel': [10, 0, maxsize],
     'foreign_p1_is_selling_fuel': [False],
-    'foreign_cost_p2_to_p1_fuel': [5, 0, maxsize],
+    'foreign_cost_p2_to_p1_fuel': [10, 0, maxsize],
     'foreign_p2_is_selling_fuel': [False],
     'foreign_cost_p1_to_p2_stargate': [5000, 0, maxsize],
     'foreign_p1_is_selling_stargate': [False],
@@ -289,6 +289,7 @@ __defaults = {
     'foreign_p2_to_p1_safe_passage': [False],
     'foreign_shared_p1_general_intel': [False],
     'foreign_shared_p2_general_intel': [False],
+    'foreign_stautus': ['']
 }
 
 
@@ -298,28 +299,43 @@ class ForeignMinister(PlayerUI):
         super().__init__(**kwargs)
         if not self.player:
             return
-        print(self.foreign_cost_p1_to_p2_lithium)
-        print(self.__dict__)
+        #print(self.foreign_cost_p1_to_p2_lithium)
+        #print(self.__dict__)
+        print(self.player.treaties)
         try:
             self.player.treaties['p2'].p2
         except:
             self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, shared_p2_general_intel=True)
             self.player.pending_treaties['p2']=self.player.treaties['p2']
         print('Hello everybody i\'m p2')
-        self.options_foreign_p2 = []
+        self.options_foreign_p2 = ['']
         self.options_foreign_p2.append('p2')
         if action == 'revert':
             #self.reset_to_default()
-            for key in self.player.treaties[foreign_p2].__dict__:
-                setattr(self, 'foreign_'+key, self.player.treaties[foreign_p2].key)
+            for key in self.player.pending_treaties[self.foreign_p2].__dict__:
+                setattr(self, 'foreign_'+key, self.player.pending_treaties[self.foreign_p2].__dict__[key])
+        if action == 'revoke':
+            if self.player.pending_treaties[self.foreign_p2] == self.player.treaties[self.foreign_p2]:
+                self.player.treaties[self.foreign_p2].reset_to_default()
+                self.player.pending_treaties[self.foreign_p2].reset_to_default()
+            else:
+                self.player.pending_treaties[self.foreign_p2] = self.player.treaties[self.foreign_p2]
         if action == 'propose':
-            #print('propose')
-            treety = Treaty()
-            for key in treety.__dict__:
-                setattr(treety, key, 'foreign_'+key)
-            self.player.pending_treaties[foreign_p2] = treety
-            if foreign_p2 == 'p2':
-                self.player.treaties['p2']=self.player.pending_treaties['p2']
+            if self.player.pending_treaties[self.foreign_p2] == self.player.treaties[self.foreign_p2]:
+                #print('propose')
+                self.foreign_stautus = 'sent'
+                treety = Treaty()
+                for key in treety.__dict__:
+                    setattr(treety, key, getattr(self, 'foreign_'+key))
+                self.player.pending_treaties[self.foreign_p2] = treety
+                if self.foreign_p2 == 'p2':
+                    self.player.treaties['p2']=self.player.pending_treaties['p2']
+            else:
+                self.player.treaties[self.foreign_p2] = self.player.pending_treaties[self.foreign_p2]
+        print(self.player.treaties)
+        if action == 'declare_war':
+            self.player.treaties[self.foreign_p2].reset_to_defalt()
+            self.player.treaties[self.foreign_p2].relation = 'enemy'
         """ set display values """
         i = 0
         treaties=self.player.treaties
@@ -341,7 +357,8 @@ class ForeignMinister(PlayerUI):
             setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_safe_passage', treaties[z].p2_to_p1_safe_passage)
             setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_intel_sharing', treaties[z].shared_p1_general_intel)
             setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_intel_sharing', treaties[z].shared_p2_general_intel)
-            setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[treaties[z].p2].stautus)
+            setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[z].stautus)
+        print(self.player.treaties)
 
     def calc_ds(self, var, i, treaty):
         l = var.split('_')

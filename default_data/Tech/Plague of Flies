@@ -1,6 +1,6 @@
 {
     "name": "Plague of Flies",
-    "category": "Missle",
+    "category": "Missile",
     "description": "Almost twice as powerful as Plague of Gnats, with longer range and slightly better accuracy.",
     "cost": {
         "titanium": 30,
