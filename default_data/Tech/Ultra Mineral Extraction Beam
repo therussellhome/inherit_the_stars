@@ -16,6 +16,6 @@
     },
     "mass": 400,
     "mining_rate": 5.0,
-    "mineral_depletion_rate": 0.02,
+    "mineral_depletion_rate": 1.12,
     "__class__": "Tech"
 }
