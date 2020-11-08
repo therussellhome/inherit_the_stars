@@ -62,7 +62,7 @@ class RaceEditor(Defaults):
         """ aply the cost of race traits """
         ap = 1000 - self.calc_race_trait_cost()
         """ calculate and aply the cost of habitablility """
-        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) 
+        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
             + '% of planets should be habitable for you'
         if self.race_editor_hab_gravity_immune:
             self.race_editor_hab_gravity = 0
@@ -93,20 +93,26 @@ class RaceEditor(Defaults):
         if self.race_editor_primary_race_trait == 'Pa\'anuri':
             pass
         elif self.race_editor_primary_race_trait == 'Halleyforms':
+            pass
         #    aps += 268
         elif self.race_editor_primary_race_trait == 'Formics':
             pass
         elif self.race_editor_primary_race_trait == 'Gaerhules':
             pass
         elif self.race_editor_primary_race_trait == 'Patryns':
+            pass
         #    aps += 284
         elif self.race_editor_primary_race_trait == 'Melconians':
+            pass
         #    aps += 176
         elif self.race_editor_primary_race_trait == 'TANSTAAFL':
+            pass
         #    aps += 399
         elif self.race_editor_primary_race_trait == 'Kender':
+            pass
         #    aps += 354
         elif self.race_editor_primary_race_trait == 'Aku\'Ultani':
+            pass
         #    aps += 347
         if self.race_editor_lrt_Trader:
             aps += 126

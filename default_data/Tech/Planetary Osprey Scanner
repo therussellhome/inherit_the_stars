@@ -18,7 +18,7 @@
     },
     "scanner": {
         "normal": 650.0,
-        "penetrating": 0.000105702977392
+        "penetrating": 0.000105702977392,
         "__class__": "Scanner"
     },
     "__class__": "Tech"

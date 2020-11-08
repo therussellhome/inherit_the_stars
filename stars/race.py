@@ -82,25 +82,25 @@ trait_cost = {
 }
 
 
-economy_costs = (
-        'research_modifier_slope': 12.5,
-        'growthrate_cost_per_click': 120,
-        'factory_cost_per_click': 5, 
-        'mine_slope': 100,
-        'power_plant_slope': 100,
-        'defense_slope': 100,
-        'energy_slope': 100,
-        'population_slope': .8,
-        'baryogenesis_invert_slope': 100,
-        'per_start_factory': 5,
-        'per_start_mine': 3,
-        'per_start_power_plant': 5,
-        'per_start_defense': 2,
-        'per_1000_start_energy': 1,
-        'start_titanium_per_p': 5,
-        'start_lithium_per_p': 5,
-        'start_silicon_per_p': 5,
-        }
+economy_costs = {
+    'research_modifier_slope': 12.5,
+    'growthrate_cost_per_click': 120,
+    'factory_cost_per_click': 5, 
+    'mine_slope': 100,
+    'power_plant_slope': 100,
+    'defense_slope': 100,
+    'energy_slope': 100,
+    'population_slope': .8,
+    'baryogenesis_invert_slope': 100,
+    'per_start_factory': 5,
+    'per_start_mine': 3,
+    'per_start_power_plant': 5,
+    'per_start_defense': 2,
+    'per_1000_start_energy': 1,
+    'start_titanium_per_p': 5,
+    'start_lithium_per_p': 5,
+    'start_silicon_per_p': 5,
+}
 
 
 immunity_cost = {'grav_immunity_cost': 400, 'temp_immunity_cost': 450, 'rad_immunity_cost': 405}
@@ -198,6 +198,7 @@ class Race(Defaults):
     """ Advantage points for habitability settings """
     def _calc_points_habitability(self):
         p = 0
+        """
         # Cost of gravity range
             grav_range = self.hab_gravity_stop - self.hab_gravity + 1
             grav_dis = abs( (self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
@@ -210,6 +211,7 @@ class Race(Defaults):
             rad_range = self.hab_radiation_stop - self.hab_radiation + 1
             rad_dis = abs( (self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
             p -= rad_range * 5 - 300 - rad_dis
+        """
         return p
 
     """ What percent of planets are habitable """
