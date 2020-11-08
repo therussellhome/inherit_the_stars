@@ -1,6 +1,7 @@
 import sys
 from .cost import Cost
 from .tech import Tech
+import copy
 
 
 """ Default values (default, min, max)  """
@@ -14,8 +15,10 @@ __defaults = {
 class Facility(Tech):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-
+    
+    def build_prep(self):
+        self.cost_incomplete = copy.copy(self.tech.cost)
+    
     def colonize(self, player):
         if self.quantity == 0:
             self.tech = self.upgrade_available(player)
@@ -28,14 +31,12 @@ class Facility(Tech):
         if best == self.tech:
             return None
         return best
-
-
+    
     def upgrade_cost(self, player, tech):
-        scrap = self.tech.cost * (self.quantity * player.scrap_rate / 100)
+        scrap = self.tech.cost * self.quantity * (player.race.scrap_rate / 100)
         cost = tech.cost * self.quantity
         return cost - scrap
-        
-        
+    
     def upgrade_complete(self, tech):
         self.tech = tech
 
