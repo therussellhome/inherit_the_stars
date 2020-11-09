@@ -253,7 +253,13 @@ function shutdown() {
 
 function edit_treaty(player) {
     player_name = player + '_name'
-    document.getElementById('show_treaty_with_') = document.getElementById(player_name)
+    document.getElementById('foreign_p2') = document.getElementById(player_name)
+}
+
+function declare_war() {
+    if(confirm('this will make them your enemy and will revoke your treaty.  Are you sure that you want to delcare war?')) {
+        post('foreign_minister', '?declare_war');
+    }
 }
 
 // Create a slider

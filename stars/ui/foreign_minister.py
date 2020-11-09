@@ -260,36 +260,11 @@ __defaults = {
     "foreign_d15_p1_to_p2_intel_sharing": [False],
     "foreign_d15_p2_to_p1_intel_sharing": [False],
     "foreign_d15_negotiation": [''],
-    'foreign_p1': [''],
-    'foreign_p2': [''],
     'options_foreign_p2': [['', 'p2']],
-    'foreign_relation': [['nutral']],
-    'foreign_options_relation': [['team', 'nutral', 'enemy']],
-    'foreign_cost_p1_to_p2_titanium': [100, 0, maxsize],
-    'foreign_p1_is_selling_titanium': [False],
-    'foreign_cost_p2_to_p1_titanium': [100, 0, maxsize],
-    'foreign_p2_is_selling_titanium': [False],
-    'foreign_cost_p1_to_p2_silicon': [100, 0, maxsize],
-    'foreign_p1_is_selling_silicon': [False],
-    'foreign_cost_p2_to_p1_silicon': [100, 0, maxsize],
-    'foreign_p2_is_selling_silicon': [False],
-    'foreign_cost_p1_to_p2_lithium': [100, 0, maxsize],
-    'foreign_p1_is_selling_lithium': [False],
-    'foreign_cost_p2_to_p1_lithium': [100, 0, maxsize],
-    'foreign_p2_is_selling_lithium': [False],
-    'foreign_cost_p1_to_p2_fuel': [10, 0, maxsize],
-    'foreign_p1_is_selling_fuel': [False],
-    'foreign_cost_p2_to_p1_fuel': [10, 0, maxsize],
-    'foreign_p2_is_selling_fuel': [False],
-    'foreign_cost_p1_to_p2_stargate': [5000, 0, maxsize],
-    'foreign_p1_is_selling_stargate': [False],
-    'foreign_cost_p2_to_p1_stargate': [5000, 0, maxsize],
-    'foreign_p2_is_selling_stargate': [False],
-    'foreign_p1_to_p2_safe_passage': [False],
-    'foreign_p2_to_p1_safe_passage': [False],
-    'foreign_shared_p1_general_intel': [False],
-    'foreign_shared_p2_general_intel': [False],
-    'foreign_stautus': ['']
+    'foreign_relation': ['neutral'],
+    'foreign_relation_is_neutral': [False],
+    'foreign_relation_is_team': [False],
+    'foreign_relation_is_enemy': [False],
 }
 
 
@@ -308,8 +283,9 @@ class ForeignMinister(PlayerUI):
             self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, shared_p2_general_intel=True)
             self.player.pending_treaties['p2']=self.player.treaties['p2']
         print('Hello everybody i\'m p2')
-        self.options_foreign_p2 = ['']
+        self.options_foreign_p2 = self.player.seen_players
         self.options_foreign_p2.append('p2')
+        self.calc_r()
         if action == 'revert':
             #self.reset_to_default()
             for key in self.player.pending_treaties[self.foreign_p2].__dict__:
@@ -334,8 +310,8 @@ class ForeignMinister(PlayerUI):
                 self.player.treaties[self.foreign_p2] = self.player.pending_treaties[self.foreign_p2]
         print(self.player.treaties)
         if action == 'declare_war':
-            self.player.treaties[self.foreign_p2].reset_to_defalt()
-            self.player.treaties[self.foreign_p2].relation = 'enemy'
+            self.player.treaties[self.foreign_p2].reset_to_default()
+            self.player.treaties[self.foreign_p2].relation = 'enemy' 
         """ set display values """
         i = 0
         treaties=self.player.treaties
@@ -357,9 +333,21 @@ class ForeignMinister(PlayerUI):
             setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_safe_passage', treaties[z].p2_to_p1_safe_passage)
             setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_intel_sharing', treaties[z].shared_p1_general_intel)
             setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_intel_sharing', treaties[z].shared_p2_general_intel)
-            setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[z].stautus)
+            setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[z].status)
         print(self.player.treaties)
-
+    
+    def calc_r(self):
+        if self.foreign_relation_is_neutral:
+            setattr(self, 'foreign_relation', 'neutral')
+        elif self.foreign_relation_is_team:
+            setattr(self, 'foreign_relation', 'team')
+        elif self.foreign_relation_is_enemy:
+            setattr(self, 'foreign_relation', 'enemy')
+        self.foreign_relation_is_neutral = False
+        self.foreign_relation_is_team = False
+        self.foreign_relation_is_enemy = False
+        setattr(self, 'foreign_relation_is_'+self.foreign_relation, True)
+    
     def calc_ds(self, var, i, treaty):
         l = var.split('_')
         d = ''
@@ -369,5 +357,7 @@ class ForeignMinister(PlayerUI):
             d = getattr(treaty, 'cost_'+var)
         setattr(self, 'foreign_d'+str(i)+'_cost_'+var, d)
 
+for key in Treaty.defaults:
+    __defaults['foreign_' + key] = Treaty.defaults[key]
 
 ForeignMinister.set_defaults(ForeignMinister, __defaults)

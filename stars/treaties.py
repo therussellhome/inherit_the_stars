@@ -5,8 +5,8 @@ from sys import maxsize
 __defaults = {
     'p1': [''],
     'p2': [''],
-    'relation': ['nutral'],
-    'options_relation': [['team', 'nutral', 'enemy']],
+    'relation': ['neutral'],
+    'options_relation': [['team', 'neutral', 'enemy']],
     'cost_p1_to_p2_titanium': [100, 0, maxsize],
     'p1_is_selling_titanium': [False],
     'cost_p2_to_p1_titanium': [100, 0, maxsize],

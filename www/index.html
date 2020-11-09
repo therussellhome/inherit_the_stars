@@ -757,7 +757,7 @@ void main() {
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ treaties</caption>
     <tr>
-    <th style="width: 4em">player</th><th style="width: 5em">relation</th><th colspan="2" style="width: 4em">Li</th><th colspan="2" style="width: 4em">Si</th><th colspan="2" style="width: 2em">Ti</th><th colspan="2" style="width: 4em"><span style="border-right: 1px solid white">₥</span></th><th colspan="2" style="width: 4em">gates</th><th colspan="2" style="width: 2em">passage</th><th colspan="2" style="width: 2em">intel</th><th style="width: 4em">negotion</th>
+    <th>player</th><th>relation</th><th colspan="2">Li</th><th colspan="2">Si</th><th colspan="2">Ti</th><th colspan="2"><span style="border-right: 1px solid white">₥</span></th><th colspan="2">gates</th><th colspan="2">passage</th><th colspan="2">intel</th><th>negotion</th>
     </tr><tr>
     <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
     <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
@@ -769,161 +769,161 @@ void main() {
     <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
     <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
     <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
-    </tr><!--<tr>
-    <td><input disabled="true" id="foreign_player2_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d2_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d2_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d2_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d2_negotiation" style="width: 4em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player2')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player3_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d3_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d3_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d3_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d3_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player3')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player4_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d4_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d4_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d4_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d4_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player4')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player5_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d5_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d5_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d5_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d5_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player5')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player6_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d6_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d6_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d6_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d6_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player6')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player7_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d7_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d7_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d7_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d7_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player7')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player8_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d8_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d8_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d8_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d8_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player8')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player9_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d9_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d9_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d9_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d9_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player9')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player10_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d10_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d10_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d10_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d10_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player10')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player11_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d11_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d11_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d11_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d11_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player11')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player12_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d12_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d12_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d12_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d12_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player12')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player13_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d13_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d13_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d13_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d13_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player13')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player14_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d14_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d14_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d14_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d14_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player14')"/></td>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
     </tr><tr>
-    <td><input disabled="true" id="foreign_player15_name" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_relation" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_cost_p2_to_p1_lithium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_cost_p2_to_p1_silicon" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_cost_p2_to_p1_titanium" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_cost_p1_to_p2_fuel" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d15_cost_p2_to_p1_fuel" style="width: 1em"/></td>
-    <td><input disabled="true" id="foreign_d15_cost_p1_to_p2_stargate" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_cost_p2_to_p1_stargate" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_p1_to_p2_safe_passage" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_p2_to_p1_safe_passage" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_p1_to_p2_intel_sharing" type="checkbox" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d15_p2_to_p1_intel_sharing" type="checkbox" style="width: 2em"/></td>
-    <td><input disabled="true" id="foreign_d15_negotiation" style="width: 2em"/></td>
-    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player15')"/></td>
-    </tr>-->
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
+    </tr><tr>
+    <td><input disabled="true" id="foreign_player1_name" style="width: 4em"/></td> <td><input disabled="true" id="foreign_d1_relation" style="width: 5em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_lithium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_lithium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_silicon" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_silicon" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_titanium" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_titanium" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_fuel" style="width: 2em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_fuel" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_d1_cost_p1_to_p2_stargate" style="width: 3em"/></td> <td><input disabled="true" id="foreign_d1_cost_p2_to_p1_stargate" style="width: 3em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_safe_passage" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_safe_passage" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_p1_to_p2_intel_sharing" type="checkbox" style="width: 1em"/></td> <td><input disabled="true" id="foreign_d1_p2_to_p1_intel_sharing" type="checkbox" style="width: 1em"/></td>
+    <td><input disabled="true" id="foreign_d1_negotiation" style="width: 5em"/></td>
+    <td><img class="button button_s" title="Edit" src="/race.png" onclick="edit_treaty('foreign_player1')"/></td>
+    </tr>
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ negotiation</caption>
@@ -932,10 +932,13 @@ void main() {
     <td><input disabled="true" id="foreign_stautus" style="width: 2em"/></td>
     <td><img class="button button_s" title="propose / axcept" src="new_game.png" onclick="post('foreign_minister', '?propose')"/>
     <img class="button button_s" title="revoke / reject" src="foreign_minister.png" onclick="post('foreign_minister', '?revoke')"/>
-    <img class="button button_s" title="reset" onclick="post('foreign_minister', '?revert')"/></td>
+    <img class="button button_s" title="reset" src="/messages.png" onclick="post('foreign_minister', '?revert')"/></td>
     </tr><tr>
-    <td colspan="2"><fieldset><input type="radio" name="relation" id="foreign_relation" value="team">teammate     <input type="radio" name="relation" id="foreign_relation" value="neutral" checked>neutral</fieldset></td>
-    <td><img class="button button_s" title="declare war" src="/battles.png" onclick="post('foreign_minister', '?declare_war')"/>declare war</td>
+    <td colspan="2"><fieldset>
+    <input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team">teammate</label>
+    <input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')"><label for="foreign_relation_is_neutral">neutral</label>
+    </fieldset></td>
+    <td><img class="button button_s" title="declare war" src="/battles.png" onclick="declare_war()"/>declare war</td>
     </tr><tr>
     <td>Li</td>
     <td>Sell <input id="foreign_p1_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p1_to_p2_lithium" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/KT</td>
@@ -950,8 +953,8 @@ void main() {
     <td>Buy <input id="foreign_p2_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p2_to_p1_titanium" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/KT</td>
     </tr><tr>
     <td><span style="border-right: 1px solid white">₥</span></td>
-    <td>Sell <input id="foreign_p1_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p1_to_p2_fuel" type="number" min="0" max="999999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/10000<span style="border-right: 1px solid white">₥</span></td>
-    <td>Buy <input id="foreign_p2_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p2_to_p1_fuel" type="number" min="0" max="999999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/10000<span style="border-right: 1px solid white">₥</span></td>
+    <td>Sell <input id="foreign_p1_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p1_to_p2_fuel" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/10000<span style="border-right: 1px solid white">₥</span></td>
+    <td>Buy <input id="foreign_p2_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p2_to_p1_fuel" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/> YJ/10000<span style="border-right: 1px solid white">₥</span></td>
     </tr><tr>
     <td>stargate</td>
     <td>Sell <input id="foreign_p1_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 2em"/><input id="foreign_cost_p1_to_p2_stargate" type="number" min="0" max="9999999" onchange="post('foreign_minister')" style="width: 5em"/> YJ/trip</td>
