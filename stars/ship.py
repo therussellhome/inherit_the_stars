@@ -1,15 +1,15 @@
 import sys
-from .reference import Reference
-from .engine import Engine
-from .cargo import Cargo
+import copy
+from . import stars_math
 from . import game_engine
+from .cargo import Cargo
 from random import randint
+from .engine import Engine
 from .location import Location
+from .expirence import Expirence
+from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from . import stars_math
-from .expirence import Expirence
-import copy
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -44,7 +44,7 @@ class Ship(ShipDesign):
         if len(self.engines) == 0:
             return 0
         fuel = 0
-        mass_per_engine = self.mass/len(self.engines)
+        mass_per_engine = self.calc_mass()/len(self.engines)
         for engine in self.engines:
             fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
         return fuel
@@ -61,7 +61,7 @@ class Ship(ShipDesign):
     def speed_is_damaging(self, speed, num_denials):
         if len(self.engines) == 0:
             return True
-        mass_per_engine = self.mass/len(self.engines)
+        mass_per_engine = self.calc_mass()/len(self.engines)
         for engine in self.engines:
             if engine.tachometer(speed, mass_per_engine, num_denials) >= 100:
                 return True
@@ -69,13 +69,14 @@ class Ship(ShipDesign):
     
     def colonize(self, player, planet):
         planet.colonize(player, copy.copy(player.get_minister(planet)))
-        self.cargo.people = 0
+        planet.on_surface += self.cargo
     
     def scan(self, player):
-        pass
+        self.scanner.scan_planets(player, self.location)
+        self.scanner.scan_ships(player, self.location)
     
     def lay_mines(self, player, system):
-        pass
+        system.mines[player.name] += self.mines_laid
     
     def open_repair_bays(self):
         return self.repair_bay
@@ -101,7 +102,7 @@ class Ship(ShipDesign):
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
-        if not planet.player.is_valid:
+        if not planet.is_colonized:
             planet.on_surface.titanium += round(self.mining_rate * planet.get_availability('titanium'))
             planet.on_surface.silicon += round(self.mining_rate * planet.get_availability('silicon'))
             planet.on_surface.lithium += round(self.mining_rate * planet.get_availability('lithium'))
@@ -125,7 +126,14 @@ class Ship(ShipDesign):
 
     def calc_apparent_mass(self):
         return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
-
+    
+    def calc_mass(self):
+        mass = self.mass + self.cargo.silicon + self.cargo.titanium + self.cargo.lithium
+        #TODO check if crew is trader
+        #if self.player.is_valid and self.player.race.lrt_trader:
+        #    mass = self.mass
+        return mass + self.cargo.people
+    
     def blow_up(self):
         self.scrap(self.location, self.location)
         pass

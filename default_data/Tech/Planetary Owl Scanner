@@ -1,0 +1,26 @@
+{
+    "name": "Planetary Owl Scanner",
+    "category": "Planetary",
+    "description": "Penetrating scanners see into solar systems, including stats of planets. Their ability to detect ships outside penetrating range decreases quickly with the ship's apparent mass.",
+    "race_requirements": "2ndSight",
+    "upgrade_path": "Penetrating",
+    "upgrade_level": 4,
+    "cost": {
+        "titanium": 24,
+        "lithium": 0,
+        "silicon": 84,
+        "energy": 42000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 6,
+        "electronics": 16,
+        "__class__": "TechLevel"
+    },
+    "scanner": {
+        "penetrating": 450.0,
+        "normal": 600.0,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

@@ -3,7 +3,7 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'systems': [[]],
+    'suns': [[]],
     'planets': [[]],
     'ships': [[]],
 }
@@ -16,10 +16,19 @@ class RenderStars(PlayerUI):
         if not self.player:
             print('no player')
             return
-        # Copy all systems
-        self.systems = []
+        # Copy all suns
+        self.suns = []
         for s in self.player.get_intel('Sun'):
-            self.systems.append({
+            self.suns.append({
+                'name': s.get('name'), 
+                'x': s.get('location').x,
+                'y': s.get('location').y,
+                'z': s.get('location').z,
+                'color': s.get('color'),
+                'size': s.get('size'),
+            })
+        for s in self.player.get_intel('Planets'):
+            self.suns.append({
                 'name': s.get('name'), 
                 'x': s.get('location').x,
                 'y': s.get('location').y,

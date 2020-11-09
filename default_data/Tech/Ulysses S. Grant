@@ -1,0 +1,27 @@
+ {
+    "name": "Ulysses S. Grant",
+    "category": "Beam Weapon",
+    "description": "Almost twice the power of Hannibal but less range and not multi-targeting.  Beam weapons have 100% accuracy but power decreases with range.",
+    "cost": {
+        "lithium": 10,
+        "energy": 900,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 12,
+        "__class__": "TechLevel"
+    },
+    "mass": 1,
+    "weapons": [
+        {
+            "power": 99,
+            "range_tm": 0.2,
+            "armor_multiplier": 1,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__class__": "Weapon"
+        }
+    ],
+    "__class__": "Tech"
+}

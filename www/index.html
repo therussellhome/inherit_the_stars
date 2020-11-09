@@ -2,6 +2,8 @@
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<!-- icons -->
+<link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
@@ -193,13 +195,13 @@ void main() {
 
 <div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">New Game</td>
+        <td class="hfill" style="font-size: 200%">New Game</td>
+        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create')"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
-            <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">
@@ -354,16 +356,17 @@ void main() {
 
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Race Editor</td>
-        <td class="hfill" style="text-align: right">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        <td class="hfill" style="font-size: 200%">Race Editor</td>
+        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
     </tr></table><table class="hfill">
         <tr>
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
-            <td rowspan="2"><img class="button" title="Save" src="/race.png" onclick="save_race()"/></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
@@ -521,11 +524,6 @@ void main() {
 </td></tr></table>
 
 
-<div class="screen hide" id="screen_tech_browser" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
-    <iframe src="/tech.html" style="width: 100%; height: 99%"></iframe>
-</div></div>
-
-
 <div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
     <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
 </div></div>
@@ -540,9 +538,6 @@ void main() {
 
 
 <div class="hide onsubmit_render_stars onload" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()" onload="post('render_stars')">
-<!--
-    <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none; width: 100%; height: 100%"></div>
--->
 </div>
 
 
@@ -553,26 +548,25 @@ void main() {
     <input id="messages_index" class="hidden" disabled="true"/>
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Messages</td>
-        <td><img class="button" title="Close" src="/close.png" onclick="show_screen(null)"/></td>
+        <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
         <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
     </table><table class="hfill">
         <tr>
-            <td><img class="button button_s" title="Prev" src="/prev.png" onclick="post('messages', '?prev')"/></td>
+            <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"></i></td>
             <td class="hfill"></td>
-            <td><img class="button button_s" title="Trash" src="/trash.png" onclick="post('messages', '?trash')"/></td>
-            <td><img class="button button_s" title="Next" src="/next.png" onclick="post('messages', '?next')"/></td>
+            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"></i></td>
+            <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"></i></td>
+            <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"></i></td>
         </tr>
     </table><table class="hfill">
         <tr>
-            <td colspan="3" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+            <td rowspan="2"><img class="button" src="/ministers.png"/></td>
+            <td colspan="2" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
         </tr><tr>
-            <td rowspan="2"><input id="messages_from_icon" disabled="true" style="font-size: 200%"/></td>
-            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
-            <td rowspan="2"><img class="button button_s" title="GoTo" src="/goto.png" onclick="message_goto()"/></td>
-        </tr><tr>
+            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 75%"/></td>
             <td><input id="messages_date" disabled="true" style="font-size: 75%"/></td>
         </tr><tr>
             <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
@@ -605,150 +599,58 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
+<div class="screen hide onload onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onload="post('research_minister')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
+        <td><img title="Research Minister" src="/research_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Research Minister</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
-        <tr><td>Energy<input id="research_current_energy_tech_level" disabled="true"/></td></tr>
-        <tr><td>Weapons<input id="research_current_weapons_tech_level" disabled="true"/></td></tr>
-        <tr><td>Propulsion<input id="research_current_propulsion_tech_level" disabled="true"/></td></tr>
-        <tr><td>Construction<input id="research_current_construction_tech_level" disabled="true"/></td></tr>
-        <tr><td>Electronics<input id="research_current_electronics_tech_level" disabled="true"/></td></tr>
-        <tr><td>Biotechnology<input id="research_current_biotechnology_tech_level" disabled="true"/></td></tr></table>
-    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_bombs"/>+ Bombs</caption>
-        <tr><td id="research_bomb_1"></td><td id="research_bomb_1_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_2"></td><td id="research_bomb_2_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_3"></td><td id="research_bomb_3_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_4"></td><td id="research_bomb_4_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_5"></td><td id="research_bomb_5_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_6"></td><td id="research_bomb_6_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_7"></td><td id="research_bomb_7_cost"></td><td></td></tr>
-        <tr><td id="research_bomb_8"></td><td id="research_bomb_8_cost"></td><td></td></tr>
+    <table class="hfill" id="research_level" style="font-size: 150%; text-aign: justify; text-align-last: justify; text-justify: inter-character">
     </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Cloaks and ECM</caption>
-        <tr><td id="research_cloak_1"></td><td id="research_cloak_1_cost"></td><td></td></tr>
-        <tr><td id="research_cloak_2"></td><td id="research_cloak_2_cost"></td><td></td></tr>
-        <tr><td id="research_cloak_3"></td><td id="research_cloak_3_cost"></td><td></td></tr>
-        <tr><td id="research_cloak_4"></td><td id="research_cloak_4_cost"></td><td></td></tr>
-        <tr><td>ECM</td></tr>
-        <tr><td id="research_ecm_1"></td><td id="research_ecm_1_cost"></td><td></td></tr>
-        <tr><td id="research_ecm_2"></td><td id="research_ecm_2_cost"></td><td></td></tr>
-        <tr><td id="research_ecm_3"></td><td id="research_ecm_3_cost"></td><td></td></tr>
-        <tr><td id="research_ecm_4"></td><td id="research_ecm_4_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_defense"/>+ Defense</caption>
-        <tr><td id="research_defense_1"></td><td id="research_defense_1_cost"></td><td></td></tr>
-        <tr><td id="research_defense_2"></td><td id="research_defense_2_cost"></td><td></td></tr>
-        <tr><td id="research_defense_3"></td><td id="research_defense_3_cost"></td><td></td></tr>
-        <tr><td id="research_defense_4"></td><td id="research_defense_4_cost"></td><td></td></tr>
-        <tr><td id="research_defense_5"></td><td id="research_defense_5_cost"></td><td></td></tr>
-        <tr><td id="research_defense_6"></td><td id="research_defense_6_cost"></td><td></td></tr>
-        <tr><td id="research_defense_7"></td><td id="research_defense_7_cost"></td><td></td></tr>
-        <tr><td id="research_defense_8"></td><td id="research_defense_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_depot"/>+ Depot</caption>
-        <tr><td id="research_depot_1"></td><td id="research_depot_1_cost"></td><td></td></tr>
-        <tr><td id="research_depot_2"></td><td id="research_depot_2_cost"></td><td></td></tr>
-        <tr><td id="research_depot_3"></td><td id="research_depot_3_cost"></td><td></td></tr>
-        <tr><td id="research_depot_4"></td><td id="research_depot_4_cost"></td><td></td></tr>
-        <tr><td id="research_depot_5"></td><td id="research_depot_5_cost"></td><td></td></tr>
-        <tr><td id="research_depot_6"></td><td id="research_depot_6_cost"></td><td></td></tr>
-        <tr><td id="research_depot_7"></td><td id="research_depot_7_cost"></td><td></td></tr>
-        <tr><td id="research_depot_8"></td><td id="research_depot_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_engines"/>+ Engines</caption>
-        <tr><td id="research_engines_1"></td><td id="research_engines_1_cost"></td><td></td></tr>
-        <tr><td id="research_engines_2"></td><td id="research_engines_2_cost"></td><td></td></tr>
-        <tr><td id="research_engines_3"></td><td id="research_engines_3_cost"></td><td></td></tr>
-        <tr><td id="research_engines_4"></td><td id="research_engines_4_cost"></td><td></td></tr>
-        <tr><td id="research_engines_5"></td><td id="research_engines_5_cost"></td><td></td></tr>
-        <tr><td id="research_engines_6"></td><td id="research_engines_6_cost"></td><td></td></tr>
-        <tr><td id="research_engines_7"></td><td id="research_engines_7_cost"></td><td></td></tr>
-        <tr><td id="research_engines_8"></td><td id="research_engines_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_hulls"/>+ Hulls</caption>
-        <tr><td id="research_hulls_1"></td><td id="research_hulls_1_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_2"></td><td id="research_hulls_2_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_3"></td><td id="research_hulls_3_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_4"></td><td id="research_hulls_4_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_5"></td><td id="research_hulls_5_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_6"></td><td id="research_hulls_6_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_7"></td><td id="research_hulls_7_cost"></td><td></td></tr>
-        <tr><td id="research_hulls_8"></td><td id="research_hulls_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_mechanical"/>+ Mechanical</caption>
-        <tr><td id="research_mech_1"></td><td id="research_mech_1_cost"></td><td></td></tr>
-        <tr><td id="research_mech_2"></td><td id="research_mech_2_cost"></td><td></td></tr>
-        <tr><td id="research_mech_3"></td><td id="research_mech_3_cost"></td><td></td></tr>
-        <tr><td id="research_mech_4"></td><td id="research_mech_4_cost"></td><td></td></tr>
-        <tr><td id="research_mech_5"></td><td id="research_mech_5_cost"></td><td></td></tr>
-        <tr><td id="research_mech_6"></td><td id="research_mech_6_cost"></td><td></td></tr>
-        <tr><td id="research_mech_7"></td><td id="research_mech_7_cost"></td><td></td></tr>
-        <tr><td id="research_mech_8"></td><td id="research_mech_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_orbital"/>+ Orbital</caption>
-        <tr><td id="research_orbital_1"></td><td id="research_orbital_1_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_2"></td><td id="research_orbital_2_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_3"></td><td id="research_orbital_3_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_4"></td><td id="research_orbital_4_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_5"></td><td id="research_orbital_5_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_6"></td><td id="research_orbital_6_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_7"></td><td id="research_orbital_7_cost"></td><td></td></tr>
-        <tr><td id="research_orbital_8"></td><td id="research_orbital_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_planetary"/>+ Planetary</caption>
-        <tr><td id="research_planetary_1"></td><td id="research_planetary_1_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_2"></td><td id="research_planetary_2_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_3"></td><td id="research_planetary_3_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_4"></td><td id="research_planetary_4_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_5"></td><td id="research_planetary_5_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_6"></td><td id="research_planetary_6_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_7"></td><td id="research_planetary_7_cost"></td><td></td></tr>
-        <tr><td id="research_planetary_8"></td><td id="research_planetary_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_scanners"/>+ Scanners</caption>
-        <tr><td id="research_scanner_1"></td><td id="research_scanner_1_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_2"></td><td id="research_scanner_2_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_3"></td><td id="research_scanner_3_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_4"></td><td id="research_scanner_4_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_5"></td><td id="research_scanner_5_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_6"></td><td id="research_scanner_6_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_7"></td><td id="research_scanner_7_cost"></td><td></td></tr>
-        <tr><td id="research_scanner_8"></td><td id="research_scanner_8_cost"></td><td></td></tr>
-    </table>
-    <table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_weapons"/>+ Weapons</caption>
-        <tr><td id="research_weapons_1"></td><td id="research_weapons_1_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_2"></td><td id="research_weapons_2_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_3"></td><td id="research_weapons_3_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_4"></td><td id="research_weapons_4_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_5"></td><td id="research_weapons_5_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_6"></td><td id="research_weapons_6_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_7"></td><td id="research_weapons_7_cost"></td><td></td></tr>
-        <tr><td id="research_weapons_8"></td><td id="research_weapons_8_cost"></td><td></td></tr>
-    </table>
-    <table class="hfill">
+    <table class="hfill" id="research_queue">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-        <tr><td><input id="research_queue_item_1" disabled="true"/></td><td></td></tr> <!-- TODO get a trash icon -->
-        <tr><td><input id="research_queue_item_2" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_3" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_4" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_5" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_6" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_7" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_8" disabled="true"/></td><td></td></tr>
+    </table>    
+    <!--
+    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
+    <table class='onsubmit_research' onsubmit='research_(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Electronics</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_defense(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_defense"/>+ Defense</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_depot(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_depot"/>+ Depot</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_engines(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_engines"/>+ Engines</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_hulls(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_hulls "/>+ Hulls</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_mech(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_mech"/>+ Mechanical</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_orbital(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_orbital"/>+ Orbital</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_planetary(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_planetary"/>+ Planetary</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    <table class='onsubmit_research' onsubmit='research_scanners(this)'>
+        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_scanners"/>+ Scanners</caption>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    </table>
+    -->
+    <table id="research_weapons" class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
     </table>
 </div>
 
@@ -973,6 +875,89 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+<!--
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%"><img id="button_shipyard" title="Shipyard" src="/shipyard.png"/>Shipyard</td></tr>
+    </table>
+    <table>
+        <tr>
+            <td>Existing</td>
+            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td>TODO get delete, save and copy icons
+        </tr>
+    </table>
+    <table class="hfill">
+            <tr>
+                <td>Design Name</td>
+                <td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post('shipyard')"/></td>
+            </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Hull</td>
+            <td>General</td>
+			<td>Orbital</td>
+			<td>Depot</td>
+		</tr>
+		<tr>
+			<td class="hfill"><select id="shipyard_hull" onchange="post('shipyard')" /></td>
+			<td><input disabled="true" id="shipyard_general_slots"/></td>
+			<td><input disabled="true" id="shipyard_orbital_slots"/></td>
+			<td><input disabled="true" id="shipyard_depot_slots"/></td>
+        </tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_bombs(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Bombs</caption>
+        <td colspan="2"><input id="shipyard_checkbox_1" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_cloaks_and_ecm(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Cloaks and ECM</caption>
+        <td colspan="2"><input id="shipyard_checkbox_2" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_defense(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Defense</caption>
+        <td colspan="2"><input id="shipyard_checkbox_3" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_depot(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Depot</caption>
+        <td colspan="2"><input id="shipyard_checkbox_4" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_engines(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engines</caption>
+        <td colspan="2"><input id="shipyard_checkbox_5" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_mech(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Mech</caption>
+        <td colspan="2"><input id="shipyard_checkbox_6" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_scanners(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanners</caption>
+        <td colspan="2"><input id="shipyard_checkbox_7" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_orbital(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orbital</caption>
+        <td colspan="2"><input id="shipyard_checkbox_8" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+    <table class="onsubmit_shipyard" onsubmit="shipyard_weapons(this)">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
+        <td colspan="2"><input id="shipyard_checkbox_9" type="checkbox" onchange="post('shipyard')"/> Show all</td>
+        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    </table>
+-->
+</div>
+
+
+<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%"><img id="button_shipyard" title="Shipyard" src="/shipyard.png"/>Shipyard</td></tr>
+    </table>
     <table>
         <tr>
             <td>Existing</td>
@@ -1044,10 +1029,6 @@ void main() {
         <td colspan="2"><input id="shipyard_checkbox_9" type="checkbox" onchange="post('shipyard')"/> Show all</td>
         <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
     </table>
-</div>
-
-
-<div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
 </div>
 
 
@@ -1128,6 +1109,45 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_race_viewer" style="width: 600px" onload="post('race_viewer')">
+</div>
+
+
+<!-- TECH DISPLAY     TECH DISPLAY     TECH DISPLAY     TECH DISPLAY     TECH DISPLAY -->
+
+
+<!-- This is for copying -->
+<div class="hide onload onsubmit_tech" id="tech_template" onsubmit="tech_display()" onload="post('tech')">
+    <div class="tech_expand" onclick="tech_expand(this.parentElement, null)"></div>
+    <table class="hfill tech_overview">
+    </table>
+
+    <table class="hide tech_combat">
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
+            <td><canvas class="tech_combat_chart"></canvas></td>
+        </tr>
+        <tr><td style="font-size: 85%; text-align: center">Range (terameters)</td></tr>
+    </table>
+    
+    <table class="hide tech_sensor">
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
+            <td><canvas class="tech_scanner_chart"></canvas></td>
+        </tr>
+    </table>
+    
+    <table class="hide tech_engine">
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
+            <td><canvas class="tech_engine_chart"></canvas></td>
+        </tr>
+        <tr><td style="font-size: 85%; text-align: center">Hyper</td></tr>
+    </table>
+
+    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
+    <table class="hfill tech_guts hide" style="font-size: 85%">
+    </table>
+    <br/>
 </div>
 
 
