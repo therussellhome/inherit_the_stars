@@ -831,14 +831,14 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ negotiation</caption>
     <tr>
     <td><select id="foreign_p2" style="width: 100%" onchange="post('foreign_minister', '?revert')" style="width: 5em"/></td>
-    <td><input disabled="true" id="foreign_stautus" style="width: 2em"/></td>
+    <td><input disabled="true" id="foreign_stautus" style="width: 5em"/></td>
     <td><img class="button button_s" title="propose / axcept" src="new_game.png" onclick="post('foreign_minister', '?propose')"/>
     <img class="button button_s" title="revoke / reject" src="foreign_minister.png" onclick="post('foreign_minister', '?revoke')"/>
     <img class="button button_s" title="reset" src="/messages.png" onclick="post('foreign_minister', '?revert')"/></td>
     </tr><tr>
     <td colspan="2"><fieldset>
     <input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team">teammate</label>
-    <input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')"><label for="foreign_relation_is_neutral">neutral</label>
+    <input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')" checked="true"><label for="foreign_relation_is_neutral">neutral</label>
     </fieldset></td>
     <td><img class="button button_s" title="declare war" src="/battles.png" onclick="declare_war()"/>declare war</td>
     </tr><tr>

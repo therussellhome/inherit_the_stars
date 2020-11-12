@@ -147,6 +147,9 @@ function post(form, action = '') {
                 }
             } else if(element.matches('[type="checkbox"]')) {
                 json_post[key] = element.checked;
+            } else if(element.matches('[type="radio"]')) {
+                //console.log(element.checked);
+                json_post[key] = element.checked;
             } else {
                 json_post[key] = element.value;
             }
@@ -212,6 +215,8 @@ function parse_json(url, json) {
                             r.innerHTML = row;
                         }
                     } else if(element.matches('[type="checkbox"]')) {
+                        element.checked = json[key];
+                    } else if(element.matches('[type="radio"]')) {
                         element.checked = json[key];
                     } else {
                         element.value = json[key];

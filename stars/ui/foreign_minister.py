@@ -274,6 +274,7 @@ class ForeignMinister(PlayerUI):
         super().__init__(**kwargs)
         if not self.player:
             return
+        self.calc_r()
         #print(self.foreign_cost_p1_to_p2_lithium)
         #print(self.__dict__)
         print(self.player.treaties)
@@ -283,19 +284,15 @@ class ForeignMinister(PlayerUI):
             self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, shared_p2_general_intel=True)
             self.player.pending_treaties['p2']=self.player.treaties['p2']
         print('Hello everybody i\'m p2')
-        self.options_foreign_p2 = self.player.seen_players
-        self.options_foreign_p2.append('p2')
-        self.calc_r()
-        if action == 'revert':
-            #self.reset_to_default()
-            for key in self.player.pending_treaties[self.foreign_p2].__dict__:
-                setattr(self, 'foreign_'+key, self.player.pending_treaties[self.foreign_p2].__dict__[key])
+        for key in self.player.treaties:
+            self.options_foreign_p2.append(key)
         if action == 'revoke':
             if self.player.pending_treaties[self.foreign_p2] == self.player.treaties[self.foreign_p2]:
                 self.player.treaties[self.foreign_p2].reset_to_default()
                 self.player.pending_treaties[self.foreign_p2].reset_to_default()
+                action = 'revert'
             else:
-                self.player.pending_treaties[self.foreign_p2] = self.player.treaties[self.foreign_p2]
+                self.player.pending_treaties[self.foreign_p2].status = 'rejected'
         if action == 'propose':
             if self.player.pending_treaties[self.foreign_p2] == self.player.treaties[self.foreign_p2]:
                 #print('propose')
@@ -307,11 +304,21 @@ class ForeignMinister(PlayerUI):
                 if self.foreign_p2 == 'p2':
                     self.player.treaties['p2']=self.player.pending_treaties['p2']
             else:
-                self.player.treaties[self.foreign_p2] = self.player.pending_treaties[self.foreign_p2]
+                self.player.pending_treaties[self.foreign_p2].status = 'axcepted'
         print(self.player.treaties)
         if action == 'declare_war':
             self.player.treaties[self.foreign_p2].reset_to_default()
-            self.player.treaties[self.foreign_p2].relation = 'enemy' 
+            self.player.treaties[self.foreign_p2].relation = 'enemy'
+            self.player.pending_treaties[self.foreign_p2]=self.player.treaties[self.foreign_p2]
+            action = 'revert'
+        if action == 'revert':
+            #self.reset_to_default()
+            for key in self.player.pending_treaties[self.foreign_p2].__dict__:
+                setattr(self, 'foreign_'+key, self.player.pending_treaties[self.foreign_p2].__dict__[key])
+                self.foreign_relation_is_neutral = False
+                self.foreign_relation_is_team = False
+                self.foreign_relation_is_enemy = False
+                setattr(self, 'foreign_relation_is_'+self.foreign_relation, True)
         """ set display values """
         i = 0
         treaties=self.player.treaties
@@ -334,7 +341,9 @@ class ForeignMinister(PlayerUI):
             setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_intel_sharing', treaties[z].shared_p1_general_intel)
             setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_intel_sharing', treaties[z].shared_p2_general_intel)
             setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[z].status)
+        self.calc_r()
         print(self.player.treaties)
+        print(self.__dict__)
     
     def calc_r(self):
         if self.foreign_relation_is_neutral:
