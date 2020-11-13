@@ -1,0 +1,20 @@
+{
+    "name": "Mine I",
+    "category": "Planetary",
+    "description": "All mines output each mineral's availability per year and take the same number of people to run. Lower tech mines decrease mineral availability more quickly.",
+    "upgrade_path": "Mine",
+    "upgrade_level": 1,
+    "cost": {
+        "titanium": 0,
+        "lithium": 1,
+        "silicon": 0,
+        "energy": 100,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 0,
+        "__class__": "TechLevel"
+    },
+    "mineral_depletion_factor": 1.3,
+    "__class__": "Tech"
+}

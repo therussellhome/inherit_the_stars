@@ -1,6 +1,6 @@
 {
     "name": "Moses's Staff",
-    "category": "Missle",
+    "category": "Missile",
     "description": "More accurate and more powerful than the tech-level-zero missle.  All missles are less accurate the farther you are from your target. (the same as Plague of Frogs but cheaper to build)",
     "race_requirements": "Aku'Ultan",
     "cost": {

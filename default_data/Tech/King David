@@ -1,0 +1,27 @@
+ {
+    "name": "King David",
+    "category": "Beam Weapon",
+    "description": "Beam weapons have 100% accuracy but their power decreases with range.",
+    "cost": {
+        "lithium": 6,
+        "energy": 500,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 1,
+    "weapons": [
+        {
+            "power": 15,
+            "range_tm": 0.2,
+            "armor_multiplier": 1,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__class__": "Weapon"
+        }
+    ],
+    "__class__": "Tech"
+}

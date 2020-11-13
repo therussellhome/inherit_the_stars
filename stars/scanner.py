@@ -22,9 +22,9 @@ class Scanner(Defaults):
     def range_visible(self, apparent_mass):
         visible_at = 0
         if apparent_mass > 0:
-            visible_at = min(visible_at, self.penetrating)
+            visible_at = max(visible_at, self.penetrating)
             ly_per_kt = self.normal / 100.0
-            visible_at = min(visible_at, apparent_mass * ly_per_kt)
+            visible_at = max(visible_at, apparent_mass * ly_per_kt)
         return visible_at
 
     def __add__(self, other):
@@ -38,7 +38,7 @@ class Scanner(Defaults):
         for ship in game_engine.get('Ship'):
             report = self.scan_ship(location, ship)
             if report:
-                player.addReport(ship, **report)
+                player.add_intel(ship, **report)
 
     def scan_ship(self, location, ship):
         report = {}
@@ -54,7 +54,7 @@ class Scanner(Defaults):
             report['apparant_mass'] = apparent
         if len(report) == 0:
             return None
-        report['player'] = ship.player.name
+        report['player'] = str(ship.player.name)
         report['location'] = ship.location
         return report
 
@@ -62,18 +62,21 @@ class Scanner(Defaults):
         for planet in game_engine.get('Planet'):
             report = self.scan_planet(location, planet)
             if report:
-                player.addReport(planet, **report)
+                player.add_intel(planet, **report)
 
     def scan_planet(self, location, planet):
         distance = planet.location - location
-        if distance <= self.penatrating:
+        if distance <= self.penetrating:
             return {
                 'location': planet.location,
                 'gravity': planet.gravity, 
                 'temperature': planet.temperature, 
                 'radiation': planet.radiation,
-                'player': planet.player.name,
-                'population': planet.population,
+                'player': str(planet.player.name),
+                'population': planet.on_surface.people,
+                'lithium availability': planet.get_availability('lithium'),
+                'silicon availability': planet.get_availability('silicon'),
+                'titanium availability': planet.get_availability('titanium'),
             }
         return None
         
