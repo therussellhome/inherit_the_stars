@@ -78,6 +78,8 @@ function draw_stars() {
     //
 
 //    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+//    document.addEventListener( 'scroll', onDocumentScroll, false );
+//    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
     document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 
@@ -104,6 +106,40 @@ function onDocumentMouseMove( event ) {
 
     mouseX = event.clientX - windowHalfX;
     mouseY = event.clientY - windowHalfY;
+
+}
+
+function onDocumentMouseDown( event ) {
+
+    if ( event.butten === 0 ) {
+        ;
+    }
+
+    if ( event.butten === 2 ) {
+        ;
+    }
+
+}
+
+var lastScrollTop = 0;
+
+function onDocumentScroll( event ) {
+
+    var st = document.pageYOffset || document.getElementById("myDIV").scrollTop;
+
+    if ( st > lastScrollTop ) {
+
+      	camra.near /= 2;
+        camra.far /= 2;
+
+   	}
+
+    else {
+
+      	camra.near *= 2;
+        camra.far *= 2;
+
+    }
 
 }
 
