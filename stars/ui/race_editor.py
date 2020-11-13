@@ -41,8 +41,9 @@ class RaceEditor(Defaults):
             setattr(race, key, getattr(self, 'race_editor_' + key))
 
         """ calculate and aply the cost of habitablility """
-        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
-            + '% of planets should be habitable for you'
+        #TODO put this back
+        #self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
+        #    + '% of planets should be habitable for you'
         if self.race_editor_hab_gravity_immune:
             self.race_editor_hab_gravity = 0
             self.race_editor_hab_gravity_stop = 100
@@ -59,10 +60,10 @@ class RaceEditor(Defaults):
         #ap -= self.calc_research_cost()
         #""" caululate and aply the cost of what you start with """
         #ap -= self.calc_start_cost()
-        self.race_editor_advantage_points_left = int(ap)
+        #self.race_editor_advantage_points_left = int(ap)
         self.options_race_editor_file_to_load = game_engine.load_list('races')
         if action == 'save':
-            game_engine.save('races', self.race_editor_name, r)
+            game_engine.save('races', self.race_editor_name, race)
 
     
     """ calulate the cost of race traits """

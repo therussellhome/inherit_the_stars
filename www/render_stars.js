@@ -14,6 +14,7 @@ function draw_stars() {
 
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
+    scene.add(camera)
 
     var geometry = new THREE.BufferGeometry();
     var positions = [];
@@ -109,17 +110,17 @@ function onDocumentMouseMove( event ) {
 
 }
 
-function onDocumentMouseDown( event ) {
-
-    if ( event.butten === 0 ) {
-        ;
-    }
-
-    if ( event.butten === 2 ) {
-        ;
-    }
-
-}
+//function onDocumentMouseDown( event ) {
+//
+//    if ( event.butten === 0 ) {
+//        ;
+//    }
+//
+//    if ( event.butten === 2 ) {
+//        ;
+//    }
+//
+//}
 
 var lastScrollTop = 0;
 
