@@ -1,7 +1,7 @@
 {
     "name": "Plague on Livestock",
-    "category": "Missle",
-    "description": "Almost twice as powerful as Plague of Flies, but less than half as accurate and more massive.  But besides the extra power, its advantage is that capital ship missles do double damage if the target ship has no remaining shields.",
+    "category": "Missile",
+    "description": "Almost twice as powerful as Plague of Flies, but less than half as accurate and more massive.  But besides the extra power, its advantage is that capital ship missiles do double damage if the target ship has no remaining shields.",
     "cost": {
         "titanium": 37,
         "lithium": 13,

@@ -1,7 +1,7 @@
 {
     "name": "Plague of Boils",
-    "category": "Missle",
-    "description": "Almost twice as powerful as Plague on Livestock.  Capital ship missles do double damage if the target ship has no remaining shields.",
+    "category": "Missile",
+    "description": "Almost twice as powerful as Plague on Livestock.  Capital ship missiles do double damage if the target ship has no remaining shields.",
     "cost": {
         "titanium": 48,
         "lithium": 16,

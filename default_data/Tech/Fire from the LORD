@@ -1,7 +1,7 @@
 {
     "name": "Fire from the LORD",
-    "category": "Missle",
-    "description": "A much more powerful and slightly longer-range capital ship missle.  (the same as Plague of Locusts but cheaper to build)",
+    "category": "Missile",
+    "description": "A much more powerful and slightly longer-range capital ship missile.  (the same as Plague of Locusts but cheaper to build)",
     "race_requirements": "Aku'Ultan",
     "cost": {
         "titanium": 45,

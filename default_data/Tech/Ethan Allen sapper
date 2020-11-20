@@ -1,25 +1,24 @@
-{
-    "name": "Goliath",
+ {
+    "name": "Ethan Allen sapper",
     "category": "Beam Weapon",
-    "description": "Intended for Aku'Ultan at the start of the game, but requires Weapons Tech 4; is the same as Themistocles but costs less.",
     "race_requirements": "Aku'Ultan",
+    "description": "The same as Napoleon sapper but cheaper to build. Sappers drain shields very efficiently and have good range but have no effect on armor.",
     "cost": {
-        "titanium": 0,
-        "lithium": 6,
-        "silicon": 0,
-        "energy": 500,
+        "silicon": 4,
+        "energy": 1200,
         "__class__": "Cost"
     },
     "level": {
-        "weapons": 4,
+        "energy": 8,
+        "weapons": 15,
         "__class__": "TechLevel"
     },
     "mass": 1,
     "weapons": [
         {
-            "power": 39,
-            "range_tm": 0.2,
-            "armor_multiplier": 1,
+            "power": 317,
+            "range_tm": 0.4,
+            "armor_multiplier": 0,
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,

@@ -1,6 +1,6 @@
 {
     "name": "Plague of Gnats",
-    "category": "Missle",
+    "category": "Missile",
     "description": "More than twice as powerful as Plague of Frogs, with significantly better accuracy.",
     "cost": {
         "titanium": 22,

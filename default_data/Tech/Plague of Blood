@@ -1,7 +1,7 @@
 {
     "name": "Plague of Blood",
-    "category": "Missle",
-    "description": "The zero-tech missle, bad accuracy and low power.",
+    "category": "Missile",
+    "description": "The zero-tech missile, bad accuracy and low power.",
     "cost": {
         "titanium": 9,
         "lithium": 3,
