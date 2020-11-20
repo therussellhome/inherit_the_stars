@@ -12,17 +12,19 @@ from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'seen_players': [[]],
+    'game_name': [''], # name of game for when generating
+    'game_key': [''], # used to validate the player file
     'date': [0.0, 0.0, sys.maxsize],
-    'load_key': [''], # used to validate the player file
     'race': [Race()],
+    'seen_players': [[]],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
     'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
-    'tech_level': [TechLevel()],
-    'research_partial': [TechLevel()],
-    'research_queue': [[]], # modifiable by the player
+    'tech_level': [TechLevel()], # current tech levels
+    'research_partial': [TechLevel()], # energy spent toward next level
+    'research_queue': [[]], # queue of tech items to research
+    'research_field': [''], # next field to research (or 'lowest')
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],
@@ -37,10 +39,9 @@ class Player(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            if 'race' in kwargs:
-                self.name = self.race.name
-            else:
-                self.name = 'Player ' + str(id(self))
+            self.name = self.race.name
+        if 'date' not in kwargs:
+            date = race.start_date
         game_engine.register(self)
     
     """ calles fleets to do actions """

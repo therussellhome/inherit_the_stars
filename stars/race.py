@@ -3,6 +3,7 @@ from .defaults import Defaults
 """ Default values [default, min, max]  """
 __defaults = {
     'name': [''],
+    'start_date': [''],
     'primary_race_trait': ['Melconians'],
     'lrt_Trader': [False],
     'lrt_Bioengineer': [False],
@@ -116,6 +117,8 @@ class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if self.name = '':
+            self.name = 'too lazy to name my race ' + str(id(self))
 
     """ Make a list of the selected primary/lesser traits for this race """
     def list_traits(self):
