@@ -240,16 +240,6 @@ function host_generate() {
     alert('TODO');
 }
 
-// Render the stars, planets, etc
-function render_stars() {
-    if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('suns')) {
-            if(json_map['render_stars']['suns'].length > 0) {
-                draw_stars();
-            }
-        }
-    }
-}
 
 // Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
 function play_generate() {

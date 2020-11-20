@@ -8,7 +8,6 @@
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
-<script src="three.js"></script>
 <!-- 3d UI -->
 <script type="x-shader/x-vertex" id="vertexshader">
 attribute float size;
@@ -27,7 +26,7 @@ void main() {
     gl_FragColor = vec4( vColor );
 }
 </script>
-<script src="render_stars.js"></script>
+<script type="module" src="render_stars.js"></script>
 <!--  -->
 <link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
@@ -537,7 +536,7 @@ void main() {
 <!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
 
 
-<div class="hide onsubmit_render_stars onload" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()" onload="post('render_stars')">
+<div class="hide onsubmit_render_stars onload" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onload="post('render_stars')">
 </div>
 
 
