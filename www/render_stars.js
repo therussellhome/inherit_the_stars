@@ -31,7 +31,6 @@ function init() {
 
 // Draw the suns & planets
 function onSubmit() {
-    console.log("you called ... RENDER_STARS.OnSubmit")
     if(json_map.hasOwnProperty('render_stars')) {
         if(json_map['render_stars'].hasOwnProperty('suns')) {
             if(json_map['render_stars']['suns'].length > 0) {
