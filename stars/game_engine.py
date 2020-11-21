@@ -33,35 +33,34 @@ class BaseClass:
 
 
 """ 
-Get a referenced class by name 
-reference can be 'Class/ObjName', 'Class/Id', or 'Class'
+Get all registered objects of a type or a specific object
+objkey can be the objects name attribute or it's id
 """
-def get(reference, create_new=False):
+def get(classname, objkey=None, create_new=False):
     global __registry
     # getting None returns None
-    if reference == None:
+    if classname == None:
         return None
     # reference must be a string
-    if not isinstance(reference, str):
-        reference = str(reference)
-    # get all of a type
-    if '/' not in reference:
-        objs = []
-        for obj in __registry:
-            if obj.__class__.__name__ == reference:
-                objs.append(obj)
-        return objs
-    # get object from registry
+    if not isinstance(classname, str):
+        classname = str(classname)
+    objs = []
     for obj in __registry:
-        if reference == obj.__class__.__name__ + '/' + str(id(obj)):
-            return obj
-        if hasattr(obj, 'name'):
-            if reference == obj.__class__.__name__ + '/' + obj.name:
+        if obj.__class__.__name__ == classname:
+            # match by id
+            if str(id(obj)) == objkey:
                 return obj
+            # match by name
+            elif getattr(obj, 'name', '') == objkey:
+                return obj
+            else:
+                objs.append(obj)
+    # return by type if no key
+    if objkey == None:
+        return objs
     # create and register new object
     if create_new:
-        (classname, obj_name) = reference.split('/')
-        obj = __new(classname, None, name=obj_name)
+        obj = __new(classname, None, name=objkey)
         register(obj)
         return obj
     return None

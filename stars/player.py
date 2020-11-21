@@ -41,7 +41,7 @@ class Player(Defaults):
         if 'name' not in kwargs:
             self.name = self.race.name
         if 'date' not in kwargs:
-            date = race.start_date
+            self.date = self.race.start_date
         game_engine.register(self)
     
     """ calles fleets to do actions """
@@ -118,9 +118,8 @@ class Player(Defaults):
     def get_budget(self):
         self.energy_minister.allocate_budget(self.energy)
     
-    """ Build/research/other economic funcitions """
-    # All non-ship / non-intel parts of take turn
-    def manage_economy(self):
+    """ Spend energy - consruction, baryogenesis, mat trans, research """
+    def generate_turn(self):
         # Collect up last years unused resources before planets generate resources
         self.energy = self.energy_minister.construction_budget 
         self.energy += self.energy_minister.mattrans_budget
@@ -132,13 +131,12 @@ class Player(Defaults):
             if planet.player.eq(self):
                 planets.append(planet)
         planets.sort(key=lambda x: x.on_planet.people)
-        # Population growth, recalculate planet value
+        # Population growth & facilities
         for planet in planets:
-            planet.planet_value = planet.calc_planet_value(self.race)
             planet.have_babies()
-        # Generate resources
-        for planet in planets:
-            planet.generate_resources()
+            self.energy += planet.generate_energy()
+            planet.mine_minerals()
+            planet.calc_production()
         # Allocated energy
         self.get_budget()
         # Existing build queue

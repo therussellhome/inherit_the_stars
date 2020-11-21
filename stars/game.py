@@ -37,6 +37,9 @@ class Game(Defaults):
             # players in lowest to highest score
             players = game_engine.get('Players')
             players.sort(key=lambda x: x.score.rank, reverse=False)
+            # player turn
+            for player in players:
+                player.generate_turn()
             # fleet actions
             for action in Fleet.actions:
                 for fleet in fleets:
@@ -62,9 +65,9 @@ class Game(Defaults):
             # in-system move
             for fleet in fleets:
                 fleet.move_in_system()
-            # player actions: reseach, score calc, pop growth
-            for fleet in fleets:
-                fleet.execute(preaction)
+            # score
+            for player in players:
+                player.calc_score()
             # update scanning
             self._scanning()
 
@@ -76,7 +79,7 @@ class Game(Defaults):
             starbase.scan()
         for planet in game_engine.get('Planet'):
             planet.scan()
-        for asteroid in self.asteroids
+        for asteroid in self.asteroids:
             asteroid.scan()
 
 Game.set_defaults(Game, __defaults)

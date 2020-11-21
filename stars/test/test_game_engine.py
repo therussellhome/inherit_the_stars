@@ -40,13 +40,13 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertEqual(ts[0].name, t1.name)
         self.assertEqual(ts[1].name, t2.name)
         # Get a single object
-        t0 = game_engine.get('_TestGameEngine/test_get2')
+        t0 = game_engine.get('_TestGameEngine', 'test_get2')
         self.assertEqual(t0.name, t2.name)
         # Don't create a new object
-        t0 = game_engine.get('_TestGameEngine/test_get0')
+        t0 = game_engine.get('_TestGameEngine', 'test_get0')
         self.assertEqual(t0, None)
         # Create an object
-        t0 = game_engine.get('_TestGameEngine/test_get0', True)
+        t0 = game_engine.get('_TestGameEngine', 'test_get0', True)
         self.assertEqual(t0.name, 'test_get0')
         # Test None
         self.assertEqual(game_engine.get(None), None)

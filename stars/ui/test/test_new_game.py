@@ -6,7 +6,7 @@ from ...star_system import StarSystem
 
 class NewGameTestCase(unittest.TestCase):
     def test_calc_num_systems(self):
-        ng = NewGame()
+        ng = NewGame('')
         self.assertEqual(ng.calc_num_systems(500, 500, 500, 8), 524)
         self.assertEqual(ng.calc_num_systems(500, 500, 0, 8), 209)
         self.assertEqual(ng.calc_num_systems(500, 50, 0, 8), 21)
@@ -17,19 +17,19 @@ class NewGameTestCase(unittest.TestCase):
         self.assertEqual(ng.calc_num_systems(2, 2, 1, 50), 0)
 
     def test_create_systems(self):
-        ng = NewGame()
+        ng = NewGame('')
         names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         self.assertLess(len(ng.create_systems(10, copy.copy(names), 5, 5, 5)), 5)
         self.assertEqual(len(ng.create_systems(10, copy.copy(names), 500, 500, 500)), 10)
         self.assertEqual(len(ng.create_systems(20, copy.copy(names), 500, 500, 500)), 10)
 
     def test_create_systems2(self):
-        ng = NewGame()
+        ng = NewGame('')
         names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         self.assertEqual(len(ng.create_systems(2, copy.copy(names), 5, 5, 5)), 2, msg='NOTE: this will sometimes fail as it is statistical in nature')
 
     def test_generate_home_systems(self):
-        ng = NewGame()
+        ng = NewGame('')
         s0 = StarSystem()
         s1 = StarSystem()
         s2 = StarSystem()
