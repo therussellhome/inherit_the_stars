@@ -189,15 +189,15 @@ class Planet(Defaults):
     """ how many facilities can be operated """
     def __operate(self, facility_type):
         race_traits = {
-            'defenses': self.player.race.colonists_to_operate_defense,
-            'power_plants': self.player.race.colonists_to_operate_power_plant,
-            'mines': self.player.race.colonists_to_operate_mine,
-            'factories': self.player.race.colonists_to_operate_factory,
+            'defenses': self.player.race.defenses_per_10k_colonists,
+            'power_plants': self.player.race.power_plants_per_10k_colonists,
+            'mines': self.player.race.mines_per_10k_colonists,
+            'factories': self.player.race.factories_per_10k_colonists,
         }
         facility = self.facilities[facility_type]
         allocation = getattr(self.player.get_minister(self.name), facility_type)
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
-        return min(facility.quantity, (workers / race_traits[facility_type]))
+        return min(facility.quantity, race_traits[facility_type] * workers / 10000)
 
     """ Incoming! """
     def raise_shields(self):
@@ -206,7 +206,7 @@ class Planet(Defaults):
     """ power plants make energy """
     def generate_energy(self):
         plants = self.__operate('power_plants') * self.facilities['power_plants'].tech.facility_output / 100
-        pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_colonist / 100
+        pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
         return plants + pop
 
     """ mines mine the minerals """

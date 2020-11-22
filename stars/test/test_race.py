@@ -100,7 +100,7 @@ class RaceTestCase(unittest.TestCase):
         r = race.Race(self.cost_of_baryogenesis = 120000)
         self.assertEqual(r._calc_points_economy(), -2120)
 
-        r = race.Race(self.starting mines = 20)
+        r = race.Race(self.starting_mines = 20)
         self.assertEqual(r._calc_points_economy(), -2150)
         r = race.Race(self.starting_power_plants = 50)
         self.assertEqual(r._calc_points_economy(), -2200)

@@ -290,7 +290,7 @@ class PlanetTestCase(unittest.TestCase):
     def test_generate_energy1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        p.player.race.energy_per_colonist = 0
+        p.player.race.energy_per_10k_colonists= 0
         p.facilities['power_plants'].quantity = 100
         p.facilities['power_plants'].tech.facility_output = 100
         self.assertEqual(p.generate_energy(), 100)
@@ -298,7 +298,7 @@ class PlanetTestCase(unittest.TestCase):
     def test_generate_energy2(self):
         p = planet.Planet()
         p.on_surface.people = 0
-        p.player.race.energy_per_colonist = 0
+        p.player.race.energy_per_10k_colonists= 0
         p.facilities['power_plants'].quantity = 100
         p.facilities['power_plants'].tech.facility_output = 100
         self.assertEqual(p.generate_energy(), 0)
@@ -306,7 +306,7 @@ class PlanetTestCase(unittest.TestCase):
     def test_generate_energy3(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        p.player.race.energy_per_colonist = 0.1
+        p.player.race.energy_per_10k_colonists= 1000
         p.facilities['power_plants'].quantity = 0
         self.assertEqual(p.generate_energy(), 1000)
 
