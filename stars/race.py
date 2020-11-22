@@ -3,6 +3,7 @@ from .defaults import Defaults
 """ Default values [default, min, max]  """
 __defaults = {
     'name': [''],
+    'start_date': [''],
     'primary_race_trait': ['Melconians'],
     'lrt_Trader': [False],
     'lrt_Bioengineer': [False],
@@ -38,7 +39,7 @@ __defaults = {
     'hab_radiation_stop': [100, 0, 100],
     'hab_radiation_immune': [False],
     'growth_rate': [15, 5, 20],
-    'population_max': [10000000, 0, 1000000000],
+    'body_mass': [80, 10, 150],
     'starting_colonists': [250000, 175000, 350000],
     'power_plants_per_10k_colonists': [10, 2, 50],
     'factories_per_10k_colonists': [10, 2, 50],
@@ -118,6 +119,8 @@ class Race(Defaults):
     """ Store values but do not load defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if self.name == '':
+            self.name = 'too lazy to name my race ' + str(id(self))
 
     """ Make a list of the selected primary/lesser traits for this race """
     def list_traits(self):
@@ -147,6 +150,10 @@ class Race(Defaults):
         if self.lrt_JuryRigged:
             traits.append('JuryRigged')
         return traits
+
+    """ How many colonists per kT """
+    def pop_per_kt(self):
+        return 80000 / self.body_mass
 
     """ Calculate the advantage points for this race (invalid race if <0) """
     def calc_points(self):
