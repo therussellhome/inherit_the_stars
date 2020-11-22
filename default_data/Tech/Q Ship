@@ -1,5 +1,5 @@
 {
-    "name": "Q Ship"
+    "name": "Q Ship",
     "category": "Hull",
     "description": "Hull with built-in cargo and armor, and 8 general purpose slots.  About the size of the African Swallow with a bigger fuel tank but costs almost no silicon but double the titanium.",
     "cost": {

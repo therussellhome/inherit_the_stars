@@ -1,13 +1,14 @@
 import json
 from pathlib import Path
-from zipfile import ZipFile, ZipInfo
 
 
 """ Base directory for saved games, races, etc """
 __game_dir = Path.home() / 'Inherit!'
+__default_data = Path(__file__).parent.parent / 'default_data'
 
 
-""" Registry of all game objects """
+
+""" Registry of all registered classes and objects """
 __registry = []
 
 
@@ -18,7 +19,7 @@ def register(obj):
 
 
 """ Unregister objects to keep them from being part of the save game """
-def unregister(obj):
+def unregister(obj=None):
     global __registry
     if obj:
         __registry.remove(obj)
@@ -31,98 +32,89 @@ class BaseClass:
     pass
 
 
-""" Get a referenced class by name """
-def get(reference, create_new=True):
+""" 
+Get all registered objects of a type or a specific object
+objkey can be the objects name attribute or it's id
+"""
+def get(classname, objkey=None, create_new=False):
     global __registry
+    # getting None returns None
+    if classname == None:
+        return None
     # reference must be a string
-    if not reference:
-        raise LookupError('None is not a valid reference')
-    # get all of a type
-    if reference[-1:] == '/':
-        objs = []
-        for obj in __registry:
-            if obj.__class__.__name__ + '/' == reference:
-                objs.append(obj)
-        return objs
-    # get object from registry
+    if not isinstance(classname, str):
+        classname = str(classname)
+    objs = []
     for obj in __registry:
-        if hasattr(obj, 'name'):
-            if reference == obj.__class__.__name__ + '/' + obj.name:
+        if obj.__class__.__name__ == classname:
+            # match by id
+            if str(id(obj)) == objkey:
                 return obj
-    # create new object
+            # match by name
+            elif getattr(obj, 'name', '') == objkey:
+                return obj
+            else:
+                objs.append(obj)
+    # return by type if no key
+    if objkey == None:
+        return objs
+    # create and register new object
     if create_new:
-        (classname, obj_name) = reference.split('/')
-        return __new(classname, None, name=obj_name)
+        obj = __new(classname, None, name=objkey)
+        register(obj)
+        return obj
     return None
 
 
 """ Decode a string into an object """
-def from_json(string):
-	return json.loads(string, object_hook=__decode)
+def from_json(raw, name='<Internal>'):
+    try:
+        return json.loads(raw, object_hook=__decode)
+    except Exception as e:
+        print('Decode error ' + str(e) + ' in ' + name + '\n' + raw)
 
 
 """ Encode an object into a string """
 def to_json(obj):
-	return json.dumps(obj, default=__encode)
+    return json.dumps(obj, indent='    ', default=__encode)
 
 
 """ List files in the game dir """
 def load_list(save_type):
     files = []
-    for f in (__game_dir / save_type).iterdir():
-        # strip the .zip
-        files.append(f.name[0:-4])
+    dir_name = __game_dir / save_type
+    dir_name.mkdir(parents=True, exist_ok=True)
+    for f in dir_name.iterdir():
+        files.append(f.name)
     files.sort()
     return files
 
 
-""" Load game from zip file """
-def load_inspect(save_type, name, class_type):
-    game_file = __game_dir / save_type / (name + '.zip')
-    internals = []
-    with ZipFile(game_file, 'r') as zipfile:
-        for info in zipfile.infolist():
-            if info.filename.startswith(class_type):
-                internals.append(info.filename[len(class_type):])
-    return internals
-
-
-""" Load game from zip file """
-def load(save_type, name, register_objects=True):
-    game_file = __game_dir / save_type / (name + '.zip')
-    objs = []
-    with ZipFile(game_file, 'r') as zipfile:
-        for info in zipfile.infolist():
-            obj = from_json(zipfile.read(info))
-            objs.append(obj)
-            if register_objects:
-                register(obj)
-    return objs
+""" Load from file, object self registration is assumed """
+def load(save_type, name):
+    file_name = __game_dir / save_type / name
+    with open(file_name, 'r') as f:
+        obj = from_json(f.read(), str(file_name))
+        return obj
 
 
 """ Load tech from loose files """
-def load_defaults(save_type, register_objects=True):
+def load_defaults(save_type):
     objs = []
-    for fname in ('..' / 'default_data' / save_type).iterdir():
-        with open(fname, 'r') as f:
-            obj = from_json(f.read(info))
+    for file_name in (__default_data / save_type).iterdir():
+        with open(file_name, 'r') as f:
+            obj = from_json(f.read(), str(file_name))
             objs.append(obj)
-            if register_objects:
-                register(obj)
     return objs
 
 
-""" Save game to zip file """
-def save(save_type, name, objs=None):
-    global __registry
-    if not objs:
-        objs = __registry
-    game_file = __game_dir / save_type / (name + '.zip')
-    game_file.parent.mkdir(parents=True, exist_ok=True)
-    with ZipFile(game_file, 'w') as zipfile:
-        for obj in objs:
-            name = obj.__class__.__name__ + '/' + getattr(obj, 'name', str(id(obj)))
-            zipfile.writestr(ZipInfo(name), to_json(obj))
+""" Save object to file """
+def save(save_type, name, obj):
+    dir_name = __game_dir / save_type
+    dir_name.mkdir(parents=True, exist_ok=True)
+    file_name = dir_name / name
+    with open(file_name, 'w') as f:
+        f.write(to_json(obj))
 
 
 """ Custom encoder to handle classes """

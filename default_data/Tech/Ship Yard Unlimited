@@ -14,7 +14,7 @@
         "__class__": "TechLevel"
     },
     "mass": 600,
-    "shipyard": sys.max,
+    "shipyard": 1000000000000,
     "repair": 4000,
     "__class__": "Tech"
 }

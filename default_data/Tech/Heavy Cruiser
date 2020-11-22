@@ -1,5 +1,5 @@
 {
-    "name": "Heavy Cruiser"
+    "name": "Heavy Cruiser",
     "category": "Hull",
     "description": "Ship hull with 16 general-purpose slots.",
     "cost": {

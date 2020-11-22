@@ -1,5 +1,7 @@
-from . import game_engine
-from .defaults import Defaults 
+from .. import game_engine
+from ..defaults import Defaults 
+
+#TODO THIS IS A COPY OF THE OLD LAUNCH THAT NEEDS TO BE CONVERTED FOR HOST
 
 
 """ Default values (default, min, max)  """
@@ -43,20 +45,22 @@ __defaults = {
     'launch_player16': ['No Player'],
     'launch_player16_status': [''],
     'launch_loaded_autogen': ['Auto Generate: DISABLED'],
+    # Shared with other forms and used to identify player
+    'player_token': [''],
 }
 
 
 """ Represent Open Game action """
 class Launch(Defaults):
-    """ Interact with UI """
-    def post(self, action):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of games
         self.options_launch_game = game_engine.load_list('games')
         self.launch_loaded_autogen = 'Auto Generate: DISABLED'
         # Get the currently loaded game
-        games = game_engine.get('Game/')
+        games = game_engine.get('Game')
         # Load info from the loaded game
         if len(games) > 0:
             self.launch_loaded_game = games[0].name
@@ -70,7 +74,7 @@ class Launch(Defaults):
                     self.options_launch_player.append(player.name)
         # Load the player list
         elif self.launch_game != '':
-            self.options_launch_player = game_engine.load_inspect('games', self.launch_game, 'Player/')
+            self.options_launch_player = game_engine.load_inspect('games', self.launch_game, 'Player')
             self.options_launch_player.insert(0, 'Host Mode')
         else:
             self.options_launch_player = ['Host Mode']
@@ -78,13 +82,17 @@ class Launch(Defaults):
         if action == 'go':
             game_engine.unregister(None)
             game_engine.load('games', self.launch_game)
-            games = game_engine.get('Game/')
+            games = game_engine.get('Game')
             games[0].autogen_turn = self.launch_autogen
             self.launch_loaded_game = games[0].name
             if games[0].autogen_turn:
                 self.launch_loaded_autogen = 'Auto Generate: ENABLED'
             else:
                 self.launch_loaded_autogen = 'Auto Generate: DISABLED'
+            if self.launch_player != 'Host Mode':
+                for p in games[0].players:
+                    if self.launch_player == p.name:
+                        self.player_token = str(id(p))
         # Load the players
         for i in range(1, 17):
             key = 'launch_player{:02d}'.format(i)

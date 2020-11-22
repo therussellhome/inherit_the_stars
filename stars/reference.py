@@ -1,3 +1,4 @@
+from random import random
 from . import game_engine
 
 
@@ -6,37 +7,62 @@ from . import game_engine
 class Reference(game_engine.BaseClass):
     """ The only supported variable is the reference string """
     def __init__(self, *args, **kwargs):
-        if 'reference' in kwargs:
-            self.reference = kwargs['reference']
+        self_dict = object.__getattribute__(self, '__dict__')
+        self_dict['__class'] = None
+        self_dict['__name'] = ''
+        if '__class' in kwargs:
+            self_dict['__class'] = kwargs['__class']
+            if '__name' in kwargs:
+                self_dict['__name'] = kwargs['__name']
         elif len(args) > 1:
-            self.reference = args[0] + '/' + args[1]
+            self_dict['__class'] = args[0]
+            self_dict['__name'] = args[1]
         elif len(args) == 1:
-            self.reference = args[0].__class__.__name__ + '/' + args[0].name
-        else:
-            self.reference = None
+            if isinstance(args[0], str):
+                self_dict['__class'] = args[0]
+            else:
+                self_dict['__class'] = args[0].__class__.__name__
+                self_dict['__name'] = args[0].name
 
     """ Get the attribute from the real class """
     def __getattribute__(self, name):
-        if name == 'reference' or name[0] == '_':
+        if name[0] == '_':
             return object.__getattribute__(self, name)
         else:
-            reference = object.__getattribute__(self, 'reference')
-            obj = game_engine.get(reference)
-            if name == 'is_valid':
+            self_dict = object.__getattribute__(self, '__dict__')
+            if name == 'name':
+                return object.__getattribute__(self, '__name')
+            elif name == 'is_valid':
+                obj = game_engine.get(self_dict['__class'], self_dict['__name'], create_new=False)
                 return (obj != None)
-            elif obj != None:
+            elif self_dict['__class'] == None:
+                raise LookupError('Uninitialized reference "None/None"')
+            elif self_dict['__name'] == None:
+                raise LookupError('Uninitialized reference "' + self_dict['__class'] + '/None"')
+            if self_dict['__name'] == '':
+                self_dict['__name'] = random()
+            obj = game_engine.get(self_dict['__class'], self_dict['__name'], create_new=True)
+            if obj != None:
                 return obj.__getattribute__(name)
             else:
-                raise LookupError('"' + str(reference) + '" is not registered')
+                raise LookupError('Unable to lookup/create "' + self_dict['__class'] + '/' + self_dict['__name'] + '"')
 
     """ Set the attribute in the encapsulated class """
     def __setattr__(self, name, value):
-        if name == 'reference' or name[0] == '_':
-            self.__dict__[name] = value
+        self_dict = object.__getattribute__(self, '__dict__')
+        if name[0] == '_':
+            self_dict[name] = value
         else:
-            reference = object.__getattribute__(self, 'reference')
-            obj = game_engine.get(reference)
+            if name == 'name':
+                self_dict['__name'] = value
+            elif self_dict['__name'] == '':
+                self_dict['__name'] = random()
+            obj = game_engine.get(self_dict['__class'], self_dict['__name'], create_new=True)
             if obj != None:
                 obj.__setattr__(name, value)
-            else:
-                raise LookupError('"' + str(reference) + '" is not registered')
+            elif self_dict['__class'] == None:
+                raise LookupError('Uninitialized reference "None/None"')
+            elif self_dict['__name'] == None:
+                raise LookupError('Uninitialized reference "' + self_dict['__class'] + '/None"')
+            elif name != 'name':
+                raise LookupError('Unable to lookup/create "' + self_dict['__class'] + '/' + self_dict['__name'] + '"')

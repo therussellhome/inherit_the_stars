@@ -34,6 +34,18 @@ class Defaults(game_engine.BaseClass):
                 pass
             return copy.copy(default[0])
         return object.__getattribute__(self, name)
+    
+    """ prints the entire __dict__ in a readable way so you can debug if somthing is wrong """
+    def debug_display(self, depth=0):
+        #TODO REMOVE=(add '#' at the begining of all lines of this function and those pertaining to this function) before release, after finished all tests
+        print('{', 'class: ', self.__class__, sep='')
+        for attribute in self.__dict__:
+            try:
+                print('    '*(depth+1), str(attribute), ": ", sep='', end='')
+                self.__dict__[attribute].debug_display(depth+1)
+            except:
+                print(getattr(self, attribute))
+        print('    '*depth, '}', sep='')
 
     """ Bulk update values """
     def update(self, **kwargs):
@@ -53,23 +65,28 @@ class Defaults(game_engine.BaseClass):
                     elif type(default[0]) == type(value):
                         pass
                 except:
-                    return copy.copy(default[0])
+                    value = copy.copy(default[0])
             object.__setattr__(self, name, value)
 
     """ Reset values to default """
     def reset_to_default(self):
         cls = object.__getattribute__(self, '__class__')
         defaults = cls.get_defaults(cls)
+        no_reset = getattr(cls, 'no_reset', [])
         for name in defaults:
-            object.__setattr__(self, name, copy.copy(defaults[name][0]))
+            if name not in no_reset:
+                object.__setattr__(self, name, copy.copy(defaults[name][0]))
 
 
 """ Store defaults on the class """
-def __set_defaults(cls, defaults):
+def __set_defaults(cls, defaults, no_reset=[]):
     cls.defaults = {}
     for parent in cls.__bases__:
         cls.defaults.update(getattr(parent, 'defaults', {}))
     cls.defaults.update(defaults)
+    cls.no_reset = no_reset
+    for parent in cls.__bases__:
+        cls.no_reset.extend(getattr(parent, 'no_reset', []))
 Defaults.set_defaults = __set_defaults
 
 

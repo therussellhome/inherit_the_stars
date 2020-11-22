@@ -18,7 +18,7 @@
         "__class__": "TechLevel"
     },
     "scanner": {
-        "penetrating": 250.0
+        "penetrating": 250.0,
         "normal": 400.0,
         "__class__": "Scanner"
     },

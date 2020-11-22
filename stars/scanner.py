@@ -20,11 +20,11 @@ class Scanner(Defaults):
 
     """ Calculate the range an apparent mass is visible at """
     def range_visible(self, apparent_mass):
-        visible_at = self.anti_cloak
+        visible_at = 0
         if apparent_mass > 0:
-            visible_at = min(visible_at, self.penetrating)
+            visible_at = max(visible_at, self.penetrating)
             ly_per_kt = self.normal / 100.0
-            visible_at = min(visible_at, apparent_mass * ly_per_kt)
+            visible_at = max(visible_at, apparent_mass * ly_per_kt)
         return visible_at
 
     def __add__(self, other):
@@ -35,37 +35,49 @@ class Scanner(Defaults):
         return s
 
     def scan_ships(self, player, location):
-        for ship in game_engine.get('Ship/'):
-            distance = ship.location - location
-            m = ship.calc_mass()
-            if distance <= self.anticloak:
-                player.addReport(ship, actual_mass = m)
-            m = ship.calc_apparent_mass()
-            if m > 0:
-                if distance <= self.penatrating:
-                    player.addReport(ship, apparent_mass = m)
-                else:
-                    if not isinstance(ship.location, LocationReference): 
-                        ly_per_kt = (self.normal - self.penetrating)/100
-                        if distance <= self.penatrating + ly_per_kt * m:
-                            player.addReport(ship, apparent_mass = m)
+        for ship in game_engine.get('Ship'):
+            report = self.scan_ship(location, ship)
+            if report:
+                player.add_intel(ship, **report)
 
     def scan_ship(self, location, ship):
+        report = {}
+        mass = ship.calc_mass()
+        apparent = ship.calc_apparent_mass()
         distance = ship.location - location
-        if distance <= self.penatrating:
-            return {}
-        return None
+        if ship.cloak.percent > 0 and distance <= self.anti_cloak:
+            report['mass'] = mass
+        if isinstance(ship.location, LocationReference):
+            if distance <= self.penetrating:
+                report['apparant_mass'] = apparent
+        elif distance <= self.range_visible(apparent):
+            report['apparant_mass'] = apparent
+        if len(report) == 0:
+            return None
+        report['player'] = str(ship.player.name)
+        report['location'] = ship.location
+        return report
 
     def scan_planets(self, player, location):
-        for planet in game_engine.get('Planet/'):
+        for planet in game_engine.get('Planet'):
             report = self.scan_planet(location, planet)
             if report:
-                player.addReport(planet, **report)
+                player.add_intel(planet, **report)
 
     def scan_planet(self, location, planet):
         distance = planet.location - location
-        if distance <= self.penatrating:
-            return {'gravity': planet.gravity, 'temperature': planet.temperature, 'radiation': planet.radiation, 'population': planet.population}
+        if distance <= self.penetrating:
+            return {
+                'location': planet.location,
+                'gravity': planet.gravity, 
+                'temperature': planet.temperature, 
+                'radiation': planet.radiation,
+                'player': str(planet.player.name),
+                'population': planet.on_surface.people,
+                'lithium availability': planet.mineral_availability('lithium'),
+                'silicon availability': planet.mineral_availability('silicon'),
+                'titanium availability': planet.mineral_availability('titanium'),
+            }
         return None
         
 

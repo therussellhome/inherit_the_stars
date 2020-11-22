@@ -1,23 +1,25 @@
-from . import game_engine
-from .defaults import Defaults
-from .game import Game
-from .player import Player
-from .star_system import StarSystem
+import sys
 from math import pi
 from random import randint
 from random import random
-from .reference import Reference
-from .location import rand_location
-from .race import Race
-from .tech import Tech
+from .. import game_engine
+from ..defaults import Defaults
+from ..game import Game
+from ..location import rand_location
+from ..player import Player
+from ..race import Race
+from ..reference import Reference
+from ..star_system import StarSystem
+from ..tech import Tech
 
 
 """ Default values (default, min, max)  """
 __defaults = {
     'new_game_name': [''],
-    'new_game_x': [500, 20, 2000], 
-    'new_game_y': [500, 20, 2000], 
-    'new_game_z': [500, 20, 2000], 
+    'new_game_num_systems': [0, 0, sys.maxsize],
+    'new_game_x': [500, 100, 2000], 
+    'new_game_y': [500, 100, 2000], 
+    'new_game_z': [500, 0, 2000], 
     'new_game_density': [8, 1, 100],
     'new_game_player_distance': [200, 1, 2000],
     'new_game_player01': ['No Player'],
@@ -82,8 +84,8 @@ __defaults = {
 
 """ Represent Open Game action """
 class NewGame(Defaults):
-    """ Interact with UI """
-    def post(self, action):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of races
@@ -97,51 +99,54 @@ class NewGame(Defaults):
                 players.append(self.__dict__[key])
         self.options_new_game_tech_tree = game_engine.load_list('tech_tree')
         self.options_new_game_tech_tree.insert(0, 'Default')
+        self.new_game_num_systems = self.calc_num_systems(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_density)
         # Create the game
         if action == 'create' and len(players) > 0:
             game = Game(name=self.new_game_name)
+            game_engine.register(game)
+            # Load tech tree
+            tech_tree = []
+            if self.new_game_tech_tree == 'Default':
+                tech = game_engine.load_defaults('Tech')
+            else:
+                tech = game_engine.load('tech_tree', self.new_game_tech_tree)
+            # Protect against other objects in a tech tree file
+            for t in tech:
+                if isinstance(t, Tech):
+                    tech_tree.append(t)
             # Create empty systems
             system_names = []
             with open('stars/star_system.names') as file:
                 for name in file:
                     system_names.append(name.strip())
-            num_systems = self.calc_num_systems(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_density)
-            systems = self.create_systems(num_systems, system_names, self.new_game_x, self.new_game_y, self.new_game_z)
+            game.systems = self.create_systems(self.new_game_num_systems, system_names, self.new_game_x, self.new_game_y, self.new_game_z)
             # Create players and their home systems
-            homes = self.generate_home_systems(len(players), systems, self.new_game_player_distance)
+            homes = self.generate_home_systems(len(players), game.systems, self.new_game_player_distance)
             for i in range(0, len(players)):
                 # Protect against other objects in a race file
-                objs = game_engine.load('races', players[i], False)
-                for r in objs:
-                    if isinstance(r, Race) and r.name == players[i]:
-                        players[i] = Player(race=r)
-                        homes[i].create_system(Reference(players[i]))
+                r = game_engine.load('races', players[i])
+                if isinstance(r, Race) and r.name == players[i]:
+                    p = Player(race=r, tech=tech_tree, game_name=game.name, game_key=game.game_key)
+                    homes[i].create_system(Reference(p))
+                    game.players.append(p)
+                else:
+                    print('reject ', players[i])
             # Create planets in systems
-            for s in systems:
+            for s in game.systems:
                 if not s in homes:
                     s.create_system()
-            # Load tech tree
-            if self.new_game_tech_tree == 'Default':
-                tech = game_engine.load_defaults('Tech', False)
-            else:
-                tech = game_engine.load('tech_tree', self.new_game_tech_tree, False)
-            # Protect against other objects in a tech tree file
-            for t in tech:
-                if isinstance(t, Tech):
-                    game_engine.register(t)
-            game_engine.save('games', self.new_game_name)
+            for p in game.players:
+                p.calc_intel()
+            # save to file
+            game_engine.save('host', game.name, game)
+            for p in game.players:
+                game_engine.save('games', game.name + ' - ' + p.name, p)
 
     """ Calculate the number of systems based on the size and density """
     def calc_num_systems(self, x, y, z, density):
         dimension = 3
-        if x < 2:
-            dimension -= 1
-            x = 2
-        if y < 2:
-            dimension -= 1
-            y = 2
         if z < 2:
-            dimension -= 1
+            dimension = 2
             z = 2
         # compute volume in light centuries
         volume = ((4/3) * pi) * (x/2) * (y/2) * (z/2) / (100**dimension)

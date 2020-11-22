@@ -15,6 +15,6 @@
         "__class__": "TechLevel"
     },
     "mass": 22,
-    "is_trading_post": True,
+    "is_trading_post": true,
     "__class__": "Tech"
 }

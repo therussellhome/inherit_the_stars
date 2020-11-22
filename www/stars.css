@@ -15,13 +15,24 @@
     color: white;
     padding-right: 150px;
 }
-#tech_html {
-    background-color: rgb(0, 0, 44);
-    color: white;
-    width: 300px;
+div.tech_expand {
+    position: absolute;
+    width: 50%;
+    height: 60px;
+    z-index: 9;
+    cursor: pointer;
 }
-iframe {
+div.tech {
+    width: 550px;
+    height: 60px;
     border: 0;
+    border-bottom: 1px solid white;
+    overflow-x: hidden; 
+    overflow-y: hidden; 
+    font-weight: normal;
+}
+table.tech {
+    #margin-left: 1em;
 }
 div.screen {
     z-index: 1;
@@ -50,6 +61,14 @@ div.sidebar {
     background-color: rgba(0, 0, 44, 0.5);
     transition: 0.5s;
 }
+div.submenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    padding-left: 70px;
+    transition: 0.5s;
+}
 div.toc {
     position: fixed;
     top: 0;
@@ -57,6 +76,9 @@ div.toc {
     z-index: 2;
     height: 100%;
     width: 150px;
+}
+input.vertical {
+    transform: rotate(-90deg);
 }
 img.button {
     width: 50px;
@@ -68,6 +90,10 @@ img.button {
     cursor: pointer;
     transition-duration: 0.4s;
     opacity: 0.6;
+}
+img.button_s {
+    width: 25px;
+    height: 25px;
 }
 ul {
     margin: 0;
@@ -86,6 +112,16 @@ a {
 }
 a:visited {
     color: magenta;
+}
+i.button {
+    font-size: 200%;
+    padding-right: 0; 
+    cursor: pointer;
+    transition-duration: 0.4s;
+    opacity: 0.6;
+}
+i.button:hover {
+    opacity: 1.0;
 }
 table {
     border: 0;
@@ -113,10 +149,21 @@ tr.slider_padding {
 td {
     white-space: nowrap;
 }
+td.tech_title {
+    text-align: center;
+}
+td.tech_value {
+    text-align: right;
+}
 input:disabled {
     color: white;
     background-color: transparent;
     border: 0;
+}
+input.tech_level {
+    text-align: right;
+    width: 1.7em;
+    font-size: 100%;
 }
 textarea:disabled {
     color: white;
@@ -130,8 +177,6 @@ textarea:disabled {
 .hide {
     display: none;
 }
-.tech {
-}
 #race_editor_hab_gravity .noUi-connect {
     background: blue;
 }
@@ -143,4 +188,104 @@ textarea:disabled {
 }
 #race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
     background: black;
+}
+
+i {
+    font-style: normal;
+    padding-right: 0.5em; 
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+/* Expand section */
+div.fa-angle-double-up, div.fa-angle-double-down {
+    width: 100%;
+    border-top: 1px dotted silver;
+    border-bottom: 1px dotted silver;
+    padding: 2px;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: silver;
+    cursor: pointer;
+}
+
+/* Cost & Weight Fields */
+i.fa-bolt {
+    color: cyan;
+}
+i.fa-bolt:after {
+    content: 'YJ';
+}
+
+i.ti:before {
+    content: 'Ti ';
+}
+i.ti {
+    color: dodgerblue;
+}
+
+i.li:before {
+    content: 'Li ';
+}
+i.li {
+    color: lightgreen;
+}
+
+i.si:before {
+    content: 'Si ';
+}
+i.si {
+    color: orange;
+}
+
+i.fa-weight-hanging {
+    color: gray;
+}
+
+i.fa-luggage-cart {
+    color: chocolate;
+}
+
+i.fa-free-code-camp {
+    font-family: 'Font Awesome 5 Brands';
+    font-weight: 400;
+    color: magenta;
+}
+i.fa-free-code-camp:after {
+    content: '₥';
+    border-top: 1px solid magenta;
+}
+
+i.ti:after, i.li:after, i.si:after, i.fa-weight-hanging:after, i.fa-luggage-cart:after {
+    content: 'kT';
+}
+
+/* Research Fields */
+i.fa-react {
+    font-family: 'Font Awesome 5 Brands';
+    font-weight: 400;
+    color: cyan;
+}
+i.fa-bomb {
+    color: red;
+}
+i.fa-tachometer-alt {
+    color: white;
+}
+i.fa-wrench {
+    color: silver;
+}
+i.fa-plug {
+    color: yellow;
+}
+i.fa-seedling {
+    color: green;
+}
+
+div.star {
+    position: relative;
+    background: white;
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
 }
