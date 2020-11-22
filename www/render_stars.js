@@ -3,40 +3,36 @@ import { TrackballControls } from '/TrackballControls.js';
 
 const TERAMETER = 0.0001057;
 
-var camera, scene, renderer, controls, mouse, selected;
-var shift = true;
-
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
+var scene, renderer, look_at, camera;
 
 init();
 
 function init() {
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 2000 );
-    camera.position.z = 100;
-
-    scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
-    scene.add(camera);
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    
     var div = document.getElementById('play_mode');
+    // create the scene and renderer
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.001);
+    renderer = new THREE.WebGLRenderer();
     div.appendChild( renderer.domElement );
-    div.addEventListener( 'submit', onSubmit, false);
-    div.addEventListener( 'keypress', onKeyPress, false);
-    window.addEventListener( 'scroll', onScroll, false);
-    div.addEventListener( 'click', onClick, false);
-
-    window.addEventListener( 'resize', onWindowResize, false );
-    createControls(camera);
+    // look at center of galaxy
+    look_at = new THREE.Vector3(0, 0, 0);
+    // camera 100ly out from center
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.00001, 2000);
+    camera.position.z = 100;
+    camera.lookAt(look_at);
+    scene.add(camera);
+    onWindowResize();
+    // attach event listeners
+    window.addEventListener('resize', onWindowResize);
+    div.addEventListener('submit', onSubmit);
+    div.addEventListener('keypress', onKeyPress);
+    div.addEventListener('click', onClick);
+    div.addEventListener('wheel', onWheel);
 }
 
 function addToScene(name, x, y, z, size, color, alphaMap) {
     var geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute([x, y, z], 3));
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
     var material = new THREE.PointsMaterial( { 
         color: new THREE.Color(color),
 		alphaMap: alphaMap,
@@ -46,9 +42,7 @@ function addToScene(name, x, y, z, size, color, alphaMap) {
     } );
     var p = new THREE.Points(geometry, material);
     p.name = name;
-    p.position.x = x;
-    p.position.y = y;
-    p.position.z = z;
+    p.position.set(x, y, z);
     scene.add(p);
 }
 
@@ -64,140 +58,86 @@ function onSubmit() {
                 var ring = new THREE.TextureLoader().load( "/particle-ring.png" )
 
                 for(var i=0; i<suns.length; i++) {
-                    addToScene("System/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, 10, suns[i].color, sphere);
+                    addToScene("System/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, 10, suns[i].color, ring);
+                    break;
                 }
 
                 for(var i=0; i<suns.length; i++) {
                     var size = (suns[i].size + 200) * TERAMETER;
-                    addToScene("Sun/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, size, suns[i].color, sphere);
+                    addToScene("Sun/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, TERAMETER / 10, suns[i].color, sphere);
                 }
 
                 for(var i=0; i<suns.length; i++) {
                     var size = (suns[i].size + 200) / 10 * TERAMETER;
-                    addToScene("Planet/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, size, "#ff0000", sphere);
+                    addToScene("Planet/" + suns[i].name, suns[i].x + TERAMETER, suns[i].y, suns[i].z, TERAMETER / 100, "#ff0000", sphere);
                 }
 
-/*
                 for(var i=0; i<planets.length; i++) {
-                    var geometry = new THREE.BufferGeometry();
-                    geometry.setAttribute('position', new THREE.Float32BufferAttribute([planets[i].x, planets[i].y, planets[i].z], 3));
-                    var material = new THREE.PointsMaterial( { 
-                        color: new THREE.Color(planets[i].color),
-		    		    alphaMap: sprite,
-                        size: (planets[i].size + 20) / 100,
-                        transparent: true,
-                        alphaTest: 0.5
-                    } );
-                    //console.log(planets[i].name, planets[i].size + 20, planets[i].color);
-                    var p = new THREE.Points(geometry, material);
-                    p.name = "Planet/" + planets[i].name;
-                    scene.add(p);
+//                    var size = (planets[i].size + 200) / 10 * TERAMETER;
+//                    addToScene("Planet/" + planets[i].name, planets[i].x, planets[i].y, planets[i].z, size, planets[i].color, sphere);
                 }
-*/
-                
-                animate();
+                //
                 onWindowResize();
             }
         }
     }
 }
 
-function createControls( camera ) {
-/*
-    controls = new TrackballControls( camera, renderer.domElement );
-    controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 0.8;
-	controls.panSpeed = 0.8;
-	controls.keys = [ 65, 83, 68 ];
-*/
-}
-
-function onScroll(event) {
+function onWheel(event) {
     event.preventDefault();
-    camera.translateOnAxis(camera.poition, 1);
+    //camera.translateOnAxis(camera.poition, 1);
 }
 
 function onKeyPress(event) {
     if (event.key == "a") {
-        console.log('zoom in');
-        camera.position.z -= 1;
+        //camera.position.lerp(look_at, 1 / camera.position.distanceTo(look_at));
+        //camera.position.lerp(look_at, TERAMETER);
+        camera.position.z -= TERAMETER;
     } else if (event.key == "o") {
-        console.log('zoom out');
         camera.position.z += 1;
     } else if (event.key == "r") {
         console.log('reset');
         camera.position.x = 0;
         camera.position.y = 0;
         camera.position.z = 100;
-        camera.lookAt(0, 0, 0);
+        look_at = new THREE.Vector3(0, 0, 0);
     }
-    camera.updateProjectionMatrix();
+    //camera.lookAt(look_at);
+	window.requestAnimationFrame(render);
 }
 
 function onClick(event) {
-    //if (shift) {
-    //    console.log('shiftClick detectted');
-    //}
-    console.log(camera.position);
-    const mouse = new THREE.Vector2();
+    var mouse = new THREE.Vector2();
 	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera( mouse, camera );
-    const intersects = raycaster.intersectObjects( scene.children, true );
-    if ( intersects.length > 0 ) {
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children);
+    if(intersects.length > 0) {
         console.log(intersects[0].object.name);
-        if (shift) {
-            if (selected) {
-                //selected.material.size *= 10;
-            }
-            selected = intersects[0].object;
-            console.log(intersects[0].object);
-            console.log(intersects[0].object.position);
-            console.log(intersects[0].object.geometry.attributes.position.array);
-            viewSystem(intersects[0].object);
-        }
-        else {
-            // viewReset()
-        }
+        //console.log(intersects[0].object);
+        intersects[0].object.material.opacity = 0;
+        camera.position.copy(intersects[0].object.position);
+        camera.position.z += TERAMETER * 10;
+        look_at = intersects[0].object.position.clone();
+        //camera.up = new THREE.Vector3(0,0,1);
+        //camera.lookAt(look_at);
     }
-
+	window.requestAnimationFrame(render);
 }
 
 function onWindowResize() {
-    windowHalfX = window.innerWidth / 2;
-    windowHalfY = window.innerHeight / 2;
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-//    controls.handleResize();
-}
-
-function viewSystem(p) {
-    //camera.position.x = p.position.x;
-    //camera.position.y = p.position.y;
-    //camera.position.z = p.position.z - 10;
-    //camera.lookAt(p);
-    camera.lookAt(p.position.x, p.position.y, p.position.z);
-    camera.updateProjectionMatrix();
-    //p.material.size /= 10;
-    //camera.near = 0.0002
-}
-
-function viewReset() {
-    //camera.position.x = 0;
-    //camera.position.y = 0;
-    //camera.position.z = 100;
-    //p.matirial.size *= 1000;
-}
-
-function animate() {
-	requestAnimationFrame( animate );
-//	controls.update();
-    render();
+	window.requestAnimationFrame(render);
 }
 
 function render() {
-    renderer.render( scene, camera );
+    camera.lookAt(look_at);
+    //console.log(camera);
+    //camera.updateMatrix();
+    //console.log(look_at, camera.position);
+    renderer.render(scene, camera);
 }
-
