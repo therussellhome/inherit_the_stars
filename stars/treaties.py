@@ -7,30 +7,34 @@ __defaults = {
     'p2': [''],
     'relation': ['neutral'],
     #'options_relation': [['team', 'neutral', 'enemy']],
-    'cost_p1_to_p2_titanium': [100, 0, maxsize],
+    'cost_p1_to_p2_titanium': [100, 0, 120],
     'p1_is_selling_titanium': [False],
-    'cost_p2_to_p1_titanium': [100, 0, maxsize],
+    'cost_p2_to_p1_titanium': [100, 0, 120],
     'p2_is_selling_titanium': [False],
-    'cost_p1_to_p2_silicon': [100, 0, maxsize],
+    'cost_p1_to_p2_silicon': [100, 0, 120],
     'p1_is_selling_silicon': [False],
-    'cost_p2_to_p1_silicon': [100, 0, maxsize],
+    'cost_p2_to_p1_silicon': [100, 0, 120],
     'p2_is_selling_silicon': [False],
-    'cost_p1_to_p2_lithium': [100, 0, maxsize],
+    'cost_p1_to_p2_lithium': [100, 0, 120],
     'p1_is_selling_lithium': [False],
-    'cost_p2_to_p1_lithium': [100, 0, maxsize],
+    'cost_p2_to_p1_lithium': [100, 0, 120],
     'p2_is_selling_lithium': [False],
-    'cost_p1_to_p2_fuel': [10, 0, maxsize],
+    'cost_p1_to_p2_fuel': [10, 0, 999],
     'p1_is_selling_fuel': [False],
-    'cost_p2_to_p1_fuel': [10, 0, maxsize],
+    'cost_p2_to_p1_fuel': [10, 0, 999],
     'p2_is_selling_fuel': [False],
-    'cost_p1_to_p2_stargate': [5000, 0, maxsize],
+    'cost_p1_to_p2_stargate': [5000, 0, 99999],
     'p1_is_selling_stargate': [False],
-    'cost_p2_to_p1_stargate': [5000, 0, maxsize],
+    'cost_p2_to_p1_stargate': [5000, 0, 99999],
     'p2_is_selling_stargate': [False],
-    'shared_p1_general_intel': [False],
-    'p1_to_p2_safe_passage': [False],
-    'shared_p2_general_intel': [False],
-    'p2_to_p1_safe_passage': [False],
+    'p1_is_selling_intel': [False],
+    'cost_p2_to_p1_intel': [10, 0, 999],
+    'p2_is_selling_intel': [False],
+    'cost_p1_to_p2_intel': [10, 0, 999],
+    'p1_is_selling_passage': [False],
+    'cost_p2_to_p1_passage': [10, 0, 999],
+    'p2_is_selling_passage': [False],
+    'cost_p1_to_p2_passage': [10, 0, 999],
     'status': ['']
 }
 
@@ -78,10 +82,14 @@ class Treaty(Defaults):
         t.p1_is_selling_stargate = self.p2_is_selling_stargate
         t.cost_p2_to_p1_stargate = self.cost_p1_to_p2_stargate
         t.p2_is_selling_stargate = self.p1_is_selling_stargate
-        t.shared_p1_general_intel = self.shared_p2_general_intel
-        t.p1_to_p2_safe_passage = self.p2_to_p1_safe_passage
-        t.shared_p2_general_intel = self.shared_p1_general_intel
-        t.p2_to_p1_safe_passage = self.p1_to_p2_safe_passage
+        t.p1_is_selling_intel = self.p2_is_selling_intel
+        t.cost_p2_to_p1_intel = self.cost_p1_to_p2_intel
+        t.p2_is_selling_intel = self.p1_is_selling_intel
+        t.cost_p1_to_p2_intel = self.cost_p2_to_p1_intel
+        t.p1_is_selling_passage = self.p2_is_selling_passage
+        t.cost_p2_to_p1_passage = self.cost_p1_to_p2_passage
+        t.p2_is_selling_passage = self.p1_is_selling_passage
+        t.cost_p1_to_p2_passage = self.cost_p2_to_p1_passage
         t.relation = self.relation
         t.status = self.status
         #self.__dict__ = t.__dict__
