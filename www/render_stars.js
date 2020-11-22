@@ -1,8 +1,10 @@
 import * as THREE from '/three.module.js';
 import { TrackballControls } from '/TrackballControls.js';
 
-var camera, scene, renderer, stats, material, controls;
-var mouseX = 0, mouseY = 0;
+const TERAMETER = 0.0001057;
+
+var camera, scene, renderer, controls, mouse, selected;
+var shift = true;
 
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
@@ -10,12 +12,12 @@ var windowHalfY = window.innerHeight / 2;
 init();
 
 function init() {
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 2, 2000 );
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.0001, 2000 );
     camera.position.z = 100;
 
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
-    scene.add(camera)
+    scene.add(camera);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -23,10 +25,31 @@ function init() {
     
     var div = document.getElementById('play_mode');
     div.appendChild( renderer.domElement );
-    div.addEventListener( 'submit', onSubmit, false)
+    div.addEventListener( 'submit', onSubmit, false);
+    div.addEventListener( 'keypress', onKeyPress, false);
+    window.addEventListener( 'scroll', onScroll, false);
+    div.addEventListener( 'click', onClick, false);
 
     window.addEventListener( 'resize', onWindowResize, false );
     createControls(camera);
+}
+
+function addToScene(name, x, y, z, size, color, alphaMap) {
+    var geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([x, y, z], 3));
+    var material = new THREE.PointsMaterial( { 
+        color: new THREE.Color(color),
+		alphaMap: alphaMap,
+        size: size,
+        transparent: true,
+        alphaTest: 0.5
+    } );
+    var p = new THREE.Points(geometry, material);
+    p.name = name;
+    p.position.x = x;
+    p.position.y = y;
+    p.position.z = z;
+    scene.add(p);
 }
 
 // Draw the suns & planets
@@ -37,92 +60,140 @@ function onSubmit() {
                 var suns = json_map['render_stars']['suns'];
                 var planets = json_map['render_stars']['planets'];
 
-                var geometry = new THREE.BufferGeometry();
-                var positions = [];
-                var sizes = [];
-                var colors = [];
+                var sphere = new THREE.TextureLoader().load( "/particle.png" )
+                var ring = new THREE.TextureLoader().load( "/particle-ring.png" )
 
                 for(var i=0; i<suns.length; i++) {
-                    positions.push(suns[i].x, suns[i].y, suns[i].z);
-                    sizes.push(suns[i].size + 200);
-                    var color = new THREE.Color(suns[i].color);
-                    colors.push(color.r, color.g, color.b, 1.0);
-                    console.log(suns[i].name, suns[i].size + 200, suns[i].color, color.r, color.g, color.b);
+                    addToScene("System/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, 10, suns[i].color, sphere);
                 }
 
+                for(var i=0; i<suns.length; i++) {
+                    var size = (suns[i].size + 200) * TERAMETER;
+                    addToScene("Sun/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, size, suns[i].color, sphere);
+                }
+
+                for(var i=0; i<suns.length; i++) {
+                    var size = (suns[i].size + 200) / 10 * TERAMETER;
+                    addToScene("Planet/" + suns[i].name, suns[i].x, suns[i].y, suns[i].z, size, "#ff0000", sphere);
+                }
+
+/*
                 for(var i=0; i<planets.length; i++) {
-                    positions.push(planets[i].x, planets[i].y, planets[i].z);
-                    sizes.push(planets[i].size + 20);
-                    var color = new THREE.Color(planets[i].color);
-                    colors.push(color.r, color.g, color.b, 1.0);
-                    console.log(planets[i].name, planets[i].size + 50, planets[i].color, color.r, color.g, color.b);
+                    var geometry = new THREE.BufferGeometry();
+                    geometry.setAttribute('position', new THREE.Float32BufferAttribute([planets[i].x, planets[i].y, planets[i].z], 3));
+                    var material = new THREE.PointsMaterial( { 
+                        color: new THREE.Color(planets[i].color),
+		    		    alphaMap: sprite,
+                        size: (planets[i].size + 20) / 100,
+                        transparent: true,
+                        alphaTest: 0.5
+                    } );
+                    //console.log(planets[i].name, planets[i].size + 20, planets[i].color);
+                    var p = new THREE.Points(geometry, material);
+                    p.name = "Planet/" + planets[i].name;
+                    scene.add(p);
                 }
-
-                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
-
-                var sprite = new THREE.TextureLoader().load( '/particle.png' );
-                material = new THREE.ShaderMaterial({
-		            vertexShader: document.getElementById('vertexshader').textContent,
-		            fragmentShader: document.getElementById('fragmentshader').textContent,
-	                    uniforms: {
-				            color: { value: new THREE.Color( 0xffffff ) },
-				            pointTexture: { value: new THREE.TextureLoader().load( "/particle.png" ) }
-			            },
-                    transparent: true
-                });
-//              material = new THREE.ShaderMaterial( {
-//                      size: 35,
-//                      sizeAttenuation: false,
-//                      map: sprite,
-//	                    uniforms: {
-//				            color: { value: new THREE.Color( 0xffffff ) },
-//				            pointTexture: { value: new THREE.TextureLoader().load( "/particle.png" ) }
-//			            },
-//			            vertexShader: document.getElementById( 'vertexshader' ).textContent,
-//			            fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-//			            alphaTest: 0.9
-//		            } );
-//              material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
-//              material.color.setHSL( 1.0, 0.3, 0.7 );
-
-                var points = new THREE.Points(geometry, material);
-                scene.add(points);
-
+*/
+                
                 animate();
+                onWindowResize();
             }
         }
     }
 }
 
 function createControls( camera ) {
-
+/*
     controls = new TrackballControls( camera, renderer.domElement );
-
     controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 1.2;
+	controls.zoomSpeed = 0.8;
 	controls.panSpeed = 0.8;
-
 	controls.keys = [ 65, 83, 68 ];
+*/
+}
+
+function onScroll(event) {
+    event.preventDefault();
+    camera.translateOnAxis(camera.poition, 1);
+}
+
+function onKeyPress(event) {
+    if (event.key == "a") {
+        console.log('zoom in');
+        camera.position.z -= 1;
+    } else if (event.key == "o") {
+        console.log('zoom out');
+        camera.position.z += 1;
+    } else if (event.key == "r") {
+        console.log('reset');
+        camera.position.x = 0;
+        camera.position.y = 0;
+        camera.position.z = 100;
+        camera.lookAt(0, 0, 0);
+    }
+    camera.updateProjectionMatrix();
+}
+
+function onClick(event) {
+    //if (shift) {
+    //    console.log('shiftClick detectted');
+    //}
+    console.log(camera.position);
+    const mouse = new THREE.Vector2();
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera( mouse, camera );
+    const intersects = raycaster.intersectObjects( scene.children, true );
+    if ( intersects.length > 0 ) {
+        console.log(intersects[0].object.name);
+        if (shift) {
+            if (selected) {
+                //selected.material.size *= 10;
+            }
+            selected = intersects[0].object;
+            console.log(intersects[0].object);
+            console.log(intersects[0].object.position);
+            console.log(intersects[0].object.geometry.attributes.position.array);
+            viewSystem(intersects[0].object);
+        }
+        else {
+            // viewReset()
+        }
+    }
+
 }
 
 function onWindowResize() {
-
     windowHalfX = window.innerWidth / 2;
     windowHalfY = window.innerHeight / 2;
-
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-
     renderer.setSize( window.innerWidth, window.innerHeight );
+//    controls.handleResize();
+}
 
-    controls.handleResize();
+function viewSystem(p) {
+    //camera.position.x = p.position.x;
+    //camera.position.y = p.position.y;
+    //camera.position.z = p.position.z - 10;
+    //camera.lookAt(p);
+    camera.lookAt(p.position.x, p.position.y, p.position.z);
+    camera.updateProjectionMatrix();
+    //p.material.size /= 10;
+    //camera.near = 0.0002
+}
+
+function viewReset() {
+    //camera.position.x = 0;
+    //camera.position.y = 0;
+    //camera.position.z = 100;
+    //p.matirial.size *= 1000;
 }
 
 function animate() {
 	requestAnimationFrame( animate );
-	controls.update();
+//	controls.update();
     render();
 }
 
