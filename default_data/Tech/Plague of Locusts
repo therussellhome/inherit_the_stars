@@ -1,7 +1,7 @@
 {
     "name": "Plague of Locusts",
     "category": "Missile",
-    "description": "Almost twice as powerful as Plague of Boils and slightly more accurate with slightly longer range.  Capital ship missles do double damage if the target ship has no remaining shields.",
+    "description": "Almost twice as powerful as Plague of Boils and slightly more accurate with slightly longer range.  Capital ship missiles do double damage if the target ship has no remaining shields.",
     "cost": {
         "titanium": 60,
         "lithium": 20,
