@@ -83,9 +83,8 @@ trait_cost = {
 }
 
 
-economy_costs = {
+economy_cost = {
     'research_modifier_slope': 12.5,
-    'growthrate_cost_per_click': 120,
     'power_plant_cost_per_click': 45,
     'factory_cost_per_click': 35, 
     'mine_cost_per_click': 20,
@@ -105,6 +104,7 @@ economy_costs = {
 
 
 habitability_cost = {
+    'growthrate_cost_per_click': 120,
     'body_mass_cost_per_click': 64,
     'range_cost_per_click': 5,
     'immunity_fee': 50, #times number of immunities squared
@@ -183,65 +183,65 @@ class Race(Defaults):
             self.research_modifier_electronics,
             self.research_modifier_biotechnology]
         for m in researchmodifiers: 
-            p -= round((1000 - m) / research_modifier_slope)
+            p -= round((1000 - m) / economy_cost['research_modifier_slope'])
         return p
 
     """ Advantage points for economy settings """
     def _calc_points_economy(self):
         ap = 0
-        ap -= (self.growth_rate - 5) * growthrate_cost_per_click
-        ap -= power_plant_cost_per_click * (self.power_plants_per_10k_colonists - 2) / 2
-        ap -= factory_cost_per_click * (self.factories_per_10k_colonists - 2) / 2
-        ap -= mine_cost_per_click * (self.mines_per_10k_colonists - 2) / 2
-        ap -= defense_cost_per_click * (self.defenses_per_10k_colonists - 2) / 2
+        ap -= economy_cost['power_plant_cost_per_click'] * (self.power_plants_per_10k_colonists - 2) / 2
+        ap -= economy_cost['factory_cost_per_click'] * (self.factories_per_10k_colonists - 2) / 2
+        ap -= economy_cost['mine_cost_per_click'] * (self.mines_per_10k_colonists - 2) / 2
+        ap -= economy_cost['defense_cost_per_click'] * (self.defenses_per_10k_colonists - 2) / 2
         #print(ap)
-        ap -= energy_cost_per_click * (self.energy_per_10k_colonists - 100) / 100
+        ap -= economy_cost['energy_cost_per_click'] * (self.energy_per_10k_colonists - 100) / 100
         #print(ap)
-        ap -= round(population_slope * (self.starting_colonists - 175000) / 1000)
-        ap -= (12000 - self.cost_of_baryogenesis) / baryogenesis_invert_slope
-        ap -= self.starting_factories * per_start_factory
-        ap -= self.starting_mines * per_start_mine
-        ap -= self.starting_power_plants * per_start_power_plant
-        ap -= self.starting_defenses * per_start_defense
-        ap -= self.starting_energy / 1000 * per_1000_start_energy
-        ap -= self.starting_titanium / start_titanium_per_p
-        ap -= self.starting_lithium / start_lithium_per_p
-        ap -= self.starting_silicon / start_silicon_per_p
+        ap -= round(economy_cost['population_slope'] * (self.starting_colonists - 175000) / 1000)
+        ap -= (12000 - self.cost_of_baryogenesis) / economy_cost['baryogenesis_invert_slope']
+        ap -= self.starting_factories * economy_cost['per_start_factory']
+        ap -= self.starting_mines * economy_cost['per_start_mine']
+        ap -= self.starting_power_plants * economy_cost['per_start_power_plant']
+        ap -= self.starting_defenses * economy_cost['per_start_defense']
+        ap -= self.starting_energy / 1000 * economy_cost['per_1000_start_energy']
+        ap -= self.starting_titanium / economy_cost['start_titanium_per_p']
+        ap -= self.starting_lithium / economy_cost['start_lithium_per_p']
+        ap -= self.starting_silicon / economy_cost['start_silicon_per_p']
         return ap
 
     """ Advantage points for habitability settings """
     def _calc_points_habitability(self):
         p = 0
+        p -= (self.growth_rate - 5) * habitability_cost['growthrate_cost_per_click']
         # Cost of body mass
-        p -= (150 - self.body_mass) * body_mass_cost_per_click / 10
+        p -= (150 - self.body_mass) * habitability_cost['body_mass_cost_per_click'] / 10
 
         immunities = 0
         if self.hab_gravity_immune:
             immunities += 1
-            p -= grav_immunity_cost
+            p -= habitability_cost['grav_immunity_cost']
         else:
         # Cost of gravity range
             grav_range = self.hab_gravity_stop - self.hab_gravity + 1
             grav_dis = abs((self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
-            p -= grav_range * range_cost_per_click - 300 - grav_dis * grav_dis_slope
+            p -= grav_range * habitability_cost['range_cost_per_click'] - 300 - grav_dis * habitability_cost['grav_dis_slope']
         if self.hab_temperature_immune:
             immunities += 1
-            p -= temp_immunity_cost
+            p -= habitability_cost['temp_immunity_cost']
         else:
         # Cost of temperature range
             temp_range = self.hab_temperature_stop - self.hab_temperature + 1
             temp_dis = abs((self.hab_temperature + self.hab_temperatue_stop) / 2 - 50)
-            p -= temp_range * range_cost_per_click - 300 - temp_dis * 2
+            p -= temp_range * habitability_cost['range_cost_per_click'] - 300 - temp_dis * 2
         if self.hab_radiation_immune:
             immunities += 1
-            p -= rad_immunity_cost
+            p -= habitability_cost['rad_immunity_cost']
         else:
         # Cost of radiation range
             rad_range = self.hab_radiation_stop - self.hab_radiation + 1
             rad_dis = abs((self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
-            p -= rad_range * range_cost_per_click - 300 - rad_dis
+            p -= rad_range * habitability_cost['range_cost_per_click'] - 300 - rad_dis
 
-        p -= (immunities ** 2) * immunity_fee + immunities * 5
+        p -= (immunities ** 2) * habitability_cost['immunity_fee'] + immunities * 5
         return p
 
     """ What percent of planets are habitable """

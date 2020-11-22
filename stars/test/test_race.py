@@ -76,6 +76,8 @@ class RaceTestCase(unittest.TestCase):
         r = race.Race(self.starting_tech_biotechnology = 1)
         self.assertEqual(r._calc_points_research(), -401)
 
+
+
     def test_calc_points_economy(self):
         r = race.Race(self.power_plants_per_10k_colonists = 2)
         self.assertEqual(r._calc_points_economy(), -700)
