@@ -41,11 +41,11 @@ __defaults = {
     'growth_rate': [15, 5, 20],
     'body_mass': [80, 10, 150],
     'starting_colonists': [250000, 175000, 350000],
-    'colonists_to_operate_factory': [1000, 200, 5000],
-    'colonists_to_operate_mine': [1000, 200, 5000],
-    'colonists_to_operate_power_plant': [1000, 200, 5000],
-    'colonists_to_operate_defense': [1000, 200, 5000],
-    'energy_per_colonist': [0.05, 0.01, 0.20],
+    'power_plants_per_10k_colonists': [10, 2, 50],
+    'factories_per_10k_colonists': [10, 2, 50],
+    'mines_per_10k_colonists': [10, 2, 50],
+    'defenses_per_10k_colonists': [10, 2, 50],
+    'energy_per_10k_colonists': [100, 100, 2000],
     'cost_of_baryogenesis': [10000, 2000, 12000],
     'starting_factories': [10, 5, 20],
     'starting_mines': [10, 5, 20],
@@ -59,15 +59,15 @@ __defaults = {
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 2767, 
-    'Kender': 2774, 
-    'Formics': 2570, 
-    'Gaerhule': 2620, 
-    'Halleyforms': 2688, 
-    'Pa\'anuri': 2770, 
-    'Melconians': 2596, 
-    'TAANSTAFL': 2819, 
-    'Patryns': 2704,
+    'Aku\'Ultani': 2817, 
+    'Kender': 2824, 
+    'Formics': 2620, 
+    'Gaerhule': 2670, 
+    'Halleyforms': 2738, 
+    'Pa\'anuri': 2820, 
+    'Melconians': 3146, 
+    'TAANSTAFL': 2869, 
+    'Patryns': 2754,
     'Trader': -126,
     'Bioengineer': -122,
     '2ndSight': -99,
@@ -86,11 +86,11 @@ trait_cost = {
 economy_costs = {
     'research_modifier_slope': 12.5,
     'growthrate_cost_per_click': 120,
-    'factory_cost_per_click': 5, 
-    'mine_slope': 100,
-    'power_plant_slope': 100,
-    'defense_slope': 100,
-    'energy_slope': 100,
+    'power_plant_cost_per_click': 45,
+    'factory_cost_per_click': 35, 
+    'mine_cost_per_click': 20,
+    'defense_cost_per_click': 20,
+    'energy_cost_per_click': 60,
     'population_slope': .8,
     'baryogenesis_invert_slope': 100,
     'per_start_factory': 5,
@@ -105,8 +105,10 @@ economy_costs = {
 
 
 habitability_cost = {
+    'body_mass_cost_per_click': 64,
     'range_cost_per_click': 5,
     'immunity_fee': 50, #times number of immunities squared
+    'grav_dis_slope': .5,
     'grav_immunity_cost': 400, 
     'temp_immunity_cost': 450, 
     'rad_immunity_cost': 405,
@@ -188,15 +190,14 @@ class Race(Defaults):
     def _calc_points_economy(self):
         ap = 0
         ap -= (self.growth_rate - 5) * growthrate_cost_per_click
-        ap -= (5000 - self.colonists_to_operate_factory) / (100 / factory_cost_per_click)
-        ap -= round(20 - (1000 / self.colonists_to_operate_mine) * mine_slope)
-        ap -= round(20 - (1000 / self.colonists_to_operate_power_plant) * power_plant_slope)
-        ap -= round(20 - (1000 / self.colonists_to_operate_defense) * defense_slope)
+        ap -= power_plant_cost_per_click * (self.power_plants_per_10k_colonists - 2) / 2
+        ap -= factory_cost_per_click * (self.factories_per_10k_colonists - 2) / 2
+        ap -= mine_cost_per_click * (self.mines_per_10k_colonists - 2) / 2
+        ap -= defense_cost_per_click * (self.defenses_per_10k_colonists - 2) / 2
         #print(ap)
-        ap -= energy_slope * self.energy_per_colonist - energy_slope
+        ap -= energy_cost_per_click * (self.energy_per_10k_colonists - 100) / 100
         #print(ap)
-        """Assuming starting_colonists increments are multiples of 5000, no need to round""" 
-        ap -= population_slope * (self.starting_colonists - 175000) / 1000
+        ap -= round(population_slope * (self.starting_colonists - 175000) / 1000)
         ap -= (12000 - self.cost_of_baryogenesis) / baryogenesis_invert_slope
         ap -= self.starting_factories * per_start_factory
         ap -= self.starting_mines * per_start_mine
@@ -211,6 +212,9 @@ class Race(Defaults):
     """ Advantage points for habitability settings """
     def _calc_points_habitability(self):
         p = 0
+        # Cost of body mass
+        p -= (150 - self.body_mass) * body_mass_cost_per_click / 10
+
         immunities = 0
         if self.hab_gravity_immune:
             immunities += 1
@@ -219,7 +223,7 @@ class Race(Defaults):
         # Cost of gravity range
             grav_range = self.hab_gravity_stop - self.hab_gravity + 1
             grav_dis = abs((self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
-            p -= grav_range * range_cost_per_click - 300 - grav_dis
+            p -= grav_range * range_cost_per_click - 300 - grav_dis * grav_dis_slope
         if self.hab_temperature_immune:
             immunities += 1
             p -= temp_immunity_cost
@@ -236,6 +240,7 @@ class Race(Defaults):
             rad_range = self.hab_radiation_stop - self.hab_radiation + 1
             rad_dis = abs((self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
             p -= rad_range * range_cost_per_click - 300 - rad_dis
+
         p -= (immunities ** 2) * immunity_fee + immunities * 5
         return p
 
