@@ -1,0 +1,39 @@
+{
+    "name": "Portal",
+    "description": "Stargate Ship",
+    "cost": {
+        "titanium": 80,
+        "lithium": 20,
+        "silicon": 30,
+        "energy": 10000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 6,
+        "propulsion": 9,
+        "construction": 10,
+        "electronics": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 800,
+    "stargate": 500,
+    "fuel_max": 1000000,
+    "shield": 100,
+    "armor": 500,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__class__": "Scanner"
+    },
+    "cloak": 50,
+    "engines": [
+        {
+            "kt_exponent": 1.5,
+            "speed_divisor": 10.0,
+            "speed_exponent": 5.0,
+            "antimatter_siphon": 0.0,
+            "__class__": "Engine"
+        }
+    ],
+    "repair": 20,
+    "__class__": "MysteryShip"
+}
