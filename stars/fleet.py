@@ -419,10 +419,6 @@ class Fleet(Defaults):
     def piracy(self, player):
         pass #TODO
     
-    def scan(self, player):
-        for ship in self.ships:
-            ship.scan(player)
-    
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
         if planet in game_engine.get('Planet') and planet.is_colonized() and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
@@ -430,20 +426,18 @@ class Fleet(Defaults):
             pop = planet.on_surface.people
             facility_kill = 0
             pop_kill = 0
-            #print(planet.facilities['Defense'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
+            #print(planet.facilities['defenses'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
             for ship in self.ships:
                 f_kill, p_kill = ship.bomb(planet, shields, pop)
                 facility_kill += f_kill
                 pop_kill += p_kill
-            planet.facilities['Defense'].quantity -= round(facility_kill)
+            planet.facilities['defenses'].quantity -= round(facility_kill)
             planet.on_surface.people -= round(pop_kill)
-            #print(planet.facilities['Defense'].quantity, planet.on_surface.people)
+            #print(planet.facilities['defenses'].quantity, planet.on_surface.people)
     
     """ runs all of the actions """
     def execute(self, action, player):
-        if action == 'scan':
-            self.scan(player)
-        elif action == 'move':
+        if action == 'move':
             self.move(player)
         elif action in self.waypoints[0].actions and (self.waypoints[0].location - self.location) == 0:
             if action == 'unload' or action == 'pre_unload':
