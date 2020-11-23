@@ -1,6 +1,6 @@
 {
     "name": "Large Cargo Pod",
-    "category": "Mech",
+    "category": "Mechanical",
     "description": "adds 250kT to your ship's cargo capacity",
     "cost": {
         "titanium": 10,

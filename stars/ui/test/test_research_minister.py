@@ -33,26 +33,4 @@ class ResearchMinisterTestCase(unittest.TestCase):
         self.assertEqual(self.p.calc_cost('construction'), 1878)
         p.biotechnology_tech_level = 2
         self.assertEqual(self.p.calc_cost('biotechnology'), 428)
-    def test_bombs(self):
-        pass
-    def test_cloaks_and_ecm(self):
-        pass
-    def test_defense(self):
-        pass
-    def test_depot(self):
-        pass
-    def test_engines(self):
-        pass
-    def test_hulls(self):
-        pass
-    def test_mech(self):
-        pass 
-    def test_orbital(self):
-        pass
-    def test_planetary(self):
-        pass
-    def test_scanners(self):
-        pass
-    def test_weapons(self):
-        pass
       
