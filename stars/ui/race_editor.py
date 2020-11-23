@@ -15,7 +15,7 @@ __defaults = {
     'race_editor_habitability_message': [''],
     'race_editor_file_to_load': [''],
     'options_race_editor_file_to_load': [[]],
-    'race_editor_advantage_points_left': [0, -sys.maxsize, sys.maxsize],
+    'race_editor_advantage_points_left': [0, -2000000, 2000000],
 }
 
 #cost_of_growthrate = [-7091, -5673, -4256, -2839, -1422, -838, -403, -119, 40, 150, 201, 252, 303, 355, 406, 457, 509, 560, 611, 664]
@@ -25,12 +25,12 @@ class RaceEditor(Defaults):
         super().__init__(**kwargs)
         if action == 'reset':
             self.reset_to_default()
-        # List races for loading
+        """List races for loading"""
         self.options_race_editor_file_to_load = game_engine.load_list('races')
         self.options_race_editor_file_to_load.insert(0, '')
         if self.race_editor_file_to_load != '':
             objs = [game_engine.load('races', self.race_editor_file_to_load)]
-            # populate self
+          """populate self"""
             for r in objs:
                 if r.__class__.__name__ == 'Race' and r.name == self.race_editor_file_to_load:
                     for key in Race.defaults:
@@ -43,15 +43,15 @@ class RaceEditor(Defaults):
         """ calculate and aply the cost of habitablility """
         self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
             + '% of planets should be habitable for you'
-        if self.race_editor_hab_gravity_immune:
-            self.race_editor_hab_gravity = 0
-            self.race_editor_hab_gravity_stop = 100
-        if self.race_editor_hab_temperature_immune:
-            self.race_editor_hab_temperature = 0
-            self.race_editor_hab_temperature_stop = 100
-        if self.race_editor_hab_radiation_immune:
-            self.race_editor_hab_radiation = 0
-            self.race_editor_hab_radiation_stop = 100
+       # if self.race_editor_hab_gravity_immune:
+        #    self.race_editor_hab_gravity = 0
+         #   self.race_editor_hab_gravity_stop = 100
+       # if self.race_editor_hab_temperature_immune:
+        #    self.race_editor_hab_temperature = 0
+         #   self.race_editor_hab_temperature_stop = 100
+       # if self.race_editor_hab_radiation_immune:
+        #    self.race_editor_hab_radiation = 0
+         #   self.race_editor_hab_radiation_stop = 100
         #ap -= self.calc_hab_cost()
         #""" calulate and aply the cost of the economy """
         #ap -= self.calc_economy_cost()
@@ -65,10 +65,11 @@ class RaceEditor(Defaults):
             game_engine.save('races', self.race_editor_name, r)
 
     
-    """ calulate the cost of race traits """
+    """ calculate the cost of race traits """
     #def calc_race_trait_cost(self):
     #    aps = 0
     #    lrts = 0
+    """We don't need to count the LRTs because we are NOT charging a fee for having them or having too many"""
     #    if self.race_editor_primary_race_trait == 'Pa\'anuri':
     #        pass
         #print(lrts)
