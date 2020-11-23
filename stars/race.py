@@ -230,7 +230,7 @@ class Race(Defaults):
         else:
         # Cost of temperature range
             temp_range = self.hab_temperature_stop - self.hab_temperature + 1
-            temp_dis = abs((self.hab_temperature + self.hab_temperatue_stop) / 2 - 50)
+            temp_dis = abs((self.hab_temperature + self.hab_temperature_stop) / 2 - 50)
             p -= temp_range * habitability_cost['range_cost_per_click'] - 300 - temp_dis * 2
         if self.hab_radiation_immune:
             immunities += 1
