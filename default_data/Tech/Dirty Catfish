@@ -22,7 +22,7 @@
             "speed_divisor": 10,
             "speed_exponent": 3.0,
             "antimatter_siphon": 600,
-	    "kills_people": TRUE,
+	    "kills_people": true,
             "__class__": "Engine"
         }
     ],

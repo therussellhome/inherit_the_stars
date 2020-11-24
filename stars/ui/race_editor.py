@@ -1,5 +1,4 @@
 import sys
-from math import log, exp
 from ..race import Race
 from ..defaults import Defaults
 from .. import game_engine
@@ -22,7 +21,7 @@ class RaceEditor(Defaults):
         self.options_race_editor_file_to_load.insert(0, '')
         if self.race_editor_file_to_load != '':
             objs = [game_engine.load('races', self.race_editor_file_to_load)]
-          """populate self"""
+            """populate self"""
             for r in objs:
                 if r.__class__.__name__ == 'Race' and r.name == self.race_editor_file_to_load:
                     for key in Race.defaults:
@@ -35,11 +34,8 @@ class RaceEditor(Defaults):
         """ calculate and aply the cost of habitablility """
         self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
             + '% of planets should be habitable for you'
-
         """validate that race has non-negative advantage points left"""
-    """ Calculate the advantage points for this race (invalid race if <0) """
-
-        self.race_editor_advantage_points_left = race.calc_points()
+        self.race_editor_advantage_points_left = int(race.calc_points())
         if action == 'save':
             if self.race_editor_advantage_points_left < 0:
                 print("INVALID RACE")

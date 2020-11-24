@@ -1,4 +1,5 @@
 from .defaults import Defaults
+from math import log, exp
 
 """ Default values [default, min, max]  """
 __defaults = {
