@@ -118,11 +118,11 @@ function show_home() {
 function launch_player(token) {
     if(token.value != '') {
         game_mode = 'play';
-        post('render_stars');
         toggle(document.getElementById('sidebar_host'), 'hide', true);
         toggle(document.getElementById('sidebar_play'), 'hide', false);
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
+        post('render_stars');
     }
 }
 
