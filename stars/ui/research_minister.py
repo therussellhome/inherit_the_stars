@@ -63,16 +63,14 @@ class ResearchMinister(PlayerUI):
                         + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
                     research_tech.append((cost, row))
         research_tech.sort(key = lambda x: x[0])
+        r = ''
+        for key in research_filter:
+            s = '<option>' + key + '</option>'
+            if key == cat:
+                s = '<option selected="true">' + key + '</option>'
+            r += s
         self.research_tech.append('<tr><td style="text-align: center" colspan="2" class="hfill">Category <select id="research_tech_category" onchange="post(\'research_minister\')">' \
-            + '<option>Weapons</option>' \
-            + '<option>Defense</option>' \
-            + '<option>Electronics</option>' \
-            + '<option>Engines</option>' \
-            + '<option>Hulls &amp; Mechanicals</option>' \
-            + '<option>Heavy Equipment</option>' \
-            + '<option>Planetary</option>' \
-            + '<option>Other</option>' \
-            + '</select></td></tr>')
+            + r + '</select></td></tr>')
         for t in research_tech:
             self.research_tech.append(t[1])
 
