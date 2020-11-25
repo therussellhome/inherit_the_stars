@@ -1,24 +1,22 @@
-{
-    "name": "Goliath",
+ {
+    "name": "Augustus",
     "category": "Beam Weapon",
-    "description": "Intended for Aku'Ultan at the start of the game, but requires Weapons Tech 4; is the same as Themistocles but costs less.",
     "race_requirements": "Aku'Ultan",
+    "description": "The same power as Brutus and Caesar but longer range. Beam weapons have 100% accuracy but power decreases with range.  The same as Agrippa but cheaper to build.",
     "cost": {
-        "titanium": 0,
-        "lithium": 6,
-        "silicon": 0,
-        "energy": 500,
+        "lithium": 11,
+        "energy": 1500,
         "__class__": "Cost"
     },
     "level": {
-        "weapons": 4,
+        "weapons": 10,
         "__class__": "TechLevel"
     },
-    "mass": 1,
+    "mass": 2,
     "weapons": [
         {
             "power": 39,
-            "range_tm": 0.2,
+            "range_tm": 0.4,
             "armor_multiplier": 1,
             "is_beam": true,
             "is_multishot": false,

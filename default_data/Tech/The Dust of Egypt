@@ -1,7 +1,7 @@
 {
     "name": "The Dust of Egypt",
     "category": "Missile",
-    "description": "One of the most accurate missles, the same range as Lightning Strike and slightly more powerful.  (the same as Plague of Hail but cheaper to build)",
+    "description": "One of the most accurate missiles, the same range as Lightning Strike and slightly more powerful.  (the same as Plague of Hail but cheaper to build)",
     "race_requirements": "Aku'Ultan",
     "cost": {
         "titanium": 28,

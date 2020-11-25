@@ -1,4 +1,5 @@
 __all__ = [
+    'asteroid',
     'battle_plan',
     'bomb',
     'cargo',
@@ -8,6 +9,7 @@ __all__ = [
     'defaults', 
     'energy_minister', 
     'engine',
+    'expirence',
     'facility',
     'fleet',
     'game', 
@@ -30,7 +32,8 @@ __all__ = [
     'sun',
     'tech', 
     'tech_level',
+    'treaties',
     'waypoint',
     'weapon',
-    'expirence',
+    'wormhole',
 ]

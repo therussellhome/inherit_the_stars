@@ -1,157 +1,273 @@
-var camera, scene, renderer, stats, material;
-var mouseX = 0, mouseY = 0;
+import * as THREE from '/three.module.js';
 
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
+const TERAMETER = 0.0001057;
+
+// the systems group is added to the scene
+// each system gets a group added to systems
+// suns are children of the named system
+// -- special processing to NOT hide suns
+// planets and in-system objects are children of the named system
+// -- these are hidden unless the system is selected
+// intersteller objects are added directly to the scene
+
+var scene, renderer, camera, selected, camera_lookat, camera_flyto, fixed_camera, systems;
+
+init();
+
+function init() {
+    var div = document.getElementById('play_mode');
+    // create the scene and renderer
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.001);
+    renderer = new THREE.WebGLRenderer();
+    div.appendChild( renderer.domElement );
+    // create systems group
+    systems = new THREE.Group();
+    scene.add(systems);
+    // look at center of galaxy
+    selected = systems;
+    fixed_camera = false;
+    camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, TERAMETER / 1000, 2000);
+    camera_lookat = new THREE.Vector3();
+    camera_flyto = new THREE.Vector3(0, 0, 500);
+    scene.add(camera);
+    onWindowResize();
+    // attach event listeners
+    window.addEventListener('resize', onWindowResize);
+    div.addEventListener('submit', onSubmit);
+    div.addEventListener('keydown', onKeyPress);
+    div.addEventListener('click', onClick);
+    div.addEventListener('dblclick', onDoubleClick);
+    div.addEventListener('wheel', onWheel);
+}
+
+// Find a system object by name
+function findSystem(name) {
+    name = "System/" + name;
+    for(var i = 0; i < systems.children.length; i++) {
+        if(systems.children[i].name == name) {
+            return systems.children[i];
+        }
+    }
+    var system = new THREE.Group();
+    system.name = name;
+    systems.add(system);
+    return system;
+}
+
+// Add a point to the correct system or to the scene if intersteller
+function addPoint(point, system_name) {
+    if(system_name == "") {
+        scene.add(point);
+    } else {
+        findSystem(system_name).add(point);
+    }
+}
 
 // Draw the suns & planets
-function draw_stars() {
-    suns = json_map['render_stars']['suns'];
-    planets = json_map['render_stars']['planets'];
-
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 2, 2000 );
-    camera.position.z = 100;
-
-    scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
-
-    var geometry = new THREE.BufferGeometry();
-    var positions = [];
-    var sizes = [];
-    var colors = [];
-
-    for(var i=0; i<suns.length; i++) {
-        positions.push(suns[i].x, suns[i].y, suns[i].z);
-        sizes.push(suns[i].size + 200);
-        var color = new THREE.Color(suns[i].color);
-        colors.push(color.r, color.g, color.b, 1.0);
-        console.log(suns[i].name, suns[i].size + 200, suns[i].color, color.r, color.g, color.b);
+function onSubmit() {
+    if(json_map.hasOwnProperty('render_stars')) {
+        if(json_map['render_stars'].hasOwnProperty('suns')) {
+            if(json_map['render_stars']['suns'].length > 0) {
+                // load materials
+                var sun_alphaMap = new THREE.TextureLoader().load( "/particle.png" )
+                var sun_texture = new THREE.TextureLoader().load( "/particle.png" )
+                var planet_alphaMap = new THREE.TextureLoader().load( "/particle.png" )
+                var planet_texture = new THREE.TextureLoader().load( "/particle.png" )
+                var suns = json_map['render_stars']['suns'];
+                var planets = json_map['render_stars']['planets'];
+                // reusable geometry
+                var geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
+                // Add suns
+                for(var i = 0; i < suns.length; i++) {
+                    var material = new THREE.PointsMaterial( { 
+                        color: new THREE.Color(suns[i].color),
+                        map: sun_texture,
+                        alphaMap: sun_alphaMap,
+                        size: (suns[i].size + 200) * TERAMETER / 1000,
+                        sizeAttenuation: true,
+                        transparent: true,
+                        alphaTest: 0.5
+                    } );
+                    var system_name = suns[i].name.replaceAll(/\'.*/g, ""); // Eventually this should come from the python side
+                    var point = new THREE.Points(geometry, material);
+                    point.position.set(suns[i].x, suns[i].y, suns[i].z);
+                    point.name = "Sun/" + suns[i].name;
+                    addPoint(point, system_name);
+                }
+                // Make dummy planets
+                var planet_colors = ["#990000", "#009900", "#000099", "#999999"];
+                for(var i = 0; i < suns.length; i++) {
+                    for(var j = 0; j < planet_colors.length; j++) {
+                        var material = new THREE.PointsMaterial( { 
+                            color: new THREE.Color(planet_colors[j]),
+                            map: planet_texture,
+                            alphaMap: planet_alphaMap,
+                            size: (Math.random() * 100 + 200) * TERAMETER / 10000,
+                            sizeAttenuation: true,
+                            transparent: true,
+                            alphaTest: 0.5
+                        } );
+                        var system_name = suns[i].name.replaceAll(/\'.*/g, ""); // Eventually this should come from the python side
+                        var point = new THREE.Points(geometry, material);
+                        point.position.set(suns[i].x + TERAMETER * Math.random() * 2 - TERAMETER, suns[i].y + TERAMETER * Math.random() * 2 - TERAMETER, suns[i].z);
+                        point.name = "Planet/" + system_name + " " + j;
+                        point.visible = false;
+                        addPoint(point, system_name);
+                    }
+                }
+                // Zoom to home world
+                select_object(systems.children[0].children[0], true); // Replace with with the home system's sun
+                // Render
+                window.setTimeout(render, 1000);
+            }
+        }
     }
-
-    for(var i=0; i<planets.length; i++) {
-        positions.push(planets[i].x, planets[i].y, planets[i].z);
-        sizes.push(planets[i].size + 20);
-        var color = new THREE.Color(planets[i].color);
-        colors.push(color.r, color.g, color.b, 1.0);
-        console.log(planets[i].name, planets[i].size + 50, planets[i].color, color.r, color.g, color.b);
-    }
-
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
-
-    var sprite = new THREE.TextureLoader().load( '/particle.png' );
-    material = new THREE.ShaderMaterial({
-		vertexShader: document.getElementById('vertexshader').textContent,
-		fragmentShader: document.getElementById('fragmentshader').textContent,
-	        uniforms: {
-				color: { value: new THREE.Color( 0xffffff ) },
-				pointTexture: { value: new THREE.TextureLoader().load( "/particle.png" ) }
-			},
-        transparent: true
-    });
-//    material = new THREE.ShaderMaterial( {
-//            size: 35,
-//            sizeAttenuation: false,
-//            map: sprite,
-//	        uniforms: {
-//				color: { value: new THREE.Color( 0xffffff ) },
-//				pointTexture: { value: new THREE.TextureLoader().load( "/particle.png" ) }
-//			},
-//			vertexShader: document.getElementById( 'vertexshader' ).textContent,
-//			fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-//			alphaTest: 0.9
-//		} );
-//    material = new THREE.PointsMaterial( { size: 35, sizeAttenuation: false, map: sprite, alphaTest: 0.5, transparent: true } );
-//    material.color.setHSL( 1.0, 0.3, 0.7 );
-
-    var points = new THREE.Points(geometry, material);
-    scene.add(points);
-
-    //
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.getElementById('play_mode').appendChild( renderer.domElement );
-
-    //
-
-//    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-    document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-
-    //
-
-    window.addEventListener( 'resize', onWindowResize, false );
-
-    animate();
 }
 
+// Zoom
+function onWheel(event) {
+    event.preventDefault();
+    var offset = camera_flyto.clone().sub(selected.position);
+    var distance = camera_flyto.distanceTo(selected.position);
+    // zoom out
+    if(event.deltaY > 0) {
+        offset.setLength(distance + Math.min(distance * 0.5, 50));
+    // zoom in
+    } else {
+        offset.setLength(Math.max(distance / 1.5, TERAMETER / 10));
+    }
+    camera_flyto = selected.position.clone().add(offset);
+    window.requestAnimationFrame(render);
+}
+
+// Key controls
+function onKeyPress(event) {
+    console.log(event.keyCode);
+    // up
+    if(event.keyCode == 38) {
+    // down
+    } else if(event.keyCode == 40) {
+    // left
+    } else if(event.keyCode == 37) {
+    // right
+    } else if(event.keyCode == 39) {
+    // reset
+    } else if(event.key == "r") {
+        select_object(selected, true);
+    }
+    window.requestAnimationFrame(render);
+}
+
+// Click
+function onClick(event) {
+    var mouse = new THREE.Vector2(
+        ( event.clientX / window.innerWidth ) * 2 - 1,
+        - ( event.clientY / window.innerHeight ) * 2 + 1
+    );
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.params.Points.threshold = TERAMETER / 10;
+    raycaster.near = 0;
+    raycaster.far = 10;
+    var intersects = raycaster.intersectObjects(scene.children, true);
+    if(intersects.length > 0) {
+        var d1 = intersects[0].object.position.distanceTo(intersects[0].point);
+        var best = 0;
+        for(var i=1; i<intersects.length; i++) {
+            var d2 = intersects[i].object.position.distanceTo(intersects[i].point);
+            if(d2 < d1) {
+                d1 = d2;
+                best = i;
+            }
+        }
+        select_object(intersects[best].object, false);
+    } else {
+        raycaster.params.Points.threshold = 10;
+        raycaster.near = 10;
+        raycaster.far = 10000;
+        intersects = raycaster.intersectObjects(systems.children, true);
+        console.log(intersects.length);
+        if(intersects.length > 0) {
+            select_object(intersects[0].object.parent.children[0], event.shiftKey);
+        }
+    }
+    window.requestAnimationFrame(render);
+}
+
+// Refocus on the clicked object
+function select_object(obj, flyto) {
+    console.log(obj.name, obj.parent.name);
+    system_visibility(selected, false);
+    selected = obj;
+    system_visibility(selected, true);
+    if(flyto) {
+        var z_offset = TERAMETER;
+        if(camera.position.z < selected.position.z) {
+            z_offset = - TERAMETER;
+        }
+        camera_flyto.set(selected.position.x, selected.position.y, selected.position.z + z_offset);
+    }
+}
+
+// Set visibility of stuff in a system
+function system_visibility(system, visibility) {
+    if(system.parent.name.startsWith("System/")) {
+        system = system.parent;
+    }
+    if(system.name.startsWith("System/")) {
+        for(var i = 0; i < system.children.length; i++) {
+            if(!system.children[i].name.startsWith("Sun/")) {
+                system.children[i].visible = visibility;
+            }
+        }
+    }
+}
+
+// Zoom to the clicked object
+function onDoubleClick(event) {
+    select_object(selected, true);
+    window.requestAnimationFrame(render);
+}
+
+// Handle window resises
 function onWindowResize() {
-
-    windowHalfX = window.innerWidth / 2;
-    windowHalfY = window.innerHeight / 2;
-
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
+    window.requestAnimationFrame(render);
 }
 
-function onDocumentMouseMove( event ) {
-
-    mouseX = event.clientX - windowHalfX;
-    mouseY = event.clientY - windowHalfY;
-
-}
-
-function onDocumentTouchStart( event ) {
-
-    if ( event.touches.length == 1 ) {
-
-        event.preventDefault();
-
-        mouseX = event.touches[ 0 ].pageX - windowHalfX;
-        mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-    }
-
-}
-
-function onDocumentTouchMove( event ) {
-
-    if ( event.touches.length == 1 ) {
-
-        event.preventDefault();
-
-        mouseX = event.touches[ 0 ].pageX - windowHalfX;
-        mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-    }
-
-}
-
-function animate() {
-
-    requestAnimationFrame( animate );
-
-    render();
-}
-
+// Update the camera and render the scene
 function render() {
+    var timer = false;
+    if(!camera_lookat.equals(selected.position)) {
+        var camera_distance = camera.position.distanceTo(selected.position);
+        // distance adjusted lookat
+        camera_lookat.sub(camera.position).setLength(camera_distance).add(camera.position);
+        var lookat_distance = camera_lookat.distanceTo(selected.position);
+        move_toward(camera_lookat, selected.position, Math.max(TERAMETER / 100, lookat_distance / 10));
+        camera.lookAt(camera_lookat);
+        timer = true;
+    }
+    if(!camera.position.equals(camera_flyto)) {
+        var camera_distance = camera.position.distanceTo(camera_flyto);
+        move_toward(camera.position, camera_flyto, Math.max(TERAMETER, camera_distance / 10));
+        timer = true;
+    }
+    camera.updateProjectionMatrix();
+    renderer.render(scene, camera);
+    if(timer) {
+        window.setTimeout(render, 10);
+    }
+}
 
-    var time = Date.now() * 0.00005;
-
-    camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-    camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-
-    camera.lookAt( scene.position );
-
-    var h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
-//    material.color.setHSL( h, 0.5, 0.5 );
-
-    renderer.render( scene, camera );
-
+// Move a vector toward a point by a maximum amount
+function move_toward(position, toward, max) {
+    var offset = position.clone().sub(toward);
+    var distance = position.distanceTo(toward);
+    offset.setLength(Math.max(distance - max, 0));
+    position.copy(toward.clone().add(offset));
 }

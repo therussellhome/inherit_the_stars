@@ -4,9 +4,9 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'titanium': [0, 0, sys.maxsize],
-    'lithium': [0, 0, sys.maxsize],
-    'silicon': [0, 0, sys.maxsize]
+    'titanium': [0.0, 0.0, sys.maxsize],
+    'lithium': [0.0, 0.0, sys.maxsize],
+    'silicon': [0.0, 0.0, sys.maxsize]
 }
 
 

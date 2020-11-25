@@ -38,8 +38,7 @@ __defaults = {
     'hyperdenial': [HyperDenial()],
     'is_colonizer': [False],
     'is_trading_post': [False],
-    'energy_output': [0.0, 0.0, sys.maxsize],
-    'factory_capacity': [0.0, 0.0, sys.maxsize],
+    'facility_output': [0.0, 0.0, sys.maxsize],
     'mining_rate': [0.0, 0.0, sys.maxsize],
     'mineral_depletion_factor': [0.0, 0.0, 100],
     'mat_trans_energy': [0, 0, sys.maxsize],
@@ -57,9 +56,9 @@ class Tech(Defaults):
             self.name = 'Tech the GM made up himself ' + str(id(self))
         game_engine.register(self)
 
-    """ Determine if the item is available for a player's tech level """
+    """ Determine if the item is available for a given tech level and race """
     def is_available(self, level=None, race=None):
-        if level and self.level.is_available(level):
+        if level and not self.level.is_available(level):
             return False
         if race and len(self.race_requirements) > 0:
             traits = race.list_traits()

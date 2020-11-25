@@ -74,9 +74,9 @@ class Scanner(Defaults):
                 'radiation': planet.radiation,
                 'player': str(planet.player.name),
                 'population': planet.on_surface.people,
-                'lithium availability': planet.get_availability('lithium'),
-                'silicon availability': planet.get_availability('silicon'),
-                'titanium availability': planet.get_availability('titanium'),
+                'lithium availability': planet.mineral_availability('lithium'),
+                'silicon availability': planet.mineral_availability('silicon'),
+                'titanium availability': planet.mineral_availability('titanium'),
             }
         return None
         

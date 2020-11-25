@@ -117,36 +117,6 @@ class FleetCase(unittest.TestCase):
         fleet_one.execute('deploy_hyper_denial', p1)
         self.assertEqual(True, False, "Not Testing")
     
-    def test_scan(self):
-        ship_1 = ship.Ship(
-            location = location.Location(),
-            scanner = scanner.Scanner(
-                anti_cloak = 75,
-                penetrating = 250,
-                normal = 400,
-                )
-            )
-        ship_2 = ship.Ship(
-            location = location.Location(),
-            scanner = scanner.Scanner(
-                anti_cloak = 125,
-                penetrating = 50,
-                normal = 600,
-                )
-            )
-        fleet_one = fleet.Fleet(
-            ships = [ship_1, ship_2],
-            waypoints = [
-                waypoint.Waypoint(
-                    actions = ['scan'],
-                    location = location.Location(),
-                    ),
-                ]
-            )
-        p1 = player.Player(fleets = [fleet_one])
-        fleet_one.execute('scan', p1)
-        self.assertEqual(True, False, "Not Testing")
-    
     def test_move(self):
         ship_1 = ship.Ship(
             fuel = 0,
@@ -772,7 +742,7 @@ class FleetCase(unittest.TestCase):
                 ),
             location = location.Location(),
             facilities = {
-                'Defense': facility.Facility(
+                'defenses': facility.Facility(
                     quantity = 20,
                     tech = tech.Tech(shields = 600)
                     ),
@@ -1401,7 +1371,7 @@ class FleetCase(unittest.TestCase):
         p2.treaties[p1.name] = defaults.Defaults(relation = 'enemy')
         fleet_two.execute('bomb', p2)
         self.assertLess(ultimantico.on_surface.people, 192, 'NOTE: this will somtimes fail as it is statistical in nature')
-        self.assertLess(ultimantico.facilities['Defense'].quantity, 17, 'NOTE: this will somtimes fail as it is statistical in nature')
+        self.assertLess(ultimantico.facilities['defenses'].quantity, 17, 'NOTE: this will somtimes fail as it is statistical in nature')
     
     def test_colonize(self):
         ultimantico = planet.Planet(
