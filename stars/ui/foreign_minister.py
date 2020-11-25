@@ -1,295 +1,15 @@
-from .treaties import Treaty
+from ..treaties import Treaty
 from .playerui import PlayerUI
 from sys import maxsize
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    "foreign_player1_name": [''],
-    "foreign_d1_relation": [''],
-    "foreign_d1_cost_p1_to_p2_lithium": [''],
-    "foreign_d1_cost_p2_to_p1_lithium": [''],
-    "foreign_d1_cost_p1_to_p2_silicon": [''],
-    "foreign_d1_cost_p2_to_p1_silicon": [''],
-    "foreign_d1_cost_p1_to_p2_titanium": [''],
-    "foreign_d1_cost_p2_to_p1_titanium": [''],
-    "foreign_d1_cost_p1_to_p2_fuel": [''],
-    "foreign_d1_cost_p2_to_p1_fuel": [''],
-    "foreign_d1_cost_p1_to_p2_stargate": [''],
-    "foreign_d1_cost_p2_to_p1_stargate": [''],
-    'foreign_d1_p1_to_p2_safe_passage': [False],
-    'foreign_d1_p2_to_p1_safe_passage': [False],
-    "foreign_d1_p1_to_p2_intel_sharing": [False],
-    "foreign_d1_p2_to_p1_intel_sharing": [False],
-    "foreign_d1_negotiation": [''],
-    "foreign_player2_name": [''],
-    "foreign_d2_relation": [''],
-    "foreign_d2_cost_p1_to_p2_lithium": [''],
-    "foreign_d2_cost_p2_to_p1_lithium": [''],
-    "foreign_d2_cost_p1_to_p2_silicon": [''],
-    "foreign_d2_cost_p2_to_p1_silicon": [''],
-    "foreign_d2_cost_p1_to_p2_titanium": [''],
-    "foreign_d2_cost_p2_to_p1_titanium": [''],
-    "foreign_d2_cost_p1_to_p2_fuel": [''],
-    "foreign_d2_cost_p2_to_p1_fuel": [''],
-    "foreign_d2_cost_p1_to_p2_stargate": [''],
-    "foreign_d2_cost_p2_to_p1_stargate": [''],
-    'foreign_d2_p1_to_p2_safe_passage': [False],
-    'foreign_d2_p2_to_p1_safe_passage': [False],
-    "foreign_d2_p1_to_p2_intel_sharing": [False],
-    "foreign_d2_p2_to_p1_intel_sharing": [False],
-    "foreign_d2_negotiation": [''],
-    "foreign_player3_name": [''],
-    "foreign_d3_relation": [''],
-    "foreign_d3_cost_p1_to_p2_lithium": [''],
-    "foreign_d3_cost_p2_to_p1_lithium": [''],
-    "foreign_d3_cost_p1_to_p2_silicon": [''],
-    "foreign_d3_cost_p2_to_p1_silicon": [''],
-    "foreign_d3_cost_p1_to_p2_titanium": [''],
-    "foreign_d3_cost_p2_to_p1_titanium": [''],
-    "foreign_d3_cost_p1_to_p2_fuel": [''],
-    "foreign_d3_cost_p2_to_p1_fuel": [''],
-    "foreign_d3_cost_p1_to_p2_stargate": [''],
-    "foreign_d3_cost_p2_to_p1_stargate": [''],
-    'foreign_d3_p1_to_p2_safe_passage': [False],
-    'foreign_d3_p2_to_p1_safe_passage': [False],
-    "foreign_d3_p1_to_p2_intel_sharing": [False],
-    "foreign_d3_p2_to_p1_intel_sharing": [False],
-    "foreign_d3_negotiation": [''],
-    "foreign_player4_name": [''],
-    "foreign_d4_relation": [''],
-    "foreign_d4_cost_p1_to_p2_lithium": [''],
-    "foreign_d4_cost_p2_to_p1_lithium": [''],
-    "foreign_d4_cost_p1_to_p2_silicon": [''],
-    "foreign_d4_cost_p2_to_p1_silicon": [''],
-    "foreign_d4_cost_p1_to_p2_titanium": [''],
-    "foreign_d4_cost_p2_to_p1_titanium": [''],
-    "foreign_d4_cost_p1_to_p2_fuel": [''],
-    "foreign_d4_cost_p2_to_p1_fuel": [''],
-    "foreign_d4_cost_p1_to_p2_stargate": [''],
-    "foreign_d4_cost_p2_to_p1_stargate": [''],
-    'foreign_d4_p1_to_p2_safe_passage': [False],
-    'foreign_d4_p2_to_p1_safe_passage': [False],
-    "foreign_d4_p1_to_p2_intel_sharing": [False],
-    "foreign_d4_p2_to_p1_intel_sharing": [False],
-    "foreign_d4_negotiation": [''],
-    "foreign_player5_name": [''],
-    "foreign_d5_relation": [''],
-    "foreign_d5_cost_p1_to_p2_lithium": [''],
-    "foreign_d5_cost_p2_to_p1_lithium": [''],
-    "foreign_d5_cost_p1_to_p2_silicon": [''],
-    "foreign_d5_cost_p2_to_p1_silicon": [''],
-    "foreign_d5_cost_p1_to_p2_titanium": [''],
-    "foreign_d5_cost_p2_to_p1_titanium": [''],
-    "foreign_d5_cost_p1_to_p2_fuel": [''],
-    "foreign_d5_cost_p2_to_p1_fuel": [''],
-    "foreign_d5_cost_p1_to_p2_stargate": [''],
-    "foreign_d5_cost_p2_to_p1_stargate": [''],
-    'foreign_d5_p1_to_p2_safe_passage': [False],
-    'foreign_d5_p2_to_p1_safe_passage': [False],
-    "foreign_d5_p1_to_p2_intel_sharing": [False],
-    "foreign_d5_p2_to_p1_intel_sharing": [False],
-    "foreign_d5_negotiation": [''],
-    "foreign_player6_name": [''],
-    "foreign_d6_relation": [''],
-    "foreign_d6_cost_p1_to_p2_lithium": [''],
-    "foreign_d6_cost_p2_to_p1_lithium": [''],
-    "foreign_d6_cost_p1_to_p2_silicon": [''],
-    "foreign_d6_cost_p2_to_p1_silicon": [''],
-    "foreign_d6_cost_p1_to_p2_titanium": [''],
-    "foreign_d6_cost_p2_to_p1_titanium": [''],
-    "foreign_d6_cost_p1_to_p2_fuel": [''],
-    "foreign_d6_cost_p2_to_p1_fuel": [''],
-    "foreign_d6_cost_p1_to_p2_stargate": [''],
-    "foreign_d6_cost_p2_to_p1_stargate": [''],
-    'foreign_d6_p1_to_p2_safe_passage': [False],
-    'foreign_d6_p2_to_p1_safe_passage': [False],
-    "foreign_d6_p1_to_p2_intel_sharing": [False],
-    "foreign_d6_p2_to_p1_intel_sharing": [False],
-    "foreign_d6_negotiation": [''],
-    "foreign_player7_name": [''],
-    "foreign_d7_relation": [''],
-    "foreign_d7_cost_p1_to_p2_lithium": [''],
-    "foreign_d7_cost_p2_to_p1_lithium": [''],
-    "foreign_d7_cost_p1_to_p2_silicon": [''],
-    "foreign_d7_cost_p2_to_p1_silicon": [''],
-    "foreign_d7_cost_p1_to_p2_titanium": [''],
-    "foreign_d7_cost_p2_to_p1_titanium": [''],
-    "foreign_d7_cost_p1_to_p2_fuel": [''],
-    "foreign_d7_cost_p2_to_p1_fuel": [''],
-    "foreign_d7_cost_p1_to_p2_stargate": [''],
-    "foreign_d7_cost_p2_to_p1_stargate": [''],
-    'foreign_d7_p1_to_p2_safe_passage': [False],
-    'foreign_d7_p2_to_p1_safe_passage': [False],
-    "foreign_d7_p1_to_p2_intel_sharing": [False],
-    "foreign_d7_p2_to_p1_intel_sharing": [False],
-    "foreign_d7_negotiation": [''],
-    "foreign_player8_name": [''],
-    "foreign_d8_relation": [''],
-    "foreign_d8_cost_p1_to_p2_lithium": [''],
-    "foreign_d8_cost_p2_to_p1_lithium": [''],
-    "foreign_d8_cost_p1_to_p2_silicon": [''],
-    "foreign_d8_cost_p2_to_p1_silicon": [''],
-    "foreign_d8_cost_p1_to_p2_titanium": [''],
-    "foreign_d8_cost_p2_to_p1_titanium": [''],
-    "foreign_d8_cost_p1_to_p2_fuel": [''],
-    "foreign_d8_cost_p2_to_p1_fuel": [''],
-    "foreign_d8_cost_p1_to_p2_stargate": [''],
-    "foreign_d8_cost_p2_to_p1_stargate": [''],
-    'foreign_d8_p1_to_p2_safe_passage': [False],
-    'foreign_d8_p2_to_p1_safe_passage': [False],
-    "foreign_d8_p1_to_p2_intel_sharing": [False],
-    "foreign_d8_p2_to_p1_intel_sharing": [False],
-    "foreign_d8_negotiation": [''],
-    "foreign_player9_name": [''],
-    "foreign_d9_relation": [''],
-    "foreign_d9_cost_p1_to_p2_lithium": [''],
-    "foreign_d9_cost_p2_to_p1_lithium": [''],
-    "foreign_d9_cost_p1_to_p2_silicon": [''],
-    "foreign_d9_cost_p2_to_p1_silicon": [''],
-    "foreign_d9_cost_p1_to_p2_titanium": [''],
-    "foreign_d9_cost_p2_to_p1_titanium": [''],
-    "foreign_d9_cost_p1_to_p2_fuel": [''],
-    "foreign_d9_cost_p2_to_p1_fuel": [''],
-    "foreign_d9_cost_p1_to_p2_stargate": [''],
-    "foreign_d9_cost_p2_to_p1_stargate": [''],
-    'foreign_d9_p1_to_p2_safe_passage': [False],
-    'foreign_d9_p2_to_p1_safe_passage': [False],
-    "foreign_d9_p1_to_p2_intel_sharing": [False],
-    "foreign_d9_p2_to_p1_intel_sharing": [False],
-    "foreign_d9_negotiation": [''],
-    "foreign_player10_name": [''],
-    "foreign_d10_relation": [''],
-    "foreign_d10_cost_p1_to_p2_lithium": [''],
-    "foreign_d10_cost_p2_to_p1_lithium": [''],
-    "foreign_d10_cost_p1_to_p2_silicon": [''],
-    "foreign_d10_cost_p2_to_p1_silicon": [''],
-    "foreign_d10_cost_p1_to_p2_titanium": [''],
-    "foreign_d10_cost_p2_to_p1_titanium": [''],
-    "foreign_d10_cost_p1_to_p2_fuel": [''],
-    "foreign_d10_cost_p2_to_p1_fuel": [''],
-    "foreign_d10_cost_p1_to_p2_stargate": [''],
-    "foreign_d10_cost_p2_to_p1_stargate": [''],
-    'foreign_d10_p1_to_p2_safe_passage': [False],
-    'foreign_d10_p2_to_p1_safe_passage': [False],
-    "foreign_d10_p1_to_p2_intel_sharing": [False],
-    "foreign_d10_p2_to_p1_intel_sharing": [False],
-    "foreign_d10_negotiation": [''],
-    "foreign_player11_name": [''],
-    "foreign_d11_relation": [''],
-    "foreign_d11_cost_p1_to_p2_lithium": [''],
-    "foreign_d11_cost_p2_to_p1_lithium": [''],
-    "foreign_d11_cost_p1_to_p2_silicon": [''],
-    "foreign_d11_cost_p2_to_p1_silicon": [''],
-    "foreign_d11_cost_p1_to_p2_titanium": [''],
-    "foreign_d11_cost_p2_to_p1_titanium": [''],
-    "foreign_d11_cost_p1_to_p2_fuel": [''],
-    "foreign_d11_cost_p2_to_p1_fuel": [''],
-    "foreign_d11_cost_p1_to_p2_stargate": [''],
-    "foreign_d11_cost_p2_to_p1_stargate": [''],
-    'foreign_d11_p1_to_p2_safe_passage': [False],
-    'foreign_d11_p2_to_p1_safe_passage': [False],
-    "foreign_d11_p1_to_p2_intel_sharing": [False],
-    "foreign_d11_p2_to_p1_intel_sharing": [False],
-    "foreign_d11_negotiation": [''],
-    "foreign_player12_name": [''],
-    "foreign_d12_relation": [''],
-    "foreign_d12_cost_p1_to_p2_lithium": [''],
-    "foreign_d12_cost_p2_to_p1_lithium": [''],
-    "foreign_d12_cost_p1_to_p2_silicon": [''],
-    "foreign_d12_cost_p2_to_p1_silicon": [''],
-    "foreign_d12_cost_p1_to_p2_titanium": [''],
-    "foreign_d12_cost_p2_to_p1_titanium": [''],
-    "foreign_d12_cost_p1_to_p2_fuel": [''],
-    "foreign_d12_cost_p2_to_p1_fuel": [''],
-    "foreign_d12_cost_p1_to_p2_stargate": [''],
-    "foreign_d12_cost_p2_to_p1_stargate": [''],
-    'foreign_d12_p1_to_p2_safe_passage': [False],
-    'foreign_d12_p2_to_p1_safe_passage': [False],
-    "foreign_d12_p1_to_p2_intel_sharing": [False],
-    "foreign_d12_p2_to_p1_intel_sharing": [False],
-    "foreign_d12_negotiation": [''],
-    "foreign_player13_name": [''],
-    "foreign_d13_relation": [''],
-    "foreign_d13_cost_p1_to_p2_lithium": [''],
-    "foreign_d13_cost_p2_to_p1_lithium": [''],
-    "foreign_d13_cost_p1_to_p2_silicon": [''],
-    "foreign_d13_cost_p2_to_p1_silicon": [''],
-    "foreign_d13_cost_p1_to_p2_titanium": [''],
-    "foreign_d13_cost_p2_to_p1_titanium": [''],
-    "foreign_d13_cost_p1_to_p2_fuel": [''],
-    "foreign_d13_cost_p2_to_p1_fuel": [''],
-    "foreign_d13_cost_p1_to_p2_stargate": [''],
-    "foreign_d13_cost_p2_to_p1_stargate": [''],
-    'foreign_d13_p1_to_p2_safe_passage': [False],
-    'foreign_d13_p2_to_p1_safe_passage': [False],
-    "foreign_d13_p1_to_p2_intel_sharing": [False],
-    "foreign_d13_p2_to_p1_intel_sharing": [False],
-    "foreign_d13_negotiation": [''],
-    "foreign_player14_name": [''],
-    "foreign_d14_relation": [''],
-    "foreign_d14_cost_p1_to_p2_lithium": [''],
-    "foreign_d14_cost_p2_to_p1_lithium": [''],
-    "foreign_d14_cost_p1_to_p2_silicon": [''],
-    "foreign_d14_cost_p2_to_p1_silicon": [''],
-    "foreign_d14_cost_p1_to_p2_titanium": [''],
-    "foreign_d14_cost_p2_to_p1_titanium": [''],
-    "foreign_d14_cost_p1_to_p2_fuel": [''],
-    "foreign_d14_cost_p2_to_p1_fuel": [''],
-    "foreign_d14_cost_p1_to_p2_stargate": [''],
-    "foreign_d14_cost_p2_to_p1_stargate": [''],
-    'foreign_d14_p1_to_p2_safe_passage': [False],
-    'foreign_d14_p2_to_p1_safe_passage': [False],
-    "foreign_d14_p1_to_p2_intel_sharing": [False],
-    "foreign_d14_p2_to_p1_intel_sharing": [False],
-    "foreign_d14_negotiation": [''],
-    "foreign_player15_name": [''],
-    "foreign_d15_relation": [''],
-    "foreign_d15_cost_p1_to_p2_lithium": [''],
-    "foreign_d15_cost_p2_to_p1_lithium": [''],
-    "foreign_d15_cost_p1_to_p2_silicon": [''],
-    "foreign_d15_cost_p2_to_p1_silicon": [''],
-    "foreign_d15_cost_p1_to_p2_titanium": [''],
-    "foreign_d15_cost_p2_to_p1_titanium": [''],
-    "foreign_d15_cost_p1_to_p2_fuel": [''],
-    "foreign_d15_cost_p2_to_p1_fuel": [''],
-    "foreign_d15_cost_p1_to_p2_stargate": [''],
-    "foreign_d15_cost_p2_to_p1_stargate": [''],
-    'foreign_d15_p1_to_p2_safe_passage': [False],
-    'foreign_d15_p2_to_p1_safe_passage': [False],
-    "foreign_d15_p1_to_p2_intel_sharing": [False],
-    "foreign_d15_p2_to_p1_intel_sharing": [False],
-    "foreign_d15_negotiation": [''],
-    'foreign_p1': [''],
-    'foreign_p2': [''],
-    'options_foreign_p2': [['', 'p2']],
-    'foreign_relation': [['nutral']],
-    'foreign_options_relation': [['team', 'nutral', 'enemy']],
-    'foreign_cost_p1_to_p2_titanium': [100, 0, maxsize],
-    'foreign_p1_is_selling_titanium': [False],
-    'foreign_cost_p2_to_p1_titanium': [100, 0, maxsize],
-    'foreign_p2_is_selling_titanium': [False],
-    'foreign_cost_p1_to_p2_silicon': [100, 0, maxsize],
-    'foreign_p1_is_selling_silicon': [False],
-    'foreign_cost_p2_to_p1_silicon': [100, 0, maxsize],
-    'foreign_p2_is_selling_silicon': [False],
-    'foreign_cost_p1_to_p2_lithium': [100, 0, maxsize],
-    'foreign_p1_is_selling_lithium': [False],
-    'foreign_cost_p2_to_p1_lithium': [100, 0, maxsize],
-    'foreign_p2_is_selling_lithium': [False],
-    'foreign_cost_p1_to_p2_fuel': [10, 0, maxsize],
-    'foreign_p1_is_selling_fuel': [False],
-    'foreign_cost_p2_to_p1_fuel': [10, 0, maxsize],
-    'foreign_p2_is_selling_fuel': [False],
-    'foreign_cost_p1_to_p2_stargate': [5000, 0, maxsize],
-    'foreign_p1_is_selling_stargate': [False],
-    'foreign_cost_p2_to_p1_stargate': [5000, 0, maxsize],
-    'foreign_p2_is_selling_stargate': [False],
-    'foreign_p1_to_p2_safe_passage': [False],
-    'foreign_p2_to_p1_safe_passage': [False],
-    'foreign_shared_p1_general_intel': [False],
-    'foreign_shared_p2_general_intel': [False],
-    'foreign_stautus': ['']
+    'foreign_treaties': [[]],
+    'foreign_relation': ['neutral'],
+    'foreign_relation_is_neutral': [False],
+    'foreign_relation_is_team': [False],
+    'foreign_relation_is_enemy': [False],
 }
 
 
@@ -299,75 +19,165 @@ class ForeignMinister(PlayerUI):
         super().__init__(**kwargs)
         if not self.player:
             return
+        self.calc_r()
         #print(self.foreign_cost_p1_to_p2_lithium)
         #print(self.__dict__)
-        print(self.player.treaties)
+        #print(self.player.treaties)
         try:
             self.player.treaties['p2'].p2
         except:
-            self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, shared_p2_general_intel=True)
+            self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, p2_shared_intel=True)
             self.player.pending_treaties['p2']=self.player.treaties['p2']
-        print('Hello everybody i\'m p2')
-        self.options_foreign_p2 = ['']
-        self.options_foreign_p2.append('p2')
+        #print('Hello everybody i\'m p2')
+        if action.startswith('edit='):
+            self.foreign_p2 = action[5:]
+            action = 'revert'
+        if action.startswith('revoke='):
+            t = action[7:]
+            self.player.treaties[t].reset_to_default()
+        if action.startswith('reject='):
+            self.player.pending_treaties[action[7:]].status = 'rejected'
+        if action.startswith('accept='):
+            self.player.pending_treaties[action[7:]].status = 'accepted'
+            if action[7:] == 'p2':
+                self.player.treaties['p2']=self.player.pending_treaties['p2']
+        if action == 'propose':
+            self.foreign_stautus = 'sent'
+            treety = Treaty()
+            for key in treety.__dict__:
+                setattr(treety, key, getattr(self, 'foreign_'+key))
+            if treety.relation == 'enemy':
+                treety.reset_to_default()
+                treety.relation = 'enemy'
+                self.player.treaties[self.foreign_p2] = treety
+            self.player.pending_treaties[self.foreign_p2] = treety
+        #print(self.player.treaties)
         if action == 'revert':
             #self.reset_to_default()
             for key in self.player.pending_treaties[self.foreign_p2].__dict__:
                 setattr(self, 'foreign_'+key, self.player.pending_treaties[self.foreign_p2].__dict__[key])
-        if action == 'revoke':
-            if self.player.pending_treaties[self.foreign_p2] == self.player.treaties[self.foreign_p2]:
-                self.player.treaties[self.foreign_p2].reset_to_default()
-                self.player.pending_treaties[self.foreign_p2].reset_to_default()
-            else:
-                self.player.pending_treaties[self.foreign_p2] = self.player.treaties[self.foreign_p2]
-        if action == 'propose':
-            if self.player.pending_treaties[self.foreign_p2] == self.player.treaties[self.foreign_p2]:
-                #print('propose')
-                self.foreign_stautus = 'sent'
-                treety = Treaty()
-                for key in treety.__dict__:
-                    setattr(treety, key, getattr(self, 'foreign_'+key))
-                self.player.pending_treaties[self.foreign_p2] = treety
-                if self.foreign_p2 == 'p2':
-                    self.player.treaties['p2']=self.player.pending_treaties['p2']
-            else:
-                self.player.treaties[self.foreign_p2] = self.player.pending_treaties[self.foreign_p2]
-        print(self.player.treaties)
-        if action == 'declare_war':
-            self.player.treaties[self.foreign_p2].reset_to_defalt()
-            self.player.treaties[self.foreign_p2].relation = 'enemy'
+                self.foreign_relation_is_neutral = False
+                self.foreign_relation_is_team = False
+                self.foreign_relation_is_enemy = False
+                setattr(self, 'foreign_relation_is_'+self.foreign_relation, True)
         """ set display values """
         i = 0
+        self.foreign_treaties.append('<th></th><th></th><th></th>\
+            <th><i style="font-size: 85%" class="li" title="Lithium">1</i></th>\
+            <th><i style="font-size: 85%" class="si" title="Silicon">1</i></th>\
+            <th><i style="font-size: 85%" class="ti" title="Titanium">1</i></th>\
+            <th><i style="font-size: 85%" class="fa-free-code-camp" title="fuel">10k</i></th>\
+            <th><i style="font-size: 150%" class="fab fa-galactic-republic" title="stargate"></i></th>\
+            <th><i style="font-size: 150%" class="fas fa-virus-slash" title="safe passage"></i></th>\
+            <th><i style="font-size: 150%" class="fas fa-user-secret" title="intel sharing"></i></th>')
         treaties=self.player.treaties
+        p_treaties=self.player.pending_treaties
         for z in self.player.treaties:
-            i += 1
-            setattr(self, 'foreign_player'+str(i)+'_name', treaties[z].p2)
-            setattr(self, 'foreign_d'+str(i)+'_relation', treaties[z].relation)
-            self.calc_ds('p1_to_p2_lithium', i, treaties[z])
-            self.calc_ds('p2_to_p1_lithium', i, treaties[z])
-            self.calc_ds('p1_to_p2_silicon', i, treaties[z])
-            self.calc_ds('p2_to_p1_silicon', i, treaties[z])
-            self.calc_ds('p1_to_p2_titanium', i, treaties[z])
-            self.calc_ds('p2_to_p1_titanium', i, treaties[z])
-            self.calc_ds('p1_to_p2_fuel', i, treaties[z])
-            self.calc_ds('p2_to_p1_fuel', i, treaties[z])
-            self.calc_ds('p1_to_p2_stargate', i, treaties[z])
-            self.calc_ds('p2_to_p1_stargate', i, treaties[z])
-            setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_safe_passage', treaties[z].p1_to_p2_safe_passage)
-            setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_safe_passage', treaties[z].p2_to_p1_safe_passage)
-            setattr(self, 'foreign_d'+str(i)+'_p1_to_p2_intel_sharing', treaties[z].shared_p1_general_intel)
-            setattr(self, 'foreign_d'+str(i)+'_p2_to_p1_intel_sharing', treaties[z].shared_p2_general_intel)
-            setattr(self, 'foreign_d'+str(i)+'_negotiation', self.player.pending_treaties[z].stautus)
-        print(self.player.treaties)
-
-    def calc_ds(self, var, i, treaty):
+            self.foreign_treaties.append('<td><i class="fas fa-pastafarianism"></i></td>\
+                <td colspan="11" style="font-size: 75%">' + z + '</td>\
+                ')
+            self.foreign_treaties.append('<td></td><td rowspan="2" style="font-size: 150%">' + self.calcR(treaties[z]) + '</td>\
+                <td style="font-size: 70%">sell</td><td style="font-size: 75%; text-align: center">' + self.calc_ds('p1_to_p2_lithium', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_silicon', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_titanium', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_fuel', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_stargate', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_passage', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_intel', treaties[z]) + '</td>\
+                <td rowspan="2"><i class="button fas fa-pencil-alt button_s" title="edit" onclick="post(\'foreign_minister\', \'?edit=' + z + '\')"></i></td>\
+                <td rowspan="2"><i class="button far fa-trash-alt button_s" title="revoke" onclick="post(\'foreign_minister\', \'?revoke=' + z + '\')"></i></td>\
+                ')
+            self.foreign_treaties.append('<td></td><td style="font-size: 75%">buy</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_lithium', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_silicon', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_titanium', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_fuel', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_stargate', p_treaties[z]) + '\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_passage', treaties[z]) + '</td>\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_intel', treaties[z]) + '</td>\
+                ')
+            if p_treaties[z]:
+                #print(self.calcR(p_treaties[z]))
+                #print(self.calc_ds('p1_to_p2_lithium', p_treaties[z]), self.calc_ds('p2_to_p1_lithium', p_treaties[z]))
+                #print(self.calc_ds('p1_to_p2_silicon', p_treaties[z]), self.calc_ds('p2_to_p1_silicon', p_treaties[z]))
+                #print(self.calc_ds('p1_to_p2_titanium', p_treaties[z]), self.calc_ds('p2_to_p1_titanium', p_treaties[z]))
+                #print(self.calc_ds('p1_to_p2_fuel', p_treaties[z]), self.calc_ds('p2_to_p1_fuel', p_treaties[z]))
+                #print(self.calc_ds('p1_to_p2_stargate', p_treaties[z]), self.calc_ds('p2_to_p1_stargate', p_treaties[z]))
+                #print(self.check(p_treaties[z].p1_to_p2_safe_passage))
+                #print(self.check(p_treaties[z].p2_to_p1_safe_passage))
+                #print(self.check(p_treaties[z].p1_shared_intel))
+                #print(self.check(p_treaties[z].p2_shared_intel))
+                #print(self.calc_c(p_treaties[z], 'a'))
+                #print(self.calc_c(p_treaties[z], 'r'))
+                self.foreign_treaties.append('<td></td><td rowspan="2" style="font-size: 150%">' + self.calcR(p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%">sell</td><td style="font-size: 75%; text-align: center">' + self.calc_ds('p1_to_p2_lithium', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_silicon', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_titanium', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_fuel', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_stargate', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_passage', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p1_to_p2_intel', p_treaties[z]) + '</td>\
+                    <td rowspan="2"><i class="button far fa-check-circle button_s"' + self.calc_c(p_treaties[z], 'a') + 'title="accept" onclick="post(\'foreign_minister\', \'?accept=' + z + '\')"></i></td>\
+                    <td rowspan="2"><i class="button far fa-times-circle button_s"' + self.calc_c(p_treaties[z], 'r') + 'title="reject" onclick="post(\'foreign_minister\', \'?reject=' + z + '\')"></i></td>\
+                    ')
+                self.foreign_treaties.append('<td></td><td style="font-size: 75%">buy</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_lithium', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_silicon', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_titanium', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_fuel', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_stargate', p_treaties[z]) + '\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_passage', p_treaties[z]) + '</td>\
+                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_intel', p_treaties[z]) + '</td>\
+                    ')
+        self.calc_r()
+        #print(self.player.treaties)
+        #print(self.__dict__)
+    
+    def check(self, boo):
+        r = ''
+        if boo:
+            r = 'checked'
+        return r
+    
+    def calc_c(self, t, c):
+        if c == 'a' and t.status == 'accepted':
+            return ' style="color: green"'
+        if c == 'r' and t.status == 'rejected':
+            return ' style="color: red"'
+        return ''
+    
+    def calcR(self, treaty):
+        t = '<i class="fas fa-meh"></i>'
+        if treaty.relation == 'neutral':
+            t = '<i class="fas fa-meh"></i>'
+        elif treaty.relation == 'team':
+            t = '<i class="fas fa-handshake"></i>'
+        elif treaty.relation == 'enemy':
+            t = '<i class="fas fa-skull-crossbones"></i>'
+        return t
+    
+    def calc_r(self):
+        if self.foreign_relation_is_neutral:
+            setattr(self, 'foreign_relation', 'neutral')
+        elif self.foreign_relation_is_team:
+            setattr(self, 'foreign_relation', 'team')
+        elif self.foreign_relation_is_enemy:
+            setattr(self, 'foreign_relation', 'enemy')
+        self.foreign_relation_is_neutral = False
+        self.foreign_relation_is_team = False
+        self.foreign_relation_is_enemy = False
+        setattr(self, 'foreign_relation_is_'+self.foreign_relation, True)
+    
+    def calc_ds(self, var, treaty):
         l = var.split('_')
         d = ''
         if not getattr(treaty, l[0]+'_is_selling_'+l[3]):
             d = '-'
         else:
-            d = getattr(treaty, 'cost_'+var)
-        setattr(self, 'foreign_d'+str(i)+'_cost_'+var, d)
+            d = '<i class="fa-bolt" title="Energy">' + str(getattr(treaty, 'cost_'+var)) + '</i>'
+        return d
 
+for key in Treaty.defaults:
+    __defaults['foreign_' + key] = Treaty.defaults[key]
 
 ForeignMinister.set_defaults(ForeignMinister, __defaults)

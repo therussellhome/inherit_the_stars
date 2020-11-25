@@ -147,6 +147,9 @@ function post(form, action = '') {
                 }
             } else if(element.matches('[type="checkbox"]')) {
                 json_post[key] = element.checked;
+            } else if(element.matches('[type="radio"]')) {
+                //console.log(element.checked);
+                json_post[key] = element.checked;
             } else {
                 json_post[key] = element.value;
             }
@@ -213,6 +216,8 @@ function parse_json(url, json) {
                         }
                     } else if(element.matches('[type="checkbox"]')) {
                         element.checked = json[key];
+                    } else if(element.matches('[type="radio"]')) {
+                        element.checked = json[key];
                     } else {
                         element.value = json[key];
                     }
@@ -256,7 +261,13 @@ function shutdown() {
 
 function edit_treaty(player) {
     player_name = player + '_name'
-    document.getElementById('show_treaty_with_') = document.getElementById(player_name)
+    document.getElementById('foreign_p2') = document.getElementById(player_name)
+}
+
+function declare_war() {
+    if(confirm('this will make them your enemy and will revoke your treaty.  Are you sure that you want to delcare war?')) {
+        post('foreign_minister', '?declare_war');
+    }
 }
 
 // Create a slider
