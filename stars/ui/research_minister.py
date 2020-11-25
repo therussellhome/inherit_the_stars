@@ -41,11 +41,11 @@ class ResearchMinister(PlayerUI):
         # Sort tech
         research_tech = []
         research_filter = {
-            'Weapons': ['Bomb', 'Missile', 'Beam'],
+            'Weapons': ['Bomb', 'Missile', 'Beam Weapon'],
             'Defense': ['Shield', 'Armor'], 
             'Electronics': ['Scanner', 'Cloak', 'ECM'],
             'Engines': ['Engine'], 
-            'Hulls & Mechanicals': ['Hull', 'Mechanical'], 
+            'Hulls & Mechanicals': ['Starbase', 'Hull', 'Mechanical'], 
             'Heavy Equipment': ['Orbital', 'Depot'], 
             'Planetary': ['Planetary'],
             'Other': []
