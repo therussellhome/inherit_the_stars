@@ -1,6 +1,6 @@
 {
     "name": "Auxiliary Antimatter Containment Tank",
-    "category": "Mech",
+    "category": "Mechanical",
     "description": "Fuel tank that holds half a million units; putting a few on your starbase means you can store extra fuel from year to year for refueling ships",
     "cost": {
         "titanium": 10,

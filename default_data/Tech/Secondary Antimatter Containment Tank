@@ -1,6 +1,6 @@
 {
     "name": "Secondary Antimatter Containment Tank",
-    "category": "Mech",
+    "category": "Mechanical",
     "description": "small low-tech fuel tank",
     "race_requirements": "-Forager",
     "cost": {

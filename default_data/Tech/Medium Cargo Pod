@@ -1,6 +1,6 @@
 {
     "name": "Medium Cargo Pod",
-    "category": "Mech",
+    "category": "Mechanical",
     "description": "adds 50kT to your ship's cargo capacity",
     "cost": {
         "titanium": 5,
