@@ -566,7 +566,7 @@ function tech_display() {
             div.getElementsByClassName('tech_sensor')[0].style.display = 'inline-table';
         }
         if(json_map['tech']['engine'].hasOwnProperty(component)) {
-            console.log(json_map['tech']['engine'].hosOwnProperty(component));
+            console.log(json_map['tech']['engine'].hasOwnProperty(component));
             chart_cnt++;
             div.getElementsByClassName('tech_engine')[0].style.display = 'inline-table';
         }
@@ -618,30 +618,6 @@ function tech_expand(div, expand_guts) {
     }
 }
 
-// Render the tech display page
-function tech_display_old() {
-    chart_cnt = 0;
-    if((json_map['tech']['armor'] != 0) || (json_map['tech']['shield'] != 0) || (json_map['tech']['ecm_chart_data'].length != 0) || (json_map['tech']['weapon_chart_data'].length != 0)) {
-        toggle(document.getElementById('combat'), 'hide', false);
-        weapon_chart();
-        chart_cnt++;
-    }
-    if((json_map['tech']['scanner_chart_data'][0] > 1) || (json_map['tech']['scanner_chart_data'][1] > 1) || (json_map['tech']['scanner_chart_data'][2] > 1) || (json_map['tech']['scanner_chart_data'][3] > 1)) {
-        toggle(document.getElementById('scanner'), 'hide', false);
-        scanner_chart();
-        chart_cnt++;
-    }
-    if(json_map['tech']['engine_chart_data'].length != 0) {
-        toggle(document.getElementById('engine'), 'hide', false);
-        engine_chart();
-        chart_cnt++;
-    }
-    chart_width = Math.min(275, 550 / chart_cnt - 20 * chart_cnt);
-    document.getElementById('weapon_chart').style.width = chart_width + 'px';
-    document.getElementById('scanner_chart').style.width = chart_width + 'px';
-    document.getElementById('engine_chart').style.width = chart_width + 'px';
-}
-
 // Create a chart for combat defense/weapon curves
 function combat_chart(chart, data) {
     labels = [];
@@ -656,7 +632,7 @@ function combat_chart(chart, data) {
         shield_data.push(data['shield'][i]);
         ecm_data.push(data['ecm'][i]);
     }
-    charts['weapon_chart'] = new Chart(chart, {
+    var jschart = new Chart(chart, {
         type: 'line',
         data: { 
             labels: labels,
@@ -731,143 +707,119 @@ function combat_chart(chart, data) {
             }
         }
     });
-//    charts['weapon_chart'].update('resize');
 }
 
-// Create a chart for scanner curve
-function scanner_chart() {
-    chart = document.getElementById('scanner_chart');
-    if(chart.offsetParent === null) {
-        return;
-    }
-    if(!charts.hasOwnProperty('scanner_chart')) {
-        labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
-        data = [0, 0, 0, 0];
-        charts['scanner_chart'] = new Chart(chart, {
-            type: 'polarArea',
-            data: { 
-                labels: labels,
-                datasets: [
-                    { 
-                        backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
-                        data: data
-                    }
-                ]
-            },
-            options: { 
-                legend: {display: false},
-                tooltips: {
-                    mode: 'dataset',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                },
-                scales: { 
-                    r: {
-                        gridLines: {display: false},
-                        ticks: {backdropColor: '#000000ff'}
-                    }
-                }
-            }
-        });
-    }
-    json_data = json_map['tech']['scanner_chart_data'];
-    scanner_data = [];
-    max = 0;
-    for(var i=0; i < json_data.length; i++) {
-        scanner_data.push(json_data[i]);
-        if(json_data[i] > max) {
-            max = json_data[i];
+// Create a chart for sensor curve
+function sensor_chart(chart, data) {
+    var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
+    var sensor_data = [];
+    var max = 0;
+    for(var i=0; i < data.length; i++) {
+        sensor_data.push(data[i]);
+        if(data[i] > max) {
+            max = data[i];
         }
     }
-    charts['scanner_chart'].data.datasets[0].data = scanner_data;
-    charts['scanner_chart'].options.scales.r.max = max;
-    charts['scanner_chart'].update('resize');
+    var jschart = new Chart(chart, {
+        type: 'polarArea',
+        data: { 
+            labels: labels,
+            datasets: [
+                { 
+                    backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
+                    data: sensor_data
+                }
+            ]
+        },
+        options: { 
+            legend: {display: false},
+            tooltips: {
+                mode: 'dataset',
+                intersect: false,
+                position: 'nearest',
+                titleFontSize: 10,
+                bodyFontSize: 10,
+            },
+            scales: { 
+                r: {
+                    gridLines: {display: false},
+                    ticks: {backdropColor: '#000000ff'},
+                    max: max
+                }
+            }
+        }
+    });
 }
 
 // Create a chart for engine curve
-function engine_chart() {
-    chart = document.getElementById('engine_chart');
-    if(chart.offsetParent === null) {
-        return;
-    }
-    if(!charts.hasOwnProperty('engine_chart')) {
-        labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-        data = [];
-        for(var i=1; i <= 10; i++) {
-            data.push(100);
-        }
-        charts['engine_chart'] = new Chart(chart, {
-            type: 'line',
-            data: { 
-                labels: labels,
-                datasets: [
-                    { 
-                        label: ' ₥ / ly',
-                        borderColor: 'white',
-                        backgroundColor: 'white',
-                        fill: false,
-                        data: data
-                    },
-                    { 
-                        label: ' siphon',
-                        borderColor: 'blue',
-                        backgroundColor: 'blue',
-                        fill: false,
-                        data: data
-                    },
-                    { 
-                        label: 'Max Safe',
-                        borderColor: '#ff000000',
-                        backgroundColor: '#ff000088',
-                        fill: 'end',
-                        data: data
-                    }
-                ]
-            },
-            options: { 
-                legend: {display: false},
-                elements: {point: {radius: 1}},
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                    filter: function(tooltipItem, data) {
-                        if(tooltipItem.datasetIndex == 2) {
-                            return false;
-                        }
-                        return true;
-                    },
-                    callbacks: {
-                        title: function(tooltipItems, data) {
-                            return 'Hyper ' + tooltipItems[0].label;
-                        }
-                    }
-                },
-                scales: { 
-                    x: {
-                        gridLines: {color: 'gray'}
-                    },
-                    y: {
-                        gridLines: {display: false},
-                        max: 120
-                    }
-                }
-            }
-        });
-    }
-    json_data = json_map['tech']['engine_chart_data'];
-    siphon = json_map['tech']['engine_siphon'];
+function engine_chart(chart, data) {
+    labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
     engine_data = [];
     siphon_data = [];
-    for(var i=0; i < json_data.length; i++) {
-        engine_data.push(json_data[i]);
-        siphon_data.push(siphon);
+    safe_data = [];
+    for(var i=0; i < 10; i++) {
+        engine_data.push(data['tachometer'][i]);
+        siphon_data.push(data['siphon'][i]);
+        safe_data.push(100);
     }
-    charts['engine_chart'].data.datasets[0].data = engine_data;
-    charts['engine_chart'].data.datasets[1].data = siphon_data;
-    charts['engine_chart'].update('resize');
+    var jschart = new Chart(chart, {
+        type: 'line',
+        data: { 
+            labels: labels,
+            datasets: [
+                { 
+                    label: ' ₥ / kT / ly',
+                    borderColor: 'white',
+                    backgroundColor: 'white',
+                    fill: false,
+                    data: engine_data
+                },
+                { 
+                    label: ' siphon %',
+                    borderColor: 'blue',
+                    backgroundColor: 'blue',
+                    fill: false,
+                    data: siphon_data
+                },
+                { 
+                    label: 'Max Safe',
+                    borderColor: '#ff000000',
+                    backgroundColor: '#ff000088',
+                    fill: 'end',
+                    data: safe_data
+                }
+            ]
+        },
+        options: { 
+            legend: {display: false},
+            elements: {point: {radius: 1}},
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                position: 'nearest',
+                titleFontSize: 10,
+                bodyFontSize: 10,
+                filter: function(tooltipItem, data) {
+                    if(tooltipItem.datasetIndex == 2) {
+                        return false;
+                    }
+                    return true;
+                },
+                callbacks: {
+                    title: function(tooltipItems, data) {
+                        return 'Hyper ' + tooltipItems[0].label;
+                    }
+                }
+            },
+            scales: { 
+                x: {
+                    gridLines: {color: 'gray'}
+                },
+                y: {
+                    gridLines: {display: false},
+                    max: 120
+                }
+            }
+        }
+    });
 }

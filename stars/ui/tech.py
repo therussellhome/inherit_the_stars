@@ -105,12 +105,23 @@ class Tech(PlayerUI):
     """ Build the engine chart """
     def _build_engine(self, tech):
         if len(tech.engines) > 0:
-            self.engine[tech.name] = []
-            mass_per_engine = (tech.mass + tech.cargo_max) / len(tech.engines)
+            self.engine[tech.name] = {'tachometer': [], 'siphon': []}
+            mass_per_engine = 100
+            if tech.category != 'Engine':
+                mass_per_engine = (tech.mass + tech.cargo_max) / len(tech.engines)
             for i in range(0, 10):
-                self.engine[tech.name].append(0)
+                fuel_per_ly = 0
+                siphon = 0
                 for engine in tech.engines:
-                    self.engine[tech.name][i] += engine.tachometer(i, mass_per_engine, 0)
+                    fuel_per_ly += engine.tachometer(i + 1, mass_per_engine, 0) * mass_per_engine
+                    siphon += engine.antimatter_siphon
+                self.engine[tech.name]['tachometer'].append(fuel_per_ly / mass_per_engine)
+                if siphon == 0:
+                    self.engine[tech.name]['siphon'].append(0)
+                elif fuel_per_ly == 0:
+                    self.engine[tech.name]['siphon'].append(100)
+                else:
+                    self.engine[tech.name]['siphon'].append(round(min(100, siphon / fuel_per_ly * 100), 0))
 
     """ Build guts table """
     def _build_guts(self, tech):
