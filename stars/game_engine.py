@@ -22,6 +22,8 @@ def register(obj):
     global __registry_block
     if not __registry_block:
         __registry.append(obj)
+    else:
+        print('registration blocked', obj)
 
 
 """ Unregister objects to keep them from being part of the save game """
@@ -100,18 +102,21 @@ def load_list(save_type):
 def load_inspect(save_type, name):
     global __registry_block 
     file_name = __game_dir / save_type / name
+    obj = None
+    __registry_block = True
     with open(file_name, 'r') as f:
         obj = from_json(f.read(), str(file_name))
-        return obj
     __registry_block = False
+    return obj
 
 
 """ Load from file, object self registration is assumed """
 def load(save_type, name):
     file_name = __game_dir / save_type / name
+    obj = None
     with open(file_name, 'r') as f:
         obj = from_json(f.read(), str(file_name))
-        return obj
+    return obj
 
 
 """ Load tech from loose files """

@@ -3,6 +3,9 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'generate_game': [''],
+    'options_generate_game': [[]],
+    'generate_status': [[]],
 }
 
 

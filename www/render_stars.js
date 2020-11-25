@@ -70,6 +70,7 @@ function onSubmit() {
         if(json_map['render_stars'].hasOwnProperty('suns')) {
             if(json_map['render_stars']['suns'].length > 0) {
                 // load materials
+                var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" )
                 var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" )
                 var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" )
                 var suns = json_map['render_stars']['suns'];
@@ -82,7 +83,7 @@ function onSubmit() {
                     var material = new THREE.PointsMaterial( { 
                         color: new THREE.Color(suns[i].color),
                         map: texture_sun,
-                        alphaMap: texture_sun,
+                        alphaMap: alpha_map,
                         size: (suns[i].size + 200) * TERAMETER / 1000,
                         sizeAttenuation: true,
                         transparent: true,
@@ -101,7 +102,7 @@ function onSubmit() {
                         var material = new THREE.PointsMaterial( { 
                             color: new THREE.Color(planet_colors[j]),
                             map: texture_planet,
-                            alphaMap: texture_planet,
+                            alphaMap: alpha_map,
                             size: (Math.random() * 100 + 200) * TERAMETER / 10000,
                             sizeAttenuation: true,
                             transparent: true,
