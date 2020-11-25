@@ -41,7 +41,6 @@ class RaceEditor(Defaults):
                 print("INVALID RACE")
             else:
                 game_engine.save('races', race.name, race)
-
     
 for key in Race.defaults:
     __defaults['race_editor_' + key] = Race.defaults[key]
