@@ -6,8 +6,7 @@ from sys import maxsize
 """ Default values (default, min, max)  """
 __defaults = {
     'foreign_treaties': [[]],
-    'foreign_relation': ['neutral'],
-    'foreign_relation_is_neutral': [False],
+    'foreign_relation_is_neutral': [True],
     'foreign_relation_is_team': [False],
     'foreign_relation_is_enemy': [False],
 }
@@ -20,13 +19,24 @@ class ForeignMinister(PlayerUI):
         if not self.player:
             return
         self.calc_r()
+        team_true = ['stargate', 'passage', 'intel']
+        enemy_false = ['titanium', 'silicon', 'lithium', 'fuel', 'stargate', 'passage', 'intel']
+        p = ['foreign_p1_is_selling_', 'foreign_p2_is_selling_']
+        if self.foreign_relation_is_team:
+            for m in p:
+                for v in team_true:
+                    setattr(self, m+v, True)
+        if self.foreign_relation_is_enemy:
+            for m in p:
+                for x in enemy_false:
+                    setattr(self, m+x, False)
         #print(self.foreign_cost_p1_to_p2_lithium)
         #print(self.__dict__)
         #print(self.player.treaties)
         try:
             self.player.treaties['p2'].p2
         except:
-            self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_to_p1_safe_passage=True, p2_shared_intel=True)
+            self.player.treaties['p2']=Treaty(p1=self.player.name, p2='p2', p2_is_selling_titanium=True, p2_is_selling_silicon=True, p2_is_selling_lithium=True, p2_is_selling_fuel=True, p2_is_selling_stargate=True, p2_is_selling_passage=True, p2_is_selling_intel=True)
             self.player.pending_treaties['p2']=self.player.treaties['p2']
         #print('Hello everybody i\'m p2')
         if action.startswith('edit='):
@@ -53,9 +63,11 @@ class ForeignMinister(PlayerUI):
             self.player.pending_treaties[self.foreign_p2] = treety
         #print(self.player.treaties)
         if action == 'revert':
-            #self.reset_to_default()
-            for key in self.player.pending_treaties[self.foreign_p2].__dict__:
-                setattr(self, 'foreign_'+key, self.player.pending_treaties[self.foreign_p2].__dict__[key])
+            t = self.player.pending_treaties[self.foreign_p2]
+            if t.status == 'rejected':
+                t = self.player.treaties[self.foreign_p2]
+            for key in t.__dict__:
+                setattr(self, 'foreign_'+key, t.__dict__[key])
                 self.foreign_relation_is_neutral = False
                 self.foreign_relation_is_team = False
                 self.foreign_relation_is_enemy = False
@@ -92,7 +104,7 @@ class ForeignMinister(PlayerUI):
                 <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_silicon', treaties[z]) + '</td>\
                 <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_titanium', treaties[z]) + '</td>\
                 <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_fuel', treaties[z]) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_stargate', p_treaties[z]) + '\
+                <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_stargate', treaties[z]) + '\
                 <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_passage', treaties[z]) + '</td>\
                 <td style="font-size: 70%; text-align: center">' + self.calc_ds('p2_to_p1_intel', treaties[z]) + '</td>\
                 ')
