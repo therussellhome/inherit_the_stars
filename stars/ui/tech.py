@@ -143,7 +143,8 @@ class Tech(PlayerUI):
         # Heavy Equipment group
         self._filter(tech, tech.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0} / y</i>')
         # Planetary group
-        self._filter(tech, tech.energy_output, 'Planetary', 'Energy output', '<i class="fa-bolt">{0} / y</i>')
+        #TODO - differeniate between factories and power plants
+        self._filter(tech, tech.facility_output, 'Planetary', 'Energy output', '<i class="fa-bolt">{0} / y</i>')
 
     """ Filter for appending to guts table """
     def _filter(self, tech, value, category, name, formatter=None):

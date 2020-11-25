@@ -8,26 +8,8 @@
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
-<script src="three.js"></script>
 <!-- 3d UI -->
-<script type="x-shader/x-vertex" id="vertexshader">
-attribute float size;
-attribute vec4 color;
-varying vec4 vColor;
-void main() {
-    vColor = color;
-	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-	gl_PointSize = size / -mvPosition.z;
-	gl_Position = projectionMatrix * mvPosition;
-}
-</script>
-<script type="x-shader/x-fragment" id="fragmentshader">
-varying vec4 vColor;
-void main() {
-    gl_FragColor = vec4( vColor );
-}
-</script>
-<script src="render_stars.js"></script>
+<script type="module" src="render_stars.js"></script>
 <!--  -->
 <link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
@@ -39,6 +21,7 @@ void main() {
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
     <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
     <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_host" title="Generate" src="/generate.gif" onclick="show_screen('host')"/></td></tr>
     <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
     <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
     <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
@@ -537,7 +520,7 @@ void main() {
 <!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
 
 
-<div class="hide onsubmit_render_stars onload" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()" onload="post('render_stars')">
+<div class="hide onsubmit_render_stars onload" id="play_mode" tabindex="0" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black" onload="post('render_stars')">
 </div>
 
 
@@ -609,51 +592,14 @@ void main() {
     </table>
     <table class="hfill" id="research_queue">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-    </table>    
-    <!--
-    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
-    <table class='onsubmit_research' onsubmit='research_(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Electronics</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+<!--
+		<tr><td>Default Research Field</td><td class="hfill"><select id="research_default_field" onchange="post('research_minister')" /></td></tr>
+-->
     </table>
-    <table class='onsubmit_research' onsubmit='research_defense(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_defense"/>+ Defense</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_depot(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_depot"/>+ Depot</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_engines(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_engines"/>+ Engines</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_hulls(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_hulls "/>+ Hulls</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_mech(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_mech"/>+ Mechanical</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_orbital(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_orbital"/>+ Orbital</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_planetary(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_planetary"/>+ Planetary</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_scanners(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_scanners"/>+ Scanners</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    -->
-    <table id="research_weapons" class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
+    <table class="hfill" id="research_tech">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
     </table>
 </div>
-
 
 <div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
     <table class="topbar hfill"><tr>

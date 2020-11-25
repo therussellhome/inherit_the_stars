@@ -12,17 +12,19 @@ from .fleet import Fleet
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'seen_players': [[]],
+    'game_name': [''], # name of game for when generating
+    'game_key': [''], # used to validate the player file
     'date': [0.0, 0.0, sys.maxsize],
-    'load_key': [''], # used to validate the player file
     'race': [Race()],
+    'seen_players': [[]],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
     'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
     'score': [Score()],
-    'tech_level': [TechLevel()],
-    'research_partial': [TechLevel()],
-    'research_queue': [[]], # modifiable by the player
+    'tech_level': [TechLevel()], # current tech levels
+    'research_partial': [TechLevel()], # energy spent toward next level
+    'research_queue': [[]], # queue of tech items to research
+    'research_field': [''], # next field to research (or 'lowest')
     'energy': [0, 0, sys.maxsize],
     'energy_minister': [EnergyMinister()],
     'fleets': [[]],
@@ -37,10 +39,9 @@ class Player(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'name' not in kwargs:
-            if 'race' in kwargs:
-                self.name = self.race.name
-            else:
-                self.name = 'Player ' + str(id(self))
+            self.name = self.race.name
+        if 'date' not in kwargs:
+            self.date = self.race.start_date
         game_engine.register(self)
     
     """ calles fleets to do actions """
@@ -117,9 +118,8 @@ class Player(Defaults):
     def get_budget(self):
         self.energy_minister.allocate_budget(self.energy)
     
-    """ Build/research/other economic funcitions """
-    # All non-ship / non-intel parts of take turn
-    def manage_economy(self):
+    """ Spend energy - consruction, baryogenesis, mat trans, research """
+    def generate_turn(self):
         # Collect up last years unused resources before planets generate resources
         self.energy = self.energy_minister.construction_budget 
         self.energy += self.energy_minister.mattrans_budget
@@ -131,13 +131,12 @@ class Player(Defaults):
             if planet.player.eq(self):
                 planets.append(planet)
         planets.sort(key=lambda x: x.on_planet.people)
-        # Population growth, recalculate planet value
+        # Population growth & facilities
         for planet in planets:
-            planet.planet_value = planet.calc_planet_value(self.race)
             planet.have_babies()
-        # Generate resources
-        for planet in planets:
-            planet.generate_resources()
+            self.energy += planet.generate_energy()
+            planet.mine_minerals()
+            planet.calc_production()
         # Allocated energy
         self.get_budget()
         # Existing build queue

@@ -26,13 +26,19 @@ __defaults = {
     'temperature': [50, -50, 150],
     'radiation': [50, -50, 150],
     'gravity': [50, -50, 150],
-    'facilities': [{'Power': Facility(), 'Factory': Facility(), 'Mine': Facility(), 'Defense': Facility(), 'Scanner': Facility()}],
+    'facilities': [{
+        'power_plants': Facility('Power'),
+        'factories': Facility('Factory'),
+        'mines': Facility('Mine'),
+        'defenses': Facility('Defense'),
+        'scanner': Facility('Scanner'),
+        'mat_trans': Facility('MatTrans'),
+    }],
     'remaining_minerals': [Minerals()],
     'on_surface': [Cargo()],
-    'player': [Reference()],
+    'player': [Reference('Player')],
     'minister': [''],
     'location': [Location()],
-    'planet_value': [0, -100, 100],
     'star_system': [Reference()],
     'factory_capacity': [0, 0, sys.maxsize]
 }
@@ -40,7 +46,7 @@ __defaults = {
 
 """ Planets are colonizable by only one player, have minerals, etc """
 class Planet(Defaults):
-    
+
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -68,20 +74,16 @@ class Planet(Defaults):
             self.age = randint(0, 3000)
         game_engine.register(self)
 
-    """ Check if the planet is colonized """
-    def is_colonized(self):
-        return self.player.is_valid
-
     """ Get the planets color """
     # return it in a hexdecimal string so the webpage can use it
     def get_color(self):
         t = (min(100, max(0, self.temperature)) / 100) * .75
         r = .5 + (min(100, max(0, self.radiation)) * .005)
         color = hls_to_rgb(t, .5, r)
-        color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X') 
+        color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X')
         return color_string
-    
-    """ Code the planet orbiting its star """        
+
+    """ Code the planet orbiting its star """
     # t = years it takes planet to orbit, min 1 year, max 30 years
     # m = the sun's gravity clicks
     # r = the distance from the sun
@@ -97,76 +99,134 @@ class Planet(Defaults):
         r = self.distance
         m = max(self.sun_gravity, 1)
         t = max(1, (((r ** 3)/m) ** .5) * (30/.85))
-        angle = date * (360/(100 * t)) 
+        angle = date * (360/(100 * t))
         self.y = r * sin(angle)
         self.x = r * cos(angle)
         #"""
 
+    """ Check if the planet is colonized """
+    def is_colonized(self):
+        return self.player.is_valid
+
     """ Colonize the planet """
-    # player is a Reference to Player
+    # player is a Player object (reference created internally)
     # because minister names can change, minister is a string
     def colonize(self, player, minister):
-        self.player = player
+        if self.is_colonized():
+            return False
+        # only Pa'anuri are allowed to colonize suns
+        elif player.race.primary_race_trait == 'Pa\'anuri':
+            if self.__class__.__name__ != 'Sun':
+                return False
+        else:
+            if self.__class__.__name__ == 'Sun':
+                return False
+        self.player = Reference(player)
         self.minister = minister
-        self.facilities['Power'].colonize(player)
-        self.facilities['Factory'].colonize(player)
-        self.facilities['Mine'].colonize(player)
-    
+        for facility_type in self.facilities:
+            self.facilities[facility_type].colonize(player)
+        return True
+
+    """ Calculate the planet's value for the current player (-100 to 100)
+    where
+    Hab%=SQRT[(1-g)^2+(1-t)^2+(1-r)^2]*(1-x)*(1-y)*(1-z)/SQRT[3]
+    g, t, and r are planet_clicks_from_race_center/race_clicks_from_race_center_to_race_edge
+    x=g-1/2 for g>1/2 | x=0 for g<1/2
+    y=t-1/2 for t>1/2 | y=0 for t<1/2
+    z=r-1/2 for r>1/2 | z=0 for r<1/2
+    negative planet value is calculated using the same equasion
+    with g, t, and r = 0 if < 1 | g, t, r = value - 1
+    and 100 subtracted from the result
+    """
+    def habitability(self, race):
+        g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop)
+        t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop)
+        r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop)
+        negative_offset = 0
+        if t > 1.0 or r > 1.0 or g > 1.0:
+            negative_offset = -100.0
+            g = max(0.0, g - 1.0)
+            t = max(0.0, t - 1.0)
+            r = max(0.0, r - 1.0)
+        x = max(0.0, g - 0.5)
+        y = max(0.0, t - 0.5)
+        z = max(0.0, r - 0.5)
+        return round(100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset)
+
+    """ Calculate the distance from the center of the habital range to the planet's attribute
+    if inside habitable range return (0..1)
+    if outside habitable range return (1..2) bounding at 2
+    """
+    def _calc_range_from_center(self, planet, race_start, race_stop):
+        race_radius = float(race_stop - race_start) / 2.0
+        if race_radius == 0 and planet == race_start:
+            return 0.0
+        elif race_radius == 0:
+            return 2.0
+        else:
+            return min([2.0, abs((race_start + race_radius) - planet) / abs(race_radius)])
+
+    """ Calculate growth rate """
+    def growth_rate(self, race):
+        return race.growth_rate * self.habitability(race) / 100.0
+
+    """ Calculate planet's max population """
+    def maxpop(self, race):
+        return int(200000000.0 / race.body_mass * (6.0 * self.gravity / 100.0 + 1.0))
+
     """ Grow the current population """
     def have_babies(self):
         # all population calculations are done using people but stored using kT (1000/kT)
-        if not self.player.is_valid:
-            return
-        pop = self.on_surface.people * 1000
-        planet_value = self.calc_planet_value(self.player.race)
-        rate = self.player.race.growth_rate / 100.0 * planet_value / 100.0
-        maxpop = self.player.race.population_max
-        pop = pop + (pop * rate) - (pop * pop / maxpop * rate)
-        self.on_surface.people = int(round(pop, -3)/1000)
-    
+        pop = self.on_surface.people * self.player.race.pop_per_kt()
+        # adjust rate for planet habitability and turn hundreth
+        rate = self.growth_rate(self.player.race) / 100.0 / 100.0
+        # adjust maxpop for size of the world
+        pop = pop + (pop * rate) - (pop * pop / self.maxpop(self.player.race) * rate)
+        # population is in whole people but stored in kT
+        self.on_surface.people = round(pop) / self.player.race.pop_per_kt()
+        return self.on_surface.people
+
+    """ how many facilities can be operated """
+    def __operate(self, facility_type):
+        race_traits = {
+            'defenses': self.player.race.defenses_per_10k_colonists,
+            'power_plants': self.player.race.power_plants_per_10k_colonists,
+            'mines': self.player.race.mines_per_10k_colonists,
+            'factories': self.player.race.factories_per_10k_colonists,
+        }
+        facility = self.facilities[facility_type]
+        allocation = getattr(self.player.get_minister(self.name), facility_type)
+        workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
+        return min(facility.quantity, race_traits[facility_type] * workers / 10000)
+
     """ Incoming! """
     def raise_shields(self):
-        if self.player.is_valid:
-            facility = self.facilities['Defense']
-            workers = self.player.get_minister(self.name).defenses / 100 * self.on_surface.people * 1000
-            colonists_to_operate_facility = self.player.race.colonists_to_operate_defense
-            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            return operate * facility.tech.shield
-    
+        return self.__operate('defenses') * self.facilities['defenses'].tech.shield
+
     """ power plants make energy """
     def generate_energy(self):
-        if self.player.is_valid:
-            facility = self.facilities['Power']
-            workers = self.player.get_minister(self.name).power_plants / 100 * self.on_surface.people * 1000
-            colonists_to_operate_facility = self.player.race.colonists_to_operate_power_plant
-            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            self.player.energy += operate * facility.tech.energy_output / 100
-    
+        plants = self.__operate('power_plants') * self.facilities['power_plants'].tech.facility_output / 100
+        pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
+        return plants + pop
+
+    """ mines mine the minerals """
+    def mine_minerals(self):
+        factor = self.facilities['mines'].tech.mineral_depletion_factor
+        operate = self.__operate('mines')
+        print(operate)
+        for mineral in ['silicon', 'titanium', 'lithium']:
+            availability = self.mineral_availability(mineral)
+            setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * availability))
+            setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * availability * factor))
+
+    """ Availability of the mineral type """
+    def mineral_availability(self, mineral):
+        return (((getattr(self.remaining_minerals, mineral, 0) / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+
     """ calculates max production capasity """
     def calc_production(self):
-        if self.player.is_valid:
-            facility = self.facilities['Factory']
-            workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
-            colonists_to_operate_facility = self.player.race.colonists_to_operate_factory
-            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            self.factory_capacity = (operate + 1) * facility.tech.factory_capacity
-    
-    """ mines mine the minerals """
-    def _mine_minerals(self):
-        if self.player.is_valid:
-            facility = self.facilities['Mine']
-            workers = self.player.get_minister(self.name).factories / 100 * self.on_surface.people * 1000
-            colonists_to_operate_facility = self.player.race.colonists_to_operate_mine
-            operate = min(facility.quantity, (workers / colonists_to_operate_facility))
-            print(operate)
-            for mineral in ['silicon', 'titanium', 'lithium']:
-                setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * self.get_availability(mineral)))
-                setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * self.get_availability(mineral) * facility.tech.mineral_depletion_factor))
+        self.factory_capacity = (self.__operate('factories') + 1) * self.facilities['factories'].tech.facility_output / 100
 
-    def get_availability(self, mineral):
-        if mineral in ['titanium', 'silicon', 'lithium']:
-            return (((getattr(self.remaining_minerals, mineral) / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
-    
     """ minister checks to see if you need to build more facilities """
     def auto_build(self):
         if not self.player.is_valid:
@@ -199,7 +259,7 @@ class Planet(Defaults):
                     lest = i
             self.facilities[check[lest][1]].build_prep()
             return self.facilities[check[lest][1]]#Reference()#?
-    
+
     """ checks for upgrades """
     """
     def auto_upgrade(self):
@@ -212,7 +272,7 @@ class Planet(Defaults):
                 return facility
         return None
     #"""
-    
+
     """ build stuff in build queue """
     def do_construction(self, auto_build=False, allow_baryogenesis=False):
         if not self.player.is_valid:
@@ -237,7 +297,7 @@ class Planet(Defaults):
                 # use baryogenesis to unblock the queue
                 if self.production > 0 and minister.baryogenesis and allow_baryogenesis:
                     for mineral in ['titanium', 'lithium', 'silicon']:
-                        max_baryogenesis = self.player.energy_minister.check_budget('baryogenesis') / self.player.race.cost_of_baryogenesis 
+                        max_baryogenesis = self.player.energy_minister.check_budget('baryogenesis') / self.player.race.cost_of_baryogenesis
                         spend = min([int(self.production / 2), getattr(item.cost_incomplete, mineral), max_baryogenesis])
                         self.production -= spend * 2
                         setattr(item.cost_incomplete, mineral, getattr(item.cost_incomplete, mineral) - spend)
@@ -247,45 +307,7 @@ class Planet(Defaults):
                 #TODO do something with the item
             if len(self.build_queue) == 0 and auto_build:
                 self.build_queue.extend(self.auto_build())
-        
-        
-    """ Calculate the distance from the center of the habital range to the planet's attribute
-    if inside habitable range return (0..1)
-    if outside habitable range return (1..2) bounding at 2
-    """
-    def _calc_range_from_center(self, planet, race_start, race_stop):
-        race_radius = float(race_stop - race_start) / 2.0
-        if race_radius == 0 and planet == race_start:
-            return 0.0
-        elif race_radius == 0:
-            return 2.0
-        else:
-            return min([2.0, abs((race_start + race_radius) - planet) / abs(race_radius)])
 
-    """ Calculate the planet's value for the current player (-100 to 100)
-    where
-    Hab%=SQRT[(1-g)^2+(1-t)^2+(1-r)^2]*(1-x)*(1-y)*(1-z)/SQRT[3]
-    g, t, and r are planet_clicks_from_race_center/race_clicks_from_race_center_to_race_edge
-    x=g-1/2 for g>1/2 | x=0 for g<1/2
-    y=t-1/2 for t>1/2 | y=0 for t<1/2
-    z=r-1/2 for r>1/2 | z=0 for r<1/2
-    negative planet value is calculated using the same equasion
-    with g, t, and r = 0 if < 1 | g, t, r = value - 1
-    and 100 subtracted from the result
-    """
-    def calc_planet_value(self, race):
-        g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop)
-        t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop)
-        r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop)
-        negative_offset = 0
-        if t > 1.0 or r > 1.0 or g > 1.0:
-            negative_offset = -100.0
-            g = max(0.0, g - 1.0)
-            t = max(0.0, t - 1.0)
-            r = max(0.0, r - 1.0)
-        x = max(0.0, g - 0.5)
-        y = max(0.0, t - 0.5)
-        z = max(0.0, r - 0.5)
-        return round(100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset)
+
 
 Planet.set_defaults(Planet, __defaults)

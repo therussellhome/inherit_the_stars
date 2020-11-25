@@ -118,11 +118,11 @@ function show_home() {
 function launch_player(token) {
     if(token.value != '') {
         game_mode = 'play';
-        post('render_stars');
         toggle(document.getElementById('sidebar_host'), 'hide', true);
         toggle(document.getElementById('sidebar_play'), 'hide', false);
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
+        post('render_stars');
     }
 }
 
@@ -245,16 +245,6 @@ function host_generate() {
     alert('TODO');
 }
 
-// Render the stars, planets, etc
-function render_stars() {
-    if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('suns')) {
-            if(json_map['render_stars']['suns'].length > 0) {
-                draw_stars();
-            }
-        }
-    }
-}
 
 // Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
 function play_generate() {

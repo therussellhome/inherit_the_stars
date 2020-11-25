@@ -10,18 +10,19 @@ from .reference import Reference
 class Location(game_engine.BaseClass):
     """ Initialize the location """
     def __init__(self, **kwargs):
-        self.x = kwargs.get('x', 0.0)
-        self.y = kwargs.get('y', 0.0)
-        self.z = kwargs.get('z', 0.0)
+        self_dict = object.__getattribute__(self, '__dict__')
+        self_dict['x'] = kwargs.get('x', 0.0)
+        self_dict['y'] = kwargs.get('y', 0.0)
+        self_dict['z'] = kwargs.get('z', 0.0)
         if 'reference' in kwargs:
-            self.reference = kwargs['reference']
+            self_dict['reference'] = kwargs['reference']
             if 'offset' in kwargs:
                 offset = kwargs.get('offset', 0.0)
                 lat = kwargs.get('lat', random() * 180 - 90)
                 lon = kwargs.get('lon', random() * 360 - 180)
-                self.x = round(cos(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
-                self.y = round(sin(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
-                self.z = round(sin(lon * pi / 180) * offset, 5)
+                self_dict['x'] = round(cos(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
+                self_dict['y'] = round(sin(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
+                self_dict['z'] = round(sin(lon * pi / 180) * offset, 5)
 
     
     def polar_offset(dis, lat, lon):
