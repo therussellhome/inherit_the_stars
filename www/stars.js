@@ -118,11 +118,11 @@ function show_home() {
 function launch_player(token) {
     if(token.value != '') {
         game_mode = 'play';
-        post('render_stars');
         toggle(document.getElementById('sidebar_host'), 'hide', true);
         toggle(document.getElementById('sidebar_play'), 'hide', false);
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
+        post('render_stars');
     }
 }
 
@@ -146,6 +146,9 @@ function post(form, action = '') {
                     json_post[key] = parseFloat(value);
                 }
             } else if(element.matches('[type="checkbox"]')) {
+                json_post[key] = element.checked;
+            } else if(element.matches('[type="radio"]')) {
+                //console.log(element.checked);
                 json_post[key] = element.checked;
             } else {
                 json_post[key] = element.value;
@@ -213,6 +216,8 @@ function parse_json(url, json) {
                         }
                     } else if(element.matches('[type="checkbox"]')) {
                         element.checked = json[key];
+                    } else if(element.matches('[type="radio"]')) {
+                        element.checked = json[key];
                     } else {
                         element.value = json[key];
                     }
@@ -240,16 +245,6 @@ function host_generate() {
     alert('TODO');
 }
 
-// Render the stars, planets, etc
-function render_stars() {
-    if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('suns')) {
-            if(json_map['render_stars']['suns'].length > 0) {
-                draw_stars();
-            }
-        }
-    }
-}
 
 // Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
 function play_generate() {
@@ -266,7 +261,13 @@ function shutdown() {
 
 function edit_treaty(player) {
     player_name = player + '_name'
-    document.getElementById('show_treaty_with_') = document.getElementById(player_name)
+    document.getElementById('foreign_p2') = document.getElementById(player_name)
+}
+
+function declare_war() {
+    if(confirm('this will make them your enemy and will revoke your treaty.  Are you sure that you want to delcare war?')) {
+        post('foreign_minister', '?declare_war');
+    }
 }
 
 // Create a slider
