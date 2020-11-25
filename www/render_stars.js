@@ -133,10 +133,10 @@ function onWheel(event) {
     var distance = camera_flyto.distanceTo(selected.position);
     // zoom out
     if(event.deltaY > 0) {
-        offset.setLength(distance * 1.2);
+        offset.setLength(distance + Math.min(distance * 0.5, 50));
     // zoom in
     } else {
-        offset.setLength(Math.max(distance / 1.2, TERAMETER / 10));
+        offset.setLength(Math.max(distance / 1.5, TERAMETER / 10));
     }
     camera_flyto = selected.position.clone().add(offset);
     window.requestAnimationFrame(render);
@@ -147,21 +147,15 @@ function onKeyPress(event) {
     console.log(event.keyCode);
     // up
     if(event.keyCode == 38) {
-        camera_offset.phi += 0.01;
     // down
     } else if(event.keyCode == 40) {
-        camera_offset.phi -= 0.01;
     // left
     } else if(event.keyCode == 37) {
-        camera_offset.theta -= 0.01;
     // right
     } else if(event.keyCode == 39) {
-        camera_offset.theta += 0.01;
     // reset
     } else if(event.key == "r") {
-        camera_offset.radius = TERAMETER * 2;
-        camera_offset.phi = Math.PI / 2;
-        camera_offset.theta = Math.PI;
+        select_object(selected, true);
     }
     window.requestAnimationFrame(render);
 }
@@ -196,7 +190,7 @@ function onClick(event) {
         intersects = raycaster.intersectObjects(systems.children, true);
         console.log(intersects.length);
         if(intersects.length > 0) {
-            select_object(intersects[0].object.parent.children[0], false);
+            select_object(intersects[0].object.parent.children[0], event.shiftKey);
         }
     }
     window.requestAnimationFrame(render);
@@ -249,11 +243,6 @@ function onWindowResize() {
 // Update the camera and render the scene
 function render() {
     var timer = false;
-    if(!camera.position.equals(camera_flyto)) {
-        var camera_distance = camera.position.distanceTo(camera_flyto);
-        move_toward(camera.position, camera_flyto, Math.max(TERAMETER, camera_distance / 10));
-        timer = true;
-    }
     if(!camera_lookat.equals(selected.position)) {
         var camera_distance = camera.position.distanceTo(selected.position);
         // distance adjusted lookat
@@ -261,6 +250,11 @@ function render() {
         var lookat_distance = camera_lookat.distanceTo(selected.position);
         move_toward(camera_lookat, selected.position, Math.max(TERAMETER / 100, lookat_distance / 10));
         camera.lookAt(camera_lookat);
+        timer = true;
+    }
+    if(!camera.position.equals(camera_flyto)) {
+        var camera_distance = camera.position.distanceTo(camera_flyto);
+        move_toward(camera.position, camera_flyto, Math.max(TERAMETER, camera_distance / 10));
         timer = true;
     }
     camera.updateProjectionMatrix();
