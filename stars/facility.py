@@ -13,8 +13,10 @@ __defaults = {
 
 """ Represent 'minerals' """
 class Facility(Tech):
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
+        if self.tech.category == '' and len(args) > 0:
+            self.tech.category = args[0]
     
     def build_prep(self):
         self.cost_incomplete = copy.copy(self.tech.cost)

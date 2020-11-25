@@ -21,10 +21,4 @@ class Sun(Planet):
         color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X') 
         return color_string
 
-    """ Only Pa'anuri are allowed to colonize suns """
-    def colonize(self, player, minister):
-        if player.race.primary_race_trait != 'Pa\'anuri':
-            return
-        super().colonize(player, minister)
-
 Sun.set_defaults(Sun, __defaults)
