@@ -14,16 +14,23 @@ class GameEngineTestCase(unittest.TestCase):
         self.ut_file = Path.home() / 'Inherit!' / 'test' / 'unittest'
         self.ut_file.unlink(missing_ok=True)
 
-    def test_register_n_get(self):
+    def test_register_n_get1(self):
         # Nothing in the register
         game_engine.unregister()
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 0)
+
+    def test_register_n_get2(self):
         # Still nothing in the register
+        game_engine.unregister()
         t1 = _TestGameEngine(name='test_get1')
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 0)
+
+    def test_register_n_get2(self):
         # t1 in the register
+        game_engine.unregister()
+        t1 = _TestGameEngine(name='test_get1')
         game_engine.register(t1)
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
@@ -32,25 +39,47 @@ class GameEngineTestCase(unittest.TestCase):
         # Verify reference
         t1.name = 'test_get1a'
         self.assertEqual(ts[0].name, t1.name)
+
+    def test_register_n_get3(self):
         # Add t2
+        game_engine.unregister()
+        t1 = _TestGameEngine(name='test_get1')
+        game_engine.register(t1)
         t2 = _TestGameEngine(name='test_get2')
         game_engine.register(t2)
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 2)
         self.assertEqual(ts[0].name, t1.name)
         self.assertEqual(ts[1].name, t2.name)
+
+    def test_register_n_get4(self):
         # Get a single object
+        game_engine.unregister()
+        t2 = _TestGameEngine(name='test_get2')
+        game_engine.register(t2)
         t0 = game_engine.get('_TestGameEngine', 'test_get2')
         self.assertEqual(t0.name, t2.name)
+
+    def test_register_n_get5(self):
         # Don't create a new object
+        game_engine.unregister()
         t0 = game_engine.get('_TestGameEngine', 'test_get0')
         self.assertEqual(t0, None)
+
+    def test_register_n_get6(self):
         # Create an object
+        game_engine.unregister()
         t0 = game_engine.get('_TestGameEngine', 'test_get0', True)
         self.assertEqual(t0.name, 'test_get0')
+
+    def test_register_n_get6(self):
         # Test None
+        game_engine.unregister()
         self.assertEqual(game_engine.get(None), None)
+
+    def test_register_n_get6(self):
         # Test random junk
+        game_engine.unregister()
         self.assertEqual(game_engine.get(123), [])
 
     def test_unregister(self):

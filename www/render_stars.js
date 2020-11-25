@@ -70,10 +70,8 @@ function onSubmit() {
         if(json_map['render_stars'].hasOwnProperty('suns')) {
             if(json_map['render_stars']['suns'].length > 0) {
                 // load materials
-                var sun_alphaMap = new THREE.TextureLoader().load( "/particle.png" )
-                var sun_texture = new THREE.TextureLoader().load( "/particle.png" )
-                var planet_alphaMap = new THREE.TextureLoader().load( "/particle.png" )
-                var planet_texture = new THREE.TextureLoader().load( "/particle.png" )
+                var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" )
+                var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" )
                 var suns = json_map['render_stars']['suns'];
                 var planets = json_map['render_stars']['planets'];
                 // reusable geometry
@@ -83,8 +81,8 @@ function onSubmit() {
                 for(var i = 0; i < suns.length; i++) {
                     var material = new THREE.PointsMaterial( { 
                         color: new THREE.Color(suns[i].color),
-                        map: sun_texture,
-                        alphaMap: sun_alphaMap,
+                        map: texture_sun,
+                        alphaMap: texture_sun,
                         size: (suns[i].size + 200) * TERAMETER / 1000,
                         sizeAttenuation: true,
                         transparent: true,
@@ -102,8 +100,8 @@ function onSubmit() {
                     for(var j = 0; j < planet_colors.length; j++) {
                         var material = new THREE.PointsMaterial( { 
                             color: new THREE.Color(planet_colors[j]),
-                            map: planet_texture,
-                            alphaMap: planet_alphaMap,
+                            map: texture_planet,
+                            alphaMap: texture_planet,
                             size: (Math.random() * 100 + 200) * TERAMETER / 10000,
                             sizeAttenuation: true,
                             transparent: true,

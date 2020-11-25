@@ -12,10 +12,16 @@ __default_data = Path(__file__).parent.parent / 'default_data'
 __registry = []
 
 
+""" Block registration of new objects """
+__registry_block = False
+
+
 """ Receive registration of classes and objects as they self-register """
 def register(obj):
     global __registry
-    __registry.append(obj)
+    global __registry_block
+    if not __registry_block:
+        __registry.append(obj)
 
 
 """ Unregister objects to keep them from being part of the save game """
@@ -88,6 +94,16 @@ def load_list(save_type):
         files.append(f.name)
     files.sort()
     return files
+
+
+""" Load from file, prevent object self registration """
+def load_inspect(save_type, name):
+    global __registry_block 
+    file_name = __game_dir / save_type / name
+    with open(file_name, 'r') as f:
+        obj = from_json(f.read(), str(file_name))
+        return obj
+    __registry_block = False
 
 
 """ Load from file, object self registration is assumed """
