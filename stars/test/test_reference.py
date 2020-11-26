@@ -116,3 +116,17 @@ class ReferenceTestCase(unittest.TestCase):
         r = reference.Reference('int/')
         with self.assertRaises(LookupError):
             r.abc = 123
+
+    def test_eq1(self):
+        r1 = reference.Reference('_TestReference/eq')
+        self.assertFalse(r1 == None)
+
+    def test_eq2(self):
+        r1 = reference.Reference('_TestReference/eq')
+        r2 = reference.Reference('_TestReference/eq')
+        self.assertTrue(r1 == r2)
+
+    def test_eq3(self):
+        r1 = reference.Reference('_TestReference/eq')
+        r2 = reference.Reference('_TestReference/ne')
+        self.assertFalse(r1 == r2)

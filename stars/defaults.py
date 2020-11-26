@@ -96,11 +96,3 @@ def __get_defaults(cls):
         cls.set_defaults(cls, {})
     return cls.defaults
 Defaults.get_defaults = __get_defaults
-
-
-""" Get saturate from the class """
-def __get_sparse_json(cls):
-    if not hasattr(cls, 'sparse_json'):
-        cls.set_defaults(cls, [])
-    return cls.sparse_json
-Defaults.get_sparse_json = __get_sparse_json
