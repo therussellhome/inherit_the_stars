@@ -6,10 +6,10 @@
     "upgrade_level": 2,
     "race_requirements": "Bioengineer",
     "cost": {
-        "titanium": 4,
-        "lithium": 4,
-        "silicon": 6,
-        "energy": 5000,
+        "titanium": 8,
+        "lithium": 8,
+        "silicon": 16,
+        "energy": 4800,
         "__class__": "Cost"
     },
     "level": {
