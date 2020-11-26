@@ -39,13 +39,7 @@ class Defaults(game_engine.BaseClass):
     def __eq__(self, other):
         if type(self) != type(other):
             return False
-        fields = set(self.__dict__.keys())
-        if fields != set(other.__dict__.keys()):
-            return False
-        for name in fields:
-            if getattr(self, name) != getattr(other, name):
-                return False
-        return True
+        return (self.__dict__ == other.__dict__)
 
     """ prints the entire __dict__ in a readable way so you can debug if somthing is wrong """
     def debug_display(self, depth=0):
