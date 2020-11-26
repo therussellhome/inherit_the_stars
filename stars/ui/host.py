@@ -22,16 +22,18 @@ class Host(PlayerUI):
         super().__init__(**kwargs)
         self.host_blocking = False
         self.options_host_game = game_engine.load_list('host')
+        self.options_host_game.sort()
         if self.host_game != '':
             self.host_ready = True
-            game_engine.unregister()
-            game = game_engine.load('host', self.host_game)
-            game.update_players()
+            game = game_engine.get('Game/' + self.host_name)
             if self.host_name != self.host_game:
                 # First time showing this game so reset the host auto
-                self.host_autogen = False
                 self.host_name = self.host_game
                 action = ''
+                game_engine.unregister()
+                print('Loading', self.host_name)
+                game = game_engine.load('host', self.host_name)
+            game.update_players()
             if action == 'generate':
                 game.generate_turn()
                 game.save()
@@ -45,6 +47,5 @@ class Host(PlayerUI):
                     self.host_ready = False
                 self.host_status.append('<td>' + p.name + '</td>' \
                     + '<td style="text-align: right">' + ready + '</td>')
-            game_engine.unregister()
 
-Host.set_defaults(Host, __defaults)
+Host.set_defaults(Host, __defaults, sparse_json=False)

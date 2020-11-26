@@ -12,4 +12,4 @@ class EnergyMinister(PlayerUI):
         super().__init__(**kwargs)
 
 
-EnergyMinister.set_defaults(EnergyMinister, __defaults)
+EnergyMinister.set_defaults(EnergyMinister, __defaults, sparse_json=False)

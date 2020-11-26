@@ -188,4 +188,4 @@ class NewGame(Defaults):
         return home_systems
             
 
-NewGame.set_defaults(NewGame, __defaults)
+NewGame.set_defaults(NewGame, __defaults, sparse_json=False)

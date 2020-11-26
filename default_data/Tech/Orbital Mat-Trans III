@@ -2,8 +2,6 @@
     "name": "Orbital Mat-Trans III",
     "category": "Orbital",
     "description": "Allows your colonists to relocate to a less-crowded (or more habitable) world so they can continue to multiply.  Requires 33% less energy than Mat-Trans II per colonists moved.",
-    "upgrade_path": "MatTrans",
-    "upgrade_level": 3,
     "race_requirements": "Pa'anuri",
     "cost": {
         "titanium": 2,

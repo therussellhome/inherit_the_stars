@@ -7,10 +7,10 @@ def distance(ship1, ship2):
 
 class Combat(Defaults):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.everybody = []
         self.players = []
         self.date = 0.0
-        super().__init__(**kwargs)
     
     """ calculates where the ship should move to"""
     def calc_strategy_m(self, me):

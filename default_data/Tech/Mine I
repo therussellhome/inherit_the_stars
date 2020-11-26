@@ -1,9 +1,8 @@
 {
     "name": "Mine I",
-    "category": "Planetary",
+    "category": "Mineral Extractor",
     "description": "All mines output each mineral's availability per year and take the same number of people to run. Lower tech mines decrease mineral availability more quickly.",
-    "upgrade_path": "Mine",
-    "upgrade_level": 1,
+    "facility_level": 1,
     "cost": {
         "titanium": 0,
         "lithium": 1,

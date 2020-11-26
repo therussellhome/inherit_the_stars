@@ -23,4 +23,4 @@ class Shipyard(PlayerUI):
         self.shipyard_orbital_slots = max(0, self.shipyard_orbital_slots)
         self.shipyard_depot_slots = max(0, self.shipyard_depot_slots)
 
-Shipyard.set_defaults(Shipyard, __defaults)
+Shipyard.set_defaults(Shipyard, __defaults, sparse_json=False)

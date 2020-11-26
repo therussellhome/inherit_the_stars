@@ -2,8 +2,7 @@
     "name": "Test Component",
     "category": "Orbital",
     "description": "a component\nstuff",
-    "upgrade_path": "",
-    "upgrade_level": 0,
+    "facility_level": 0,
     "race_requirements": "-Aku'Ultan",
     "is_end_item": false,
     "cost": {

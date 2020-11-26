@@ -1,9 +1,8 @@
 {
     "name": "Power Plant II",
-    "category": "Planetary",
+    "category": "Power Plant",
     "description": "Produces 20% more energy than Power Plant I; all plants cost the same and take the same number of people to run.",
-    "upgrade_path": "Power",
-    "upgrade_level": 2,
+    "facility_level": 2,
     "cost": {
         "titanium": 1,
         "lithium": 1,

@@ -82,4 +82,4 @@ class Score(PlayerUI):
         for attribute in elements:
             self.__dict__[key.format(attribute, player)] = intel.get(attribute, default='?')
 
-Score.set_defaults(Score, __defaults)
+Score.set_defaults(Score, __defaults, sparse_json=False)

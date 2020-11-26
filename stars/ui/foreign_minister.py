@@ -180,4 +180,4 @@ class ForeignMinister(PlayerUI):
 for key in Treaty.defaults:
     __defaults['foreign_' + key] = Treaty.defaults[key]
 
-ForeignMinister.set_defaults(ForeignMinister, __defaults)
+ForeignMinister.set_defaults(ForeignMinister, __defaults, sparse_json=False)

@@ -80,7 +80,6 @@ class Game(Defaults):
                 player.calc_score()
         # update scanning
         self._scanning()
-        print(game_engine.get('Planet'))
 
     """ Update all scanning """
     def _scanning(self):

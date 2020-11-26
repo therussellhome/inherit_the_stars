@@ -16,10 +16,8 @@ class Minerals(Defaults):
         super().__init__(**kwargs)
 
 
-    def __eq__(self, other):
-        if self.titanium == other.titanium and self.lithium == other.lithium and self.silicon == other.silicon:
-            return True
-        return False
+    def is_zero(self):
+        return (self.titanium == 0 and self.lithium == 0 and self.silicon == 0)
 
 
     def __add__(self, other):

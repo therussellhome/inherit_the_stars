@@ -20,9 +20,7 @@ class Launch(Defaults):
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of games
-        self.options_launch_game = []
-        for player in game_engine.load_list('games'):
-            self.options_launch_game.append(player)
+        self.options_launch_game = game_engine.load_list('games')
         self.options_launch_game.sort()
         # Load the selected game
         if action == 'go':
@@ -33,4 +31,4 @@ class Launch(Defaults):
             self.player_token = str(id(p))
             
 
-Launch.set_defaults(Launch, __defaults)
+Launch.set_defaults(Launch, __defaults, sparse_json=False)

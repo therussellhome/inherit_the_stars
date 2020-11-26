@@ -1,9 +1,8 @@
 {
     "name": "Planetary Hawk Scanner",
-    "category": "Planetary",
+    "category": "Planetary Scanner",
     "description": "A scanner to build on your planet to detect ships and other objects in space",
-    "upgrade_path": "Scanner",
-    "upgrade_level": 1,
+    "facility_level": 1,
     "cost": {
         "titanium": 12,
         "lithium": 0,

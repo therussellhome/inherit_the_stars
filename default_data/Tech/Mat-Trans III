@@ -1,9 +1,8 @@
 {
     "name": "Mat-Trans III",
-    "category": "Planetary",
+    "category": "MatTrans",
     "description": "Allows your colonists to relocate to a less-crowded (or more habitable) planet so they can continue to multiply.  Requires 33% less energy than Mat-Trans II per colonists moved.",
-    "upgrade_path": "MatTrans",
-    "upgrade_level": 3,
+    "facility_level": 3,
     "race_requirements": "-Formics",
     "cost": {
         "titanium": 2,

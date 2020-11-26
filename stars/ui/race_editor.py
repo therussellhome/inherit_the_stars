@@ -46,4 +46,4 @@ for key in Race.defaults:
     __defaults['race_editor_' + key] = Race.defaults[key]
 
 
-RaceEditor.set_defaults(RaceEditor, __defaults)
+RaceEditor.set_defaults(RaceEditor, __defaults, sparse_json=False)

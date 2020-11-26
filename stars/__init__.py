@@ -2,6 +2,7 @@ __all__ = [
     'asteroid',
     'battle_plan',
     'bomb',
+    'buildable',
     'cargo',
     'cloak',
     'combat',

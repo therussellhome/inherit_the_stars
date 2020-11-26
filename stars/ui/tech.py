@@ -179,4 +179,4 @@ class Tech(PlayerUI):
     <tr><td>Engine Siphon</td><td><input id="engine_siphon" style="text-align: right; width: 5em" disabled="true"/></td><td><span style="border-top: 1px solid white">₥</span>/ly</td></tr>
 """
 
-Tech.set_defaults(Tech, __defaults)
+Tech.set_defaults(Tech, __defaults, sparse_json=False)

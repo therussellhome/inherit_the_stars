@@ -55,19 +55,19 @@ class GameEngineTestCase(unittest.TestCase):
         # Get a single object
         game_engine.unregister()
         t2 = _TestGameEngine(name='test_get2')
-        t0 = game_engine.get('_TestGameEngine', 'test_get2')
+        t0 = game_engine.get('_TestGameEngine/test_get2')
         self.assertEqual(t0.name, t2.name)
 
     def test_register_n_get5(self):
         # Don't create a new object
         game_engine.unregister()
-        t0 = game_engine.get('_TestGameEngine', 'test_get0')
+        t0 = game_engine.get('_TestGameEngine/test_get0')
         self.assertEqual(t0, None)
 
     def test_register_n_get6(self):
         # Create an object
         game_engine.unregister()
-        t0 = game_engine.get('_TestGameEngine', 'test_get0', True)
+        t0 = game_engine.get('_TestGameEngine/test_get0', True)
         self.assertEqual(t0.name, 'test_get0')
 
     def test_register_n_get6(self):

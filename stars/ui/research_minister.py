@@ -76,4 +76,4 @@ class ResearchMinister(PlayerUI):
         for t in research_tech:
             self.research_tech.append(t[1])
 
-ResearchMinister.set_defaults(ResearchMinister, __defaults)
+ResearchMinister.set_defaults(ResearchMinister, __defaults, sparse_json=False)

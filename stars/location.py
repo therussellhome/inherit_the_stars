@@ -68,7 +68,9 @@ class Location(game_engine.BaseClass):
     
     """ Equality check """
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.z == other.z
+        if type(self) != type(other):
+            return False
+        return self.x == other.x and self.y == other.y and self.z == other.z and getattr(self, 'reference', None) == getattr(other, 'reference', None)
 
     """ If a reference then get the attribute from the referenced class """
     def __getattribute__(self, name):

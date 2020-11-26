@@ -37,4 +37,4 @@ class RenderStars(PlayerUI):
             })
             
 
-RenderStars.set_defaults(RenderStars, __defaults)
+RenderStars.set_defaults(RenderStars, __defaults, sparse_json=False)
