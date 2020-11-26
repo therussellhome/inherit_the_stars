@@ -126,7 +126,7 @@ class NewGame(Defaults):
                 # Protect against other objects in a race file
                 r = game_engine.load('races', players[i])
                 if isinstance(r, Race) and r.name == players[i]:
-                    p = Player(race=r, tech=tech_tree, game_name=game.name, game_key=game.game_key)
+                    p = Player(race=r, tech=tech_tree, game_name=game.name)
                     homes[i].create_system(Reference(p))
                     game.players.append(p)
                 else:

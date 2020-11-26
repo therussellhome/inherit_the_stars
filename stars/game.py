@@ -1,19 +1,18 @@
 import sys
 from . import game_engine
 from .defaults import Defaults
+from .fleet import Fleet
 
 
 """ Default values (default, min, max)  """
 __defaults = {
     'name': [''],
-    'game_key': [''], # used to validate the player file
-    'autogen_turn': [True],
-    'date': [0.0, 0.0, sys.maxsize],
+    'turn': [0, 0, sys.maxsize],
     'players': [[]], # all players for the game, these are updated/overwritten when the players are loaded from file
     'systems': [[]], # all systems - suns and planets are part of systems
     'wormholes': [[]], # all wormholes
     'asteroids': [[]], # all comets/mineral packets/salvage
-    'myster_traders': [[]], # myster trader ships
+    'mystery_traders': [[]], # myster trader ships
 }
 
 
@@ -22,15 +21,26 @@ class Game(Defaults):
     """ Initialize defaults and register self """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'game_key' not in kwargs:
-            self.game_key = str(id(self))
         game_engine.register(self)
 
+    """ Save host and players to file """
+    def save(self):
+        game_engine.save('host', self.name, self)
+        for p in self.players:
+            if not p.computer_player:
+                game_engine.save('games', self.name + ' - ' + p.name, p)
+
+    """ Load updates from player files """
+    def update_players(self):
+        for p in self.players:
+            if not p.computer_player:
+                p.update_from_file()
 
     """ Generate a turn """
     def generate_turn(self):
+        self.turn += 1
         # All actions are in hundredths of a turn
-        for time_in in range(100):
+        for hundreth in range(100):
             # fleets in lowest to highest initiative
             fleets = game_engine.get('Fleet')
             fleets.sort(key=lambda x: x.initiative, reverse=False)
@@ -53,7 +63,7 @@ class Game(Defaults):
             for asteroid in self.asteroids:
                 asteroid.move()
             # mystery trader
-            for trader in mystery_trader:
+            for trader in self.mystery_traders:
                 trader.move()
             # fleet move
             for fleet in fleets:
@@ -68,8 +78,9 @@ class Game(Defaults):
             # score
             for player in players:
                 player.calc_score()
-            # update scanning
-            self._scanning()
+        # update scanning
+        self._scanning()
+        print(game_engine.get('Planet'))
 
     """ Update all scanning """
     def _scanning(self):

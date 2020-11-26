@@ -14,7 +14,6 @@ class RenderStars(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         if not self.player:
-            print('no player')
             return
         # Copy all suns
         self.suns = []

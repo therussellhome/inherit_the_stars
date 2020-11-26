@@ -22,8 +22,6 @@ def register(obj):
     global __registry_block
     if not __registry_block:
         __registry.append(obj)
-    else:
-        print('registration blocked', obj)
 
 
 """ Unregister objects to keep them from being part of the save game """
