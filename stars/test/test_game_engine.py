@@ -7,6 +7,8 @@ class _TestGameEngine(game_engine.BaseClass):
     def __init__(self, **kwargs):
         self.name = kwargs.get('name', str(id(self)))
         self.register = kwargs.get('register', True)
+        self.abc = kwargs.get('abc', 123)
+        self.xyz = {'a': 42}
         if self.register:
             game_engine.register(self)
 
@@ -80,6 +82,11 @@ class GameEngineTestCase(unittest.TestCase):
         game_engine.unregister()
         self.assertEqual(game_engine.get(123), [])
 
+    def test_register_n_get7(self):
+        # Test random junk
+        game_engine.unregister()
+        self.assertEqual(game_engine.get(None), None)
+
     def test_unregister1(self):
         game_engine.unregister()
         t1 = _TestGameEngine(name='test_unreg1')
@@ -118,7 +125,7 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 0)
 
-    def test_save_load(self):
+    def test_save_load1(self):
         game_engine.unregister()
         t1 = _TestGameEngine(name='save_load')
         game_engine.save('test', 'save_load', t1)
@@ -128,6 +135,20 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].name, 'save_load')
+
+    def test_save_load2(self):
+        game_engine.unregister()
+        t1 = _TestGameEngine(name='sparse', abc=555)
+        _TestGameEngine.defaults = {'abc': [555, 0, 999]}
+        _TestGameEngine.sparse_json = {'abc': True}
+        game_engine.save('test', 'sparse', t1)
+        game_engine.unregister()
+        t2 = game_engine.load('test', 'sparse')
+        self.assertEqual(t2.name, 'sparse')
+        ts = game_engine.get('_TestGameEngine')
+        self.assertEqual(len(ts), 1)
+        self.assertEqual(ts[0].name, 'sparse')
+        self.assertEqual(ts[0].abc, 123)
 
     def test_list(self):
         game_engine.unregister()
