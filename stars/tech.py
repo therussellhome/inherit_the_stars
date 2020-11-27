@@ -1,3 +1,4 @@
+import copy
 import sys
 from . import game_engine
 from .cloak import Cloak
@@ -14,11 +15,9 @@ __defaults = {
     'category': [''],
     'slot_type': [''],
     'description': ['I\'m a horrible scanner, a zero range weapon, and an engine that only works on Saturday'],
-    'upgrade_path': [''],
-    'upgrade_level': [0, 0, 100],
-    'race_requirements': [''],
+    'facility_level': [0, 0, 100],
     'cost': [Cost()],
-    'cost_incomplete': [Cost()],
+    'race_requirements': [''],
     'level': [TechLevel()],
     'mass': [0, 0, sys.maxsize],
     'cargo_max': [0, 0, sys.maxsize],
@@ -37,6 +36,7 @@ __defaults = {
     'fuel_generation': [0, 0, sys.maxsize],
     'hyperdenial': [HyperDenial()],
     'is_colonizer': [False],
+    'is_starbase': [False],
     'is_trading_post': [False],
     'facility_output': [0.0, 0.0, sys.maxsize],
     'mining_rate': [0.0, 0.0, sys.maxsize],
@@ -48,7 +48,7 @@ __defaults = {
 }
 
 
-""" Represent 'minerals' """
+""" Represent a tech component """
 class Tech(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -69,5 +69,13 @@ class Tech(Defaults):
                 elif requirement not in traits:
                     return False
         return True
+
+    """ Calculate the scrap value """
+    def scrap_value(self, race):
+        if self.under_construction:
+            return Cost()
+        c = copy.copy(self.cost)
+        complete.energy = 0
+        return c * (race.scrap_rate() / 100)
 
 Tech.set_defaults(Tech, __defaults)

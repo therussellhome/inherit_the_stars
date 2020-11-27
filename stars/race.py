@@ -156,6 +156,12 @@ class Race(Defaults):
     def pop_per_kt(self):
         return 80000 / self.body_mass
 
+    """ Scrap rate """
+    def scrap_rate(self):
+        if self.lrt_WasteNot:
+            return 100
+        return 50
+
     """ Calculate the advantage points for this race (invalid race if <0) """
     def calc_points(self):
         p = 0
@@ -266,4 +272,4 @@ class Race(Defaults):
         overall_hab = 100.0 * max(overall_hab, 0.001)
         return overall_hab
 
-Race.set_defaults(Race, __defaults)
+Race.set_defaults(Race, __defaults, sparse_json=False)

@@ -12,4 +12,4 @@ class Plans(PlayerUI):
         super().__init__(**kwargs)
 
 
-Plans.set_defaults(Plans, __defaults)
+Plans.set_defaults(Plans, __defaults, sparse_json=False)

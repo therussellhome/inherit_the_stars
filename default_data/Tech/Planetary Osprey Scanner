@@ -1,9 +1,8 @@
 {
     "name": "Planetary Osprey Scanner",
-    "category": "Planetary",
+    "category": "Planetary Scanner",
     "description": "A scanner to build on your planet to detect ships and other objects in space",
-    "upgrade_path": "Scanner",
-    "upgrade_level": 5,
+    "facility_level": 5,
     "cost": {
         "titanium": 18,
         "lithium": 0,

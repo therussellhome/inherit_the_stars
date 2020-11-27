@@ -1,9 +1,8 @@
 {
     "name": "Mine IV",
-    "category": "Planetary",
+    "category": "Mineral Extractor",
     "description": "Wastes only a fifth as much as Mine I. All mines output the same; lower tech mines decrease mineral availability more quickly.",
-    "upgrade_path": "Mine",
-    "upgrade_level": 4,
+    "facility_level": 4,
     "cost": {
         "titanium": 0,
         "lithium": 1,

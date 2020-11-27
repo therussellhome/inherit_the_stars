@@ -74,8 +74,8 @@ function show_screen(show) {
     }
     // Show selected screen
     if(show) {
-        toggle(document.getElementById('screen_' + show), 'hide', false);
         toggle(document.getElementById('button_' + show), 'selected', true);
+        toggle(document.getElementById('screen_' + show), 'hide', false);
     }
 }
 
@@ -127,7 +127,10 @@ function launch_player(token) {
 }
 
 // Submit data for actioning
-function post(form, action = '') {
+function post(form = '', action = '') {
+    if(form == '') {
+        form = current_screen;
+    }
     // Default the json
     if(!json_map.hasOwnProperty(form)) {
         json_map[form] = {};
@@ -240,9 +243,25 @@ function parse_json(url, json) {
     }
 }
 
+// Refresh host screen / auto generate
+function host_auto() {
+    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').checked) {
+        document.getElementById('host_blocking').checked = true;
+        post('host', '?generate');
+    } else {
+        window.setTimeout(post, 10000);
+    }
+}
+
 // Confirm if everyone is submitted before generating
 function host_generate() {
-    alert('TODO');
+    if(!document.getElementById('host_blocking').checked) {
+        var ready = document.getElementById('host_ready').checked;
+        if(ready || confirm('Not all players are turned in.  Generate anyway?')) {
+            document.getElementById('host_blocking').checked = true;
+            post('host', '?generate');
+        }
+    }
 }
 
 

@@ -1,14 +1,13 @@
 {
     "name": "Botany Bay Terraforming Station",
-    "category": "Planetary",
+    "category": "Terraforming Station",
     "description": "Terraforms a planet up to 6 clicks in each attribute.  Does not take population to run once it is built.",
-    "upgrade_path": "Terraform",
-    "upgrade_level": 4,
+    "facility_level": 4,
     "race_requirements": "Bioengineer",
     "cost": {
-        "titanium": 6,
-        "lithium": 6,
-        "silicon": 9,
+        "titanium": 15,
+        "lithium": 15,
+        "silicon": 24,
         "energy": 6300,
         "__class__": "Cost"
     },

@@ -17,7 +17,7 @@ _handlers = {
     '/energy_minister': energy_minister.EnergyMinister,
     '/fleets': fleets.Fleets,
     '/foreign_minister': foreign_minister.ForeignMinister,
-    '/generate': generate.Generate,
+    '/host': host.Host,
     '/launch': launch.Launch,
     '/messages': messages.Messages,
     '/new_game': new_game.NewGame,

@@ -70,10 +70,9 @@ function onSubmit() {
         if(json_map['render_stars'].hasOwnProperty('suns')) {
             if(json_map['render_stars']['suns'].length > 0) {
                 // load materials
-                var sun_alphaMap = new THREE.TextureLoader().load( "/particle.png" )
-                var sun_texture = new THREE.TextureLoader().load( "/particle.png" )
-                var planet_alphaMap = new THREE.TextureLoader().load( "/particle.png" )
-                var planet_texture = new THREE.TextureLoader().load( "/particle.png" )
+                var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" )
+                var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" )
+                var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" )
                 var suns = json_map['render_stars']['suns'];
                 var planets = json_map['render_stars']['planets'];
                 // reusable geometry
@@ -83,8 +82,8 @@ function onSubmit() {
                 for(var i = 0; i < suns.length; i++) {
                     var material = new THREE.PointsMaterial( { 
                         color: new THREE.Color(suns[i].color),
-                        map: sun_texture,
-                        alphaMap: sun_alphaMap,
+                        map: texture_sun,
+                        alphaMap: alpha_map,
                         size: (suns[i].size + 200) * TERAMETER / 1000,
                         sizeAttenuation: true,
                         transparent: true,
@@ -102,8 +101,8 @@ function onSubmit() {
                     for(var j = 0; j < planet_colors.length; j++) {
                         var material = new THREE.PointsMaterial( { 
                             color: new THREE.Color(planet_colors[j]),
-                            map: planet_texture,
-                            alphaMap: planet_alphaMap,
+                            map: texture_planet,
+                            alphaMap: alpha_map,
                             size: (Math.random() * 100 + 200) * TERAMETER / 10000,
                             sizeAttenuation: true,
                             transparent: true,
@@ -144,20 +143,62 @@ function onWheel(event) {
 
 // Key controls
 function onKeyPress(event) {
-    console.log(event.keyCode);
+    console.log(event.keyCode);//, camera.up, camera.position, camera);
+    var rotateDirection;
     // up
     if(event.keyCode == 38) {
+        rotateDirection = new THREE.Vector3(0, -1, 0)
+        rotateCamera(rotateDirection)
+    }
     // down
-    } else if(event.keyCode == 40) {
+    else if(event.keyCode == 40) {
+        rotateDirection = new THREE.Vector3(0, 1, 0);
+        rotateCamera(rotateDirection);
+    }
     // left
-    } else if(event.keyCode == 37) {
+    else if(event.keyCode == 37) {
+        rotateDirection = new THREE.Vector3(1, 0, 0);
+        rotateCamera(rotateDirection);
+    }
     // right
-    } else if(event.keyCode == 39) {
+    else if(event.keyCode == 39) {
+        rotateDirection = new THREE.Vector3(-1, 0, 0);
+        rotateCamera(rotateDirection);
+    }
     // reset
-    } else if(event.key == "r") {
+    else if(event.key == "r") {
         select_object(selected, true);
     }
     window.requestAnimationFrame(render);
+}
+
+// Rotate on comand
+function rotateCamera(moveDirection) {
+	var axis = new THREE.Vector3(),
+		quaternion = new THREE.Quaternion(),
+		eyeDirection = new THREE.Vector3(),
+		objectUpDirection = new THREE.Vector3(),
+		objectSidewaysDirection = new THREE.Vector3(),
+		_eye = new THREE.Vector3().subVectors( camera.position, selected.position ),
+		angle;
+	angle = moveDirection.length();
+	if ( angle ) {
+		_eye.copy( camera.position ).sub( selected.position );
+		eyeDirection.copy( _eye ).normalize();
+		objectUpDirection.copy( camera.up ).normalize();
+		objectSidewaysDirection.crossVectors( objectUpDirection, eyeDirection ).normalize();
+		objectUpDirection.setLength( moveDirection.y );
+		objectSidewaysDirection.setLength( moveDirection.x );
+		moveDirection.copy( objectUpDirection.add( objectSidewaysDirection ) );
+		axis.crossVectors( moveDirection, _eye ).normalize();
+        angle *= 15 * Math.PI/180;
+		quaternion.setFromAxisAngle( axis, angle );
+        _eye.applyQuaternion( quaternion );
+        camera.up.applyQuaternion( quaternion );
+        moveDirection.copy( _eye ).normalize();
+        camera_flyto.set(( _eye.x * moveDirection.length() ) + selected.position.x, ( _eye.y * moveDirection.length() ) + selected.position.y, ( _eye.z * moveDirection.length() ) + selected.position.z);
+        //camera.lookAt( selected.position )
+	}
 }
 
 // Click
@@ -249,14 +290,14 @@ function render() {
         camera_lookat.sub(camera.position).setLength(camera_distance).add(camera.position);
         var lookat_distance = camera_lookat.distanceTo(selected.position);
         move_toward(camera_lookat, selected.position, Math.max(TERAMETER / 100, lookat_distance / 10));
-        camera.lookAt(camera_lookat);
         timer = true;
     }
     if(!camera.position.equals(camera_flyto)) {
         var camera_distance = camera.position.distanceTo(camera_flyto);
-        move_toward(camera.position, camera_flyto, Math.max(TERAMETER, camera_distance / 10));
+        move_toward(camera.position, camera_flyto, Math.max(TERAMETER / 100, camera_distance / 10));
         timer = true;
     }
+    camera.lookAt(camera_lookat);
     camera.updateProjectionMatrix();
     renderer.render(scene, camera);
     if(timer) {

@@ -1,9 +1,8 @@
 {
     "name": "Factory III",
-    "category": "Planetary",
+    "category": "Factory",
     "description": "Turns 10kT of minerals into finished product per year; all factories cost the same and take the same number of people to run.",
-    "upgrade_path": "Factory",
-    "upgrade_level": 3,
+    "facility_level": 3,
     "cost": {
         "titanium": 1,
         "lithium": 0,

@@ -1,10 +1,9 @@
 {
     "name": "Planetary Cat Scanner",
-    "category": "Planetary",
+    "category": "Planetary Scanner",
     "description": "Penetrating scanners see into solar systems, including stats of planets. Their ability to detect ships outside penetrating range decreases quickly with the ship's apparent mass.",
     "race_requirements": "2ndSight",
-    "upgrade_path": "Penetrating",
-    "upgrade_level": 2,
+    "facility_level": 2,
     "cost": {
         "titanium": 6,
         "lithium": 0,

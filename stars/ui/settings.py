@@ -12,4 +12,4 @@ class Settings(PlayerUI):
         super().__init__(**kwargs)
 
 
-Settings.set_defaults(Settings, __defaults)
+Settings.set_defaults(Settings, __defaults, sparse_json=False)

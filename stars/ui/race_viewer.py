@@ -12,4 +12,4 @@ class RaceViewer(PlayerUI):
         super().__init__(**kwargs)
 
 
-RaceViewer.set_defaults(RaceViewer, __defaults)
+RaceViewer.set_defaults(RaceViewer, __defaults, sparse_json=False)

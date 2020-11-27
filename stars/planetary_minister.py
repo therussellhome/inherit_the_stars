@@ -4,10 +4,6 @@ from .defaults import Defaults
 """ Default values (default, min, max)  """
 __defaults = {
     'new_colony_minister': [False],
-    'power_plants': [25, 0, 100],
-    'factories': [25, 0, 100],
-    'mines': [25, 0, 100],
-    'defenses': [25, 0, 100],
     'build_scanner_after_num_facilities': [50, 0, sys.maxsize],
     'build_penetrating_after_num_facilities': [100, 0, sys.maxsize],
     'build_mattrans_after_num_facilities': [100, 0, sys.maxsize],
@@ -15,6 +11,11 @@ __defaults = {
     'build_max_terraform': [100, 0, 100],
     'allow_baryogenesis': [True],
     'planets': [[]],
+    # facilities where the key matches the tech category
+    'Power Plant': [25, 0, 100],
+    'Factory': [25, 0, 100],
+    'Mineral Extractor': [25, 0, 100],
+    'Planetary Shield': [25, 0, 100],
 }
 
 
@@ -26,22 +27,21 @@ class PlanetaryMinister(Defaults):
             self.name = 'Planetary Minister ' + str(id(self))
     
     """ makes shure that all effort is alocated and the total is = to 100% """
-    def __getattribute__(self, name):
-        power_plants = super().__getattribute__('power_plants')
-        factories = super().__getattribute__('factories')
-        mines = super().__getattribute__('mines')
-        defenses = super().__getattribute__('defenses')
+    def normalize(self):
+        power_plants = getattr(self, 'Power Plant')
+        factories = getattr(self, 'Factory')
+        mines = getattr(self, 'Mineral Extractor')
+        defenses = getattr(self, 'Planetary Shield')
         factor = power_plants + factories + mines + defenses
         if factor != 0:
             factor = 100 / factor
         factories = int(factories * factor)
         mines = int(mines * factor)
         defenses = int(defenses * factor)
-        self.power_plants = 100 - factories - mines - defenses
-        self.factories = factories
-        self.mines = mines
-        self.defenses = defenses
-        return super().__getattribute__(name)
+        setattr(self, 'Power Plant', 100 - factories - mines - defenses)
+        setattr(self, 'Factory', factories)
+        setattr(self, 'Mineral Extractor', mines)
+        setattr(self, 'Planetary Shield', defenses)
 
         
 PlanetaryMinister.set_defaults(PlanetaryMinister, __defaults)

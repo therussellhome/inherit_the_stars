@@ -1,46 +1,50 @@
 import sys
-from .cost import Cost
-from .tech import Tech
-import copy
+from .buildable import Buildable
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'tech': [Tech()],
+    'tech': [Reference('Tech')],
     'quantity': [0, 0, sys.maxsize],
 }
 
 
 """ Represent 'minerals' """
-class Facility(Tech):
+class Facility(Buildable):
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
-        if self.tech.category == '' and len(args) > 0:
-            self.tech.category = args[0]
-    
-    def build_prep(self):
-        self.cost_incomplete = copy.copy(self.tech.cost)
-    
+
+    """ Return the cost to build """
+    def add_to_build_queue(self, race=None, upgrade_to=None):
+        super().add_to_build_queue(race, upgrade_to)
+        if upgrade_to:
+            return (self.upgrade_to.cost - self.tech.scrap_value(race)) * self.quantity
+        return self.tech.cost
+
+    """ Add to facility count or finalize upgrade """
+    def build_complete(self, race=None, upgrade_to=None):
+        super().build_complete(race, upgrade_to)
+        if upgrade_to:
+            self.tech = Reference(upgrade_to)
+        else:
+            self.quantity += 1
+
     def colonize(self, player):
         if self.quantity == 0:
-            self.tech = self.upgrade_available(player)
+            upgrade = self.upgrade(player)
+            if upgrade:
+                self.tech = upgrade
     
-    def upgrade_available(self, player):
+    def upgrade(self, category, player):
+        if self.under_construction:
+            return None
         best = self.tech
         for t in player.tech:
-            if t.is_available(player.tech_level, player.race) and t.upgrade_path == best.upgrade_path and t.upgrade_level > best.upgrade_level:
+            if t.is_available(player.tech_level) and t.upgrade_path == category and t.upgrade_level > best.upgrade_level:
                 best = t
         if best == self.tech:
             return None
         return best
-    
-    def upgrade_cost(self, player, tech):
-        scrap = self.tech.cost * self.quantity * (player.race.scrap_rate / 100)
-        cost = tech.cost * self.quantity
-        return cost - scrap
-    
-    def upgrade_complete(self, tech):
-        self.tech = tech
-
 
 Facility.set_defaults(Facility, __defaults)

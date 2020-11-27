@@ -87,4 +87,4 @@ class Shipyard(PlayerUI):
         self.shipyard_design.append('<tr><td style="text-align: center" colspan="2" class="hfill">Hull <select id="shipyard_hull" onchange="post(\'shipyard\')">' \
             + r + '</select></td></tr>')
 
-Shipyard.set_defaults(Shipyard, __defaults)
+Shipyard.set_defaults(Shipyard, __defaults, sparse_json=False)

@@ -14,10 +14,8 @@ class Cost(Minerals):
         super().__init__(**kwargs)
 
 
-    def __eq__(self, other):
-        if super().__eq__(other) and self.energy == other.energy:
-            return True
-        return False
+    def is_zero(self):
+        return (self.energy == 0 and super().is_zero())
 
 
     def __add__(self, other):

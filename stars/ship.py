@@ -10,6 +10,7 @@ from .expirence import Expirence
 from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
+from .buildable import Buildable
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -32,7 +33,7 @@ __defaults = {
 }
 
 
-class Ship(ShipDesign):
+class Ship(ShipDesign, Buildable):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -68,7 +69,7 @@ class Ship(ShipDesign):
         return False
     
     def colonize(self, player, planet):
-        planet.colonize(player, copy.copy(player.get_minister(planet)))
+        planet.colonize(player, player.get_minister(planet).name)
         planet.on_surface += self.cargo
     
     def scan(self, player):
@@ -138,5 +139,18 @@ class Ship(ShipDesign):
         self.scrap(self.location, self.location)
         pass
 
+    """ Return the cost to build """
+    def add_to_build_queue(self, race=None, upgrade_to=None):
+        super().add_to_build_queue(race, upgrade_to)
+        if upgrade_to:
+            return upgrade_to.cost - self.scrap_value(race)
+        return self.cost
+
+    """ Store the upgraded specs """
+    def build_complete(self, race=None, upgrade_to=None):
+        super().build_complete(race, upgrade_to)
+        if upgrade_to:
+            #TODO replace current ship specs with upgrade specs
+            pass
 
 Ship.set_defaults(Ship, __defaults)
