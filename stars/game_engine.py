@@ -40,34 +40,34 @@ class BaseClass:
 
 """ 
 Get all registered objects of a type or a specific object
-objkey can be the objects name attribute or it's id
+reference is 'Class', 'Class/Name', or 'Class/id' 
 """
-def get(classname, objkey=None, create_new=False):
+def get(reference, create_new=False):
     global __registry
     # getting None returns None
-    if classname == None:
+    if reference == None:
         return None
-    # reference must be a string
-    if not isinstance(classname, str):
-        classname = str(classname)
-    objs = []
+    # split reference after forcin string
+    reference = str(reference).split('/', 1)
+    # get all of a class
+    if len(reference) == 1:
+        objs = []
+        for obj in __registry:
+            if obj.__class__.__name__ == reference[0]:
+                objs.append(obj)
+        return objs
+    # find a specific object
     for obj in __registry:
-        if obj.__class__.__name__ == classname:
+        if obj.__class__.__name__ == reference[0]:
             # match by id
-            if str(id(obj)) == objkey:
+            if str(id(obj)) == reference[1]:
                 return obj
             # match by name
-            elif getattr(obj, 'name', '') == objkey:
+            elif getattr(obj, 'name', '') == reference[1]:
                 return obj
-            else:
-                objs.append(obj)
-    # return by type if no key
-    if objkey == None:
-        return objs
     # create and register new object
     if create_new:
-        obj = __new(classname, None, name=objkey)
-        register(obj)
+        obj = __new(reference[0], None, name=reference[1])
         return obj
     return None
 
@@ -100,18 +100,21 @@ def load_list(save_type):
 def load_inspect(save_type, name):
     global __registry_block 
     file_name = __game_dir / save_type / name
+    obj = None
+    __registry_block = True
     with open(file_name, 'r') as f:
         obj = from_json(f.read(), str(file_name))
-        return obj
     __registry_block = False
+    return obj
 
 
 """ Load from file, object self registration is assumed """
 def load(save_type, name):
     file_name = __game_dir / save_type / name
+    obj = None
     with open(file_name, 'r') as f:
         obj = from_json(f.read(), str(file_name))
-        return obj
+    return obj
 
 
 """ Load tech from loose files """
@@ -136,7 +139,13 @@ def save(save_type, name, obj):
 """ Custom encoder to handle classes """
 def __encode(obj):
     values = obj.__dict__.copy()
-    values['__class__'] = obj.__class__.__name__
+    cls = obj.__class__
+    # special handling for children of Defaults
+    defaults = getattr(cls, 'defaults', {})
+    for (name, sparse) in getattr(cls, 'sparse_json', {}).items():
+        if sparse and name in values and defaults[name][0] == values[name]:
+            del values[name]
+    values['__class__'] = cls.__name__
     return values
 
 

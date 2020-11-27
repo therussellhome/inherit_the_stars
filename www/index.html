@@ -36,7 +36,6 @@
 
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
     <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
-    <tr><td><img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/></tr></td>
     <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
     <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
     <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
@@ -52,6 +51,7 @@
     
 
 <div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
+    <img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/>
     <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
     <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
     <img class="button" id="button_interstellar" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
@@ -96,90 +96,36 @@
 <div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Launch</td>
-        <td><img class="button" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
     </tr></table>
-    <select id="launch_game" class="hfill" size="25" onchange="post('launch')" style="background: transparent; color: white"/>
+    <select id="launch_game" class="hfill" size="15" onchange="post('launch', '?go')" style="background: transparent; color: white; font-size: 100%"></select>
     <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
-    <!-- TODO move to host screen
-    <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
-        <tr>
-            <td class="hfill"><input id="launch_player01" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player01_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player02" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player02_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player03" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player03_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player04" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player04_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player05" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player05_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player06" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player06_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player07" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player07_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player08" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player08_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player09" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player09_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player10" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player10_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player11" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player11_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player12" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player12_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player13" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player13_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player14" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player14_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player15" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player15_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player16" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player16_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_loaded_autogen" disabled="true" class="hfill"/></td>
-            <td style="text-align: right"><img class="button" id="button_generate_now" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
-        </tr>
+</div>
+
+
+<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host', '?reset')" onsubmit="host_auto()">
+    <table class="topbar hfill"><tr>
+        <td class="hfill" style="font-size: 200%">Host</td>
+        <td>Auto Generate: <input id="host_autogen" type="checkbox"/></td>
+    </tr></table>
+    <select id="host_game" class="hfill" size="15" onchange="post('host')" style="background: transparent; color: white; font-size: 100%"></select>
+    <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
+    <input id="host_ready" type="checkbox" disabled="true" style="display: none"/>
+    <table class="hfill"><tr>
+        <td>Game: <input id="host_name" disabled="true"/></td>
+        <td rowspan="2" class="hfill" style="text-align: right"><img class="button" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
+    </tr><tr>
+        <td>Turn #: <input id="host_turn" disabled="true"/></td>
+    </tr></table>
+    <table class="hfill" id="host_status">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Player Status</caption>
     </table>
-    -->
 </div>
 
 
 <div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">New Game</td>
-        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create')"></i></td>
+        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create'); show_screen('launch')"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>

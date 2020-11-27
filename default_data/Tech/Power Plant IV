@@ -1,9 +1,8 @@
 {
     "name": "Power Plant IV",
-    "category": "Planetary",
+    "category": "Power Plant",
     "description": "Produces 21% more energy than Power Plant III; all plants cost the same and take the same number of people to run.",
-    "upgrade_path": "Power",
-    "upgrade_level": 4,
+    "facility_level": 4,
     "cost": {
         "titanium": 1,
         "lithium": 1,

@@ -14,7 +14,6 @@ class RenderStars(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         if not self.player:
-            print('no player')
             return
         # Copy all suns
         self.suns = []
@@ -38,4 +37,4 @@ class RenderStars(PlayerUI):
             })
             
 
-RenderStars.set_defaults(RenderStars, __defaults)
+RenderStars.set_defaults(RenderStars, __defaults, sparse_json=False)

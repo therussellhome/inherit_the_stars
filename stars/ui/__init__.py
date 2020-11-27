@@ -3,7 +3,7 @@ __all__ = [
     'energy_minister',
     'fleets',
     'foreign_minister',
-    'generate',
+    'host',
     'launch',
     'messages',
     'new_game',

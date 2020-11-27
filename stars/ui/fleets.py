@@ -12,4 +12,4 @@ class Fleets(PlayerUI):
         super().__init__(**kwargs)
 
 
-Fleets.set_defaults(Fleets, __defaults)
+Fleets.set_defaults(Fleets, __defaults, sparse_json=False)

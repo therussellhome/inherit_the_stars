@@ -1,9 +1,8 @@
 {
     "name": "Planet Fort Xiinen",
-    "category": "Planetary",
+    "category": "Planetary Shield",
     "description": "Planetary shields take population to maintain them, so you want better shields not just more.  They can spread themselves thinner as your population increases, but that lowers protection.",
-    "upgrade_path": "Shield",
-    "upgrade_level": 13,
+    "facility_level": 13,
     "race_requirements": "Gaerhule",
     "cost": {
         "titanium": 9,

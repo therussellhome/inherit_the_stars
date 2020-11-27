@@ -13,9 +13,11 @@ from .fleet import Fleet
 """ Default values (default, min, max)  """
 __defaults = {
     'game_name': [''], # name of game for when generating
-    'game_key': [''], # used to validate the player file
+    'player_key': [''], # used to validate the player file
+    'ready_to_generate': [False],
     'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
+    'computer_player': [False],
     'seen_players': [[]],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
@@ -33,6 +35,17 @@ __defaults = {
     'pending_treaties': [{}],
 }
 
+""" List of fields that are user modifable """
+_player_fields = [
+    'ready_to_generate',
+    'planetary_ministers',
+    'research_queue',
+    'research_field',
+    'energy_minister',
+    'fleets',
+    'treaties',
+]
+
 """ A player in a game """
 class Player(Defaults):
     """ Initialize """
@@ -42,8 +55,18 @@ class Player(Defaults):
             self.name = self.race.name
         if 'date' not in kwargs:
             self.date = self.race.start_date
+        if 'player_key' not in kwargs:
+            self.player_key = str(id(self))
         game_engine.register(self)
-    
+
+    """ Update self from file """
+    def update_from_file(self):
+        global _player_fields
+        p = game_engine.load_inspect('games', self.game_name + ' - ' + self.name)
+        if self.player_key == p.player_key:
+            for field in _player_fields:
+                setattr(self, field, getattr(p, field))
+
     """ calles fleets to do actions """
     def ship_action(self, action):
         for fleet in self.fleets:
@@ -120,6 +143,7 @@ class Player(Defaults):
     
     """ Spend energy - consruction, baryogenesis, mat trans, research """
     def generate_turn(self):
+        self.date = round(self.date + 0.01, 2)
         # Collect up last years unused resources before planets generate resources
         self.energy = self.energy_minister.construction_budget 
         self.energy += self.energy_minister.mattrans_budget
@@ -155,6 +179,8 @@ class Player(Defaults):
             planet.do_mattrans()
         # Research
         self._do_research()
+        if not self.computer_player:
+            self.ready_to_generate = False
 
     """ Research """
     def _do_research(self):

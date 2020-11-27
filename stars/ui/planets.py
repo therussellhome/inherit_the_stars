@@ -12,4 +12,4 @@ class Planets(PlayerUI):
         super().__init__(**kwargs)
 
 
-Planets.set_defaults(Planets, __defaults)
+Planets.set_defaults(Planets, __defaults, sparse_json=False)

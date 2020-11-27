@@ -12,4 +12,4 @@ class Battles(PlayerUI):
         super().__init__(**kwargs)
 
 
-Battles.set_defaults(Battles, __defaults)
+Battles.set_defaults(Battles, __defaults, sparse_json=False)

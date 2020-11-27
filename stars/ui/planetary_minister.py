@@ -12,4 +12,4 @@ class PlanetaryMinister(PlayerUI):
         super().__init__(**kwargs)
 
 
-PlanetaryMinister.set_defaults(PlanetaryMinister, __defaults)
+PlanetaryMinister.set_defaults(PlanetaryMinister, __defaults, sparse_json=False)

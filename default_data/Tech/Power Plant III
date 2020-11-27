@@ -1,9 +1,8 @@
 {
     "name": "Power Plant III",
-    "category": "Planetary",
+    "category": "Power Plant",
     "description": "Produces 40% more energy than the lowest-level plant; all plants cost the same and take the same number of people to run.",
-    "upgrade_path": "Power",
-    "upgrade_level": 3,
+    "facility_level": 3,
     "cost": {
         "titanium": 1,
         "lithium": 1,

@@ -17,6 +17,7 @@ from .minerals import Minerals
 from .facility import Facility
 from .location import Location
 from .reference import Reference
+from .tech import Tech
 
 
 """ Default values (default, min, max)  """
@@ -26,21 +27,19 @@ __defaults = {
     'temperature': [50, -50, 150],
     'radiation': [50, -50, 150],
     'gravity': [50, -50, 150],
-    'facilities': [{
-        'power_plants': Facility('Power'),
-        'factories': Facility('Factory'),
-        'mines': Facility('Mine'),
-        'defenses': Facility('Defense'),
-        'scanner': Facility('Scanner'),
-        'mat_trans': Facility('MatTrans'),
-    }],
     'remaining_minerals': [Minerals()],
     'on_surface': [Cargo()],
     'player': [Reference('Player')],
     'minister': [''],
     'location': [Location()],
     'star_system': [Reference()],
-    'factory_capacity': [0, 0, sys.maxsize]
+    'factory_capacity': [0, 0, sys.maxsize],
+    'build_queue': [[]], # array of tuples (cost_incomplete, buildable)
+    # facilities where the key matches the tech category
+    'Power Plant': [Facility()],
+    'Factory': [Facility()],
+    'Mineral Extractor': [Facility()],
+    'Planetary Shield': [Facility()],
 }
 
 
@@ -53,10 +52,11 @@ class Planet(Defaults):
         if 'name' not in kwargs:
             self.name = 'Planet_' + str(id(self))
         if 'temperature' not in kwargs:
-            if 'sun' in kwargs and 'distance' in kwargs:
-                self.temperature = round(self.distance * 0.35 + self.sun.temperature * 0.65 + randint(-15, 15))
-            else:
-                self.temperature = randint(0, 100)
+            self.temperature = randint(0, 100)
+            if 'star_system' in kwargs:
+                sun = self.star_system.sun()
+                if sun:
+                    self.temperature = round(self.distance * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
         if 'radiation' not in kwargs:
             self.radiation = randint(0, 100)
         if 'gravity' not in kwargs:
@@ -123,8 +123,6 @@ class Planet(Defaults):
                 return False
         self.player = Reference(player)
         self.minister = minister
-        for facility_type in self.facilities:
-            self.facilities[facility_type].colonize(player)
         return True
 
     """ Calculate the planet's value for the current player (-100 to 100)
@@ -187,32 +185,28 @@ class Planet(Defaults):
         return self.on_surface.people
 
     """ how many facilities can be operated """
-    def __operate(self, facility_type):
-        race_traits = {
-            'defenses': self.player.race.defenses_per_10k_colonists,
-            'power_plants': self.player.race.power_plants_per_10k_colonists,
-            'mines': self.player.race.mines_per_10k_colonists,
-            'factories': self.player.race.factories_per_10k_colonists,
-        }
-        facility = self.facilities[facility_type]
+    # avoid creating facilities
+    def __operate(self, facility_type, race_trait):
         allocation = getattr(self.player.get_minister(self.name), facility_type)
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
-        return min(facility.quantity, race_traits[facility_type] * workers / 10000)
+        return min(getattr(self, facility_type).quantity, getattr(self.player.race,race_trait) * workers / 10000)
 
     """ Incoming! """
     def raise_shields(self):
-        return self.__operate('defenses') * self.facilities['defenses'].tech.shield
+        return self.__operate('Planetary Shield', 'defenses_per_10k_colonists') * getattr(self, 'Planetary Shield').tech.shield
 
     """ power plants make energy """
     def generate_energy(self):
-        plants = self.__operate('power_plants') * self.facilities['power_plants'].tech.facility_output / 100
+        plants = self.__operate('Power Plant', 'power_plants_per_10k_colonists') * getattr(self, 'Power Plant').tech.facility_output / 100
+        print(plants)
         pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
+        print(self.player.race.energy_per_10k_colonists)
         return plants + pop
 
     """ mines mine the minerals """
     def mine_minerals(self):
-        factor = self.facilities['mines'].tech.mineral_depletion_factor
-        operate = self.__operate('mines')
+        factor = getattr(self, 'Mineral Extractor').tech.mineral_depletion_factor
+        operate = self.__operate('Mineral Extractor', 'mines_per_10k_colonists')
         print(operate)
         for mineral in ['silicon', 'titanium', 'lithium']:
             availability = self.mineral_availability(mineral)
@@ -225,7 +219,8 @@ class Planet(Defaults):
 
     """ calculates max production capasity """
     def calc_production(self):
-        self.factory_capacity = (self.__operate('factories') + 1) * self.facilities['factories'].tech.facility_output / 100
+        # 1 unit of production free
+        self.factory_capacity = 1 + self.__operate('Factory', 'factories_per_10k_colonists') * getattr(self, 'Factory').tech.facility_output / 100
 
     """ minister checks to see if you need to build more facilities """
     def auto_build(self):
@@ -245,10 +240,10 @@ class Planet(Defaults):
             self.scanner_tech = 'scanner_tech'
             return self.scanner_tech
         else:
-            factory_percent = ((self.player.race.colonists_to_operate_factory * self.facilities['Factory'].quantity) / self.on_surface.people) - (minister.factories / 100)
-            power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * self.facilities['Power'].quantity) / self.on_surface.people) - (minister.power_plants / 100)
-            mine_percent = ((self.player.race.colonists_to_operate_mine * self.facilities['Mine'].quantity) / self.on_surface.people) - (minister.mines / 100)
-            defense_percent = ((self.player.race.colonists_to_operate_defense * self.facilities['Defense'].quantity) / self.on_surface.people) - (minister.defenses / 100)
+            factory_percent = ((self.player.race.colonists_to_operate_factory * getattr(self, 'Factory').quantity) / self.on_surface.people) - (minister.factories / 100)
+            power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * getattr(self, 'Power Plant').quantity) / self.on_surface.people) - (minister.power_plants / 100)
+            mine_percent = ((self.player.race.colonists_to_operate_mine * getattr(self, 'Mineral Extractor').quantity) / self.on_surface.people) - (minister.mines / 100)
+            defense_percent = ((self.player.race.colonists_to_operate_defense * getattr(self, 'Planetary Shields').quantity) / self.on_surface.people) - (minister.defenses / 100)
             check = [[factory_percent, 'Factory'], [power_plant_percent, 'Power'], [mine_percent, 'Mine'], [defense_percent, 'Defense']]
             #print(check)
             least = 1

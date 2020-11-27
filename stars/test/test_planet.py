@@ -290,32 +290,32 @@ class PlanetTestCase(unittest.TestCase):
     def test_generate_energy1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        p.player.race.energy_per_10k_colonists= 0
-        p.facilities['power_plants'].quantity = 100
-        p.facilities['power_plants'].tech.facility_output = 100
-        self.assertEqual(p.generate_energy(), 100)
+        p.player.race.energy_per_10k_colonists = 100
+        getattr(p, 'Power Plant').quantity = 100
+        getattr(p, 'Power Plant').tech.facility_output = 100
+        self.assertEqual(p.generate_energy(), 200)
 
     def test_generate_energy2(self):
         p = planet.Planet()
         p.on_surface.people = 0
-        p.player.race.energy_per_10k_colonists= 0
-        p.facilities['power_plants'].quantity = 100
-        p.facilities['power_plants'].tech.facility_output = 100
+        p.player.race.energy_per_10k_colonists = 0
+        getattr(p, 'Power Plant').quantity = 100
+        getattr(p, 'Power Plant').tech.facility_output = 100
         self.assertEqual(p.generate_energy(), 0)
 
     def test_generate_energy3(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        p.player.race.energy_per_10k_colonists= 1000
-        p.facilities['power_plants'].quantity = 0
+        p.player.race.energy_per_10k_colonists = 1000
+        getattr(p, 'Power Plant').quantity = 0
         self.assertEqual(p.generate_energy(), 1000)
 
 
     def test_mine_minerals1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        p.facilities['mines'].quantity = 100
-        p.facilities['mines'].tech.mineral_depletion_factor = 1.3
+        getattr(p, 'Mineral Extractor').quantity = 100
+        getattr(p, 'Mineral Extractor').tech.mineral_depletion_factor = 1.3
         p.mine_minerals()
         return #TODO
         play = player.Player(
@@ -329,8 +329,8 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.colonize(reference.Reference(play), 'New Colony Minister')
         self.planet.on_surface = cargo.Cargo(people = 40)
         self.planet.remaining_minerals = minerals.Minerals(titanium=10000, silicon=10000, lithium=10000)
-        self.planet.facilities['Mine'].quantity = 100
-        self.planet.facilities['Mine'].tech.mineral_depletion_factor = 1.3
+        getattr(self.planet, 'Mineral Extractor').quantity = 100
+        getattr(self.planet, 'Mineral Extractor').tech.mineral_depletion_factor = 1.3
         self.planet._mine_minerals()
         self.assertEqual(self.planet.on_surface.titanium, 7, 'FIX ME')
         self.assertEqual(self.planet.on_surface.lithium, 7, 'FIX ME')
@@ -400,8 +400,8 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.factories = 26
         self.planet.defenses = 4
         #self.planet.auto_build().debug_display()
-        #self.planet.facilities['Mine'].debug_display()
-        #self.assertEqual(self.planet.auto_build(), self.planet.facilities['Mine'], 'FIX ME')
+        #getattr(self.planet, 'Mineral Extractor').debug_display()
+        #self.assertEqual(self.planet.auto_build(), getattr(self.planet, 'Mineral Extractor'), 'FIX ME')
         ###reset###
         self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')

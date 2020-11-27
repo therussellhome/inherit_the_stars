@@ -24,4 +24,4 @@ class Messages(PlayerUI):
         self.messages_count = len(self.player.messages)
         self.messages_text = self.player.messages[self.messages_index]
 
-Messages.set_defaults(Messages, __defaults)
+Messages.set_defaults(Messages, __defaults, sparse_json=False)
