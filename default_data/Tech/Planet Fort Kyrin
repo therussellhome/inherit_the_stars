@@ -9,12 +9,12 @@
         "lithium": 0,
         "silicon": 10,
         "energy": 1500,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 18,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "shield": 3750,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

@@ -32,7 +32,7 @@ __defaults = {
     'player': [Reference('Player')],
     'minister': [''],
     'location': [Location()],
-    'star_system': [Reference()],
+    'star_system': [Reference('StarSystem')],
     'factory_capacity': [0, 0, sys.maxsize],
     'build_queue': [[]], # array of tuples (cost_incomplete, buildable)
     # facilities where the key matches the tech category

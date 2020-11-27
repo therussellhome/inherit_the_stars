@@ -556,7 +556,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ultimantico.on_surface.titanium, 60)
         self.assertEqual(ultimantico.on_surface.people, 40)
         self.assertEqual(ultimantico.space_station.fuel, 99960)
-        ultimantico.player = reference.Reference()
+        ultimantico.player = reference.Reference('Player')
         fleet_one.execute('unload', p1)
         ultimantico.player = reference.Reference(p1)
         fleet_one.execute('unload', p1)

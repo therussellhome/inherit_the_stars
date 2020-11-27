@@ -8,12 +8,12 @@
         "lithium": 1,
         "silicon": 0,
         "energy": 100,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "weapons": 9,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mineral_depletion_factor": 1.09,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

@@ -8,14 +8,14 @@
         "lithium": 5,
         "silicon": 4,
         "energy": 4500,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "weapons": 2,
         "biotechnology": 4,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 50,
     "mines_laid": 50000000000,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

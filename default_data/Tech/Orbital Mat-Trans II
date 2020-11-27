@@ -8,14 +8,14 @@
         "lithium": 4,
         "silicon": 5,
         "energy": 2000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 10,
         "biotechnology": 5,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 11,
     "mat_trans_energy": 45,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

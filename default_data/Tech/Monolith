@@ -8,20 +8,20 @@
         "lithium": 0,
         "silicon": 19,
         "energy": 6000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 4,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 200,
     "armor": 200,
     "scanner": {
         "penetrating": 0.0002115,
-        "__class__": "Scanner"
+        "__uuid__": "Scanner"
     },
     "repair": 50,
     "slots_general": 48,
     "slots_orbital": 2,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

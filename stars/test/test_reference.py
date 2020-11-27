@@ -3,6 +3,7 @@ from .. import *
 
 class _TestReference(game_engine.BaseClass):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = kwargs.get('name', str(id(self)))
         self.abc = 0
         game_engine.register(self)
@@ -58,6 +59,7 @@ class ReferenceTestCase(unittest.TestCase):
         game_engine.unregister()
         t = _TestReference(name='create')
         r = reference.Reference(t)
+        print(t.__uuid__, r._reference)
         self.assertEqual(r.name, 'create')
 
     def test_get1(self):

@@ -8,17 +8,17 @@
         "lithium": 0,
         "silicon": 2,
         "energy": 400,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 2,
         "electronics": 1,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 3,
     "cloak": {
         "percent": 10,
-        "__class__": "Cloak"
+        "__uuid__": "Cloak"
     },
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

@@ -6,12 +6,12 @@
     "cost": {
         "silicon": 3,
         "energy": 900,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 5,
         "weapons": 9,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 1,
     "weapons": [
@@ -22,8 +22,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__class__": "Weapon"
+            "__uuid__": "Weapon"
         }
     ],
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

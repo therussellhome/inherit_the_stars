@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 0,
         "energy": 1000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 0,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 60,
     "armor": 50,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

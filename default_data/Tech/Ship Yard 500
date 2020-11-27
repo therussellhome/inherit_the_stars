@@ -7,14 +7,14 @@
         "lithium": 10,
         "silicon": 18,
         "energy": 5000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 3,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 300,
     "shipyard": 500,
     "repair": 2000,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

@@ -8,17 +8,17 @@
         "lithium": 0,
         "silicon": 30,
         "energy": 3600,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 8,
         "electronics": 17,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 15,
     "scanner": {
         "anti_cloak": 150.0,
-        "__class__": "Scanner"
+        "__uuid__": "Scanner"
     },
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

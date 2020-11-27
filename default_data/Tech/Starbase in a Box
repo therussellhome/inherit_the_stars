@@ -8,10 +8,10 @@
         "lithium": 15,
         "silicon": 15,
         "energy": 2000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "mass": 50,
     "repair": 2,
     "is_colonizer": true,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

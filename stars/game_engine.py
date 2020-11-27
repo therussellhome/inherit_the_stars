@@ -1,4 +1,6 @@
 import json
+import uuid
+import traceback
 from pathlib import Path
 
 
@@ -35,12 +37,16 @@ def unregister(obj=None):
 
 """ Base class for use in creating classes by name """
 class BaseClass:
-    pass
-
+    """ Get a uid """
+    def __init__(self, **kwargs):
+        if '__uuid__' in kwargs and '/' in kwargs['__uuid__']:
+            self.__uuid__ = kwargs['__uuid__']
+        else:
+            self.__uuid__ = self.__class__.__name__ + '/' + str(uuid.uuid4())
 
 """ 
 Get all registered objects of a type or a specific object
-reference is 'Class', 'Class/Name', or 'Class/id' 
+reference is 'Class', 'Class/uid', 'Class/id', or 'Class/Name' 
 """
 def get(reference, create_new=False):
     global __registry
@@ -48,26 +54,29 @@ def get(reference, create_new=False):
     if reference == None:
         return None
     # split reference after forcin string
-    reference = str(reference).split('/', 1)
+    ref = str(reference).split('/', 1)
     # get all of a class
-    if len(reference) == 1:
+    if len(ref) == 1:
         objs = []
         for obj in __registry:
-            if obj.__class__.__name__ == reference[0]:
+            if obj.__class__.__name__ == ref[0]:
                 objs.append(obj)
         return objs
     # find a specific object
     for obj in __registry:
-        if obj.__class__.__name__ == reference[0]:
+        # match by uid
+        if getattr(obj, '__uuid__', '') == reference:
+            return obj
+        elif obj.__class__.__name__ == ref[0]:
             # match by id
-            if str(id(obj)) == reference[1]:
+            if str(id(obj)) == ref[1]:
                 return obj
             # match by name
-            elif getattr(obj, 'name', '') == reference[1]:
+            elif getattr(obj, 'name', '') == ref[1]:
                 return obj
     # create and register new object
     if create_new:
-        obj = __new(reference[0], None, name=reference[1])
+        obj = __new(ref[0], None, name=ref[1])
         return obj
     return None
 
@@ -145,15 +154,15 @@ def __encode(obj):
     for (name, sparse) in getattr(cls, 'sparse_json', {}).items():
         if sparse and name in values and defaults[name][0] == values[name]:
             del values[name]
-    values['__class__'] = cls.__name__
+    if '__uuid__' not in values:
+        values['__uuid__'] = cls.__name__ + '/' + uuid.uuid4()
     return values
 
 
 """ Custom decoder to handle classes """
 def __decode(values):
-    if '__class__' in values:
-        classname = values['__class__']
-        del values['__class__']
+    if '__uuid__' in values:
+        classname = values['__uuid__'].split('/')[0]
         return __new(classname, values, **values)
     return values
 

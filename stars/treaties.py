@@ -3,7 +3,7 @@ from .defaults import Defaults
 from sys import maxsize
 
 __defaults = {
-    'name': '',
+    'name': [''],
     'relation': ['neutral'],
     'accepted_by': [[]],
     'rejected_by': [[]],

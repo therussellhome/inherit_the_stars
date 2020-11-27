@@ -7,6 +7,7 @@ from . import game_engine
 class Defaults(game_engine.BaseClass):
     """ Load all defaults into the object """
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         # populate with initial defaults
         cls = object.__getattribute__(self, '__class__')
         defaults = cls.get_defaults(cls)
@@ -39,7 +40,12 @@ class Defaults(game_engine.BaseClass):
     def __eq__(self, other):
         if type(self) != type(other):
             return False
-        return (self.__dict__ == other.__dict__)
+        if self.__dict__.keys() != other.__dict__.keys():
+            return False
+        for f in self.__dict__.keys():
+            if f != '__uuid__' and self.__dict__[f] != other.__dict__[f]:
+                return False
+        return True
 
     """ prints the entire __dict__ in a readable way so you can debug if somthing is wrong """
     def debug_display(self, depth=0):

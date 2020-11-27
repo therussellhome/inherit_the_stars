@@ -8,11 +8,11 @@
         "lithium": 0,
         "silicon": 0,
         "energy": 1100,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "propulsion": 2,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 6,
     "engines": [
@@ -21,8 +21,8 @@
             "speed_divisor": 12.68,
             "speed_exponent": 5.0,
             "antimatter_siphon": 125,
-            "__class__": "Engine"
+            "__uuid__": "Engine"
         }
     ],
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

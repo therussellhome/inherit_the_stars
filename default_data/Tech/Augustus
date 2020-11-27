@@ -6,11 +6,11 @@
     "cost": {
         "lithium": 11,
         "energy": 1500,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "weapons": 10,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 2,
     "weapons": [
@@ -21,8 +21,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__class__": "Weapon"
+            "__uuid__": "Weapon"
         }
     ],
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

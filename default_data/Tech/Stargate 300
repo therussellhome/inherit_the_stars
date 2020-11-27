@@ -8,14 +8,14 @@
         "lithium": 20,
         "silicon": 20,
         "energy": 20000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "propulsion": 5,
         "construction": 4,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 80,
     "stargate": 300,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }
