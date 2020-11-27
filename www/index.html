@@ -600,159 +600,18 @@
 
 
 <div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
-<!--
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%"><img id="button_shipyard" title="Shipyard" src="/shipyard.png"/>Shipyard</td></tr>
+        <td><img title="Shipyard" src="/shipyard.png"/></td>
+        <td class="hfill" style="font-size: 200%">Shipyard</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill" id="shipyard_ship">
     </table>
-    <table>
-        <tr>
-            <td>Existing</td>
-            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td>TODO get delete, save and copy icons
-        </tr>
+    <table class="hfill" id="shipyard_design"> 
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
     </table>
-    <table class="hfill">
-            <tr>
-                <td>Design Name</td>
-                <td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post('shipyard')"/></td>
-            </tr>
-    </table>
-    <table>
-        <tr>
-            <td>Hull</td>
-            <td>General</td>
-			<td>Orbital</td>
-			<td>Depot</td>
-		</tr>
-		<tr>
-			<td class="hfill"><select id="shipyard_hull" onchange="post('shipyard')" /></td>
-			<td><input disabled="true" id="shipyard_general_slots"/></td>
-			<td><input disabled="true" id="shipyard_orbital_slots"/></td>
-			<td><input disabled="true" id="shipyard_depot_slots"/></td>
-        </tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_bombs(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Bombs</caption>
-        <td colspan="2"><input id="shipyard_checkbox_1" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_cloaks_and_ecm(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Cloaks and ECM</caption>
-        <td colspan="2"><input id="shipyard_checkbox_2" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_defense(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Defense</caption>
-        <td colspan="2"><input id="shipyard_checkbox_3" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_depot(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Depot</caption>
-        <td colspan="2"><input id="shipyard_checkbox_4" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_engines(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engines</caption>
-        <td colspan="2"><input id="shipyard_checkbox_5" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_mech(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Mech</caption>
-        <td colspan="2"><input id="shipyard_checkbox_6" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_scanners(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanners</caption>
-        <td colspan="2"><input id="shipyard_checkbox_7" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_orbital(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orbital</caption>
-        <td colspan="2"><input id="shipyard_checkbox_8" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_weapons(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
-        <td colspan="2"><input id="shipyard_checkbox_9" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
--->
-</div>
-
-
-<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
-    <table class="topbar hfill"><tr>
-        <td style="font-size: 200%"><img id="button_shipyard" title="Shipyard" src="/shipyard.png"/>Shipyard</td></tr>
-    </table>
-    <table>
-        <tr>
-            <td>Existing</td>
-            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td><!--TODO get delete, save and copy icons-->
-        </tr>
-    </table>
-    <table class="hfill">
-            <tr>
-                <td>Design Name</td>
-                <td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post('shipyard')"/></td>
-            </tr>
-    </table>
-    <table>
-        <tr>
-            <td>Hull</td>
-            <td>General</td>
-			<td>Orbital</td>
-			<td>Depot</td>
-		</tr>
-		<tr>
-			<td class="hfill"><select id="shipyard_hull" onchange="post('shipyard')" /></td>
-			<td><input disabled="true" id="shipyard_general_slots"/></td>
-			<td><input disabled="true" id="shipyard_orbital_slots"/></td>
-			<td><input disabled="true" id="shipyard_depot_slots"/></td>
-        </tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_bombs(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Bombs</caption>
-        <td colspan="2"><input id="shipyard_checkbox_1" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_cloaks_and_ecm(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Cloaks and ECM</caption>
-        <td colspan="2"><input id="shipyard_checkbox_2" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_defense(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Defense</caption>
-        <td colspan="2"><input id="shipyard_checkbox_3" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_depot(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Depot</caption>
-        <td colspan="2"><input id="shipyard_checkbox_4" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_engines(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engines</caption>
-        <td colspan="2"><input id="shipyard_checkbox_5" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_mech(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Mech</caption>
-        <td colspan="2"><input id="shipyard_checkbox_6" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_scanners(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanners</caption>
-        <td colspan="2"><input id="shipyard_checkbox_7" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_orbital(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orbital</caption>
-        <td colspan="2"><input id="shipyard_checkbox_8" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_weapons(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
-        <td colspan="2"><input id="shipyard_checkbox_9" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    <table class="hfill" id="shipyard_tech">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
     </table>
 </div>
 
