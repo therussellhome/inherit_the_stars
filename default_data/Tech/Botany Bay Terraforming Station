@@ -5,9 +5,9 @@
     "facility_level": 4,
     "race_requirements": "Bioengineer",
     "cost": {
-        "titanium": 6,
-        "lithium": 6,
-        "silicon": 9,
+        "titanium": 15,
+        "lithium": 15,
+        "silicon": 24,
         "energy": 6300,
         "__class__": "Cost"
     },
