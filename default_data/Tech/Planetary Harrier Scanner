@@ -2,7 +2,7 @@
     "name": "Planetary Harrier Scanner",
     "category": "Planetary Scanner",
     "description": "A scanner to build on your planet to detect ships and other objects in space",
-    "facility_level": 4,
+    "facility_level": 6,
     "cost": {
         "titanium": 12,
         "lithium": 0,
@@ -17,7 +17,7 @@
     },
     "scanner": {
         "normal": 400.0,
-        "penetrating": 0.000105702977392,
+        "penetrating": 0.0002115,
         "__uuid__": "Scanner"
     },
     "__uuid__": "Tech"

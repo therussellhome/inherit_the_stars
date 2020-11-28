@@ -2,7 +2,7 @@
     "name": "Planetary Eagle Scanner",
     "category": "Planetary Scanner",
     "description": "The longest-range scanner to build on your planet to detect ships and other objects in space",
-    "facility_level": 6,
+    "facility_level": 10,
     "cost": {
         "titanium": 18,
         "lithium": 0,
@@ -17,7 +17,7 @@
     },
     "scanner": {
         "normal": 1050.0,
-        "penetrating": 0.000105702977392,
+        "penetrating": 0.0002115,
         "__uuid__": "Scanner"
     },
     "__uuid__": "Tech"
