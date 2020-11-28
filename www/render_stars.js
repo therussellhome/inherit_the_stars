@@ -143,12 +143,12 @@ function onWheel(event) {
 
 // Key controls
 function onKeyPress(event) {
-    console.log(event.keyCode);//, camera.up, camera.position, camera);
+    console.log(event.keyCode, camera.up, camera.position);//, camera);
     var rotateDirection;
     // up
     if(event.keyCode == 38) {
-        rotateDirection = new THREE.Vector3(0, -1, 0)
-        rotateCamera(rotateDirection)
+        rotateDirection = new THREE.Vector3(0, -1, 0);
+        rotateCamera(rotateDirection);
     }
     // down
     else if(event.keyCode == 40) {
@@ -191,14 +191,17 @@ function rotateCamera(moveDirection) {
 		objectSidewaysDirection.setLength( moveDirection.x );
 		moveDirection.copy( objectUpDirection.add( objectSidewaysDirection ) );
 		axis.crossVectors( moveDirection, _eye ).normalize();
-        angle *= 15 * Math.PI/180;
+        angle *= 15.0 * Math.PI/180.0;
 		quaternion.setFromAxisAngle( axis, angle );
         _eye.applyQuaternion( quaternion );
         camera.up.applyQuaternion( quaternion );
         moveDirection.copy( _eye ).normalize();
         camera_flyto.set(( _eye.x * moveDirection.length() ) + selected.position.x, ( _eye.y * moveDirection.length() ) + selected.position.y, ( _eye.z * moveDirection.length() ) + selected.position.z);
-        //camera.lookAt( selected.position )
-	}
+        camera.lookAt(camera_lookat);
+        camera.updateProjectionMatrix();
+        window.setTimeout(render, 1);
+        window.requestAnimationFrame(render);
+    }
 }
 
 // Click
@@ -249,6 +252,7 @@ function select_object(obj, flyto) {
             z_offset = - TERAMETER;
         }
         camera_flyto.set(selected.position.x, selected.position.y, selected.position.z + z_offset);
+        camera.up = new THREE.Vector3(0, 1, 0)
     }
 }
 
