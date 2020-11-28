@@ -10,6 +10,7 @@ from .reference import Reference
 class Location(game_engine.BaseClass):
     """ Initialize the location """
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self_dict = object.__getattribute__(self, '__dict__')
         self_dict['x'] = kwargs.get('x', 0.0)
         self_dict['y'] = kwargs.get('y', 0.0)

@@ -5,6 +5,7 @@ from .. import *
 
 class _TestGameEngine(game_engine.BaseClass):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = kwargs.get('name', str(id(self)))
         self.register = kwargs.get('register', True)
         self.abc = kwargs.get('abc', 123)
@@ -17,6 +18,15 @@ class GameEngineTestCase(unittest.TestCase):
     def onSetup():
         self.ut_dir = Path.home() / 'Inherit!' / 'test'
         self.ut_dir.unlink(missing_ok=True)
+
+    def test_uuid1(self):
+        t = _TestGameEngine(name='test_uid1', register=False)
+        self.assertEqual(t.__uuid__.split('/')[0], '_TestGameEngine')
+
+    def test_uuid2(self):
+        t1 = _TestGameEngine(name='test_uid2.1', register=False)
+        t2 = _TestGameEngine(name='test_uid2.2', register=False)
+        self.assertNotEqual(t1.__uuid__.split('/')[1], t2.__uuid__.split('/')[1])
 
     def test_register_n_get1(self):
         # Nothing in the register

@@ -6,14 +6,14 @@
         "lithium": 20,
         "silicon": 30,
         "energy": 10000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 6,
         "propulsion": 9,
         "construction": 10,
         "electronics": 5,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 800,
     "stargate": 500,
@@ -22,7 +22,7 @@
     "armor": 500,
     "scanner": {
         "penetrating": 0.0002115,
-        "__class__": "Scanner"
+        "__uuid__": "Scanner"
     },
     "cloak": 50,
     "engines": [
@@ -31,9 +31,9 @@
             "speed_divisor": 10.0,
             "speed_exponent": 5.0,
             "antimatter_siphon": 0.0,
-            "__class__": "Engine"
+            "__uuid__": "Engine"
         }
     ],
     "repair": 20,
-    "__class__": "MysteryShip"
+    "__uuid__": "MysteryShip"
 }

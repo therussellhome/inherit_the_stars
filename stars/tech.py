@@ -11,7 +11,7 @@ from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'name': [''],
+    'name': ['Tech the GM made up himself'],
     'category': [''],
     'slot_type': [''],
     'description': ['I\'m a horrible scanner, a zero range weapon, and an engine that only works on Saturday'],
@@ -52,8 +52,6 @@ __defaults = {
 class Tech(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = 'Tech the GM made up himself ' + str(id(self))
         game_engine.register(self)
 
     """ Determine if the item is available for a given tech level and race """

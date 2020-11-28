@@ -8,13 +8,13 @@
         "lithium": 8,
         "silicon": 12,
         "energy": 6000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 11,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 600,
     "repair": 400,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

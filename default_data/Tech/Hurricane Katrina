@@ -7,12 +7,12 @@
         "lithium": 33,
         "silicon": 15,
         "energy": 1400,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "weapons": 15,
         "electronics": 12,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 180,
     "bombs": [
@@ -21,8 +21,8 @@
             "minimum_pop_kill": 0,
             "shield_kill": 50,
             "max_defense": 85,
-            "__class__": "Bomb"
+            "__uuid__": "Bomb"
         }
     ],
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

@@ -4,6 +4,7 @@ from .. import *
 
 class _TestLocationReference(game_engine.BaseClass):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = kwargs.get('name', str(id(self)))
         self.location = location.Location()
 

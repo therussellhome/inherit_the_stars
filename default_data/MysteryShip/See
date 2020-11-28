@@ -6,14 +6,14 @@
         "lithium": 0,
         "silicon": 20,
         "energy": 10000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 3,
         "propulsion": 0,
         "construction": 10,
         "electronics": 50,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 10,
     "fuel_max": 100000,
@@ -23,7 +23,7 @@
         "anti_cloak": 1000.0,
         "penetrating": 1000.0,
         "normal": 1111.0,
-        "__class__": "Scanner"
+        "__uuid__": "Scanner"
     },
     "cloak": 0,
     "engines": [
@@ -32,7 +32,7 @@
             "speed_divisor": 10.0,
             "speed_exponent": 5.0,
             "antimatter_siphon": 0.0,
-            "__class__": "Engine"
+            "__uuid__": "Engine"
         }
     ],
     "shipyard": 0,
@@ -40,5 +40,5 @@
     "fuel_generation": 0,
     "hyperdenial": 0,
     "mat_trans_energy": 0,
-    "__class__": "MysteryShip"
+    "__uuid__": "MysteryShip"
 }

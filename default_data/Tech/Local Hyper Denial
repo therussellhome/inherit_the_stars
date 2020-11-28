@@ -8,14 +8,14 @@
         "lithium": 3,
         "silicon": 26,
         "energy": 6000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "propulsion": 7,
         "electronics": 9,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 48,
     "hyperdenial": 60,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

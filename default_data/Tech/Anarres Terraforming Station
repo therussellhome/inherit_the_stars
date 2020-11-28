@@ -9,12 +9,12 @@
         "lithium": 8,
         "silicon": 16,
         "energy": 4800,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "biotechnology": 2,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "terraform": 3,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

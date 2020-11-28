@@ -8,12 +8,12 @@
         "lithium": 0,
         "silicon": 1,
         "energy": 250,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 5,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "facility_output": 7.0,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

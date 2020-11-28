@@ -9,6 +9,7 @@ The latest report is a merge of all reports
 """
 class Intel(game_engine.BaseClass):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.__dict__.update(kwargs)
         if not hasattr(self, 'latest'):
             self.latest = {'date': 0.0}

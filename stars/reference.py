@@ -1,3 +1,4 @@
+import uuid
 from . import game_engine
 
 
@@ -6,6 +7,7 @@ from . import game_engine
 class Reference(game_engine.BaseClass):
     """ The only supported variable is the reference string """
     def __init__(self, *args, **kwargs):
+        super().__init__(**kwargs)
         if '_reference' in kwargs:
             self._reference = kwargs['_reference']
         elif len(args) == 1:
@@ -16,10 +18,10 @@ class Reference(game_engine.BaseClass):
                     self._reference = args[0] + '/'
             elif isinstance(args[0], Reference):
                 self._reference = args[0]._reference
-            elif not hasattr(args[0], 'name'):
-                raise LookupError('Cannot create reference to ' + str(args[0]))
+            elif hasattr(args[0], '__uuid__'):
+                self._reference = args[0].__uuid__
             else:
-                self._reference = args[0].__class__.__name__ + '/' + args[0].name
+                raise LookupError('Cannot create reference to "' + str(args[0]) + '"')
         elif len(args) == 2:
             self._reference = args[0] + '/' + args[1]
         else:
@@ -31,17 +33,20 @@ class Reference(game_engine.BaseClass):
             return object.__getattribute__(self, name)
         else:
             reference = self._reference
+            obj = game_engine.get(reference, create_new=False)
             if name == 'is_valid':
-                obj = game_engine.get(reference, create_new=False)
+                print(reference)
                 return (obj != None)
             elif reference == None:
                 raise LookupError('Uninitialized reference')
-            elif name == 'name':
-                return reference.split('/', 1)[1]
-            if reference.split('/', 1)[1] == '':
-                reference += str(id(self))
-                self._reference = reference
-            obj = game_engine.get(reference, create_new=True)
+            elif obj == None:
+                ref_name = reference.split('/', 1)[1]
+                if name == 'name':
+                    return ref_name
+                if ref_name == '':
+                    reference += str(uuid.uuid4())
+                    self._reference = reference
+                obj = game_engine.get(reference, create_new=True)
             if obj != None:
                 return obj.__getattribute__(name)
             else:
