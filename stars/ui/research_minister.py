@@ -40,16 +40,7 @@ class ResearchMinister(PlayerUI):
                     + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
         # Sort tech
         research_tech = []
-        research_filter = {
-            'Weapons': ['Bomb', 'Missile', 'Beam Weapon'],
-            'Defense': ['Shield', 'Armor'], 
-            'Electronics': ['Scanner', 'Cloak', 'ECM'],
-            'Engines': ['Engine'], 
-            'Hulls & Mechanicals': ['Starbase', 'Hull', 'Mechanical'], 
-            'Heavy Equipment': ['Orbital', 'Depot'], 
-            'Planetary': ['Planetary'],
-            'Other': []
-        }
+        research_filter = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Planetary', 'Other']
         research_filter_other = []
         for f in research_filter:
             research_filter_other.extend(research_filter[f])

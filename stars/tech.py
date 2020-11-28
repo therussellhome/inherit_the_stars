@@ -76,4 +76,26 @@ class Tech(Defaults):
         complete.energy = 0
         return c * (race.scrap_rate() / 100)
 
+    def get_display_category(self):
+        if self.category in ['Beam Weapon', 'Bomb', 'Missle']:
+            return 'Weapons'
+        elif self.category in ['Shield', 'Armor']:
+            return 'Defense'
+        elif self.category in ['Cloak', 'ECM', 'Scanner']:
+            return 'Electronics'
+        elif self.category in ['Engine']:
+            return 'Engines'
+        elif self.category in ['Starbase', 'Hull', 'Mechanical']:
+            return 'Hulls & Mechanicals'
+        elif self.category in ['Depot', 'Orbital']:
+            return 'Heavy Equipment'
+        elif self.category in ['Planetary Shield', 'Planetary Scanner', 'Mineral Extracter', 'Factory', 'Power Plant']:
+            return 'Planetary'        
+        else:
+            return 'Other'
+
+
+
+
+
 Tech.set_defaults(Tech, __defaults)

@@ -7,12 +7,11 @@ __defaults = {
     'shipyard_ship': [[]],
     'shipyard_design': [[]],
     'shipyard_tech': [[]],
-    'shipyard_existing_designs': [''],
     'shipyard_hull': ['Scout'],
     'shipyard_general_slots': [0, 0, sys.maxsize],
     'shipyard_orbital_slots': [0, 0, sys.maxsize],
     'shipyard_depot_slots': [0, 0, sys.maxsize],
-    
+    'shipyard_category': ['Weapons'],
 }
 
 
@@ -35,34 +34,21 @@ class Shipyard(PlayerUI):
                     + '<td><i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'Shipyard\', \'?del=' + link + '\')"></i></td>')
         # Sort tech
         shipyard_tech = []
-        shipyard_filter = {
-            'Weapons': ['Bomb', 'Missile', 'Beam Weapon'],
-            'Defense': ['Shield', 'Armor'], 
-            'Electronics': ['Scanner', 'Cloak', 'ECM'],
-            'Engines': ['Engine'], 
-            'Hulls & Mechanicals': ['Starbase', 'Hull', 'Mechanical'], 
-            'Heavy Equipment': ['Orbital', 'Depot'], 
-            'Planetary': ['Planetary'],
-            'Other': []
-        }
         shipyard_filter_other = []
-        for f in shipyard_filter:
-            shipyard_filter_other.extend(shipyard_filter[f])
-        cat = self.shipyard_tech_category
         for t in self.player.tech:
-            if t.category in shipyard_filter[cat] or (cat == 'Other' and t.category not in shipyard_filter_other):
-                cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.shipyard_partial)
-                if t.is_available(): 
-                    link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
-                    row = '<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
-                        + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'shipyard\', \'?add=' + link + '\')"></i></td>'
-                    shipyard_tech.append((cost, row))
+            if t.get_display_category() == shipyard_category and t.is_available(self.player.tech_level, self.player.race:
+                link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
+                row = '<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
+                    + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'shipyard\', \'?add=' + link + '\')"></i></td>'
+                shipyard_tech.append((cost, row))
         shipyard_tech.sort(key = lambda x: x[0])
+
         r = ''
-        for key in shipyard_filter:
-            s = '<option>' + key + '</option>'
-            if key == cat:
-                s = '<option selected="true">' + key + '</option>'
+        sf = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Planetary', 'Other']
+        for f in shipyard_filter:
+            s = '<option>' + f + '</option>'
+            if f == cat:
+                s = '<option selected="true">' + f + '</option>'
             r += s
         self.shipyard_tech.append('<tr><td style="text-align: center" colspan="2" class="hfill">Category <select id="shipyard_tech_category" onchange="post(\'shipyard\')">' \
             + r + '</select></td></tr>')
@@ -70,7 +56,7 @@ class Shipyard(PlayerUI):
             self.shipyard_tech.append(t[1])
 
         # Ship Design table
-        ship_design.append('<td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post(\'shipyard\')"/></td>')
+        ship_design.append('<tr><td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post(\'shipyard\')"/></td></tr>')
         hulls = []
         for t in self.player.tech:
             if t.is_available(player.tech_levels, player.race):
