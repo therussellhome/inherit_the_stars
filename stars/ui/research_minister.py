@@ -46,7 +46,7 @@ class ResearchMinister(PlayerUI):
             research_filter_other.extend(research_filter[f])
         cat = self.research_tech_category
         for t in self.player.tech:
-            if t.category in research_filter[cat] or (cat == 'Other' and t.category not in research_filter_other):
+            if t.get_display_category == cat or (cat == 'Other' and t.category not in research_filter_other):
                 cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.research_partial)
                 if cost > 0 and t.name not in research_queue: 
                     link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
