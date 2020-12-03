@@ -1,0 +1,19 @@
+{
+    "name": "Factory III",
+    "category": "Factory",
+    "description": "Turns 10kT of minerals into finished product per year; all factories cost the same and take the same number of people to run.",
+    "facility_level": 3,
+    "cost": {
+        "titanium": 1,
+        "lithium": 0,
+        "silicon": 1,
+        "energy": 250,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "construction": 9,
+        "__uuid__": "TechLevel"
+    },
+    "facility_output": 10.0,
+    "__uuid__": "Tech"
+}

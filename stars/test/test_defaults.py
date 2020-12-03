@@ -85,3 +85,8 @@ class DefaultsTestCase(unittest.TestCase):
         t.default_int = 9;
         t.reset_to_default()
         self.assertEqual(t.default_int, 123)
+    
+    """ requires visual confermation when you run ./unittest.sh """
+    def test_debug_display(self):
+        defalt = defaults.Defaults(name="thtoh")
+        defalt.debug_display()

@@ -1,18 +1,18 @@
 {
     "name": "Plague on Firstborn",
-    "category": "Missle",
-    "description": "The most powerful missle and the most accurate at its range but still only 40% accurate.  Capital ship missles do double damage if the target ship has no remaining shields.",
+    "category": "Missile",
+    "description": "The most powerful missile and the most accurate at its range but still only 40% accurate.  Capital ship missiles do double damage if the target ship has no remaining shields.",
     "cost": {
         "titanium": 67,
         "lithium": 23,
         "silicon": 16,
         "energy": 2400,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "weapons": 24,
         "propulsion": 10,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 35,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 40,
-            "__class__": "Weapon"
+            "__uuid__": "Weapon"
         }
     ],
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

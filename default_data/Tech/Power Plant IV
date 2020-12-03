@@ -1,0 +1,19 @@
+{
+    "name": "Power Plant IV",
+    "category": "Power Plant",
+    "description": "Produces 21% more energy than Power Plant III; all plants cost the same and take the same number of people to run.",
+    "facility_level": 4,
+    "cost": {
+        "titanium": 1,
+        "lithium": 1,
+        "silicon": 2,
+        "energy": 250,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 16,
+        "__uuid__": "TechLevel"
+    },
+    "facility_output": 170.0,
+    "__uuid__": "Tech"
+}

@@ -2,6 +2,7 @@
 let json_map = {};
 let charts = {};
 let game_mode = 'host';
+let player_tech = false;
 let current_screen = 'home';
 let current_submenu = null;
 
@@ -73,8 +74,8 @@ function show_screen(show) {
     }
     // Show selected screen
     if(show) {
-        toggle(document.getElementById('screen_' + show), 'hide', false);
         toggle(document.getElementById('button_' + show), 'selected', true);
+        toggle(document.getElementById('screen_' + show), 'hide', false);
     }
 }
 
@@ -117,16 +118,19 @@ function show_home() {
 function launch_player(token) {
     if(token.value != '') {
         game_mode = 'play';
-        post('render_stars');
         toggle(document.getElementById('sidebar_host'), 'hide', true);
         toggle(document.getElementById('sidebar_play'), 'hide', false);
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
+        post('render_stars');
     }
 }
 
 // Submit data for actioning
-function post(form, action = '') {
+function post(form = '', action = '') {
+    if(form == '') {
+        form = current_screen;
+    }
     // Default the json
     if(!json_map.hasOwnProperty(form)) {
         json_map[form] = {};
@@ -145,6 +149,9 @@ function post(form, action = '') {
                     json_post[key] = parseFloat(value);
                 }
             } else if(element.matches('[type="checkbox"]')) {
+                json_post[key] = element.checked;
+            } else if(element.matches('[type="radio"]')) {
+                //console.log(element.checked);
                 json_post[key] = element.checked;
             } else {
                 json_post[key] = element.value;
@@ -165,70 +172,98 @@ function post(form, action = '') {
 // Update the fields and the cache
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
-    // Store the entire response to the cache
-    json_map[form] = json;
-    for(key in json) {
-        element = document.getElementById(key);
-        if(element != null) {
-            if(element.nodeName == 'DIV') {
-                value = [json[key]];
-                if(json.hasOwnProperty(key + '_stop')) {
-                    value.push(json[key + '_stop']);
-                }
-                element.noUiSlider.set(value);
-            } else if(element.nodeName == 'SELECT') {
-                var options = []
-                for(var i = 0; i < element.length; i++) {
-                    options.push(element.options[i].text);
-                }
-                for(opt_text of json['options_' + key]) {
-                    if(!options.includes(opt_text)) {
-                        var new_option = document.createElement("option");
-                        new_option.text = opt_text;
-                        element.add(new_option); 
-                    }
-                    options.splice(options.indexOf(opt_text), 1);
-                }
-                for(var i = 0; i < options.length; i++) {
-                    for(var j = 0; j < element.length; j++) {
-                        if(element.options[j].text == options[i]) {
-                            element.remove(j);
-                            break;
+    try {
+        // Store the entire response to the cache
+        json_map[form] = json;
+        for(key in json) {
+            try {
+                element = document.getElementById(key);
+                if(element != null) {
+                    if(element.nodeName == 'DIV') {
+                        value = [json[key]];
+                        if(json.hasOwnProperty(key + '_stop')) {
+                            value.push(json[key + '_stop']);
                         }
+                        element.noUiSlider.set(value);
+                    } else if(element.nodeName == 'SELECT') {
+                        var options = []
+                        for(var i = 0; i < element.length; i++) {
+                            options.push(element.options[i].text);
+                        }
+                        if(json.hasOwnProperty('options_' + key)) {
+                            for(opt_text of json['options_' + key]) {
+                                if(!options.includes(opt_text)) {
+                                    var new_option = document.createElement("option");
+                                    new_option.text = opt_text;
+                                    element.add(new_option); 
+                                }
+                                options.splice(options.indexOf(opt_text), 1);
+                            }
+                            for(var i = 0; i < options.length; i++) {
+                                for(var j = 0; j < element.length; j++) {
+                                    if(element.options[j].text == options[i]) {
+                                        element.remove(j);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        element.value = json[key];
+                    } else if(element.nodeName == 'TABLE') {
+                        while(element.rows.length > 0) {
+                            element.deleteRow(0);
+                        }
+                        for(row of json[key]) {
+                            r = element.insertRow(-1);
+                            r.innerHTML = row;
+                        }
+                    } else if(element.matches('[type="checkbox"]')) {
+                        element.checked = json[key];
+                    } else if(element.matches('[type="radio"]')) {
+                        element.checked = json[key];
+                    } else {
+                        element.value = json[key];
+                    }
+                    if(json.hasOwnProperty('disabled_' + key)) {
+                        element.disabled = json['disabled_' + key];
                     }
                 }
-                element.value = json[key];
-            } else if(element.matches('[type="checkbox"]')) {
-                element.checked = json[key];
-            } else {
-                element.value = json[key];
-            }
-            if(json.hasOwnProperty('disabled_' + key)) {
-                element.disabled = json['disabled_' + key];
+            } catch(e) {
+                console.log(form, key, e);
             }
         }
+        // Let objects update themselves
+        var submit_event = document.createEvent("HTMLEvents");
+        submit_event.initEvent("submit", false, false);
+        for(element of document.getElementsByClassName('onsubmit_' + form)) {
+            element.dispatchEvent(submit_event);
+        }
+    } catch(e) {
+        console.log(form, e);
     }
-    // Let objects update themselves
-    var submit_event = document.createEvent("HTMLEvents");
-    submit_event.initEvent("submit", false, false);
-    for(element of document.getElementsByClassName('onsubmit_' + form)) {
-        element.dispatchEvent(submit_event);
+}
+
+// Refresh host screen / auto generate
+function host_auto() {
+    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').checked) {
+        document.getElementById('host_blocking').checked = true;
+        post('host', '?generate');
+    } else {
+        window.setTimeout(post, 10000);
     }
 }
 
 // Confirm if everyone is submitted before generating
 function host_generate() {
-    alert('TODO');
-}
-
-// Render the stars, planets, etc
-function render_stars() {
-    if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('systems')) {
-            draw_stars();
+    if(!document.getElementById('host_blocking').checked) {
+        var ready = document.getElementById('host_ready').checked;
+        if(ready || confirm('Not all players are turned in.  Generate anyway?')) {
+            document.getElementById('host_blocking').checked = true;
+            post('host', '?generate');
         }
     }
 }
+
 
 // Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
 function play_generate() {
@@ -240,6 +275,17 @@ function shutdown() {
     if(confirm('Shutdown INHERIT THE STARS! server?')) {
         show_screen('shutdown');
         fetch('/shutdown', { method: 'post' });
+    }
+}
+
+function edit_treaty(player) {
+    player_name = player + '_name'
+    document.getElementById('foreign_p2') = document.getElementById(player_name)
+}
+
+function declare_war() {
+    if(confirm('this will make them your enemy and will revoke your treaty.  Are you sure that you want to delcare war?')) {
+        post('foreign_minister', '?declare_war');
     }
 }
 
@@ -503,270 +549,296 @@ function format_radiation(value) {
     return ((value + 50) / 100).toString() + ' R';
 }
 
-// Post changes for tech
-function post_tech() {
-    post('tech', decodeURI(document.location.search))
+// Get the tech data
+function tech_post() {
+    if((player_tech == false) && (document.getElementById('player_token').value != '')) {
+        post('tech');
+    } else {
+        tech_display();
+    }
 }
 
-// Render the tech display page
+// Render the tech display
 function tech_display() {
-    for(screen of document.getElementsByClassName('tech')) {
-        screen.classList.toggle('hide', true);
+    if(document.getElementById('player_token').value != '') {
+        player_tech = true;
     }
-    toggle(document.body, 'hide', false);
-    if((json_map['tech']['armor'] != 0) || (json_map['tech']['shield'] != 0) || (json_map['tech']['ecm_chart_data'].length != 0) || (json_map['tech']['weapon_chart_data'].length != 0)) {
-        document.getElementById('combat').classList.toggle('hide', false);
+    var template = document.getElementById('tech_template');
+    for(var div of document.getElementsByClassName('tech_template')) {
+        var component = div.innerHTML;
+        div.innerHTML = template.innerHTML;
+        // Overview
+        if(json_map['tech']['overview'].hasOwnProperty(component)) {
+            var overview = div.getElementsByClassName('tech_overview')[0];
+            for(var row of json_map['tech']['overview'][component]) {
+                overview.insertRow(-1).innerHTML = row;
+            }
+        }
+        // Show charts
+        var chart_cnt = 0;
+        if(json_map['tech']['combat'].hasOwnProperty(component)) {
+            chart_cnt++;
+            div.getElementsByClassName('tech_combat')[0].style.display = 'inline-table';
+        }
+        if(json_map['tech']['sensor'].hasOwnProperty(component)) {
+            chart_cnt++;
+            div.getElementsByClassName('tech_sensor')[0].style.display = 'inline-table';
+        }
+        if(json_map['tech']['engine'].hasOwnProperty(component)) {
+            console.log(json_map['tech']['engine'].hasOwnProperty(component));
+            chart_cnt++;
+            div.getElementsByClassName('tech_engine')[0].style.display = 'inline-table';
+        }
+        // Size and render charts
+        var chart_width = Math.min(275, 550 / chart_cnt - 20 * chart_cnt);
+        if(json_map['tech']['combat'].hasOwnProperty(component)) {
+            var chart_element = div.getElementsByClassName('tech_combat_chart')[0];
+            chart_element.style.width = chart_width + 'px';
+            combat_chart(chart_element, json_map['tech']['combat'][component]);
+        }
+        if(json_map['tech']['sensor'].hasOwnProperty(component)) {
+            var chart_element = div.getElementsByClassName('tech_sensor_chart')[0];
+            chart_element.style.width = chart_width + 'px';
+            sensor_chart(chart_element, json_map['tech']['sensor'][component]);
+        }
+        if(json_map['tech']['engine'].hasOwnProperty(component)) {
+            var chart_element = div.getElementsByClassName('tech_engine_chart')[0];
+            chart_element.style.width = chart_width + 'px';
+            engine_chart(chart_element, json_map['tech']['engine'][component]);
+        }
+        // Guts
+        if(json_map['tech']['guts'].hasOwnProperty(component)) {
+            var guts = div.getElementsByClassName('tech_guts')[0];
+            for(var row of json_map['tech']['guts'][component]) {
+                guts.insertRow(-1).innerHTML = row;
+            }
+        }        
     }
-    if(json_map['tech']['scanner_chart_data'].length != 0) {
-        document.getElementById('scanner').classList.toggle('hide', false);
-    }
-    if(json_map['tech']['engine_chart_data'].length != 0) {
-        document.getElementById('engine').classList.toggle('hide', false);
+    toggle(document.body, 'tech_template', false);
+}
+
+// Expand the tech display
+function tech_expand(div, expand_guts) {
+    if(expand_guts != null) {
+        var guts = div.getElementsByClassName('tech_guts')[0];
+        guts.classList.toggle('hide');
+        expand_guts.classList.toggle('fa-angle-double-up');
+        expand_guts.classList.toggle('fa-angle-double-down');
+        if(div.style.height != '60px') {
+            div.style.height = '60px'
+            div.style.height = div.scrollHeight + 'px'
+        }
+    } else {
+        if((div.style.height != '60px') && (div.style.height != '')) {
+            div.style.height = '60px'
+        } else {
+            div.style.height = div.scrollHeight + 'px'
+        }
     }
 }
 
-// Create a chart for weapon curve
-function weapon_chart() {
-    chart = document.getElementById('weapon_chart');
-    if(chart.offsetParent === null) {
-        return;
-    }
-    if(!charts.hasOwnProperty('weapon_chart')) {
-        labels = [];
-        armor_data = [];
-        shield_data = [];
-        data = [];
-        for(var i=0; i < 100; i++) {
-            labels.push(i / 100);
-            armor_data.push(json_map['tech']['armor']);
-            shield_data.push(json_map['tech']['shield'] + json_map['tech']['armor']);
-            data.push(0);
-        }
-        charts['weapon_chart'] = new Chart(chart, {
-            type: 'line',
-            data: { 
-                labels: labels,
-                datasets: [
-                    { 
-                        label: 'Firepower',
-                        borderColor: 'red',
-                        backgroundColor: '#ff000055',
-                        fill: false,
-                        data: data
-                    },
-                    { 
-                        label: 'Armor',
-                        borderColor: 'gray',
-                        backgroundColor: '#99999955',
-                        fill: 'origin',
-                        data: armor_data
-                    },
-                    { 
-                        label: 'Shield',
-                        borderColor: 'cyan',
-                        backgroundColor: '#00ffff55',
-                        fill: '-1',
-                        data: shield_data
-                    },
-                    { 
-                        label: 'ECM',
-                        borderColor: 'yellow',
-                        backgroundColor: '#ffff0055',
-                        fill: false,
-                        data: data
-                    }
-                ]
-            },
-            options: { 
-                legend: {display: false},
-                elements: {point: {radius: 1}},
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                    callbacks: {
-                        title: function(tooltipItems, data) {
-                            return 'Range: ' + tooltipItems[0].label + ' Tm';
-                        },
-                        label: function(tooltipItem, data) {
-                            var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
-                            if(tooltipItem.datasetIndex == 0) {
-                                label += Math.round(tooltipItem.value);
-                            } else if(tooltipItem.datasetIndex == 2) {
-                                label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
-                            } else if(tooltipItem.datasetIndex == 3) {
-                                base = json_map['tech']['armor'] + json_map['tech']['shield'];
-                                value = parseInt(tooltipItem.value);
-                                label += Math.round(value / base * 100) + '%';
-                            } else {
-                                label += tooltipItem.value;
-                            }
-                            return label;
-                        }
-                    }
-                },
-                scales: { 
-                    x: {
-                        gridLines: {display: false}
-                    },
-                    y: {
-                        gridLines: {display: false}
-                    }
-                }
-            }
-        });
-    }
-    json_ecm = json_map['tech']['ecm_chart_data'];
+// Create a chart for combat defense/weapon curves
+function combat_chart(chart, data) {
+    labels = [];
+    firepower_data = [];
+    armor_data = [];
+    shield_data = [];
     ecm_data = [];
-    for(var i=0; i <= json_ecm.length; i++) {
-        ecm_data.push(json_ecm[i]);
+    for(var i=0; i < 100; i++) {
+        labels.push(i / 100);
+        firepower_data.push(data['firepower'][i]);
+        armor_data.push(data['armor'][i]);
+        shield_data.push(data['shield'][i]);
+        ecm_data.push(data['ecm'][i]);
     }
-    charts['weapon_chart'].data.datasets[3].data = ecm_data;
-    json_weapon = json_map['tech']['weapon_chart_data'];
-    weapon_data = [];
-    for(var i=0; i <= json_weapon.length; i++) {
-        weapon_data.push(json_weapon[i]);
-    }
-    charts['weapon_chart'].data.datasets[0].data = weapon_data;
-    charts['weapon_chart'].update('resize');
-}
-
-// Create a chart for scanner curve
-function scanner_chart() {
-    chart = document.getElementById('scanner_chart');
-    if(chart.offsetParent === null) {
-        return;
-    }
-    if(!charts.hasOwnProperty('scanner_chart')) {
-        labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
-        data = [0, 0, 0, 0];
-        charts['scanner_chart'] = new Chart(chart, {
-            type: 'polarArea',
-            data: { 
-                labels: labels,
-                datasets: [
-                    { 
-                        backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
-                        data: data
-                    }
-                ]
-            },
-            options: { 
-                legend: {display: false},
-                tooltips: {
-                    mode: 'dataset',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
+    var jschart = new Chart(chart, {
+        type: 'line',
+        data: { 
+            labels: labels,
+            datasets: [
+                { 
+                    label: 'Firepower',
+                    borderColor: 'red',
+                    backgroundColor: '#ff000055',
+                    fill: false,
+                    data: firepower_data
                 },
-                scales: { 
-                    r: {
-                        gridLines: {display: false},
-                        ticks: {backdropColor: '#000000ff'}
+                { 
+                    label: 'Armor',
+                    borderColor: 'gray',
+                    backgroundColor: '#99999955',
+                    fill: 'origin',
+                    data: armor_data
+                },
+                { 
+                    label: 'Shield',
+                    borderColor: 'cyan',
+                    backgroundColor: '#00ffff55',
+                    fill: '-1',
+                    data: shield_data
+                },
+                { 
+                    label: 'ECM',
+                    borderColor: 'yellow',
+                    backgroundColor: '#ffff0055',
+                    fill: false,
+                    data: ecm_data
+                }
+            ]
+        },
+        options: { 
+            legend: {display: false},
+            elements: {point: {radius: 1}},
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                position: 'nearest',
+                titleFontSize: 10,
+                bodyFontSize: 10,
+                callbacks: {
+                    title: function(tooltipItems, data) {
+                        return 'Range: ' + tooltipItems[0].label + ' Tm';
+                    },
+                    label: function(tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
+                        if(tooltipItem.datasetIndex == 0) {
+                            label += Math.round(tooltipItem.value);
+                        } else if(tooltipItem.datasetIndex == 2) {
+                            label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
+                        } else if(tooltipItem.datasetIndex == 3) {
+                            base = json_map['tech']['armor'] + json_map['tech']['shield'];
+                            value = parseInt(tooltipItem.value);
+                            label += Math.round(value / base * 100) + '%';
+                        } else {
+                            label += tooltipItem.value;
+                        }
+                        return label;
                     }
                 }
+            },
+            scales: { 
+                x: {
+                    gridLines: {display: false}
+                },
+                y: {
+                    gridLines: {display: false}
+                }
             }
-        });
-    }
-    json_data = json_map['tech']['scanner_chart_data'];
-    scanner_data = [];
-    max = 0;
-    for(var i=0; i < json_data.length; i++) {
-        scanner_data.push(json_data[i]);
-        if(json_data[i] > max) {
-            max = json_data[i];
+        }
+    });
+}
+
+// Create a chart for sensor curve
+function sensor_chart(chart, data) {
+    var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
+    var sensor_data = [];
+    var max = 0;
+    for(var i=0; i < data.length; i++) {
+        sensor_data.push(data[i]);
+        if(data[i] > max) {
+            max = data[i];
         }
     }
-    charts['scanner_chart'].data.datasets[0].data = scanner_data;
-    charts['scanner_chart'].options.scales.r.max = max;
-    charts['scanner_chart'].update('resize');
+    var jschart = new Chart(chart, {
+        type: 'polarArea',
+        data: { 
+            labels: labels,
+            datasets: [
+                { 
+                    backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
+                    data: sensor_data
+                }
+            ]
+        },
+        options: { 
+            legend: {display: false},
+            tooltips: {
+                mode: 'dataset',
+                intersect: false,
+                position: 'nearest',
+                titleFontSize: 10,
+                bodyFontSize: 10,
+            },
+            scales: { 
+                r: {
+                    gridLines: {display: false},
+                    ticks: {backdropColor: '#000000ff'},
+                    max: max
+                }
+            }
+        }
+    });
 }
 
 // Create a chart for engine curve
-function engine_chart() {
-    chart = document.getElementById('engine_chart');
-    if(chart.offsetParent === null) {
-        return;
-    }
-    if(!charts.hasOwnProperty('engine_chart')) {
-        labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-        data = [];
-        for(var i=1; i <= 10; i++) {
-            data.push(100);
-        }
-        charts['engine_chart'] = new Chart(chart, {
-            type: 'line',
-            data: { 
-                labels: labels,
-                datasets: [
-                    { 
-                        label: ' ₥ / ly',
-                        borderColor: 'white',
-                        backgroundColor: 'white',
-                        fill: false,
-                        data: data
-                    },
-                    { 
-                        label: ' siphon',
-                        borderColor: 'blue',
-                        backgroundColor: 'blue',
-                        fill: false,
-                        data: data
-                    },
-                    { 
-                        label: 'Max Safe',
-                        borderColor: '#ff000000',
-                        backgroundColor: '#ff000088',
-                        fill: 'end',
-                        data: data
-                    }
-                ]
-            },
-            options: { 
-                legend: {display: false},
-                elements: {point: {radius: 1}},
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                    filter: function(tooltipItem, data) {
-                        if(tooltipItem.datasetIndex == 2) {
-                            return false;
-                        }
-                        return true;
-                    },
-                    callbacks: {
-                        title: function(tooltipItems, data) {
-                            return 'Hyper ' + tooltipItems[0].label;
-                        }
-                    }
-                },
-                scales: { 
-                    x: {
-                        gridLines: {color: 'gray'}
-                    },
-                    y: {
-                        gridLines: {display: false},
-                        max: 120
-                    }
-                }
-            }
-        });
-    }
-    json_data = json_map['tech']['engine_chart_data'];
-    siphon = json_map['tech']['engine_siphon'];
+function engine_chart(chart, data) {
+    labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
     engine_data = [];
     siphon_data = [];
-    for(var i=0; i < json_data.length; i++) {
-        engine_data.push(json_data[i]);
-        siphon_data.push(siphon);
+    safe_data = [];
+    for(var i=0; i < 10; i++) {
+        engine_data.push(data['tachometer'][i]);
+        siphon_data.push(data['siphon'][i]);
+        safe_data.push(100);
     }
-    charts['engine_chart'].data.datasets[0].data = engine_data;
-    charts['engine_chart'].data.datasets[1].data = siphon_data;
-    charts['engine_chart'].update('resize');
+    var jschart = new Chart(chart, {
+        type: 'line',
+        data: { 
+            labels: labels,
+            datasets: [
+                { 
+                    label: ' ₥ / kT / ly',
+                    borderColor: 'white',
+                    backgroundColor: 'white',
+                    fill: false,
+                    data: engine_data
+                },
+                { 
+                    label: ' siphon %',
+                    borderColor: 'blue',
+                    backgroundColor: 'blue',
+                    fill: false,
+                    data: siphon_data
+                },
+                { 
+                    label: 'Max Safe',
+                    borderColor: '#ff000000',
+                    backgroundColor: '#ff000088',
+                    fill: 'end',
+                    data: safe_data
+                }
+            ]
+        },
+        options: { 
+            legend: {display: false},
+            elements: {point: {radius: 1}},
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                position: 'nearest',
+                titleFontSize: 10,
+                bodyFontSize: 10,
+                filter: function(tooltipItem, data) {
+                    if(tooltipItem.datasetIndex == 2) {
+                        return false;
+                    }
+                    return true;
+                },
+                callbacks: {
+                    title: function(tooltipItems, data) {
+                        return 'Hyper ' + tooltipItems[0].label;
+                    }
+                }
+            },
+            scales: { 
+                x: {
+                    gridLines: {color: 'gray'}
+                },
+                y: {
+                    gridLines: {display: false},
+                    max: 120
+                }
+            }
+        }
+    });
 }

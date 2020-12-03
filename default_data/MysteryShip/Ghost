@@ -1,0 +1,54 @@
+{
+    "name": "Ghost",
+    "description": "ECM Ship",
+    "cost": {
+        "titanium": 10,
+        "lithium": 6,
+        "silicon": 20,
+        "energy": 10000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 13,
+        "weapons": 18,
+        "propulsion": 20,
+        "construction": 10,
+        "electronics": 35,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 20,
+    "cargo_max": 0,
+    "fuel_max": 100000,
+    "shield": 100,
+    "armor": 200,
+    "ecm": 96,
+    "weapons": [
+        {
+            "power": 800,
+            "range_tm": 0.3,
+            "armor_multiplier": 0,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__uuid__": "Weapon"
+        }
+    ],
+    "scanner": {
+        "anti_cloak": 0.0002115,
+        "penetrating": 0.0002115,
+        "normal": 3.0,
+        "__uuid__": "Scanner"
+    },
+    "cloak": 0,
+    "engines": [
+        {
+            "kt_exponent": 1.0,
+            "speed_divisor": 20.0,
+            "speed_exponent": 1.0,
+            "antimatter_siphon": 0.0,
+            "__uuid__": "Engine"
+        }
+    ],
+    "repair": 4,
+    "__uuid__": "MysteryShip"
+}

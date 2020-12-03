@@ -1,0 +1,29 @@
+ {
+    "name": "Ethan Allen sapper",
+    "category": "Beam Weapon",
+    "race_requirements": "Aku'Ultan",
+    "description": "The same as Napoleon sapper but cheaper to build. Sappers drain shields very efficiently and have good range but have no effect on armor.",
+    "cost": {
+        "silicon": 4,
+        "energy": 1200,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 8,
+        "weapons": 15,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 1,
+    "weapons": [
+        {
+            "power": 317,
+            "range_tm": 0.4,
+            "armor_multiplier": 0,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__uuid__": "Weapon"
+        }
+    ],
+    "__uuid__": "Tech"
+}

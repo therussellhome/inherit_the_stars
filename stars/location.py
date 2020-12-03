@@ -1,4 +1,5 @@
 import sys
+from math import cos, pi, sin
 from random import random
 from . import game_engine
 from . import stars_math
@@ -7,17 +8,29 @@ from .reference import Reference
 
 """ Class defining a location """
 class Location(game_engine.BaseClass):
-    """ Initialize defaults """
+    """ Initialize the location """
     def __init__(self, **kwargs):
-        self.x = kwargs.get('x', 0.0)
-        self.y = kwargs.get('y', 0.0)
-        self.z = kwargs.get('z', 0.0)
+        super().__init__(**kwargs)
+        self_dict = object.__getattribute__(self, '__dict__')
+        self_dict['x'] = kwargs.get('x', 0.0)
+        self_dict['y'] = kwargs.get('y', 0.0)
+        self_dict['z'] = kwargs.get('z', 0.0)
+        if 'reference' in kwargs:
+            self_dict['reference'] = kwargs['reference']
+            if 'offset' in kwargs:
+                offset = kwargs.get('offset', 0.0)
+                lat = kwargs.get('lat', random() * 180 - 90)
+                lon = kwargs.get('lon', random() * 360 - 180)
+                self_dict['x'] = round(cos(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
+                self_dict['y'] = round(sin(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
+                self_dict['z'] = round(sin(lon * pi / 180) * offset, 5)
+
     
-    def polar_to_cartesian(dis, lat, lon):
+    def polar_offset(dis, lat, lon):
         x = round(cos(lat*pi/180)*dis*cos(lon*pi/180), 5)
         y = round(sin(lat*pi/180)*dis*cos(lon*pi/180), 5)
         z = round(sin(lon*pi/180)*dis, 5)
-        return [x, y, z]
+        return Location(x = self.x + x, y = self.y + y, z = self.z + z)
 
     #def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
     #    distance = (self - target) - standoff
@@ -56,7 +69,26 @@ class Location(game_engine.BaseClass):
     
     """ Equality check """
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.z == other.z
+        if type(self) != type(other):
+            return False
+        return self.x == other.x and self.y == other.y and self.z == other.z and getattr(self, 'reference', None) == getattr(other, 'reference', None)
+
+    """ If a reference then get the attribute from the referenced class """
+    def __getattribute__(self, name):
+        self_dict = object.__getattribute__(self, '__dict__')
+        if 'reference' in self_dict and name == 'x':
+            return self_dict['reference'].location.x + self_dict['x']
+        elif 'reference' in self_dict and name == 'y':
+            return self_dict['reference'].location.y + self_dict['y']
+        elif 'reference' in self_dict and name == 'z':
+            return self_dict['reference'].location.z + self_dict['z']
+        else:
+            return object.__getattribute__(self, name)
+
+    """ Set the attribute locally """
+    def __setattr__(self, name, value):
+        self_dict = object.__getattribute__(self, '__dict__')
+        self_dict[name] = value
 
 
 """ 

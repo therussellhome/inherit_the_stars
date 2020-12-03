@@ -71,6 +71,17 @@ class FleetCase(unittest.TestCase):
         fleet_one.execute('split', p1)
         self.assertEqual(ship_1 in fleet_one.ships, True)
         self.assertEqual(ship_2 in p1.fleets[1].ships, True)
+        fleet_one.waypoints = [
+            waypoint.Waypoint(
+                actions = ['split'],
+                splits = [[ship_1]],
+                location = location.Location()
+                )
+            ]
+        fleet_one.execute('split', p1)
+        self.assertEqual(ship_1 in p1.fleets[1].ships, True)
+        self.assertEqual(ship_2 in p1.fleets[0].ships, True)
+        
         
     def test_transfer(self):
         ship_1 = ship.Ship(location = location.Location())
@@ -89,12 +100,29 @@ class FleetCase(unittest.TestCase):
         p1 = player.Player(fleets = [fleet_one])
         fleet_one.execute('transfer', p1)
         self.assertEqual(fleet_one in p2.fleets, True)
-        
+    
+    def test_hyper_denial(self):
+        ship_1 = ship.Ship(location = location.Location())
+        ship_2 = ship.Ship(location = location.Location())
+        fleet_one = fleet.Fleet(
+            ships = [ship_1, ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['deploy_hyper_denial'],
+                    location = location.Location(),
+                    ),
+                ]
+            )
+        p1 = player.Player(fleets = [fleet_one])
+        fleet_one.execute('deploy_hyper_denial', p1)
+        self.assertEqual(True, False, "Not Testing")
+    
     def test_move(self):
         ship_1 = ship.Ship(
             fuel = 0,
             fuel_max = 100,
-            location=location.Location(),
+            location = location.Location(),
+            mass = 100,
             engines = [
                 engine.Engine(
                     kt_exponent = 1.5,
@@ -107,13 +135,14 @@ class FleetCase(unittest.TestCase):
                     speed_divisor = 10.0,
                     speed_exponent = 5.0,
                     antimatter_siphon = 0.0
-                    )
-                ]
+                    ),
+                ],
             )
         ship_2 = ship.Ship(
             fuel = 1000,
             fuel_max = 10000,
-            location=location.Location(),
+            location = location.Location(),
+            mass = 100,
             engines = [
                 engine.Engine(
                     kt_exponent = 1.5,
@@ -126,11 +155,86 @@ class FleetCase(unittest.TestCase):
                     speed_divisor = 10.0,
                     speed_exponent = 5.0,
                     antimatter_siphon = 0.0
-                    )
-                ]
+                    ),
+                ],
             )
         fleet_one = fleet.Fleet(
             ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    location = location.Location(),
+                    standoff = 'No Standoff',
+                    speed = 5,
+                    ),
+                waypoint.Waypoint(
+                    location = location.Location(x = 1, y = 1, z = 1),
+                    speed = 5,
+                    standoff = 'No Standoff',
+                    ),
+                waypoint.Waypoint(
+                    location = location.Location(x = 1, y = 1, z = 1),
+                    standoff = 'No Standoff',
+                    speed = 5,
+                    ),
+                ],
+            )
+        p1 = player.Player(fleets = [fleet_one])
+        for i in range(175):
+            fleet_one.execute('move', p1)
+        self.assertEqual(fleet_one.location.x, 1)
+        self.assertEqual(fleet_one.location.y, 1)
+        self.assertEqual(fleet_one.location.z, 1)
+        #'''
+        ship_3 = ship.Ship(
+            fuel = 1000,
+            fuel_max = 10000,
+            location = location.Location(),
+            mass = 100,
+            engines = [
+                ],
+            )
+        fleet_one = fleet.Fleet(
+            ships = [ship_3],
+            waypoints = [
+                waypoint.Waypoint(
+                    location = location.Location(),
+                    standoff = 'No Standoff',
+                    speed = 5,
+                    ),
+                waypoint.Waypoint(
+                    location = location.Location(x = 1, y = 1, z = 1),
+                    speed = 2,
+                    standoff = 'No Standoff',
+                    ),
+                ],
+            )
+        p1 = player.Player(fleets = [fleet_one])
+        for i in range(1):
+            fleet_one.execute('move', p1)
+        self.assertEqual(fleet_one.location.x, 0)
+        self.assertEqual(fleet_one.location.y, 0)
+        self.assertEqual(fleet_one.location.z, 0)
+        #'''
+        fleet_one.location = location.Location()
+        ship_1.location = location.Location()
+        fleet_one.add_ships([ship_2])
+        fleet_one.waypoints[1] = waypoint.Waypoint(
+            location = location.Location(x = 24/100, y = 7/100, z = 0),
+            speed = 5,
+            standoff = 'No Standoff'
+            )
+        fleet_one.waypoints.append(waypoint.Waypoint(
+            location = location.Location(x = 48/100, y = 14/100, z = 0),
+            standoff = 'No Standoff',
+            speed = 1
+            ))
+        for i in range(1):
+            fleet_one.execute('move', p1)
+        self.assertEqual(fleet_one.location.x, 24/100)
+        self.assertEqual(fleet_one.location.y, 7/100)
+        self.assertEqual(fleet_one.location.z, 0)
+        fleet_one = fleet.Fleet(
+            ships = [ship_2],
             waypoints = [
                 waypoint.Waypoint(
                     location = location.Location(),
@@ -139,40 +243,24 @@ class FleetCase(unittest.TestCase):
                     ),
                 waypoint.Waypoint(
                     location = location.Location(x = 1, y = 1, z = 1),
-                    speed = 1,
+                    speed = 10,
                     standoff = 'No Standoff'
                     ),
                 waypoint.Waypoint(
-                    location = location.Location(x = 1, y = 1, z = 1),
+                    location = location.Location(x = 2, y = 1, z = 1),
                     standoff = 'No Standoff',
                     speed = 1
                     )
                 ]
             )
         p1 = player.Player(fleets = [fleet_one])
-        for i in range(175):
-            fleet_one.execute('move', p1)
+        """
+        for i in range(9):
+            fleet_one.move(p1)
         self.assertEqual(fleet_one.location.x, 1)
         self.assertEqual(fleet_one.location.y, 1)
         self.assertEqual(fleet_one.location.z, 1)
-        fleet_one.location = location.Location()
-        fleet_one.add_ships([ship_2])
-        fleet_one.waypoints[1] = waypoint.Waypoint(
-            location = location.Location(x = 24/100, y = 7/100, z = 0),
-            speed = 5,
-            standoff = 'No Standoff'
-            )
-        fleet_one.waypoints[2] = waypoint.Waypoint(
-            location = location.Location(x = 24/100, y = 7/100, z = 0),
-            standoff = 'No Standoff',
-            speed = 1
-            )
-        for i in range(1):
-            fleet_one.move(p1)
-        self.assertEqual(fleet_one.location.x, 24/100)
-        self.assertEqual(fleet_one.location.y, 7/100)
-        self.assertEqual(fleet_one.location.z, 0)
-        
+        #"""
         
     def test_trade(self):
         buy = defaults.Defaults(
@@ -190,12 +278,12 @@ class FleetCase(unittest.TestCase):
         treaty1 = defaults.Defaults(
             sell = sell,
             buy = buy,
-            relation = 'team'
+            relation = 'team',
             )
         treaty2 = defaults.Defaults(
             sell = buy,
             buy = sell,
-            relation = 'team'
+            relation = 'teamm',
             )
         p1 = player.Player(
             energy_minister = energy_minister.EnergyMinister(
@@ -221,7 +309,7 @@ class FleetCase(unittest.TestCase):
         game_engine.register(p2)
         space_station = defaults.Defaults(
             fuel = 100000,
-            trade = True,
+            is_trading_post = True,
             fuel_max = 500000
             )
         ultimantico = planet.Planet(
@@ -233,7 +321,7 @@ class FleetCase(unittest.TestCase):
                 lithium = 1000,
                 silicon = 1000,
                 people = 1000,
-                cargo_max = 1000000000000
+                cargo_max = 10000000000000000000000000000000
                 ),
             location=location.Location(),
             )
@@ -263,7 +351,7 @@ class FleetCase(unittest.TestCase):
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['buy', 'sell'],
-                    transfers = {'buy':[['lithium', 50], ['silicon', 50]], 'sell':[['titanium', 40], ['fuel', 30000]]},
+                    transfers = {'buy':[['lithium', 50], ['silicon', 50], ['fuel', 30000]], 'sell':[['titanium', 40], ['fuel', 30000]]},
                     recipiants = {'buy':ultimantico, 'sell':ultimantico},
                     location = location.LocationReference(ultimantico)
                     )
@@ -274,7 +362,8 @@ class FleetCase(unittest.TestCase):
         p2.get_budget()
         fleet_three.compile()
         fleet_three.returnn()
-        """print()
+        """
+        print()
         print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
         for key in ultimantico.on_surface.__dict__:
             print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
@@ -287,8 +376,11 @@ class FleetCase(unittest.TestCase):
                     for key in s.cargo.__dict__:
                         if key != 'cargo_max':
                             print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
-                    print("}")"""
-        fleet_three.execute('sell', p2) #do stuff
+                    print("}")
+        #"""
+        fleet_three.execute('sell', p2)
+        p1.treaties[p2.name].relation = 'team'
+        fleet_three.execute('sell', p2)
         self.assertEqual(p1.energy, 29640)
         self.assertEqual(p2.energy, 150360)
         self.assertEqual(ultimantico.on_surface.titanium, 1040)
@@ -299,17 +391,24 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_7.fuel, 0)
         self.assertEqual(ship_8.cargo.titanium, 30)
         self.assertEqual(ship_8.fuel, 0)
-        fleet_three.execute('buy', p2) #do stuff
-        self.assertEqual(p1.energy, 30340)
-        self.assertEqual(p2.energy, 149660)
+        p1.treaties[p2.name].relation = 'teamm'
+        fleet_three.execute('buy', p2)
+        p1.treaties[p2.name].relation = 'team'
+        fleet_three.execute('buy', p2)
+        self.assertEqual(p1.energy, 90340)
+        self.assertEqual(p2.energy, 89660)
         self.assertEqual(ultimantico.on_surface.lithium, 950)
         self.assertEqual(ultimantico.on_surface.silicon, 950)
+        self.assertEqual(ultimantico.space_station.fuel, 100000)
         self.assertEqual(ship_6.cargo.lithium, 50)
         self.assertEqual(ship_6.cargo.silicon, 50)
+        self.assertEqual(ship_6.fuel, 10000)
         self.assertEqual(ship_7.cargo.lithium, 25)
         self.assertEqual(ship_7.cargo.silicon, 25)
+        self.assertEqual(ship_7.fuel, 5000)
         self.assertEqual(ship_8.cargo.lithium, 75)
         self.assertEqual(ship_8.cargo.silicon, 75)
+        self.assertEqual(ship_8.fuel, 15000)
         
         
     def test_load_unload_fleet(self):
@@ -358,14 +457,16 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_one, fleet_two])
         fleet_two.execute('load', p1)
-        """print()
+        """
+        print()
         for fleett in p1.fleets:
             for shipp in fleett.ships:
                 print(shipp.name, ": {'fuel':", shipp.fuel, end='')
                 for key in shipp.cargo.__dict__:
                     if key != 'cargo_max':
                         print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-                print("}")"""
+                print("}")
+        #"""
         self.assertEqual(ship_1.cargo.titanium, 20)
         self.assertEqual(ship_1.cargo.people, 30)
         self.assertEqual(ship_2.cargo.titanium, 20)
@@ -406,7 +507,6 @@ class FleetCase(unittest.TestCase):
         game_engine.register(ship_2)
         p1 = player.Player()
         ultimantico = planet.Planet(
-            player = reference.Reference(p1),
             name = 'ultimantico',
             space_station = defaults.Defaults(
                 fuel_max = 1000000,
@@ -424,16 +524,18 @@ class FleetCase(unittest.TestCase):
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['load', 'unload'],
-                    transfers = {'unload':[['lithium', 40], ['silicon', 60], ['fuel', 40]], 'load':[['titanium', 40], ['people', 60]]},
+                    transfers = {'unload':[['lithium', 40], ['silicon', 60]], 'load':[['titanium', 40], ['people', 60], ['fuel', 40]]},
                     recipiants = {'load':ultimantico, 'unload':ultimantico},
                     location = location.LocationReference(ultimantico)
                     )
                 ]
             )
         p1.fleets = [fleet_one]
+        fleet_one.execute('load', p1)
         ultimantico.player = reference.Reference(p1)
         fleet_one.execute('load', p1)
-        """print()
+        """
+        print()
         for shipp in fleet_one.ships:
             print(shipp.name, ": {'fuel':", shipp.fuel, end='')
             for key in shipp.cargo.__dict__:
@@ -443,23 +545,27 @@ class FleetCase(unittest.TestCase):
         print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
         for key in ultimantico.on_surface.__dict__:
             print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")"""
+        print("}")
+        #"""
         self.assertEqual(ship_1.cargo.titanium, 20)
         self.assertEqual(ship_1.cargo.people, 30)
+        self.assertEqual(ship_1.fuel, 70)
         self.assertEqual(ship_2.cargo.titanium, 20)
         self.assertEqual(ship_2.cargo.people, 30)
+        self.assertEqual(ship_2.fuel, 70)
         self.assertEqual(ultimantico.on_surface.titanium, 60)
         self.assertEqual(ultimantico.on_surface.people, 40)
+        self.assertEqual(ultimantico.space_station.fuel, 99960)
+        ultimantico.player = reference.Reference('Player')
+        fleet_one.execute('unload', p1)
+        ultimantico.player = reference.Reference(p1)
         fleet_one.execute('unload', p1)
         self.assertEqual(ship_1.cargo.lithium, 30)
         self.assertEqual(ship_1.cargo.silicon, 20)
-        self.assertEqual(ship_1.fuel, 30)
         self.assertEqual(ship_2.cargo.lithium, 30)
         self.assertEqual(ship_2.cargo.silicon, 20)
-        self.assertEqual(ship_2.fuel, 30)
         self.assertEqual(ultimantico.on_surface.lithium, 40)
         self.assertEqual(ultimantico.on_surface.silicon, 60)
-        self.assertEqual(ultimantico.space_station.fuel, 100040)
     
     
     def test_self_repair(self):
@@ -525,6 +631,9 @@ class FleetCase(unittest.TestCase):
                 lithium = 40000,
                 ),
             gravity = 50,
+            on_surface = cargo.Cargo(
+                people = 1,
+                ),
             )
         ship_3 = ship.Ship(
             location = location.Location(),
@@ -544,19 +653,45 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('orbital_mining', p1)
+        ultimantico.on_surface.people = 0
+        fleet_two.execute('orbital_mining', p1)
         self.assertEqual(ultimantico.on_surface.titanium, 16)
         self.assertEqual(ultimantico.on_surface.lithium, 16)
         self.assertEqual(ultimantico.on_surface.silicon, 16)
         self.assertEqual(ultimantico.remaining_minerals.titanium, 39977)
         self.assertEqual(ultimantico.remaining_minerals.lithium, 39977)
         self.assertEqual(ultimantico.remaining_minerals.silicon, 39977)
-    '''
+    
     def test_lay_mines(self):
+        p1 = player.Player(name = 'caltorez')
+        system = star_system.StarSystem(
+            mines = {p1.name: 0},
+            location = location.Location(),
+            planets = [
+                planet.Planet(
+                    gravity = 70,
+                    ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
+                planet.Planet(
+                    gravity = 30,
+                    ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
+                planet.Planet(
+                    gravity = 50,
+                    ),
+                ],
+            )
         ship_3 = ship.Ship(
             location = location.Location(),
+            mines_laid = 500000000000,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
+            mines_laid = 500000000000,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -565,14 +700,20 @@ class FleetCase(unittest.TestCase):
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['lay_mines'],
-                    recipiants = {'lay_mines': ultimantico},
+                    recipiants = {'lay_mines': system},
                     location = location.Location()
                     )
                 ]
             )
-        p1 = player.Player(fleets = [fleet_two])
+        p1.fleets = [fleet_two]
         fleet_two.execute('lay_mines', p1)
-    '''
+        self.assertEqual(system.mines[p1.name], 1000000000000)
+        print('dencity', 1000000000000 / (100 ** 3))
+        print('sweep', system.sweep_mines(120, 1, 0.3, 'caltorez'))
+        print('hit', system.mines_hit(300, 100, 'caltorez'))
+        system.mines_decay()
+        self.assertEqual(system.mines['caltorez'], 985000000000)
+        
     def test_bomb(self):
         p1 = player.Player(
             race = race.Race(
@@ -601,9 +742,9 @@ class FleetCase(unittest.TestCase):
                 ),
             location = location.Location(),
             facilities = {
-                'Defense': facility.Facility(
+                'defenses': facility.Facility(
                     quantity = 20,
-                    tech = tech.Tech(shield = 600)
+                    tech = tech.Tech(shields = 600)
                     ),
                 },
             )
@@ -1230,7 +1371,7 @@ class FleetCase(unittest.TestCase):
         p2.treaties[p1.name] = defaults.Defaults(relation = 'enemy')
         fleet_two.execute('bomb', p2)
         self.assertLess(ultimantico.on_surface.people, 192, 'NOTE: this will somtimes fail as it is statistical in nature')
-        self.assertLess(ultimantico.facilities['Defense'].quantity, 17, 'NOTE: this will somtimes fail as it is statistical in nature')
+        self.assertLess(ultimantico.facilities['defenses'].quantity, 17, 'NOTE: this will somtimes fail as it is statistical in nature')
     
     def test_colonize(self):
         ultimantico = planet.Planet(
@@ -1240,14 +1381,12 @@ class FleetCase(unittest.TestCase):
         ship_3 = ship.Ship(
             location = location.Location(),
             cargo = cargo.Cargo(people = 100, cargo_max = 200),
-            num_col_modules = 1,
-            can_colonize = True,
+            colonizer = True,
             )
         ship_4 = ship.Ship(
             location = location.Location(),
             cargo = cargo.Cargo(people = 200, cargo_max = 200),
-            num_col_modules = 2,
-            can_colonize = True,
+            colonizer = True,
             )
         game_engine.register(ship_3)
         game_engine.register(ship_4)
@@ -1268,7 +1407,7 @@ class FleetCase(unittest.TestCase):
         game_engine.register(p1)
         game_engine.register(ultimantico)
         fleet_two.execute('colonize', p1)
-        self.assertEqual(ultimantico.on_surface.people, 100)
+        self.assertEqual(ultimantico.on_surface.people, 200)
         self.assertEqual(ship_3 in fleet_two.ships, False)
         
     """
@@ -1357,7 +1496,7 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('patrol', p1)
-    '''
+    "'""
     def test_route(self):
         ship_3 = ship.Ship(
             location = location.Location(),
@@ -1379,4 +1518,4 @@ class FleetCase(unittest.TestCase):
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('route', p1)
     """
-#'''
+

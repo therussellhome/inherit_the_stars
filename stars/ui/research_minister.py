@@ -1,77 +1,77 @@
 import sys
-from .player import Player
+from .playerui import PlayerUI
+from ..reference import Reference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'research_current_energy_tech_level': [0, 0, 25],
-    'research_current_weapons_tech_level': [0, 0, 25],
-    'research_current_propulsion_tech_level': [0, 0, 25],
-    'research_current_construction_tech_level': [0, 0, 25],
-    'research_current_biotechnology_tech_level': [0, 0, 25],
-    'research_queue_item_1': [''],
-    'research_queue_item_2': [''],
-    'research_queue_item_3': [''],
-    'research_queue_item_4': [''],
-    'research_queue_item_5': [''],
-    'research_queue_item_6': [''],
-    'research_queue_item_7': [''],
-    'research_queue_item_8': [''],
+    'research_level': [[]],
+    'research_queue': [[]],
+    'research_tech_category':['Weapons'],
+    'research_default_field': [[]],
+    'research_tech': [[]],
 }
 
 
 """ """
-class ResearchMinister(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
-        self.research_current_energy_tech_level = max(min(research_current_energy_tech_level, 25), 0)  
-        self.research_current_weapons_tech_level = max(min(research_current_weapons_tech_level, 25), 0)
-        self.research_current_propulsion_tech_level = max(min(research_current_propulsion_tech_level, 25), 0)
-        self.research_current_construction_tech_level = max(min(research_current_construction_tech_level, 25), 0)
-        self.research_current_electronics_tech_level = max(min(research_current_electronics_tech_level, 25), 0)
-        self.research_current_biotechnology_tech_level = max(min(research_current_biotechnology_tech_level, 25), 0)
-        self.research_queue_item_1 = me.research_queue[0] 
-        self.research_queue_item_2 = me.research_queue[1] 
-        self.research_queue_item_3 = me.research_queue[2] 
-        self.research_queue_item_4 = me.research_queue[3] 
-        self.research_queue_item_5 = me.research_queue[4] 
-        self.research_queue_item_6 = me.research_queue[5] 
-        self.research_queue_item_7 = me.research_queue[6] 
-        self.research_queue_item_8 = me.research_queue[7] 
-    def calc_cost(self, field):
-        if field == 'energy':
-            return round(research_modifier_energy * ((player.energy_tech_level ** 3) * 8 + 150))
-        if field == 'weapons':
-            return round(research_modifier_weapons * ((player.weapons_tech_level ** 3) * 8 + 150)) 
-        if field == 'propulsion':
-            return round(research_modifier_propulsion * ((player.propulsion_tech_level ** 3) * 8 + 150))
-        if field == 'construction':
-            return round(research_modifier_construction * ((player.construction_tech_level ** 3) * 8 + 150)) 
-        if field == 'electronics':
-            return round(research_modifier_electronics * ((player.electronics_tech_level ** 3) * 8 + 150))
-        if field == 'biotechnology':
-            return round(research_modifier_biotechnology * ((player.biotechnology_tech_level ** 3) * 8 + 150))
-    def research_bombs(self):
-        pass
-    def research_cloaks_and_ecm(self):
-        pass
-    def research_defense(self):
-        pass
-    def research_depot(self):
-        pass
-    def research_engines(self):
-        pass
-    def research_hulls(self):
-        pass
-    def research_mech(self):
-        pass 
-    def research_orbital(self):
-        pass
-    def research_planetary(self):
-        pass
-    def research_scanners(self):
-        pass
-    def research_weapons(self):
-        pass
+class ResearchMinister(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
+        if not self.player:
+            return
+        # Add to research queue
+        if action.startswith('add='):
+            tech_add = Reference('Tech', action[4:])
+            self.player.research_queue.append(tech_add)
+        # Remove from research queue
+        if action.startswith('del='):
+            for t in self.player.research_queue:
+                if t.name == action[4:]:
+                    self.player.research_queue.remove(t)
+                    break
+        # Current tech levels
+        self.research_level.append('<td>' + self.player.tech_level.to_html(True) + '</td>')
+        # Research queue
+        research_queue = []
+        for t in self.player.research_queue:
+            link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
+            research_queue.append(t.name)
+            self.research_queue.append('<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
+                    + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
+        # Sort tech
+        research_tech = []
+        research_filter = {
+            'Weapons': ['Bomb', 'Missile', 'Beam Weapon'],
+            'Defense': ['Shield', 'Armor'], 
+            'Electronics': ['Scanner', 'Cloak', 'ECM'],
+            'Engines': ['Engine'], 
+            'Hulls & Mechanicals': ['Starbase', 'Hull', 'Mechanical'], 
+            'Heavy Equipment': ['Orbital', 'Depot'], 
+            'Planetary': ['Planetary'],
+            'Other': []
+        }
+        research_filter_other = []
+        for f in research_filter:
+            research_filter_other.extend(research_filter[f])
+        cat = self.research_tech_category
+        for t in self.player.tech:
+            if t.category in research_filter[cat] or (cat == 'Other' and t.category not in research_filter_other):
+                cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.research_partial)
+                if cost > 0 and t.name not in research_queue: 
+                    link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
+                    row = '<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
+                        + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
+                    research_tech.append((cost, row))
+        research_tech.sort(key = lambda x: x[0])
+        r = ''
+        for key in research_filter:
+            s = '<option>' + key + '</option>'
+            if key == cat:
+                s = '<option selected="true">' + key + '</option>'
+            r += s
+        self.research_tech.append('<tr><td style="text-align: center" colspan="2" class="hfill">Category <select id="research_tech_category" onchange="post(\'research_minister\')">' \
+            + r + '</select></td></tr>')
+        for t in research_tech:
+            self.research_tech.append(t[1])
 
-ResearchMinister.set_defaults(ResearchMinister, __defaults, no_reset=[])
+ResearchMinister.set_defaults(ResearchMinister, __defaults, sparse_json=False)

@@ -8,14 +8,14 @@
         "lithium": 16,
         "silicon": 10,
         "energy": 5000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 1,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 100,
     "mining_rate": 1.25,
-    "mineral_depletion_factor": 0.01,
-    "__class__": "Tech"
+    "mineral_depletion_factor": 1.33,
+    "__uuid__": "Tech"
 }

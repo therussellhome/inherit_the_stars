@@ -1,5 +1,5 @@
 import sys
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -11,15 +11,17 @@ __defaults = {
 
 
 """ Components of score are precomputed as part of turn generation """
-class Messages(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
+class Messages(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
+        if not self.player:
+            return
         # Bound the msg index
         if self.messages_index == -1:
-            self.messages_index = me.messages_unread
-        self.messages_index = min(len(me.messages), self.messages_index)
-        me.messages_unread = max(me.messages_unread, self.messages_index)
-        self.messages_count = len(me.messages)
-        self.messages_text = me.messages[self.messages_index]
+            self.messages_index = self.player.messages_unread
+        self.messages_index = min(len(self.player.messages), self.messages_index)
+        self.player.messages_unread = max(self.player.messages_unread, self.messages_index)
+        self.messages_count = len(self.player.messages)
+        self.messages_text = self.player.messages[self.messages_index]
 
-Messages.set_defaults(Messages, __defaults, no_reset=['messages_index'])
+Messages.set_defaults(Messages, __defaults, sparse_json=False)

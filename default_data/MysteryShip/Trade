@@ -1,0 +1,37 @@
+{
+    "name": "Trade",
+    "description": "Trading Post Ship, cargo does not increase fuel use",
+    "cost": {
+        "titanium": 100,
+        "lithium": 0,
+        "silicon": 10,
+        "energy": 10000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+	"propulsion": 10,
+        "construction": 20,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 200,
+    "cargo_max": 10000,
+    "fuel_max": 1000000,
+    "is_trading_post": true,
+    "shield": 100,
+    "armor": 200,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__uuid__": "Scanner"
+    },
+    "engines": [
+        {
+            "kt_exponent": 0.01,
+            "speed_divisor": 20.0,
+            "speed_exponent": 5.0,
+            "antimatter_siphon": 0.0,
+            "__uuid__": "Engine"
+        }
+    ],
+    "repair": 10,
+    "__uuid__": "MysteryShip"
+}

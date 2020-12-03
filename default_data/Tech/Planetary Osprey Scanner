@@ -1,0 +1,24 @@
+{
+    "name": "Planetary Osprey Scanner",
+    "category": "Planetary Scanner",
+    "description": "A scanner to build on your planet to detect ships and other objects in space",
+    "facility_level": 5,
+    "cost": {
+        "titanium": 18,
+        "lithium": 0,
+        "silicon": 84,
+        "energy": 38400,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 6,
+        "electronics": 14,
+        "__uuid__": "TechLevel"
+    },
+    "scanner": {
+        "normal": 650.0,
+        "penetrating": 0.000105702977392,
+        "__uuid__": "Scanner"
+    },
+    "__uuid__": "Tech"
+}

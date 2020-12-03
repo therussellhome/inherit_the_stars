@@ -8,18 +8,18 @@
         "lithium": 0,
         "silicon": 7,
         "energy": 2400,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 2,
         "electronics": 5,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 2,
     "scanner": {
         "penetrating": 50.0,
         "normal": 75.0,
-        "__class__": "Scanner"
+        "__uuid__": "Scanner"
     },
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

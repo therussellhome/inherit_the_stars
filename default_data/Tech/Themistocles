@@ -1,0 +1,29 @@
+{
+    "name": "Themistocles",
+    "category": "Beam Weapon",
+    "description": "the-MIST-oh-cleez (it starts like thick and rhymes with cheese).  Themistocles was the ancient Greek naval commander who fought off Persia.",
+    "cost": {
+        "titanium": 0,
+        "lithium": 8,
+        "silicon": 0,
+        "energy": 700,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "weapons": 6,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 1,
+    "weapons": [
+        {
+            "power": 39,
+            "range_tm": 0.2,
+            "armor_multiplier": 1,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__uuid__": "Weapon"
+        }
+    ],
+    "__uuid__": "Tech"
+}

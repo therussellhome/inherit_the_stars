@@ -1,0 +1,19 @@
+{
+    "name": "Mine II",
+    "category": "Mineral Extractor",
+    "description": "Wastes only about half as much as Mine I. All mines output the same; lower tech mines decrease mineral availability more quickly.",
+    "facility_level": 2,
+    "cost": {
+        "titanium": 0,
+        "lithium": 1,
+        "silicon": 0,
+        "energy": 100,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "weapons": 4,
+        "__uuid__": "TechLevel"
+    },
+    "mineral_depletion_factor": 1.16,
+    "__uuid__": "Tech"
+}

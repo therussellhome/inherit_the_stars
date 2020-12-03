@@ -1,4 +1,4 @@
-from .player import Player
+from .playerui import PlayerUI
 
 
 """ Default values (default, min, max)  """
@@ -7,10 +7,9 @@ __defaults = {
 
 
 """ """
-class EnergyMinister(Player):
-    """ Interact with UI """
-    def _post(self, action, me):
-        pass
+class EnergyMinister(PlayerUI):
+    def __init__(self, action, **kwargs):
+        super().__init__(**kwargs)
 
 
-EnergyMinister.set_defaults(EnergyMinister, __defaults, no_reset=[])
+EnergyMinister.set_defaults(EnergyMinister, __defaults, sparse_json=False)

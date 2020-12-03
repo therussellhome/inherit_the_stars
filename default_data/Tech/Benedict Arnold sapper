@@ -1,0 +1,29 @@
+ {
+    "name": "Benedict Arnold sapper",
+    "category": "Beam Weapon",
+    "race_requirements": "Aku'Ultan",
+    "description": "The same as Wellington sapper but cheaper to build. Sappers drain shields very efficiently and have good range but have no effect on armor.",
+    "cost": {
+        "silicon": 6,
+        "energy": 1600,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 11,
+        "weapons": 21,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 1,
+    "weapons": [
+        {
+            "power": 812,
+            "range_tm": 0.4,
+            "armor_multiplier": 0,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__uuid__": "Weapon"
+        }
+    ],
+    "__uuid__": "Tech"
+}

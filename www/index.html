@@ -2,30 +2,14 @@
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
 <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<!-- icons -->
+<link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
-<script src="three.js"></script>
 <!-- 3d UI -->
-<script type="x-shader/x-vertex" id="vertexshader">
-attribute float size;
-attribute vec4 color;
-varying vec4 vColor;
-void main() {
-    vColor = color;
-	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-	gl_PointSize = size / -mvPosition.z;
-	gl_Position = projectionMatrix * mvPosition;
-}
-</script>
-<script type="x-shader/x-fragment" id="fragmentshader">
-varying vec4 vColor;
-void main() {
-    gl_FragColor = vec4( vColor );
-}
-</script>
-<script src="render_stars.js"></script>
+<script type="module" src="render_stars.js"></script>
 <!--  -->
 <link href="stars.css" rel="stylesheet">
 <script src="stars.js"></script>
@@ -37,6 +21,7 @@ void main() {
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
     <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
     <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_host" title="Generate" src="/generate.gif" onclick="show_screen('host')"/></td></tr>
     <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
     <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
     <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
@@ -51,7 +36,6 @@ void main() {
 
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
     <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
-    <tr><td><img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/></tr></td>
     <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
     <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
     <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
@@ -67,6 +51,7 @@ void main() {
     
 
 <div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
+    <img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/>
     <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
     <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
     <img class="button" id="button_interstellar" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
@@ -111,95 +96,41 @@ void main() {
 <div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Launch</td>
-        <td><img class="button" title="Launch" src="/launch.gif" onclick="post('launch', '?go')"/></td>
     </tr></table>
-    <select id="launch_game" class="hfill" size="25" onchange="post('launch')" style="background: transparent; color: white"/>
+    <select id="launch_game" class="hfill" size="15" onchange="post('launch', '?go')" style="background: transparent; color: white; font-size: 100%"></select>
     <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
-    <!-- TODO move to host screen
-    <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Loaded Game: <input id="launch_loaded_game" disabled="true" style="color: black"/></caption>
-        <tr>
-            <td class="hfill"><input id="launch_player01" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player01_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player02" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player02_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player03" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player03_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player04" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player04_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player05" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player05_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player06" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player06_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player07" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player07_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player08" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player08_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player09" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player09_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player10" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player10_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player11" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player11_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player12" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player12_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player13" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player13_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player14" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player14_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player15" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player15_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_player16" disabled="true" class="hfill"/></td>
-            <td><input id="launch_player16_status" disabled="true"/></td>
-        </tr>
-        <tr>
-            <td class="hfill"><input id="launch_loaded_autogen" disabled="true" class="hfill"/></td>
-            <td style="text-align: right"><img class="button" id="button_generate_now" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
-        </tr>
+</div>
+
+
+<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host', '?reset')" onsubmit="host_auto()">
+    <table class="topbar hfill"><tr>
+        <td class="hfill" style="font-size: 200%">Host</td>
+        <td>Auto Generate: <input id="host_autogen" type="checkbox"/></td>
+    </tr></table>
+    <select id="host_game" class="hfill" size="15" onchange="post('host')" style="background: transparent; color: white; font-size: 100%"></select>
+    <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
+    <input id="host_ready" type="checkbox" disabled="true" style="display: none"/>
+    <table class="hfill"><tr>
+        <td>Game: <input id="host_name" disabled="true"/></td>
+        <td rowspan="2" class="hfill" style="text-align: right"><img class="button" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
+    </tr><tr>
+        <td>Turn #: <input id="host_turn" disabled="true"/></td>
+    </tr></table>
+    <table class="hfill" id="host_status">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Player Status</caption>
     </table>
-    -->
 </div>
 
 
 <div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">New Game</td>
+        <td class="hfill" style="font-size: 200%">New Game</td>
+        <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create'); show_screen('launch')"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
-            <td><img class="button" id="button_new_game_create" title="Create Game" src="/new_game.png" onclick="post('new_game', '?create')"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">
@@ -354,16 +285,17 @@ void main() {
 
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Race Editor</td>
-        <td class="hfill" style="text-align: right">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        <td class="hfill" style="font-size: 200%">Race Editor</td>
+        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
     </tr></table><table class="hfill">
         <tr>
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
-            <td rowspan="2"><img class="button" title="Save" src="/race.png" onclick="save_race()"/></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
@@ -521,11 +453,6 @@ void main() {
 </td></tr></table>
 
 
-<div class="screen hide" id="screen_tech_browser" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
-    <iframe src="/tech.html" style="width: 100%; height: 99%"></iframe>
-</div></div>
-
-
 <div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
     <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
 </div></div>
@@ -539,10 +466,7 @@ void main() {
 <!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
 
 
-<div class="hide onsubmit_render_stars" id="play_mode" style="position: absolute; width: 100%; height: 100%; background: black" onsubmit="render_stars()">
-<!--
-    <div id="draw_stars" style="position: absolute; left: 70px; top: 0px; user-select: none; width: 100%; height: 100%"></div>
--->
+<div class="hide onsubmit_render_stars onload" id="play_mode" tabindex="0" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black" onload="post('render_stars')">
 </div>
 
 
@@ -553,26 +477,25 @@ void main() {
     <input id="messages_index" class="hidden" disabled="true"/>
     <table class="topbar hfill"><tr>
         <td class="hfill" style="font-size: 200%">Messages</td>
-        <td><img class="button" title="Close" src="/close.png" onclick="show_screen(null)"/></td>
+        <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
         <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
     </table><table class="hfill">
         <tr>
-            <td><img class="button button_s" title="Prev" src="/prev.png" onclick="post('messages', '?prev')"/></td>
+            <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"></i></td>
             <td class="hfill"></td>
-            <td><img class="button button_s" title="Trash" src="/trash.png" onclick="post('messages', '?trash')"/></td>
-            <td><img class="button button_s" title="Next" src="/next.png" onclick="post('messages', '?next')"/></td>
+            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"></i></td>
+            <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"></i></td>
+            <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"></i></td>
         </tr>
     </table><table class="hfill">
         <tr>
-            <td colspan="3" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
+            <td rowspan="2"><img class="button" src="/ministers.png"/></td>
+            <td colspan="2" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
         </tr><tr>
-            <td rowspan="2"><input id="messages_from_icon" disabled="true" style="font-size: 200%"/></td>
-            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
-            <td rowspan="2"><img class="button button_s" title="GoTo" src="/goto.png" onclick="message_goto()"/></td>
-        </tr><tr>
+            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 75%"/></td>
             <td><input id="messages_date" disabled="true" style="font-size: 75%"/></td>
         </tr><tr>
             <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
@@ -612,157 +535,101 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_research_minister" style="width: 600px" onload="post('research_minister')">
+<div class="screen hide onload onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onload="post('research_minister')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%"><img id="button_research_minister" title="Research Minister" src="/research_minister.png"/>Research Minister</td> 
+        <td><img title="Research Minister" src="/research_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Research Minister</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="current_tech_levels"/>+ Current Tech Levels</caption>
-        <tr><td>Energy<input id="research_current_energy_tech_level" disabled="true"/></td></tr>
-        <tr><td>Weapons<input id="research_current_weapons_tech_level" disabled="true"/></td></tr>
-        <tr><td>Propulsion<input id="research_current_propulsion_tech_level" disabled="true"/></td></tr>
-        <tr><td>Construction<input id="research_current_construction_tech_level" disabled="true"/></td></tr>
-        <tr><td>Electronics<input id="research_current_electronics_tech_level" disabled="true"/></td></tr>
-        <tr><td>Biotechnology<input id="research_current_biotechnology_tech_level" disabled="true"/></td></tr></table>
-    <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_plan"/>+ Research Plan</caption>
-    <table class='onsubmit_research' onsubmit='research_bombs(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_bombs"/>+ Bombs</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
+    <table class="hfill" id="research_level" style="font-size: 150%; text-aign: justify; text-align-last: justify; text-justify: inter-character">
     </table>
-    <table class='onsubmit_research' onsubmit='research_cloaks_and_ecm(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_cloaks_and_ecm"/>+ Cloaks and ECM</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_defense(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_defense"/>+ Defense</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_depot(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_depot"/>+ Depot</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_engines(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_engines"/>+ Engines</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_hulls(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_hulls "/>+ Hulls</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_mech(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_mech"/>+ Mechanical</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_orbital(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_orbital"/>+ Orbital</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_planetary(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_planetary"/>+ Planetary</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_scanners(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_scanners"/>+ Scanners</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class='onsubmit_research' onsubmit='research_weapons(this)'>
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="research_weapons"/>+ Weapons</caption>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>    
-    </table>
-    <table class="hfill">
+    <table class="hfill" id="research_queue">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-        <tr><td><input id="research_queue_item_1" disabled="true"/></td><td></td></tr> <!-- TODO get a trash icon -->
-        <tr><td><input id="research_queue_item_2" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_3" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_4" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_5" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_6" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_7" disabled="true"/></td><td></td></tr>
-        <tr><td><input id="research_queue_item_8" disabled="true"/></td><td></td></tr>
+<!--
+		<tr><td>Default Research Field</td><td class="hfill"><select id="research_default_field" onchange="post('research_minister')" /></td></tr>
+-->
+    </table>
+    <table class="hfill" id="research_tech">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
     </table>
 </div>
 
-
 <div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Foreign Minister" src="/foreign_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Foreign Minister</td>
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill" id="foreign_treaties">
+    </table>
+    <table class="hfill"  style="font-size: 85%">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ negotiation</caption>
+        <tr><td colspan="5">
+        <table class="hfill" style="font-size: 118%">
+        <tr>
+            <td><input disabled="true" id="foreign_p2" style="width: 6em; font-size: 125%"/></td>
+            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team"><i style="font-size: 125%" class="fas fa-handshake"></i></label></td>
+            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')" checked="true"><label for="foreign_relation_is_neutral"><i style="font-size: 125%" class="fas fa-meh"></i></label></td>
+            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_enemy" onchange="post('foreign_minister')"><label for="foreign_relation_is_enemy"><i style="font-size: 125%" class="fas fa-skull-crossbones"></i></label></td>
+            <td style="text-align: right"><i class="button button_s far fa-check-circle" title="save / propose" onclick="post('foreign_minister', '?propose')"></i></td>
+        </tr></table></td></tr>
+        <tr>
+            <td><i class="li" title="Lithium"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_lithium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="li" title="Lithium">1</i></td>
+            <td>Buy <input id="foreign_p2_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_lithium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="li" title="Lithium">1</i></td>
+        </tr><tr>
+            <td><i class="si" title="Silicon"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_silicon" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_silicon" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="si" title="Silicon">1</i></td>
+            <td>Buy <input id="foreign_p2_is_selling_silicon" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_silicon" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="si" title="Silicon">1</i></td>
+        </tr><tr>
+            <td><i class="ti" title="Titanium"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_titanium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="ti" title="Titanium">1</i></td>
+            <td>Buy <input id="foreign_p2_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_titanium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="ti" title="Titanium">1</i></td>
+        </tr><tr>
+            <td><i class="fa-free-code-camp" title="fuel"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_fuel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="fa-free-code-camp">10k</i></td>
+            <td>Buy <input id="foreign_p2_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_fuel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="fa-free-code-camp">10k</i></td>
+        </tr><tr>
+            <td style="width: 6em"><i class="fab fa-galactic-republic" title="stargate" style="font-size: 160%"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_stargate" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i style="font-size: 127.5%" class="fab fa-galactic-republic" title="gate"></i></td>
+            <td>Buy <input id="foreign_p2_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_stargate" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i style="font-size: 127.5%" class="fab fa-galactic-republic" title="gate"></i></td>
+        </tr><tr>
+            <td style="width: 6em"><i class="fas fa-virus-slash" title="safe passage" style="font-size: 160%"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_passage" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_passage" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+            <td>Buy <input id="foreign_p2_is_selling_passage" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_passage" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+        </tr><tr>
+            <td><i class="fas fa-user-secret" title="intel sharing" style="font-size: 160%"></i></td>
+            <td>Sell <input id="foreign_p1_is_selling_intel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_intel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+            <td>Buy <input id="foreign_p2_is_selling_intel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_intel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+        </tr></table></td></tr>
+    </table>
 </div>
 
 
 <div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
     <table class="topbar hfill"><tr>
-        <td style="font-size: 200%"><img id="button_shipyard" title="Shipyard" src="/shipyard.png"/>Shipyard</td></tr>
+        <td><img title="Shipyard" src="/shipyard.png"/></td>
+        <td class="hfill" style="font-size: 200%">Shipyard</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill" id="shipyard_ship">
     </table>
-    <table>
-        <tr>
-            <td>Existing</td>
-            <td class="hfill"><select id="shipyard_existing_designs" style="width: 100%" onchange="post('shipyard')"/></td><!--TODO get delete, save and copy icons-->
-        </tr>
+    <table class="hfill" id="shipyard_design"> 
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
     </table>
-    <table class="hfill">
-            <tr>
-                <td>Design Name</td>
-                <td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post('shipyard')"/></td>
-            </tr>
-    </table>
-    <table>
-        <tr>
-            <td>Hull</td>
-            <td>General</td>
-			<td>Orbital</td>
-			<td>Depot</td>
-		</tr>
-		<tr>
-			<td class="hfill"><select id="shipyard_hull" onchange="post('shipyard')" /></td>
-			<td><input disabled="true" id="shipyard_general_slots"/></td>
-			<td><input disabled="true" id="shipyard_orbital_slots"/></td>
-			<td><input disabled="true" id="shipyard_depot_slots"/></td>
-        </tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_bombs(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Bombs</caption>
-        <td colspan="2"><input id="shipyard_checkbox_1" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_cloaks_and_ecm(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Cloaks and ECM</caption>
-        <td colspan="2"><input id="shipyard_checkbox_2" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_defense(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Defense</caption>
-        <td colspan="2"><input id="shipyard_checkbox_3" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_depot(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Depot</caption>
-        <td colspan="2"><input id="shipyard_checkbox_4" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_engines(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engines</caption>
-        <td colspan="2"><input id="shipyard_checkbox_5" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_mech(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Mech</caption>
-        <td colspan="2"><input id="shipyard_checkbox_6" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_scanners(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanners</caption>
-        <td colspan="2"><input id="shipyard_checkbox_7" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_orbital(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orbital</caption>
-        <td colspan="2"><input id="shipyard_checkbox_8" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
-    </table>
-    <table class="onsubmit_shipyard" onsubmit="shipyard_weapons(this)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Weapons</caption>
-        <td colspan="2"><input id="shipyard_checkbox_9" type="checkbox" onchange="post('shipyard')"/> Show all</td>
-        <tr><td><input disabled="true"/></td><td><input disabled="true"/></td><td></td></tr>
+    <table class="hfill" id="shipyard_tech">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
     </table>
 </div>
 
+
+<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
+    <table class="topbar hfill"><tr>
+        <td style="font-size: 200%">Score</td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td></td>
 
 <div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
 </div>
@@ -813,18 +680,6 @@ void main() {
         </tr>
         <tr>
             <td>Ships</td>
-            <td><input id="score_ships01" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships02" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships03" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships04" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships05" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships06" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships07" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships08" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships09" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships10" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships11" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships12" disabled="true" style="width: 5em"/></td>
             <td><input id="score_ships13" disabled="true" style="width: 5em"/></td>
             <td><input id="score_ships14" disabled="true" style="width: 5em"/></td>
             <td><input id="score_ships15" disabled="true" style="width: 5em"/></td>
@@ -845,6 +700,45 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_race_viewer" style="width: 600px" onload="post('race_viewer')">
+</div>
+
+
+<!-- TECH DISPLAY     TECH DISPLAY     TECH DISPLAY     TECH DISPLAY     TECH DISPLAY -->
+
+
+<!-- This is for copying -->
+<div class="hide onload onsubmit_tech" id="tech_template" onsubmit="tech_display()" onload="post('tech')">
+    <div class="tech_expand" onclick="tech_expand(this.parentElement, null)"></div>
+    <table class="hfill tech_overview">
+    </table>
+
+    <table class="hide tech_combat">
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
+            <td><canvas class="tech_combat_chart"></canvas></td>
+        </tr>
+        <tr><td style="font-size: 85%; text-align: center">Range (terameters)</td></tr>
+    </table>
+    
+    <table class="hide tech_sensor">
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
+            <td><canvas class="tech_sensor_chart"></canvas></td>
+        </tr>
+    </table>
+    
+    <table class="hide tech_engine">
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
+            <td><canvas class="tech_engine_chart"></canvas></td>
+        </tr>
+        <tr><td style="font-size: 85%; text-align: center">Hyper</td></tr>
+    </table>
+
+    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
+    <table class="hfill tech_guts hide" style="font-size: 85%">
+    </table>
+    <br/>
 </div>
 
 

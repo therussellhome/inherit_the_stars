@@ -6,14 +6,14 @@
         "titanium": 2,
         "silicon": 7,
         "energy": 2000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "energy": 16,
         "electronics": 22,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 2,
     "ecm": 50,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

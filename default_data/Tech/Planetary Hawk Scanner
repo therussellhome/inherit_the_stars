@@ -1,0 +1,23 @@
+{
+    "name": "Planetary Hawk Scanner",
+    "category": "Planetary Scanner",
+    "description": "A scanner to build on your planet to detect ships and other objects in space",
+    "facility_level": 1,
+    "cost": {
+        "titanium": 12,
+        "lithium": 0,
+        "silicon": 12,
+        "energy": 1800,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "electronics": 0,
+        "__uuid__": "TechLevel"
+    },
+    "scanner": {
+        "normal": 100.0,
+        "penetrating": 0.000105702977392,
+        "__uuid__": "Scanner"
+    },
+    "__uuid__": "Tech"
+}

@@ -1,18 +1,18 @@
 {
     "name": "Plague of Frogs",
-    "category": "Missle",
+    "category": "Missile",
     "description": "More than twice as powerful as Plague of Blood, with significantly better accuracy.",
     "cost": {
         "titanium": 18,
         "lithium": 6,
         "silicon": 4,
         "energy": 600,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "weapons": 5,
         "propulsion": 1,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 50,
-            "__class__": "Weapon"
+            "__uuid__": "Weapon"
         }
     ],
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

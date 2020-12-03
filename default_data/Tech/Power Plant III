@@ -1,0 +1,19 @@
+{
+    "name": "Power Plant III",
+    "category": "Power Plant",
+    "description": "Produces 40% more energy than the lowest-level plant; all plants cost the same and take the same number of people to run.",
+    "facility_level": 3,
+    "cost": {
+        "titanium": 1,
+        "lithium": 1,
+        "silicon": 2,
+        "energy": 250,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 9,
+        "__uuid__": "TechLevel"
+    },
+    "facility_output": 140.0,
+    "__uuid__": "Tech"
+}

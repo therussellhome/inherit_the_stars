@@ -1,0 +1,42 @@
+{
+    "name": "Virus",
+    "description": "bombs immune to defenses",
+    "cost": {
+        "titanium": 10,
+        "lithium": 1,
+        "silicon": 10,
+        "energy": 10000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 3,
+        "electronics": 5,
+        "biotechnology": 40,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 80,
+    "fuel_max": 100000,
+    "armor": 200,
+    "bombs": [
+        {
+            "percent_pop_kill": 50,
+            "max_defense": 0,
+            "__uuid__": "Bomb"
+        }
+    ],
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__uuid__": "Scanner"
+    },
+    "cloak": 100,
+    "engines": [
+        {
+            "kt_exponent": 5,
+            "speed_divisor": 19.0,
+            "speed_exponent": 11.0,
+            "__uuid__": "Engine"
+        }
+    ],
+    "repair": 5,
+    "__uuid__": "MysteryShip"
+}

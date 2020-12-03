@@ -1,4 +1,6 @@
+import copy
 import sys
+from . import game_engine
 from .cloak import Cloak
 from .cost import Cost
 from .defaults import Defaults
@@ -9,15 +11,13 @@ from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'name': [''],
+    'name': ['Tech the GM made up himself'],
     'category': [''],
     'slot_type': [''],
     'description': ['I\'m a horrible scanner, a zero range weapon, and an engine that only works on Saturday'],
-    'upgrade_path': [''],
-    'upgrade_level': [0, 0, 100],
-    'race_requirements': [''],
+    'facility_level': [0, 0, 100],
     'cost': [Cost()],
-    'cost_incomplete': [Cost()],
+    'race_requirements': [''],
     'level': [TechLevel()],
     'mass': [0, 0, sys.maxsize],
     'cargo_max': [0, 0, sys.maxsize],
@@ -36,9 +36,9 @@ __defaults = {
     'fuel_generation': [0, 0, sys.maxsize],
     'hyperdenial': [HyperDenial()],
     'is_colonizer': [False],
+    'is_starbase': [False],
     'is_trading_post': [False],
-    'energy_output': [0.0, 0.0, sys.maxsize],
-    'factory_capacity': [0.0, 0.0, sys.maxsize],
+    'facility_output': [0.0, 0.0, sys.maxsize],
     'mining_rate': [0.0, 0.0, sys.maxsize],
     'mineral_depletion_factor': [0.0, 0.0, 100],
     'mat_trans_energy': [0, 0, sys.maxsize],
@@ -48,19 +48,18 @@ __defaults = {
 }
 
 
-""" Represent 'minerals' """
+""" Represent a tech component """
 class Tech(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = 'Tech the GM made up himself ' + str(id(self))
+        game_engine.register(self)
 
-    """ Determine if the item is available for a player's tech level """
-    def is_available(self, player):
-        if not self.level.is_available(player.tech_level):
+    """ Determine if the item is available for a given tech level and race """
+    def is_available(self, level=None, race=None):
+        if level and not self.level.is_available(level):
             return False
-        if len(self.race_requirements) > 0:
-            traits = player.race.list_traits()
+        if race and len(self.race_requirements) > 0:
+            traits = race.list_traits()
             for requirement in self.race_requirements.split(' '):
                 if requirement[0] == '-':
                     if requirement[1:] in traits:
@@ -68,5 +67,13 @@ class Tech(Defaults):
                 elif requirement not in traits:
                     return False
         return True
+
+    """ Calculate the scrap value """
+    def scrap_value(self, race):
+        if self.under_construction:
+            return Cost()
+        c = copy.copy(self.cost)
+        complete.energy = 0
+        return c * (race.scrap_rate() / 100)
 
 Tech.set_defaults(Tech, __defaults)

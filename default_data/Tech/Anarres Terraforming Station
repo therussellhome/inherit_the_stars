@@ -1,0 +1,20 @@
+{
+    "name": "Anarres Terraforming Station",
+    "category": "Terraforming Station",
+    "description": "Terraforms a planet up to 3 clicks in each attribute.  Does not take population to run once it is built.",
+    "facility_level": 2,
+    "race_requirements": "Bioengineer",
+    "cost": {
+        "titanium": 8,
+        "lithium": 8,
+        "silicon": 16,
+        "energy": 4800,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "biotechnology": 2,
+        "__uuid__": "TechLevel"
+    },
+    "terraform": 3,
+    "__uuid__": "Tech"
+}

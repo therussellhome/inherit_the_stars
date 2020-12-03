@@ -8,11 +8,11 @@
         "lithium": 10,
         "silicon": 11,
         "energy": 1800,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 0,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 32,
     "cargo_max": 15,
@@ -20,7 +20,7 @@
     "armor": 5,
     "scanner": {
         "penetrating": 0.0002115,
-        "__class__": "Scanner"
+        "__uuid__": "Scanner"
     },
     "engines": [
         {
@@ -28,11 +28,11 @@
             "speed_divisor": 10.0,
             "speed_exponent": 3.0,
             "antimatter_siphon": 600.0,
-            "__class__": "Engine"
+            "__uuid__": "Engine"
         }
     ],
     "repair": 2,
     "colonizer": true,
     "slots_general": 0,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

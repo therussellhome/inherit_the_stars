@@ -4,9 +4,9 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'titanium': [0, 0, sys.maxsize],
-    'lithium': [0, 0, sys.maxsize],
-    'silicon': [0, 0, sys.maxsize]
+    'titanium': [0.0, 0.0, sys.maxsize],
+    'lithium': [0.0, 0.0, sys.maxsize],
+    'silicon': [0.0, 0.0, sys.maxsize]
 }
 
 
@@ -16,10 +16,8 @@ class Minerals(Defaults):
         super().__init__(**kwargs)
 
 
-    def __eq__(self, other):
-        if self.titanium == other.titanium and self.lithium == other.lithium and self.silicon == other.silicon:
-            return True
-        return False
+    def is_zero(self):
+        return (self.titanium == 0 and self.lithium == 0 and self.silicon == 0)
 
 
     def __add__(self, other):

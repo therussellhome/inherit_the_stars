@@ -1,10 +1,10 @@
 import sys
 import copy
 from . import game_engine
-from .race import Race
-from .ship import Ship
+#from .race import Race
+#from .ship import Ship
 #from .fleet import Fleet
-from .planet import Planet
+#from .planet import Planet
 from .defaults import Defaults
 from .location import Location
 #from .location import locationReference

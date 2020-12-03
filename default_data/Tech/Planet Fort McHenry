@@ -1,0 +1,20 @@
+{
+    "name": "Planet Fort McHenry",
+    "category": "Planetary Shield",
+    "description": "Planetary shields take population to maintain them, so you want better shields not just more.  They can spread themselves thinner as your population increases, but that lowers protection.",
+    "facility_level": 12,
+    "race_requirements": "-Aku'Ultan",
+    "cost": {
+        "titanium": 12,
+        "lithium": 0,
+        "silicon": 15,
+        "energy": 2000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 22,
+        "__uuid__": "TechLevel"
+    },
+    "shield": 5000,
+    "__uuid__": "Tech"
+}

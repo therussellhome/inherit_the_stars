@@ -1,19 +1,19 @@
 {
     "name": "Medium Cargo Pod",
-    "category": "Mech",
+    "category": "Mechanical",
     "description": "adds 50kT to your ship's cargo capacity",
     "cost": {
         "titanium": 5,
         "lithium": 0,
         "silicon": 2,
         "energy": 1000,
-        "__class__": "Cost"
+        "__uuid__": "Cost"
     },
     "level": {
         "construction": 3,
-        "__class__": "TechLevel"
+        "__uuid__": "TechLevel"
     },
     "mass": 7,
     "cargo_max": 50,
-    "__class__": "Tech"
+    "__uuid__": "Tech"
 }

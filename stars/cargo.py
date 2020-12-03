@@ -4,7 +4,7 @@ from .minerals import Minerals
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'people': [0, 0, sys.maxsize],
+    'people': [0.0, 0.0, sys.maxsize],
     'cargo_max': [0, 0, sys.maxsize]
 }
 

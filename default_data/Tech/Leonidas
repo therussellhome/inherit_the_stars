@@ -1,0 +1,27 @@
+ {
+    "name": "Leonidas",
+    "category": "Beam Weapon",
+    "description": "Leonidas (Leo-NY-das) was king of Sparta and led the 300 warriors at Thermopolae (rhymes with Monopoly).",
+    "cost": {
+        "lithium": 6,
+        "energy": 600,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "weapons": 3,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 1,
+    "weapons": [
+        {
+            "power": 24,
+            "range_tm": 0.2,
+            "armor_multiplier": 1,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__uuid__": "Weapon"
+        }
+    ],
+    "__uuid__": "Tech"
+}
