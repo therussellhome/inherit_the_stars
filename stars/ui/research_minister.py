@@ -37,7 +37,8 @@ class ResearchMinister(PlayerUI):
             link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
             research_queue.append(t.name)
             self.research_queue.append('<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
-                    + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
+
++ '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
         # Sort tech
         research_tech = []
         research_filter = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Planetary', 'Other']

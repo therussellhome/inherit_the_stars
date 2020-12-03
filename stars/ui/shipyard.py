@@ -1,6 +1,7 @@
 import sys
 from .playerui import PlayerUI
 from ..reference import Reference
+from ..ship_design import ShipDesign
 
 
 """ Default values (default, min, max)  """
@@ -70,15 +71,22 @@ class Shipyard(PlayerUI):
         # Add to ship design
         if action.startswith('add='):
             tech_add = Reference('Tech', action[4:])
-            self.shipyard_design.append(tech_add)
+            ShipDesign.add_component(tech_add)
         # Remove from ship design
         if action.startswith('del='):
             for t in self.shipyard_design:
                 if t.name == action[4:]:
-                    self.shipyard_design.remove(t)
+                    ShipDesign.components.remove(t)
                     break
+        # Ship components
+        shipyard_components = []
+        for t in ShipDesign.components:
+            link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
+            shipyard_components.append(t.name)
+            self.shipyard_design.append('<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
+                    + '<td><i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
 
-        # Shipyard Tech
+        # Shipyard tech
         # Sort tech
         shipyard_tech = []
         shipyard_filter_other = []
