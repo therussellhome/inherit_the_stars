@@ -44,9 +44,9 @@ class Planets(PlayerUI):
         for s in self.player.get_intel('Sun')
             planet.append(s)
         for p in planets:
-            # Sort planets
-                
-
-            self.planets_report.append('<td>' + p.get('name') + '</td><td>' + p.get(planet_field) + '</td>')
+            # TODO Sort planets
+            self.planets_report.append('<td>' + p.get('name') + '</td><td>100,000</td>') 
 
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
+
+# TODO get comparasion field working, TODO sort planets, TODO click on the planet name and it shows everything else
