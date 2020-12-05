@@ -6,14 +6,15 @@ from ..ship_design import ShipDesign
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'shipyard_ship': [[]],
     'shipyard_existing_designs': [''],
+    'options_shipyard_existing_designs': [[]],
+    'shipyard_ship': [[]], # table with ship tech display
+    'shipyard_name': [''],
+    'shipyard_hull': [''],
+    'options_shipyard_hull': [[]],
     'shipyard_design': [[]],
     'shipyard_tech': [[]],
-    'shipyard_hull': ['Scout'],
-    'shipyard_general_slots': [0, 0, sys.maxsize],
-    'shipyard_orbital_slots': [0, 0, sys.maxsize],
-    'shipyard_depot_slots': [0, 0, sys.maxsize],
+    'options_shipyard_tech_category': [[]],
     'shipyard_tech_category': ['Weapons'],
 }
 
@@ -24,67 +25,48 @@ class Shipyard(PlayerUI):
         super().__init__(**kwargs)
         if not self.player:
             return
-        
-        e = ''
-        for r in self.player.existing_designs:
-            s = '<option>' + r + '</option>'
-            if r == self.shipyard_existing_designs:
-                s = '<option selected="true">' + r + '</option>'
-            e += s
-        self.shipyard_ship.append('<td style="text-align: center" colspan="2" >Existing Designs <select id="shipyard_existing_designs" onchange="post(\'shipyard\')">' \
-            + e + '</select></td>')
+        design = None
+        for existing_design in self.player.ship_designs:
+            if existing_design.name == self.shipyard_existing_designs:
+                design = existing_design
+        if design == None:
+            design = ShipDesign()
+            self.player.ship_designs.append(design)
+            self.shipyard_name = design.name
+        self.shipyard_ship = '<td><div class="tech tech_template">' + design.__uuid__ + '</div></td>'
 
         # Shipyard design
-        self.shipyard_design.append('<td>Design Name <input id="shipyard_name" onchange="post(\'shipyard\')"/></td>')
-        hulls = []
         for t in self.player.tech: 
             if t.is_available(self.player.tech_level, self.player.race) and t.category in ['Hull', 'Starbase']:
-                hulls.append(t)
-        r = ''
-        for h in hulls:
-            s = '<option>' + h.name + '</option>'
-            if h == self.shipyard_hull:
-                s = '<option selected="true">' + h + '</option>'
-            r += s
-        self.shipyard_design.append('<td style="text-align: center" colspan="2">Hull <select id="shipyard_hull" onchange="post(\'shipyard\')">' \
-            + r + '</select></td>')
-        depot = []
-        orbital = []
-        general = []
-        for t in self.shipyard_tech:
-            if t in self.shipyard_design:
-                if t.category == 'Depot':
-                    depot.append(t)
-                elif t.category == 'Orbital':
-                    orbital.append(t)
-                else:
-                    general.append(t)
-        for h in hulls:
-            if h.name == self.shipyard_hull:
-                g = h.slots_general
-                o = h.slots_orbital
-                d = h.slots_depot
-        self.shipyard_design.append('<td id="shipyard_general_slots">General Slots: '  + str(len(general)) + '/' + str(g) + '</td>')
-        self.shipyard_design.append('<td id="shipyard_orbital_slots">Orbital Slots: ' + str(len(orbital)) + '/'  + str(o) + '</td>')
-        self.shipyard_design.append('<td id="shipyard_depot_slots">Depot Slots: ' + str(len(depot)) + '/' + str(d) + '</td>')
+                self.options_shipyard_hull.append(t.name)
         
+        # Show how many slots are used up
+        design.set_hull('Tech/' + self.shipyard_hull)
+        design.name = self.shipyard_name
+
+        # Build design list after any chance for the name to change
+        for existing_design in self.player.ship_designs:
+            self.options_shipyard_existing_designs.append(existing_design.name)
+        self.shipyard_existing_designs = design.name
+
         # Add to ship design
         if action.startswith('add='):
-            tech_add = Reference('Tech', action[4:])
-            ShipDesign.add_component(tech_add)
+            design.add_component('Tech/' + action[4:])
         # Remove from ship design
         if action.startswith('del='):
-            for t in self.shipyard_design:
-                if t.name == action[4:]:
-                    ShipDesign.components.remove(t)
-                    break
+            design.remove_component('Tech/' + action[4:])
+
         # Ship components
-        shipyard_components = []
-        for t in ShipDesign.components:
+        for t in design.components:
             link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
-            shipyard_components.append(t.name)
             self.shipyard_design.append('<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
                     + '<td><i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
+
+        self.shipyard_design.append('<td colspan="2"><table class="hfill"><tr>' \
+                + '<td>General Slots:</td><td>' + str(design.hull.slots_general - design.slots_general) + '/' + str(design.hull.slots_general) + '</td>' \
+                + '<td>Orbital Slots:</td><td>' + str(design.hull.slots_orbital - design.slots_orbital) + '/' + str(design.hull.slots_orbital) + '</td>' \
+                + '<td>Depot Slots:</td><td>' + str(design.hull.slots_depot - design.slots_depot) + '/' + str(design.hull.slots_depot) + '</td>' \
+                + '</tr></table></td>')
 
         # Shipyard tech
         # Sort tech
@@ -96,19 +78,12 @@ class Shipyard(PlayerUI):
                     row = '<td ><div class="tech tech_template">' + t.name + '</div></td>' \
                         + '<td><i class="button fas fa-cart-plus" title="Add to ship" onclick="post(\'shipyard\', \'?add=' + link + '\')"></i></td>'
                     shipyard_tech.append(row)
-        #shipyard_tech.sort(key = lambda x: x[0])
-        
-        r = ''
-        sf = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Mechanicals', 'Heavy Equipment', 'Other']
-        for f in sf:
-            s = '<option>' + f + '</option>'
-            if f == self.shipyard_tech_category:
-                s = '<option selected="true">' + f + '</option>'
-            r += s
-        self.shipyard_tech.append('<td style="text-align: center" colspan="2" >Category <select id="shipyard_tech_category" onchange="post(\'shipyard\')">' \
-            + r + '</select></td>')
+        # Tech category        
+        categories = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Mechanicals', 'Heavy Equipment', 'Other']
+        for cat in categories:
+            self.options_shipyard_tech_category.append(cat)
+        self.shipyard_tech.append('<td style="text-align: center" colspan="2">Category <select id="shipyard_tech_category" onchange="post(\'shipyard\')"></select></td>')
         for t in shipyard_tech:
             self.shipyard_tech.append(t)
-
 
 Shipyard.set_defaults(Shipyard, __defaults, sparse_json=False)
