@@ -2,7 +2,7 @@
     "name": "Planetary Kite Scanner",
     "category": "Planetary Scanner",
     "description": "A scanner to build on your planet to detect ships and other objects in space",
-    "facility_level": 4,
+    "facility_level": 3,
     "cost": {
         "titanium": 18,
         "lithium": 0,
