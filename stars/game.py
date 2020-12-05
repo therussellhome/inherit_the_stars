@@ -50,6 +50,7 @@ class Game(Defaults):
             # player turn
             for player in players:
                 player.generate_turn()
+                player.resolve_treaties()
             # fleet actions
             for action in Fleet.actions:
                 for fleet in fleets:
