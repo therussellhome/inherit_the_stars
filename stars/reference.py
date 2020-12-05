@@ -35,7 +35,6 @@ class Reference(game_engine.BaseClass):
             reference = self._reference
             obj = game_engine.get(reference, create_new=False)
             if name == 'is_valid':
-                print(reference)
                 return (obj != None)
             elif reference == None:
                 raise LookupError('Uninitialized reference')

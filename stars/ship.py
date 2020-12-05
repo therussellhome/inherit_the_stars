@@ -73,8 +73,7 @@ class Ship(ShipDesign, Buildable):
         planet.on_surface += self.cargo
     
     def scan(self, player):
-        self.scanner.scan_planets(player, self.location)
-        self.scanner.scan_ships(player, self.location)
+        self.scanner.scan(player, self.location)
     
     def lay_mines(self, player, system):
         system.mines[player.name] += self.mines_laid

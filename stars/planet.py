@@ -198,16 +198,13 @@ class Planet(Defaults):
     """ power plants make energy """
     def generate_energy(self):
         plants = self.__operate('Power Plant', 'power_plants_per_10k_colonists') * getattr(self, 'Power Plant').tech.facility_output / 100
-        print(plants)
         pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
-        print(self.player.race.energy_per_10k_colonists)
         return plants + pop
 
     """ mines mine the minerals """
     def mine_minerals(self):
         factor = getattr(self, 'Mineral Extractor').tech.mineral_depletion_factor
         operate = self.__operate('Mineral Extractor', 'mines_per_10k_colonists')
-        print(operate)
         for mineral in ['silicon', 'titanium', 'lithium']:
             availability = self.mineral_availability(mineral)
             setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * availability))
@@ -303,6 +300,27 @@ class Planet(Defaults):
             if len(self.build_queue) == 0 and auto_build:
                 self.build_queue.extend(self.auto_build())
 
+    """ Perform scanning """
+    def scan(self):
+        if self.player.is_valid:
+            getattr(self, 'Planetary Scanner').scan_planets(self.player, self.location)
+            getattr(self, 'Planetary Scanner').scan_planets(self.player, self.location)
+
+
+""" Ordered list of fleet actions for use by the Game.generate_turn """
+Planet.actions = [
+    'have_babies',
+    'generate_energy',
+    'extract_minerals',
+    'build_queue',
+    'build_facilities',
+    '',
+    'baryogenesis',
+    'mattrans',
+    '',
+    '',
+    '',
+]
 
 
 Planet.set_defaults(Planet, __defaults)

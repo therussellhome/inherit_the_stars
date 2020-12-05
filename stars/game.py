@@ -41,12 +41,15 @@ class Game(Defaults):
         self.turn += 1
         # All actions are in hundredths of a turn
         for hundreth in range(100):
-            # fleets in lowest to highest initiative
-            fleets = game_engine.get('Fleet')
-            fleets.sort(key=lambda x: x.initiative, reverse=False)
             # players in lowest to highest score
-            players = game_engine.get('Players')
+            players = list(self.players)
             players.sort(key=lambda x: x.score.rank, reverse=False)
+            # fleets in lowest to highest initiative
+            fleets = []
+            for player in players:
+                for fleet in player.fleets:
+                    fleets.append((fleet, player))
+            fleets.sort(key=lambda x: x[0].initiative, reverse=False)
             # player turn
             for player in players:
                 player.generate_turn()
@@ -54,10 +57,10 @@ class Game(Defaults):
             # fleet actions
             for action in Fleet.actions:
                 for fleet in fleets:
-                    fleet.execute(action)
-            # generate new anomolies
+                    fleet[0].execute(action, fleet[1])
+            # generate new anomalies
             #TODO
-            # anomolies
+            # anomalies
             for wormhole in self.wormholes:
                 wormhole.move()
             # asteroid movement
@@ -68,14 +71,14 @@ class Game(Defaults):
                 trader.move()
             # fleet move
             for fleet in fleets:
-                fleet.move()
+                fleet[0].move(fleet[1])
             # scanning
             self._scanning()
             # combat
             #TODO calculate where combat will occur and execute combat
             # in-system move
             for fleet in fleets:
-                fleet.move_in_system()
+                fleet[0].move_in_system(fleet[1])
             # score
             for player in players:
                 player.calc_score()
