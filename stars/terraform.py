@@ -15,10 +15,10 @@ class Terraform(Buildable):
     """ Return the cost to build """
     def add_to_build_queue(self, planet, upgrade_to=None):
         super().add_to_build_queue(planet, upgrade_to)
+        base = 5000
         if planet.player.race.lrt_Bioengineer:
-            return Cost(energy=350)
-        else:
-            return Cost(energy=500)
+            base = 3500
+        return Cost(energy=base * (1 + planet[hab + '_terraform']) ** 1.5) #TODO Pam, please balance this
 
     """ Mark the item as completed """
     def build_complete(self, planet, upgrade_to=None):

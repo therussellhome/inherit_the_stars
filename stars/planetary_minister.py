@@ -5,6 +5,7 @@ from .defaults import Defaults
 __defaults = {
     'new_colony_minister': [False],
     'allow_baryogenesis': [True],
+    'min_terraform_only': [True],
     'planets': [[]],
     # facilities where the key matches the tech category
     'Power Plant': [25, 0, 100],

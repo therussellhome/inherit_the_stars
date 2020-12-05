@@ -252,12 +252,14 @@ class Planet(Defaults):
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):
-        baryogenesis = self.player.get_minister(self.name).allow_baryogenesis
+        minister = self.player.get_minister(self.name)
         nothing_more = False
         while not nothing_more and len(self.build_queue) == 0:
             # Terraforming
             worst_hab = None
             worst_hab_from_center = 0.0
+            if minister.min_terraform_only:
+                worst_hab_from_center = 1.0
             max_offset = min(40, self.player.tech_level.biotechnology)
             if not self.player.race.lrt_Bioengineer:
                 max_offset = int(max_offset / 2)
@@ -271,6 +273,7 @@ class Planet(Defaults):
             else:
                 # Build facility
                 pass #TODO
+            build_from_queue(baryogenesis=minister.allow_baryogenesis)
         """
         if not self.player.is_valid:
             return
