@@ -71,10 +71,9 @@ class Game(Defaults):
         self._call(planets, 'operate_factories')
         self._call(players, 'allocate_budget')
         self._call(planets, 'build_from_queue')
-        self._call(planets, 'build_auto')
+        self._call(planets, 'build_with_baryogenesis')
+        self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)
-        self._call(planets, 'mattrans', reverse=True)
-        self._call(players, 'research')
         self._call(self.wormholes, 'move')
         self._call(self.asteroids, 'move')
         self._call(self.mystery_traders, 'move')
@@ -100,6 +99,8 @@ class Game(Defaults):
         self._call(fleets, 'load')
         self._call(fleets, 'transfer')
         self._call(fleets, 'patrol')
+        self._call(planets, 'mattrans', reverse=True)
+        self._call(players, 'research')
         self._call(players, 'deallocate_budget')
         #
         # actions only done at the end of a year

@@ -171,7 +171,7 @@ class Player(Defaults):
     def spend(self, sub_category, request=sys.maxsize, spend=True):
         category = sub_category
         # Pull from the correct budget category
-        if sub_category in ['ship', 'planetary', 'baryogenesis']:
+        if sub_category in ['Ship', 'StarBase', 'Facility', 'baryogenesis']:
             category = 'construction'
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':

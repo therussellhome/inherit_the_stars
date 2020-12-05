@@ -4,11 +4,6 @@ from .defaults import Defaults
 """ Default values (default, min, max)  """
 __defaults = {
     'new_colony_minister': [False],
-    'build_scanner_after_num_facilities': [50, 0, sys.maxsize],
-    'build_penetrating_after_num_facilities': [100, 0, sys.maxsize],
-    'build_mattrans_after_num_facilities': [100, 0, sys.maxsize],
-    'build_min_terraform': [1, 0, 100],
-    'build_max_terraform': [100, 0, 100],
     'allow_baryogenesis': [True],
     'planets': [[]],
     # facilities where the key matches the tech category

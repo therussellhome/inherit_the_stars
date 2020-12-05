@@ -54,19 +54,18 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_colonize1(self):
         p = planet.Planet()
-        self.assertTrue(p.colonize(player.Player(name='test_colonize'), 'a minister'))
+        self.assertTrue(p.colonize(player.Player(name='test_colonize')))
         self.assertTrue(p.is_colonized())
-        self.assertEqual(p.minister, 'a minister')
-        self.assertFalse(p.colonize(player.Player(name='claim jumper'), 'a minister'))
+        self.assertFalse(p.colonize(player.Player(name='claim jumper')))
 
     def test_colonize2(self):
         p = planet.Planet()
-        p.colonize(player.Player(name='test_colonize'), 'a minister')
-        self.assertFalse(p.colonize(player.Player(name='claim jumper'), 'a minister'))
+        p.colonize(player.Player(name='test_colonize'))
+        self.assertFalse(p.colonize(player.Player(name='claim jumper')))
 
     def test_colonize3(self):
         p = planet.Planet()
-        self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri')), 'a minister'))
+        self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri'))))
 
 
     def test_habitability1(self):

@@ -1,23 +1,19 @@
 import sys
-from random import randint
-from random import uniform
+from colorsys import hls_to_rgb
+from math import cos, sin
+from random import randint, uniform
 from . import game_engine
 from . import stars_math
-from math import sin
-from math import cos
-from random import randint
-from random import uniform
-from colorsys import hls_to_rgb
-from . import game_engine
-from .cost import Cost
 from .cargo import Cargo
+from .cost import Cost
 from .defaults import Defaults
-from .location import Location
-from .minerals import Minerals
 from .facility import Facility
 from .location import Location
+from .location import Location
+from .minerals import Minerals, MINERAL_TYPES
 from .reference import Reference
 from .tech import Tech
+from .terraform import Terraform
 
 
 """ Default values (default, min, max)  """
@@ -27,14 +23,16 @@ __defaults = {
     'temperature': [50, -50, 150],
     'radiation': [50, -50, 150],
     'gravity': [50, -50, 150],
+    'temperature_terraform': [0, 0, 100],
+    'radiation_terraform': [0, 0, 100],
+    'gravity_terraform': [0, 0, 100],
     'remaining_minerals': [Minerals()],
     'on_surface': [Cargo()],
     'player': [Reference('Player')],
-    'minister': [''],
     'location': [Location()],
     'star_system': [Reference('StarSystem')],
     'factory_capacity': [0, 0, sys.maxsize],
-    'build_queue': [[]], # array of tuples (cost_incomplete, buildable)
+    'build_queue': [[]], # array of tuples (cost_incomplete, buildable, upgrade_to)
     # facilities where the key matches the tech category
     'Power Plant': [Facility()],
     'Factory': [Facility()],
@@ -72,6 +70,7 @@ class Planet(Defaults):
             self.orbit_speed = uniform(0.01, 1.0)
         if 'age' not in kwargs:
             self.age = randint(0, 3000)
+        self.__cache__ = {}
         game_engine.register(self)
 
     """ Get the planets color """
@@ -110,8 +109,7 @@ class Planet(Defaults):
 
     """ Colonize the planet """
     # player is a Player object (reference created internally)
-    # because minister names can change, minister is a string
-    def colonize(self, player, minister):
+    def colonize(self, player):
         if self.is_colonized():
             return False
         # only Pa'anuri are allowed to colonize suns
@@ -122,7 +120,6 @@ class Planet(Defaults):
             if self.__class__.__name__ == 'Sun':
                 return False
         self.player = Reference(player)
-        self.minister = minister
         return True
 
     """ Calculate the planet's value for the current player (-100 to 100)
@@ -136,10 +133,10 @@ class Planet(Defaults):
     with g, t, and r = 0 if < 1 | g, t, r = value - 1
     and 100 subtracted from the result
     """
-    def habitability(self, race):
-        g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop)
-        t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop)
-        r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop)
+    def habitability(self, race, terraform=(0, 0, 0)):
+        g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop, terraform[0])
+        t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop, terraform[1])
+        r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop, terraform[2])
         negative_offset = 0
         if t > 1.0 or r > 1.0 or g > 1.0:
             negative_offset = -100.0
@@ -155,18 +152,18 @@ class Planet(Defaults):
     if inside habitable range return (0..1)
     if outside habitable range return (1..2) bounding at 2
     """
-    def _calc_range_from_center(self, planet, race_start, race_stop):
+    def _calc_range_from_center(self, planet, race_start, race_stop, terraform):
         race_radius = float(race_stop - race_start) / 2.0
         if race_radius == 0 and planet == race_start:
             return 0.0
         elif race_radius == 0:
             return 2.0
         else:
-            return min([2.0, abs((race_start + race_radius) - planet) / abs(race_radius)])
+            return min([2.0, (abs((race_start + race_radius) - planet) - terraform) / abs(race_radius)])
 
     """ Calculate growth rate """
-    def growth_rate(self, race):
-        return race.growth_rate * self.habitability(race) / 100.0
+    def growth_rate(self, race, terraform=(0, 0, 0)):
+        return race.growth_rate * self.habitability(race, terraform) / 100.0
 
     """ Calculate planet's max population """
     def maxpop(self, race):
@@ -177,7 +174,7 @@ class Planet(Defaults):
         # all population calculations are done using people but stored using kT (1000/kT)
         pop = self.on_surface.people * self.player.race.pop_per_kt()
         # adjust rate for planet habitability and turn hundreth
-        rate = self.growth_rate(self.player.race) / 100.0 / 100.0
+        rate = self.growth_rate(self.player.race, (self.gravity_terraform, self.temperature_terraform, self.radiation_terraform)) / 100.0 / 100.0
         # adjust maxpop for size of the world
         pop = pop + (pop * rate) - (pop * pop / self.maxpop(self.player.race) * rate)
         # population is in whole people but stored in kT
@@ -219,11 +216,62 @@ class Planet(Defaults):
     """ calculates max production capasity """
     def operate_factories(self):
         # 1 unit of production free
-        self.factory_capacity = 1 + self.__operate('Factory', 'factories_per_10k_colonists') * getattr(self, 'Factory').tech.facility_output / 100
-        return self.factory_capacity
+        self.__cache__['production'] = 1 + self.__operate('Factory', 'factories_per_10k_colonists') * getattr(self, 'Factory').tech.facility_output / 100
+        return self.__cache__['production']
 
-    """ minister checks to see if you need to build more facilities """
-    def auto_build(self):
+    """ Build what is on the queue """
+    def build_from_queue(self, baryogenesis=False):
+        blocked = False
+        production = self.__cache__['production']
+        while not blocked and len(self.build_queue) > 0:
+            (cost, item, upgrade_to) = self.build_queue[0][0]
+            spend = self.player.spend(item.__class__.__name__, cost.energy)
+            cost.energy -= spend
+            for m in MINERAL_TYPES:
+                spend = min(production, cost[m], self.on_surface[m])
+                production -= spend
+                self.on_surface[m] -= spend
+                cost[m] -= spend
+            if cost.is_zero():
+                item.build_complete(self.player.race, upgrade_to)
+                self.build_queue.pop()
+            else:
+                blocked = True
+        self.__cache__['production'] = production
+        return blocked
+
+    """ Run through the queue again if the planetary minister allows baryogenesis """
+    def build_with_baryogenesin(self):
+        if self.player.get_minister(self.name).allow_baryogenesis:
+            self.build_from_queue(baryogenesis=True)
+
+    """ Add an item to the build queue """
+    def add_to_build_queue(self, buildable, upgrade_to=None):
+        cost = buildable.add_to_build_queue(self, upgrade_to)
+        self.build_queue.append((cost, buildable, upgrade_to))
+
+    """ Add planetary facilities / capabilities """
+    def build_planetary(self):
+        baryogenesis = self.player.get_minister(self.name).allow_baryogenesis
+        nothing_more = False
+        while not nothing_more and len(self.build_queue) == 0:
+            # Terraforming
+            worst_hab = None
+            worst_hab_from_center = 0.0
+            max_offset = min(40, self.player.tech_level.biotechnology)
+            if not self.player.race.lrt_Bioengineer:
+                max_offset = int(max_offset / 2)
+            for hab in ['temperature', 'radiation', 'gravity']:
+                hab_from_center = self._calc_range_from_center(self[hab], race['hab_' + hab], race['hab_' + hab + '_stop'], self[hab + '_terraform'])
+                if hab_from_center > worst_hab_from_center and self[hab + '_terraform'] < max_offset:
+                    worst_hab = hab
+                    worst_hab_from_center = hab_from_center
+            if worst_hab:
+                self.add_to_build_queue(Terraform(hab=worst_hab))
+            else:
+                # Build facility
+                pass #TODO
+        """
         if not self.player.is_valid:
             return
         #facility = self.auto_upgrade()
@@ -254,6 +302,7 @@ class Planet(Defaults):
                     lest = i
             self.facilities[check[lest][1]].build_prep()
             return self.facilities[check[lest][1]]#Reference()#?
+        """
 
     """ checks for upgrades """
     """
