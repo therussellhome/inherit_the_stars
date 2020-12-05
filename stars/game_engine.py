@@ -155,7 +155,7 @@ def __encode(obj):
         if sparse and name in values and defaults[name][0] == values[name]:
             del values[name]
     if '__uuid__' not in values:
-        values['__uuid__'] = cls.__name__ + '/' + uuid.uuid4()
+        values['__uuid__'] = cls.__name__ + '/' + str(uuid.uuid4())
     return values
 
 

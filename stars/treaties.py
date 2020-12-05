@@ -90,4 +90,4 @@ class Treaty(Defaults):
             #print(a)
         return all(a)
 
-Treaty.set_defaults(Treaty, __defaults, no_reset=['p2', 'p1'])
+Treaty.set_defaults(Treaty, __defaults, no_reset=['me', 'other_player'])
