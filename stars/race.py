@@ -1,10 +1,11 @@
-from .defaults import Defaults
+import sys
 from math import log, exp
+from .defaults import Defaults
 
 """ Default values [default, min, max]  """
 __defaults = {
     'name': [''],
-    'start_date': [''],
+    'start_date': [3000, 0, sys.maxsize],
     'primary_race_trait': ['Melconians'],
     'lrt_Trader': [False],
     'lrt_Bioengineer': [False],

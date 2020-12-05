@@ -36,26 +36,16 @@ class ReferenceTestCase(unittest.TestCase):
 
     def test_create4(self):
         game_engine.unregister()
-        r = reference.Reference('_TestReference')
-        self.assertEqual(r.name, '')
-
-    def test_create5(self):
-        game_engine.unregister()
-        r = reference.Reference('_TestReference/')
-        self.assertEqual(r.name, '')
-
-    def test_create6(self):
-        game_engine.unregister()
         with self.assertRaises(LookupError):
             r = reference.Reference(5)
 
-    def test_create7(self):
+    def test_create5(self):
         game_engine.unregister()
         r1 = reference.Reference('_TestReference/create')
         r2 = reference.Reference(r1)
         self.assertEqual(r2.name, 'create')
 
-    def test_create8(self):
+    def test_create6(self):
         game_engine.unregister()
         t = _TestReference(name='create')
         r = reference.Reference(t)

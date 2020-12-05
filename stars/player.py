@@ -1,13 +1,13 @@
 import sys
+from math import ceil
 from . import game_engine
 from .defaults import Defaults
-from .energy_minister import EnergyMinister
 from .intel import Intel
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
-from .tech_level import TechLevel
+from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 
 """ Default values (default, min, max)  """
@@ -26,13 +26,18 @@ __defaults = {
     'tech_level': [TechLevel()], # current tech levels
     'research_partial': [TechLevel()], # energy spent toward next level
     'research_queue': [[]], # queue of tech items to research
-    'research_field': [''], # next field to research (or 'lowest')
+    'research_field': ['<LOWEST>'], # next field to research (or 'lowest')
     'energy': [0, 0, sys.maxsize],
-    'energy_minister': [EnergyMinister()],
     'fleets': [[]],
     'tech': [[]], # tech tree
     'treaties': [{}],
     'pending_treaties': [{}],
+    'energy_minister_construction_percent': [90, 0, 100],
+    'energy_minister_mattrans_percent': [0, 0, 100],
+    'energy_minister_mattrans_use_surplus': [False],
+    'energy_minister_research_percent': [10, 0, 100],
+    'energy_minister_research_use_surplus': [False],
+    'historical': [{}], # map of category to value by year (not hundreth)
 }
 
 """ List of fields that are user modifable """
@@ -41,9 +46,13 @@ _player_fields = [
     'planetary_ministers',
     'research_queue',
     'research_field',
-    'energy_minister',
     'fleets',
     'treaties',
+    'energy_minister_construction_percent',
+    'energy_minister_mattrans_percent',
+    'energy_minister_mattrans_use_surplus',
+    'energy_minister_research_percent',
+    'energy_minister_research_use_surplus',
 ]
 
 """ A player in a game """
@@ -58,6 +67,7 @@ class Player(Defaults):
         if 'player_key' not in kwargs:
             self.player_key = str(id(self))
         game_engine.register(self)
+        self.__cache__ = {}
 
     """ Update self from file """
     def update_from_file(self):
@@ -65,7 +75,11 @@ class Player(Defaults):
         p = game_engine.load_inspect('games', self.game_name + ' - ' + self.name)
         if self.player_key == p.player_key:
             for field in _player_fields:
-                setattr(self, field, getattr(p, field))
+                self[field] = p[field]
+
+    """ Update the date """
+    def next_hundreth(self):
+        self.date = round(self.date + 0.01, 2)
 
     """ calles fleets to do actions """
     def ship_action(self, action):
@@ -118,12 +132,20 @@ class Player(Defaults):
             for s in game_engine.get('Sun'):
                 self.add_intel(s, name=s.name, location=s.location, color=s.get_color(), size=s.gravity)
 
+    """ Store historical values - accumulates across the year """
+    def add_historical(self, category, value):
+        history = self.historical.get(category, [])
+        for i in range(self.race.start_date + len(history), int(self.date) + 1):
+            history.append(0)
+        history[-1] += value
+        self.historical[category] = history
+
     """ Add a message """
     def add_message(self, source, subject, body, link):
         self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
 
     """ Compute score based on intel """
-    def compute_score(self):
+    def calc_score(self):
         #TODO
         pass
 
@@ -137,87 +159,107 @@ class Player(Defaults):
                 return m
         return self.planetary_ministers[0]
     
-    """ Calles the energy mineister and tells him to alocat the budget """
-    def get_budget(self):
-        self.energy_minister.allocate_budget(self.energy)
-    
-    """ Spend energy - consruction, baryogenesis, mat trans, research """
-    def generate_turn(self):
-        self.date = round(self.date + 0.01, 2)
-        # Collect up last years unused resources before planets generate resources
-        self.energy = self.energy_minister.construction_budget 
-        self.energy += self.energy_minister.mattrans_budget
-        self.energy += self.energy_minister.research_budget
-        self.energy += self.energy_minister.unallocated_budget 
-        # Get the list of planets
-        planets = []
-        for planet in game_engine.get('Planet'):
-            if planet.player.eq(self):
-                planets.append(planet)
-        planets.sort(key=lambda x: x.on_planet.people)
-        # Population growth & facilities
-        for planet in planets:
-            planet.have_babies()
-            self.energy += planet.generate_energy()
-            planet.mine_minerals()
-            planet.calc_production()
-        # Allocated energy
-        self.get_budget()
-        # Existing build queue
-        for planet in planets:
-            planet.do_construction(False)
-        # Add auto build
-        for planet in planets:
-            planet.do_construction(True)
-        # Flip the order
-        planets.sort(key=lambda x: x.on_planet.people, reverse=True)
-        # Create minerals
-        for planet in planets:
-            planet.do_baryogenesis()
-        # Mat-Trans
-        for planet in planets:
-            planet.do_mattrans()
-        # Research
-        self._do_research()
-        if not self.computer_player:
-            self.ready_to_generate = False
+    """ Calls the energy mineister to allocate the budget """
+    def allocate_budget(self):
+        total = self.energy
+        for category in ['construction', 'mattrans', 'research']:
+            allocation = min(round(total * self['energy_minister_' + category + '_percent'] / 100), self.energy)
+            self.__cache__['budget_' + category] = allocation
+            self.energy -= allocation
 
-    """ Research """
-    def _do_research(self):
-        budget = self.energy_minister.check_budget('research', self.energy)
-        if not self.race.lrt_MadScientist:
-            while budget > 0:
-                budget = self._research_in_field(self.research_field, budget)
-                if budget > 0:
-                    self.research_field = self._calc_next_research_field()
+    """ Request to spend energy for a category """
+    def spend(self, sub_category, request=sys.maxsize, spend=True):
+        category = sub_category
+        # Pull from the correct budget category
+        if sub_category in ['ship', 'planetary', 'baryogenesis']:
+            category = 'construction'
+            budget = self.__cache__['budget_construction']
+        elif category == 'mattrans':
+            budget = self.__cache__['budget_mattrans']
+            if self.energy_minister_mattrans_use_surplus:
+                budget += self.__cache__['budget_construction']
+        elif category == 'research':
+            budget = self.__cache__['budget_research']
+            if self.energy_minister_research_use_surplus:
+                budget += self.__cache__['budget_construction']
+                budget += self.__cache__['budget_mattrans']
+        # All other categories pull from the unallocated budget and surplus
         else:
-            # TODO
-            print('TODO')
-        # TODO unlock tech items?
+            category = 'unallocated'
+            budget = self.energy
+            budget += self.__cache__['budget_construction']
+            budget += self.__cache__['budget_mattrans']
+            budget += self.__cache__['budget_research']
+        # If not enough budget then adjust request
+        if request > budget:
+            request = budget
+        if spend:
+            self.add_historical('spend_' + sub_category, request)
+            if category == 'unallocated':
+                self.energy -= request
+            else:
+                self.__cache__['budget_' + category] -= request
+        # Return approved or adjusted request
+        return request
 
-    """ Apply energy to a specific research field """
-    def _research_in_field(self, field, budget):
-        field_level = getattr(self.tech_level, field)
-        field_cost = getattr(self.next_tech_cost, field)
-        request = self.energy_minister.spend_budget('research', field_cost)
-        field_cost -= request
-        budget -= request
-        if field_cost == 0:
-            field_level += 1
-            field_cost = self._calc_research_cost(field, field_level)
-        setattr(self.tech_level, field, field_level)
-        setattr(self.next_tech_cost, field, field_cost)
-        return budget
-
-    """ Calculate the cost of the next tech level in that field """
-    def _calc_research_cost(self, field, level):
-        # TODO
-        return 100 * level
-
-    """ Determine the next research field """
-    def _calc_next_research_field(self):
-        # TODO
-        return self.research_field
+    """ Calls the energy mineister to return unused budget """
+    def deallocate_budget(self):
+        for category in ['construction', 'mattrans', 'research']:
+            self.energy += self.__cache__['budget_' + category]
+            self.__cache__['budget_' + category] = 0
+    
+    """ Research """
+    def research(self):
+        budget = self.spend('research')
+        while budget > 0:
+            # Default field
+            field = self.research_field
+            # Most expensive field for the top item in the queue
+            if len(self.research_queue) > 0:
+                field = self.research_queue[0].level.most_expensive_field(self.race, self.tech_level, self.research_partial)
+                expensive = -1
+                for f in TECH_FIELDS:
+                    increase = max(0, research_queue[0].level[field] - self.tech_level[field])
+                    cost = self.tech_level.cost_for_next_level(f, race, increase) - self.research_partial[f]
+                    if cost > expensive:
+                        expensive = cost
+                        field = f
+            # Lowest field
+            elif self.research_field == '<LOWEST>':
+                lowest = -1
+                for f in TECH_FIELDS:
+                    if self.tech_level[f] > lowest[1]:
+                        lowest = self.tech_level[f]
+                        field = f
+            # Cost to get to the next level in the selected field
+            cost = self.tech_level.cost_for_next_level(field, self.race) - self.research_partial[field]
+            # Mad scientist gets 130% return with 55% in the selected field and 15% in every other field
+            if self.race.lrt_MadScientist:
+                to_each = ceil(cost * 0.15)
+                spend = min(cost + to_each * 3, budget)
+                to_each = ceil(spend * 0.15) # recalculate to account for budget constraints
+                for f in TECH_FIELDS:
+                    if f == field:
+                        self.research_partial[f] += spend - to_each * 3
+                    else:
+                        self.research_partial[f] += to_each
+            # Spend in the given field
+            else:
+                spend = min(cost, budget)
+                self.research_partial[field] += spend
+            # Decrease budget
+            budget -= spend
+            # Check for tech level-ups
+            for f in TECH_FIELDS:
+                cost_next = self.tech_level.cost_for_next_level(f, race)
+                while self.research_partial[f] > cost_next:
+                    self.tech_level[f] += 1
+                    self.research_partial[f] -= cost_next
+                    cost_next = self.tech_level.cost_for_next_level(f, race)
+            # Scrub the research queue
+            for t in self.research_queue:
+                if t.level.is_available(self.tech_level):
+                    self.research_queue.remove(t)
 
 
 Player.set_defaults(Player, __defaults)

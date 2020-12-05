@@ -87,5 +87,13 @@ class EnergyMinister(Defaults):
         # Return approved or adjusted request
         return request
 
+    """ Return unused budget """
+    def deallocate_budget(self):
+        unused = self.construction_budget + self.mattrans_budget + self.research_budget + self.unallocated_budget
+        self.construction_budget = 0
+        self.mattrans_budget = 0
+        self.research_budget = 0
+        self.unallocated_budget = 0
+        return unused
 
 EnergyMinister.set_defaults(EnergyMinister, __defaults)

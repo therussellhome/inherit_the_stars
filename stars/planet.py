@@ -199,7 +199,9 @@ class Planet(Defaults):
     def generate_energy(self):
         plants = self.__operate('Power Plant', 'power_plants_per_10k_colonists') * getattr(self, 'Power Plant').tech.facility_output / 100
         pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
-        return plants + pop
+        energy = plants + pop
+        self.player.energy += energy
+        return energy
 
     """ mines mine the minerals """
     def mine_minerals(self):
@@ -215,9 +217,10 @@ class Planet(Defaults):
         return (((getattr(self.remaining_minerals, mineral, 0) / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
 
     """ calculates max production capasity """
-    def calc_production(self):
+    def operate_factories(self):
         # 1 unit of production free
         self.factory_capacity = 1 + self.__operate('Factory', 'factories_per_10k_colonists') * getattr(self, 'Factory').tech.facility_output / 100
+        return self.factory_capacity
 
     """ minister checks to see if you need to build more facilities """
     def auto_build(self):

@@ -46,6 +46,15 @@ class DefaultsTestCase(unittest.TestCase):
         self.assertEqual(t.default_object[0], 'xyz')
         self.assertEqual(t.other_value, self)
 
+    def test_subscript1(self):
+        t = _TestDefaults()
+        self.assertEqual(t['default_int'], 123)
+
+    def test_subscript2(self):
+        t = _TestDefaults()
+        t['default_int'] = 321
+        self.assertEqual(t['default_int'], 321)
+
     def test_value(self):
         t = _TestDefaults()
         t.default_int = 2
