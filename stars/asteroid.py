@@ -15,18 +15,18 @@ __defaults = {
     'player': [Reference('Player')],
     'decay_factor': [0.01, 0.0, 1.0],
 }
-    """decay = mass * hyper**2 * decay_factor, mass -= decay
+    """decay = mass * hyper**2 * decay_factor, mass -= decay"""
 
 
-what does it need to have?
-minerals is class
-location is class
-mass
-speed
-target is location
-player (only if TANSTAAFL) is reference
-decay rate
+#what does it need to have?
+#minerals is class
+#location is class
+#mass
+#speed is hyper
+#target is location
+#player (only if TANSTAAFL) is reference
+#decay rate
 
-from what does it inherit
-buildable
-not minerals (it has minerals)
+#from what does it inherit
+#buildable
+#not minerals (it has minerals)
