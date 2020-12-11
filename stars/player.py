@@ -21,7 +21,8 @@ __defaults = {
     'seen_players': [[]],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
-    'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
+    'planetary_ministers': [[PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)]], # list of planetary ministers
+    'planetary_minister_map': [{}], # map of planet references to minister references
     'score': [Score()],
     'tech_level': [TechLevel()], # current tech levels
     'research_partial': [TechLevel()], # energy spent toward next level
