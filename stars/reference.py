@@ -28,6 +28,14 @@ class Reference(game_engine.BaseClass):
         object.__setattr__(self, '_reference', reference)
         object.__setattr__(self, '__cache__', None)
 
+    """ Override the subscript operator """
+    def __getitem__(self, name):
+        return getattr(self, name)
+
+    """ Override the subscript operator """
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
+
     """ Get the attribute from the real class """
     def __getattribute__(self, name):
         if name[0] == '_':

@@ -48,7 +48,7 @@ __defaults = {
     'mines_per_10k_colonists': [10, 2, 50],
     'defenses_per_10k_colonists': [10, 2, 50],
     'energy_per_10k_colonists': [100, 100, 2000],
-    'cost_of_baryogenesis': [10000, 2000, 12000],
+    'cost_of_baryogenesis': [1000, 200, 1200], # YJ / kT
     'starting_factories': [10, 5, 20],
     'starting_mines': [10, 5, 20],
     'starting_power_plants': [10, 5, 20],

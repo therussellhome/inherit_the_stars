@@ -32,11 +32,13 @@ __defaults = {
     'tech': [[]], # tech tree
     'treaties': [{}],
     'pending_treaties': [{}],
-    'energy_minister_construction_percent': [90, 0, 100],
-    'energy_minister_mattrans_percent': [0, 0, 100],
-    'energy_minister_mattrans_use_surplus': [False],
-    'energy_minister_research_percent': [10, 0, 100],
-    'energy_minister_research_use_surplus': [False],
+    'build_queue': [[]], # array of BuildQueue items
+    'finance_minister_construction_percent': [90, 0, 100],
+    'finance_minister_mattrans_percent': [0, 0, 100],
+    'finance_minister_mattrans_use_surplus': [False],
+    'finance_minister_research_percent': [10, 0, 100],
+    'finance_minister_research_use_surplus': [False],
+    'finance_minister_baryogenesis_default': [True],
     'historical': [{}], # map of category to value by year (not hundreth)
 }
 
@@ -48,11 +50,11 @@ _player_fields = [
     'research_field',
     'fleets',
     'treaties',
-    'energy_minister_construction_percent',
-    'energy_minister_mattrans_percent',
-    'energy_minister_mattrans_use_surplus',
-    'energy_minister_research_percent',
-    'energy_minister_research_use_surplus',
+    'finance_minister_construction_percent',
+    'finance_minister_mattrans_percent',
+    'finance_minister_mattrans_use_surplus',
+    'finance_minister_research_percent',
+    'finance_minister_research_use_surplus',
 ]
 
 """ A player in a game """
@@ -163,9 +165,8 @@ class Player(Defaults):
     def allocate_budget(self):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:
-            allocation = min(round(total * self['energy_minister_' + category + '_percent'] / 100), self.energy)
+            allocation = min(round(total * self['finance_minister_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
-            self.energy -= allocation
 
     """ Request to spend energy for a category """
     def spend(self, sub_category, request=sys.maxsize, spend=True):
@@ -176,38 +177,35 @@ class Player(Defaults):
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':
             budget = self.__cache__['budget_mattrans']
-            if self.energy_minister_mattrans_use_surplus:
+            if self.finance_minister_mattrans_use_surplus:
                 budget += self.__cache__['budget_construction']
         elif category == 'research':
             budget = self.__cache__['budget_research']
-            if self.energy_minister_research_use_surplus:
+            if self.finance_minister_research_use_surplus:
                 budget += self.__cache__['budget_construction']
                 budget += self.__cache__['budget_mattrans']
         # All other categories pull from the unallocated budget and surplus
         else:
-            category = 'unallocated'
+            category = 'other'
             budget = self.energy
-            budget += self.__cache__['budget_construction']
-            budget += self.__cache__['budget_mattrans']
-            budget += self.__cache__['budget_research']
+        budget = min(self.energy, budget)
         # If not enough budget then adjust request
         if request > budget:
             request = budget
         if spend:
             self.add_historical('spend_' + sub_category, request)
-            if category == 'unallocated':
-                self.energy -= request
-            else:
+            self.energy -= request
+            if category != 'other':
                 self.__cache__['budget_' + category] -= request
         # Return approved or adjusted request
         return request
 
-    """ Calls the energy mineister to return unused budget """
-    def deallocate_budget(self):
-        for category in ['construction', 'mattrans', 'research']:
-            self.energy += self.__cache__['budget_' + category]
-            self.__cache__['budget_' + category] = 0
-    
+    """ Attempt to build the items in the build queue """
+    def build_from_queue(self):
+        for b in self.build_queue:
+            if b.planet.build(b):
+                self.build_queue.remove(b)
+
     """ Research """
     def research(self):
         budget = self.spend('research')

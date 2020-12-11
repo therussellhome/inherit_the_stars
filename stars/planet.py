@@ -7,7 +7,7 @@ from . import stars_math
 from .cargo import Cargo
 from .cost import Cost
 from .defaults import Defaults
-from .facility import Facility
+from .facility import Facility, FACILITY_TYPES
 from .location import Location
 from .location import Location
 from .minerals import Minerals, MINERAL_TYPES
@@ -31,13 +31,11 @@ __defaults = {
     'player': [Reference('Player')],
     'location': [Location()],
     'star_system': [Reference('StarSystem')],
-    'factory_capacity': [0, 0, sys.maxsize],
-    'build_queue': [[]], # array of tuples (cost_incomplete, buildable, upgrade_to)
-    # facilities where the key matches the tech category
-    'Power Plant': [Facility()],
-    'Factory': [Facility()],
-    'Mineral Extractor': [Facility()],
-    'Planetary Shield': [Facility()],
+    # facilities where the key matches from the facility class
+    'power_plants': [0, 0, sys.maxsize],
+    'factories': [0, 0, sys.maxsize],
+    'mines': [0, 0, sys.maxsize],
+    'defenses': [0, 0, sys.maxsize],
 }
 
 
@@ -183,78 +181,71 @@ class Planet(Defaults):
 
     """ how many facilities can be operated """
     # avoid creating facilities
-    def __operate(self, facility_type, race_trait):
+    def _operate(self, facility_type, ideal=False):
         allocation = getattr(self.player.get_minister(self.name), facility_type)
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
-        return min(getattr(self, facility_type).quantity, getattr(self.player.race,race_trait) * workers / 10000)
+        operate = self.player.race[facility_type + '_per_10k_colonists'] * workers / 10000
+        if ideal:
+            return operate
+        return min(self[facility_type], operate)
 
     """ Incoming! """
     def raise_shields(self):
-        return self.__operate('Planetary Shield', 'defenses_per_10k_colonists') * getattr(self, 'Planetary Shield').tech.shield
+        return self._operate('defenses') * self.playertech_level.energy * 1234 # TODO Pam please come up with equasion
 
     """ power plants make energy """
     def generate_energy(self):
-        plants = self.__operate('Power Plant', 'power_plants_per_10k_colonists') * getattr(self, 'Power Plant').tech.facility_output / 100
-        pop = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
-        energy = plants + pop
-        self.player.energy += energy
-        return energy
+        facility_yj =  self._operate('power_plants') * self.player.tech_level.propulsion * 1234 # TODO Pam please come up with equasion
+        pop_yj = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
+        self.player.energy += facility_yj + pop_yj
+        return facility_yj + pop_yj
 
     """ mines mine the minerals """
     def mine_minerals(self):
-        factor = getattr(self, 'Mineral Extractor').tech.mineral_depletion_factor
-        operate = self.__operate('Mineral Extractor', 'mines_per_10k_colonists')
-        for mineral in ['silicon', 'titanium', 'lithium']:
+        factor = 1 / (self.player.tech_level.weapons + 1) # TODO Pam please come up with equasion
+        operate = self._operate('mines')
+        for mineral in MINERAL_TYPES:
             availability = self.mineral_availability(mineral)
-            setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) + round(operate * availability))
-            setattr(self.remaining_minerals, mineral, getattr(self.remaining_minerals, mineral) - round(operate * availability * factor))
+            self.on_surface[mineral] += round(operate * availability)
+            self.remaining_minerals[mineral] -= round(operate * availability * factor)
 
     """ Availability of the mineral type """
     def mineral_availability(self, mineral):
-        return (((getattr(self.remaining_minerals, mineral, 0) / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+        return (((self.remaining_minerals[mineral] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
 
     """ calculates max production capasity """
     def operate_factories(self):
         # 1 unit of production free
-        self.__cache__['production'] = 1 + self.__operate('Factory', 'factories_per_10k_colonists') * getattr(self, 'Factory').tech.facility_output / 100
+        self.__cache__['production'] = 1 + self._operate('factories') * self.player.tech_level.construction * 1234 # TODO Pam please come up with equasion
         return self.__cache__['production']
 
-    """ Build what is on the queue """
-    def build_from_queue(self, baryogenesis=False):
-        blocked = False
+    """ Build an item """
+    def build(self, item, from_queue=True):
         production = self.__cache__['production']
-        while not blocked and len(self.build_queue) > 0:
-            (cost, item, upgrade_to) = self.build_queue[0][0]
-            spend = self.player.spend(item.__class__.__name__, cost.energy)
-            cost.energy -= spend
-            for m in MINERAL_TYPES:
-                spend = min(production, cost[m], self.on_surface[m])
-                production -= spend
-                self.on_surface[m] -= spend
-                cost[m] -= spend
-            if cost.is_zero():
-                item.build_complete(self.player.race, upgrade_to)
-                self.build_queue.pop()
-            else:
-                blocked = True
+        item.cost.energy -= self.player.spend(item.__class__.__name__, item.cost.energy)
+        for m in MINERAL_TYPES:
+            use_p = min(production, item.cost[m], self.on_surface[m])
+            production -= use_p
+            self.on_surface[m] -= use_p
+            item.cost[m] -= use_p
+            if item.cost[m] > 0 and item.baryogenesis:
+                spend_e = self.player.spend('baryogenesis', min(production / 2, item.cost[m]) * self.player.race.cost_of_baryogenesis)
+                baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
+                production -= baryogenesis_minerals * 2
+                item.cost[m] -= baryogenesis_minerals
         self.__cache__['production'] = production
-        return blocked
-
-    """ Run through the queue again if the planetary minister allows baryogenesis """
-    def build_with_baryogenesin(self):
-        if self.player.get_minister(self.name).allow_baryogenesis:
-            self.build_from_queue(baryogenesis=True)
-
-    """ Add an item to the build queue """
-    def add_to_build_queue(self, buildable, upgrade_to=None):
-        cost = buildable.add_to_build_queue(self, upgrade_to)
-        self.build_queue.append((cost, buildable, upgrade_to))
+        if item.cost.is_zero():
+            item.finish()
+            return true
+        if not from_queue:
+            self.player.build_queue.append(item)
+        return False
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):
         minister = self.player.get_minister(self.name)
-        nothing_more = False
-        while not nothing_more and len(self.build_queue) == 0:
+        keep_going = True
+        while keep_going and len(self.__cache__['build_queue']) == 0:
             # Terraforming
             worst_hab = None
             worst_hab_from_center = 0.0
@@ -269,11 +260,37 @@ class Planet(Defaults):
                     worst_hab = hab
                     worst_hab_from_center = hab_from_center
             if worst_hab:
-                self.add_to_build_queue(Terraform(hab=worst_hab))
+                keep_goind = self.build(Terraform(hab=worst_hab, planet=self))
             else:
                 # Build facility
-                pass #TODO
-            build_from_queue(baryogenesis=minister.allow_baryogenesis)
+                worst_facility = None
+                wosst_facility_percent = 1.0
+                for facility in FACILITY_TYPES:
+                    operate = self._operate(facility)
+                    ideal = self._operate(facility, True)
+                    if operate / ideal < worst_facility_percent:
+                        worst_facility = facility
+                        worst_facility_percent = operate / ideal
+                if worst_facility:
+                    keep_going = self.build(Facility(facility_type=worst_facility, planet=self, baryogenesis=minister.allow_baryogenesis))
+                else:
+                    keep_going = False
+
+    """ Do baryogenesis """
+    def baryogenesis(self):
+        if self.player.get_minister(self.name).allow_baryogenesis:
+            spend_e = self.player.spend('baryogenesis', self.__cache__['production'] * self.player.race.cost_of_baryogenesis)
+            minerals = spend_e / self.player.race.cost_of_baryogenesis
+            lowest = ''
+            lowest_kt = sys.maxsize
+            for m in MINERAL_TYPES:
+                if self.on_surface[m] < lowest_kt:
+                    lowest = m
+                    lowest_kt = self.on_surface[m]
+            self.on_surface[lowest] += minerals
+            self.__cache__['production'] -= minerals
+        
+
         """
         if not self.player.is_valid:
             return
@@ -360,22 +377,6 @@ class Planet(Defaults):
         if self.player.is_valid:
             getattr(self, 'Planetary Scanner').scan_planets(self.player, self.location)
             getattr(self, 'Planetary Scanner').scan_planets(self.player, self.location)
-
-
-""" Ordered list of fleet actions for use by the Game.generate_turn """
-Planet.actions = [
-    'have_babies',
-    'generate_energy',
-    'extract_minerals',
-    'build_queue',
-    'build_facilities',
-    '',
-    'baryogenesis',
-    'mattrans',
-    '',
-    '',
-    '',
-]
 
 
 Planet.set_defaults(Planet, __defaults)

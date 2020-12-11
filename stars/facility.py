@@ -1,50 +1,34 @@
-import sys
-from .buildable import Buildable
-from .reference import Reference
+from .build_queue import BuildQueue
+from .cost import Cost
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'tech': [Reference('Tech')],
-    'quantity': [0, 0, sys.maxsize],
+    'facility_type': [''],
 }
 
 
-""" Represent 'minerals' """
-class Facility(Buildable):
-    def __init__(self, *args, **kwargs):
+""" Facility types """
+FACILITY_TYPES = ['power_plants', 'factories', 'mines', 'defenses']
+
+
+""" Facility costs """
+_facility_costs = {
+    'power_plants': Cost(titanium=1, lithium=1, silicon=2, energy=250),
+    'factories': Cost(titanium=1, lithium=0, silicon=1, energy=250),
+    'mines': Cost(titanium=0, lithium=1, silicon=0, energy=100),
+    'defenses': Cost(titanium=0, lithium=0, silicon=0, energy=0), # TODO Pam please come up with a cost
+}
+
+""" Temporary class to indicate facility in process """
+class Facility(BuildQueue):
+    def __init__(self, **kwargs):
+        global _facility_costs
         super().__init__(**kwargs)
+        self.cost = _facility_costs[self.facility_type]
 
-    """ Return the cost to build """
-    def add_to_build_queue(self, planet, upgrade_to=None):
-        super().add_to_build_queue(planet, upgrade_to)
-        if upgrade_to:
-            return (self.upgrade_to.cost - self.tech.scrap_value(planet.player.race)) * self.quantity
-        return self.tech.cost
-
-    """ Add to facility count or finalize upgrade """
-    def build_complete(self, planet, upgrade_to=None):
-        super().build_complete(planet, upgrade_to)
-        if upgrade_to:
-            self.tech = Reference(upgrade_to)
-        else:
-            self.quantity += 1
-
-    def colonize(self, player):
-        if self.quantity == 0:
-            upgrade = self.upgrade(player)
-            if upgrade:
-                self.tech = upgrade
-    
-    def upgrade(self, category, player):
-        if self.under_construction:
-            return None
-        best = self.tech
-        for t in player.tech:
-            if t.is_available(player.tech_level) and t.upgrade_path == category and t.upgrade_level > best.upgrade_level:
-                best = t
-        if best == self.tech:
-            return None
-        return best
+    """ Mark the item as completed """
+    def finish(self):
+        self.planet[self.facility_type] += 1
 
 Facility.set_defaults(Facility, __defaults)
