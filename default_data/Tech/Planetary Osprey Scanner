@@ -17,7 +17,7 @@
     },
     "scanner": {
         "normal": 650.0,
-        "penetrating": 0.000105702977392,
+        "penetrating": 0.0002115,
         "__uuid__": "Scanner"
     },
     "__uuid__": "Tech"
