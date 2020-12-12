@@ -118,6 +118,8 @@ class Planet(Defaults):
             if self.__class__.__name__ == 'Sun':
                 return False
         self.player = Reference(player)
+        #minister = PlanetaryMinister()
+        #player.planetary_minister_map[Reference(self)] = 
         return True
 
     """ Calculate the planet's value for the current player (-100 to 100)

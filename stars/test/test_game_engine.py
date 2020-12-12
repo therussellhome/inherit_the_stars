@@ -13,7 +13,6 @@ class _TestGameEngine(game_engine.BaseClass):
         if self.register:
             game_engine.register(self)
 
-
 class GameEngineTestCase(unittest.TestCase):
     def onSetup():
         self.ut_dir = Path.home() / 'Inherit!' / 'test'
@@ -96,6 +95,11 @@ class GameEngineTestCase(unittest.TestCase):
         # Test random junk
         game_engine.unregister()
         self.assertEqual(game_engine.get(None), None)
+
+    def test_register_n_get8(self):
+        game_engine.unregister()
+        t1 = _TestGameEngine(name='test_get8')
+        self.assertEqual(game_engine.get(t1.__uuid__), t1)
 
     def test_unregister1(self):
         game_engine.unregister()
