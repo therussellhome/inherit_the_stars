@@ -17,6 +17,7 @@ class RenderStars(PlayerUI):
             return
         # Copy all suns
         self.suns = []
+        self.plants = []
         for s in self.player.get_intel('Sun'):
             self.suns.append({
                 'name': s.get('name'), 
@@ -27,7 +28,7 @@ class RenderStars(PlayerUI):
                 'size': s.get('size'),
             })
         for s in self.player.get_intel('Planets'):
-            self.suns.append({
+            self.planets.append({
                 'name': s.get('name'), 
                 'x': s.get('location').x,
                 'y': s.get('location').y,
@@ -35,6 +36,7 @@ class RenderStars(PlayerUI):
                 'color': s.get('color'),
                 'size': s.get('size'),
             })
-            
+        print(len(self.suns))
+        print(len(self.planets))
 
 RenderStars.set_defaults(RenderStars, __defaults, sparse_json=False)

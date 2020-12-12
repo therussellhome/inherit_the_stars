@@ -481,33 +481,6 @@ class Fleet(Defaults):
             
 Fleet.set_defaults(Fleet, __defaults)
 
-""" Ordered list of fleet preactions for use by the Game.generate_turn """
-Fleet.preactions = [
-    'pre_unload',
-    'pre_load',
-    'pre_piracy',
-    'deploy_hyper_denial',
-]
-
-""" Ordered list of fleet actions for use by the Game.generate_turn """
-Fleet.actions = [
-    'merge',
-    'generate_fuel',#move to starbase
-    'self_repair',
-    'repair',
-    'orbital_mining',
-    'lay_mines',
-    'bomb',
-    'colonize',
-    'piracy',
-    'sell',
-    'unload',
-    'scrap',
-    'buy',
-    'load',
-    'transfer',
-    'patrol',
-]
 """ In-system movment mine interaction """
 ''' Aryon:
     """ protect self first then help other ships """

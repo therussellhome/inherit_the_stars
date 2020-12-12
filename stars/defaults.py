@@ -16,6 +16,14 @@ class Defaults(game_engine.BaseClass):
         # override with provided kwargs
         self.update(**kwargs)
 
+    """ Override the subscript operator """
+    def __getitem__(self, name):
+        return getattr(self, name)
+
+    """ Override the subscript operator """
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
+
     """ Override to enforce type and bounds checking """
     def __setattr__(self, name, value):
         if name[0] != '_':
@@ -43,7 +51,7 @@ class Defaults(game_engine.BaseClass):
         if self.__dict__.keys() != other.__dict__.keys():
             return False
         for f in self.__dict__.keys():
-            if f != '__uuid__' and self.__dict__[f] != other.__dict__[f]:
+            if f != '__uuid__' and f != '__cache__' and self.__dict__[f] != other.__dict__[f]:
                 return False
         return True
 

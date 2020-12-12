@@ -34,11 +34,15 @@ class Scanner(Defaults):
         s.normal = stars_math.volume_add(self.normal, other.normal) 
         return s
 
-    def scan_ships(self, player, location):
+    def scan(self, player, location):
         for ship in game_engine.get('Ship'):
             report = self.scan_ship(location, ship)
             if report:
                 player.add_intel(ship, **report)
+        for planet in game_engine.get('Planet'):
+            report = self.scan_planet(location, planet)
+            if report:
+                player.add_intel(planet, **report)
 
     def scan_ship(self, location, ship):
         report = {}
@@ -57,12 +61,6 @@ class Scanner(Defaults):
         report['player'] = str(ship.player.name)
         report['location'] = ship.location
         return report
-
-    def scan_planets(self, player, location):
-        for planet in game_engine.get('Planet'):
-            report = self.scan_planet(location, planet)
-            if report:
-                player.add_intel(planet, **report)
 
     def scan_planet(self, location, planet):
         distance = planet.location - location

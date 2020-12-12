@@ -3,7 +3,7 @@
     "category": "Planetary Scanner",
     "description": "Penetrating scanners see into solar systems, including stats of planets. Their ability to detect ships outside penetrating range decreases quickly with the ship's apparent mass.",
     "race_requirements": "2ndSight",
-    "facility_level": 3,
+    "facility_level": 9,
     "cost": {
         "titanium": 12,
         "lithium": 0,

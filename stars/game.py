@@ -7,7 +7,7 @@ from .fleet import Fleet
 """ Default values (default, min, max)  """
 __defaults = {
     'name': [''],
-    'turn': [0, 0, sys.maxsize],
+    'hundreth': [0, 0, sys.maxsize],
     'players': [[]], # all players for the game, these are updated/overwritten when the players are loaded from file
     'systems': [[]], # all systems - suns and planets are part of systems
     'wormholes': [[]], # all wormholes
@@ -28,6 +28,7 @@ class Game(Defaults):
         game_engine.save('host', self.name, self)
         for p in self.players:
             if not p.computer_player:
+                p.ready_to_generate = False
                 game_engine.save('games', self.name + ' - ' + p.name, p)
 
     """ Load updates from player files """
@@ -36,60 +37,94 @@ class Game(Defaults):
             if not p.computer_player:
                 p.update_from_file()
 
-    """ Generate a turn """
-    def generate_turn(self):
-        self.turn += 1
-        # All actions are in hundredths of a turn
-        for hundreth in range(100):
-            # fleets in lowest to highest initiative
-            fleets = game_engine.get('Fleet')
-            fleets.sort(key=lambda x: x.initiative, reverse=False)
-            # players in lowest to highest score
-            players = game_engine.get('Players')
-            players.sort(key=lambda x: x.score.rank, reverse=False)
-            # player turn
-            for player in players:
-                player.generate_turn()
-            # fleet actions
-            for action in Fleet.actions:
-                for fleet in fleets:
-                    fleet.execute(action)
-            # generate new anomolies
-            #TODO
-            # anomolies
-            for wormhole in self.wormholes:
-                wormhole.move()
-            # asteroid movement
-            for asteroid in self.asteroids:
-                asteroid.move()
-            # mystery trader
-            for trader in self.mystery_traders:
-                trader.move()
-            # fleet move
-            for fleet in fleets:
-                fleet.move()
-            # scanning
-            self._scanning()
-            # combat
-            #TODO calculate where combat will occur and execute combat
-            # in-system move
-            for fleet in fleets:
-                fleet.move_in_system()
-            # score
-            for player in players:
-                player.calc_score()
-        # update scanning
-        self._scanning()
+    """ Generate hundreth """
+    def generate_hundreth(self):
+        # actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            pass
+        #
+        self.hundreth += 1
+        #
+        # players in lowest to highest score
+        players = list(self.players)
+        players.sort(key=lambda x: x.score.rank, reverse=False)
+        # planets in lowest to highest population
+        # planets call actions on their starbase
+        planets = []
+        for system in self.systems:
+            for planet in system.planets:
+                if planet.on_surface.people > 0:
+                    planets.append(planet)
+        planets.sort(key=lambda x: x.on_planet.people, reverse=False)
+        # fleets in lowest to highest initiative
+        fleets = []
+        for player in players:
+            for fleet in player.fleets:
+                fleets.append(fleet)
+        fleets.sort(key=lambda x: x.initiative, reverse=False)
+        #
+        # actions in order
+        self._call(players, 'next_hundreth')
+        self._call(planets, 'have_babies')
+        self._call(planets, 'generate_energy')
+        self._call(planets, 'mine_minerals')
+        self._call(planets, 'operate_factories')
+        self._call(players, 'allocate_budget')
+        self._call(players, 'build_from_queue')
+        self._call(planets, 'build_planetary')
+        self._call(planets, 'baryogenesis', reverse=True)
+        self._call(self.wormholes, 'move')
+        self._call(self.asteroids, 'move')
+        self._call(self.mystery_traders, 'move')
+        self._call(fleets, 'move')
+        self._call(planets, 'scan')
+        self._call(self.asteroids, 'scan')
+        self._call(fleets, 'scan')
+        self._combat()
+        self._call(fleets, 'move_in_system')
+        self._call(planets, 'generate_fuel')
+        self._call(fleets, 'merge')
+        self._call(fleets, 'self_repair')
+        self._call(fleets, 'repair')
+        self._call(fleets, 'orbital_mining')
+        self._call(fleets, 'lay_mines')
+        self._call(fleets, 'bomb')
+        self._call(fleets, 'colonize')
+        self._call(fleets, 'piracy')
+        self._call(fleets, 'sell')
+        self._call(fleets, 'unload')
+        self._call(fleets, 'scrap')
+        self._call(fleets, 'buy')
+        self._call(fleets, 'load')
+        self._call(fleets, 'transfer')
+        self._call(fleets, 'patrol')
+        self._call(planets, 'mattrans', reverse=True)
+        self._call(players, 'research')
+        #
+        # actions only done at the end of a year
+        if self.hundreth % 100 == 0:
+            self._call(planets, 'deallocate_build_queue')
+            self._call(planets, 'scan')
+            self._call(self.asteroids, 'scan')
+            self._call(fleets, 'scan')
+            self._call(players, 'calc_score')
+            self._check_for_winner()
 
-    """ Update all scanning """
-    def _scanning(self):
-        for ship in game_engine.get('Ship'):
-            ship.scan()
-        for starbase in game_engine.get('Starbase'):
-            starbase.scan()
-        for planet in game_engine.get('Planet'):
-            planet.scan()
-        for asteroid in self.asteroids:
-            asteroid.scan()
+    """ Call a method on a list of classes """
+    def _call(self, objs, method, reverse=False):
+        if reverse:
+            for obj in reversed(objs):
+                eval('obj.' + method + '()')
+        else:
+            for obj in objs:
+                eval('obj.' + method + '()')
+
+    """ Execute combat after determining where combat will occur """
+    def _combat(self):
+        pass #TODO
+
+    """ Check against the win conditions """
+    def _check_for_winner(self):
+        pass #TODO
 
 Game.set_defaults(Game, __defaults)
