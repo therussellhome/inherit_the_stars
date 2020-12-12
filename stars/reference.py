@@ -8,68 +8,71 @@ class Reference(game_engine.BaseClass):
     """ The only supported variable is the reference string """
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
+        reference = None
         if '_reference' in kwargs:
-            self._reference = kwargs['_reference']
+            reference = kwargs['_reference']
         elif len(args) == 1:
             if isinstance(args[0], str):
                 if '/' in args[0]:
-                    self._reference = args[0]
+                    reference = args[0]
                 else:
-                    self._reference = args[0] + '/'
+                    reference = args[0] + '/'
             elif isinstance(args[0], Reference):
-                self._reference = args[0]._reference
+                reference = args[0]._reference
             elif hasattr(args[0], '__uuid__'):
-                self._reference = args[0].__uuid__
+                reference = args[0].__uuid__
             else:
                 raise LookupError('Cannot create reference to "' + str(args[0]) + '"')
         elif len(args) == 2:
-            self._reference = args[0] + '/' + args[1]
-        else:
-            self._reference = None
+            reference = args[0] + '/' + args[1]
+        object.__setattr__(self, '_reference', reference)
+        object.__setattr__(self, '__cache__', None)
+
+    """ Override the subscript operator """
+    def __getitem__(self, name):
+        return getattr(self, name)
+
+    """ Override the subscript operator """
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
 
     """ Get the attribute from the real class """
     def __getattribute__(self, name):
         if name[0] == '_':
             return object.__getattribute__(self, name)
+        elif name == 'is_valid':
+            return (self._get(allow_error=False) != None)
         else:
-            reference = self._reference
-            obj = game_engine.get(reference, create_new=False)
-            if name == 'is_valid':
-                return (obj != None)
-            elif reference == None:
-                raise LookupError('Uninitialized reference')
-            elif obj == None:
-                ref_name = reference.split('/', 1)[1]
-                if name == 'name':
-                    return ref_name
-                if ref_name == '':
-                    reference += str(uuid.uuid4())
-                    self._reference = reference
-                obj = game_engine.get(reference, create_new=True)
-            if obj != None:
-                return obj.__getattribute__(name)
-            else:
-                raise LookupError('Unable to lookup/create "' + reference + '"')
+            obj = self._get(create_new=True)
+            return obj.__getattribute__(name)
 
     """ Set the attribute in the encapsulated class """
     def __setattr__(self, name, value):
         if name[0] == '_':
             object.__setattr__(self, name, value)
         else:
-            reference = self._reference
+            obj = self._get(create_new=True)
+            if name == 'name':
+                object.__setattr__(self, '_reference', obj.__uuid__)
+            obj.__setattr__(name, value)
+
+    """ Get/cache the object """
+    def _get(self, create_new=False, allow_error=True):
+        cache = object.__getattribute__(self, '__cache__')
+        if cache == None:
+            reference = object.__getattribute__(self, '_reference')
             if reference == None:
-                raise LookupError('Uninitialized reference')
-            elif name == 'name':
-                reference = reference.split('/')[0] + '/' + value
-                self._reference = reference
-            elif reference.split('/', 1)[1] == '':
-                reference += str(id(self))
-                self._reference = reference
-            obj = game_engine.get(reference, create_new=True)
-            if obj != None:
-                obj.__setattr__(name, value)
+                if allow_error:
+                    raise LookupError('Uninitialized reference')
             else:
+                if create_new and reference.split('/', 1)[1] == '':
+                    reference += str(uuid.uuid4())
+                    object.__setattr__(self, '_reference', reference)
+                cache = game_engine.get(reference, create_new=create_new)
+                object.__setattr__(self, '__cache__', cache)
+            if cache == None and allow_error:
                 raise LookupError('Unable to lookup/create "' + reference + '"')
+        return cache
 
     """ Equality test """
     def __eq__(self, other):

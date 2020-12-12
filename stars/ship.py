@@ -10,7 +10,6 @@ from .expirence import Expirence
 from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from .buildable import Buildable
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -33,7 +32,7 @@ __defaults = {
 }
 
 
-class Ship(ShipDesign, Buildable):
+class Ship(ShipDesign):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -137,19 +136,5 @@ class Ship(ShipDesign, Buildable):
     def blow_up(self):
         self.scrap(self.location, self.location)
         pass
-
-    """ Return the cost to build """
-    def add_to_build_queue(self, race=None, upgrade_to=None):
-        super().add_to_build_queue(race, upgrade_to)
-        if upgrade_to:
-            return upgrade_to.cost - self.scrap_value(race)
-        return self.cost
-
-    """ Store the upgraded specs """
-    def build_complete(self, race=None, upgrade_to=None):
-        super().build_complete(race, upgrade_to)
-        if upgrade_to:
-            #TODO replace current ship specs with upgrade specs
-            pass
 
 Ship.set_defaults(Ship, __defaults)

@@ -54,19 +54,18 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_colonize1(self):
         p = planet.Planet()
-        self.assertTrue(p.colonize(player.Player(name='test_colonize'), 'a minister'))
+        self.assertTrue(p.colonize(player.Player(name='test_colonize')))
         self.assertTrue(p.is_colonized())
-        self.assertEqual(p.minister, 'a minister')
-        self.assertFalse(p.colonize(player.Player(name='claim jumper'), 'a minister'))
+        self.assertFalse(p.colonize(player.Player(name='claim jumper')))
 
     def test_colonize2(self):
         p = planet.Planet()
-        p.colonize(player.Player(name='test_colonize'), 'a minister')
-        self.assertFalse(p.colonize(player.Player(name='claim jumper'), 'a minister'))
+        p.colonize(player.Player(name='test_colonize'))
+        self.assertFalse(p.colonize(player.Player(name='claim jumper')))
 
     def test_colonize3(self):
         p = planet.Planet()
-        self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri')), 'a minister'))
+        self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri'))))
 
 
     def test_habitability1(self):
@@ -291,31 +290,29 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet()
         p.on_surface.people = 1000
         p.player.race.energy_per_10k_colonists = 100
-        getattr(p, 'Power Plant').quantity = 100
-        getattr(p, 'Power Plant').tech.facility_output = 100
-        self.assertEqual(p.generate_energy(), 200)
+        p.player.tech_level.propulsion = 10
+        p.power_plants = 100
+        self.assertEqual(p.generate_energy(), 1234100)
 
     def test_generate_energy2(self):
         p = planet.Planet()
         p.on_surface.people = 0
         p.player.race.energy_per_10k_colonists = 0
-        getattr(p, 'Power Plant').quantity = 100
-        getattr(p, 'Power Plant').tech.facility_output = 100
+        p.power_plants = 100
         self.assertEqual(p.generate_energy(), 0)
 
     def test_generate_energy3(self):
         p = planet.Planet()
         p.on_surface.people = 1000
         p.player.race.energy_per_10k_colonists = 1000
-        getattr(p, 'Power Plant').quantity = 0
+        p.power_plants = 0
         self.assertEqual(p.generate_energy(), 1000)
 
 
     def test_mine_minerals1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        getattr(p, 'Mineral Extractor').quantity = 100
-        getattr(p, 'Mineral Extractor').tech.mineral_depletion_factor = 1.3
+        p.mines = 100
         p.mine_minerals()
         return #TODO
         play = player.Player(

@@ -1,7 +1,7 @@
-from unittest import TestCase
+import unittest
 from .. import treaties
 
-class TestTreaty(TestCase):
+class TestTreaty(unittest.TestCase):
     def setUp(self):
         self.m0 = treaties.Treaty(buy_ti=0, buy_ti_at=True,
                                   buy_si=0, buy_si_at=True,

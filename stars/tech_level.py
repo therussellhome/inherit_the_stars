@@ -1,4 +1,5 @@
 import sys
+from math import ceil
 from .defaults import Defaults
 
 
@@ -12,6 +13,8 @@ __defaults = {
     'biotechnology': [0, 0, sys.maxsize]
 }
 
+TECH_FIELDS = ['energy', 'weapons', 'propulsion', 'construction', 'electronics', 'biotechnology']
+
 """ Represent 'tech level' """
 class TechLevel(Defaults):
     def __init__(self, **kwargs):
@@ -19,19 +22,24 @@ class TechLevel(Defaults):
 
     """ Determine if the item is available for a player's tech level """
     def is_available(self, level):
-        if level.energy >= self.energy and level.weapons >= self.weapons and level.propulsion >= self.propulsion and level.construction >= self.construction and level.electronics >= self.electronics and level.biotechnology >= self.biotechnology:
-            return True
-        return False
+        for field in TECH_FIELDS:
+            if self[field] > level[field]:
+                return False
+        return True
 
+    """ Add uses the greater of the inputs by field """
     def __add__(self, other):
         t = TechLevel()
-        t.energy = max(self.energy, other.energy)
-        t.weapons = max(self.weapons, other.weapons)
-        t.propulsion = max(self.propulsion, other.propulsion)
-        t.construction = max(self.construction, other.construction)
-        t.electronics = max(self.electronics, other.electronics)
-        t.biotechnology = max(self.biotechnology, other.biotechnology)
+        for field in TECH_FIELDS:
+            t[field] = max(self[field], other[field])
         return t
+
+    """ Calculate cost for an increase in a given field """
+    def cost_for_next_level(self, field, race, increase=1):
+        cost = 0
+        for i in range(self[field] + 1, self[field] + 1 + increase):
+            cost += race['research_modifier_' + field] * (10 + i ** 3)
+        return cost
 
     """
     Cost in YJ to attain this level
@@ -41,11 +49,9 @@ class TechLevel(Defaults):
     """
     def calc_cost(self, race, level, partial):
         cost = 0
-        for field in ['energy', 'weapons', 'propulsion', 'construction', 'electronics', 'biotechnology']:
-            cost_field = 0
-            for i in range(getattr(level, field) + 1, getattr(self, field) + 1):
-                cost_field += getattr(race, 'research_modifier_' + field) * (10 + i ** 3)
-            cost += max(0, cost_field - getattr(partial, field))
+        for field in TECH_FIELDS:
+            increase = max(0, self[field] - level[field])
+            cost += max(0, level.cost_for_next_level(field, race, increase) - partial[field])
         return cost
 
     """ Format the tech level for HTML """
