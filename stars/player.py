@@ -7,6 +7,7 @@ from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
+from .treaties import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 
@@ -101,7 +102,7 @@ class Player(Defaults):
     """ Return the id for use as a temporary player token """
     def token(self):
         return str(id(self))
-
+    
     """ Add an intel report """
     def add_intel(self, obj, **kwargs):
         # Intentionally allowing this to fail if the object does not have a name attribute
@@ -115,7 +116,7 @@ class Player(Defaults):
             reference = 'Player/' + kwargs['player']
             if reference not in self.intel:
                 self.intel[reference] = Intel(reference=reference)
-
+    
     """ Get intel about an object or objects """
     def get_intel(self, reference):
         if '/' in reference:
@@ -127,7 +128,7 @@ class Player(Defaults):
             if k.startswith(reference + '/'):
                 reports.append(i)
         return reports
-
+    
     """ 'Recieve' intel reports """
     def calc_intel(self):
         # First run includes all of the stars
@@ -146,12 +147,12 @@ class Player(Defaults):
     """ Add a message """
     def add_message(self, source, subject, body, link):
         self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
-
+    
     """ Compute score based on intel """
     def calc_score(self):
         #TODO
         pass
-
+    
     """ Get the minister for a given planet """
     def get_minister(self, planet):
         for m in self.planetary_ministers:
@@ -161,6 +162,59 @@ class Player(Defaults):
             if m.new_colony_minister:
                 return m
         return self.planetary_ministers[0]
+    
+    def calc_treaty(self, whith):
+        for key in self.treaties:
+            t = self.treaties[key]
+            if whith == t.other_player:
+                if len(t.accepted_by) == 2:
+                    if not t.replaced_by == '':
+                        mt = self.treaties[replaced_by]
+                        if len(mt.accepted_by) == 2:
+                            return mt
+                    return t
+        return Treaty(me = Reference(self), other_player = whith)
+    
+    def calc_p_treaty(self, whith):
+        for key in self.treaties:
+            t = self.treaties[key]
+            if whith == t.other_player:
+                if len(t.accepted_by) <= 1 and len(t.rejected_by) == 0:
+                    return t
+        return None
+    
+    def resolve_treaties(self):
+        for player in self.seen_players:
+            for key in self.treaties:
+                treaty = self.treaties[key]
+                if treaty.other_player == player:
+                    player.up_date_treaty(treaty.flip(), self)
+    
+    def up_date_treaty(self, treaty, other):
+        try:
+            if not self.treaties[treaty.name].eq(treaty):
+                self.get_proposal(treaty, other)
+            elif len(treaty.rejected_by) > 0:
+                del self.treaties[treaty.name]
+            elif treaty.replaced_by != '':
+                if len(self.treaties[treaty.reglaced_by].rejected_by) == 0:
+                    del self.treaties[treaty.name]
+                else:
+                    treaty.replaced_by = ''
+                    self.treaties[treaty.name] = treaty
+            elif None:
+                #TODO
+                pass
+        except IndexError:
+            self.get_proposal(treaty, other)
+    
+    def get_proposal(self, treaty, other):
+        tp = self.calc_p_treaty(treaty.other_player)
+        if tp and other.name in treaty.accepted_by:
+            ts = tp.merge(treaty)
+            other.get_proposal(ts.flip)
+            treaty = ts
+        treaties[treaty.name] = treaty
     
     """ Calls the energy mineister to allocate the budget """
     def allocate_budget(self):
@@ -260,5 +314,5 @@ class Player(Defaults):
                 if t.level.is_available(self.tech_level):
                     self.research_queue.remove(t)
 
-
+                    
 Player.set_defaults(Player, __defaults)
