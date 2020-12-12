@@ -65,41 +65,52 @@ class GameEngineTestCase(unittest.TestCase):
     def test_register_n_get4(self):
         # Get a single object
         game_engine.unregister()
-        t2 = _TestGameEngine(name='test_get2')
-        t0 = game_engine.get('_TestGameEngine/test_get2')
+        t2 = _TestGameEngine(name='test_get4')
+        t0 = game_engine.get('_TestGameEngine/test_get4')
         self.assertEqual(t0.name, t2.name)
 
     def test_register_n_get5(self):
         # Don't create a new object
         game_engine.unregister()
-        t0 = game_engine.get('_TestGameEngine/test_get0')
+        t0 = game_engine.get('_TestGameEngine/test_get5')
         self.assertEqual(t0, None)
 
     def test_register_n_get6(self):
         # Create an object
         game_engine.unregister()
-        t0 = game_engine.get('_TestGameEngine/test_get0', True)
-        self.assertEqual(t0.name, 'test_get0')
+        t0 = game_engine.get('_TestGameEngine/test_get6', True)
+        self.assertEqual(t0.name, 'test_get6')
 
-    def test_register_n_get6(self):
+    def test_register_n_get7(self):
         # Test None
         game_engine.unregister()
         self.assertEqual(game_engine.get(None), None)
 
-    def test_register_n_get6(self):
+    def test_register_n_get8(self):
         # Test random junk
         game_engine.unregister()
         self.assertEqual(game_engine.get(123), [])
 
-    def test_register_n_get7(self):
+    def test_register_n_get9(self):
         # Test random junk
         game_engine.unregister()
         self.assertEqual(game_engine.get(None), None)
 
-    def test_register_n_get8(self):
+    def test_register_n_get10(self):
         game_engine.unregister()
         t1 = _TestGameEngine(name='test_get8')
         self.assertEqual(game_engine.get(t1.__uuid__), t1)
+
+    def test_register_n_get11(self):
+        game_engine.unregister()
+        t1 = _TestGameEngine(name='test_get8')
+        self.assertEqual(game_engine.get('_TestGameEngine/' + str(id(t1))), t1)
+
+    def test_register_n_get12(self):
+        # Create an object
+        game_engine.unregister()
+        t0 = game_engine.get('Not_A_Real_Class/test_get12', True)
+        self.assertEqual(t0, None)
 
     def test_unregister1(self):
         game_engine.unregister()
@@ -122,12 +133,28 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].name, t2.name)
     
-    def test_json(self):
+    def test_json1(self):
         t1 = _TestGameEngine(name='test_json')
         json = game_engine.to_json(t1)
         t2 = game_engine.from_json(json)
         self.assertEqual(t1.name, t2.name)
+    
+    def test_json2(self):
         self.assertEqual(game_engine.from_json('this is bad json and is supposed to print'), None)
+
+    def test_json3(self):
+        t1 = _TestGameEngine(name='test_json')
+        del t1.__dict__['__uuid__']
+        json = game_engine.to_json(t1)
+        t2 = game_engine.from_json(json)
+        self.assertEqual(t1.name, t2.name)
+
+    def test_json4(self):
+        t1 = _TestGameEngine(name='test_json')
+        t1.__cache__ = 'abc'
+        json = game_engine.to_json(t1)
+        t2 = game_engine.from_json(json)
+        self.assertFalse(hasattr(t2, __cache__))
 
     def test_load_inspect(self):
         game_engine.unregister()
