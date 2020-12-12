@@ -30,3 +30,38 @@ class TechLevelTestCase(unittest.TestCase):
         self.assertTrue(tech_item.is_available(player_level))
         player_level.energy = 2
         self.assertTrue(tech_item.is_available(player_level))
+
+    def test_cost_next1(self):
+        l = tech_level.TechLevel()
+        r = race.Race()
+        self.assertEqual(l.cost_for_next_level('energy', r), 5500)
+
+    def test_cost_next2(self):
+        l = tech_level.TechLevel()
+        r = race.Race()
+        self.assertEqual(l.cost_for_next_level('energy', r, increase=2), 14500)
+
+    def test_cost1(self):
+        l = tech_level.TechLevel()
+        t = tech_level.TechLevel(energy=2)
+        p = tech_level.TechLevel()
+        r = race.Race()
+        self.assertEqual(t.calc_cost(r, l, p), 14500)
+
+    def test_cost2(self):
+        l = tech_level.TechLevel(energy=1)
+        t = tech_level.TechLevel(energy=2)
+        p = tech_level.TechLevel()
+        r = race.Race()
+        self.assertEqual(t.calc_cost(r, l, p), 9000)
+
+    def test_cost3(self):
+        l = tech_level.TechLevel()
+        t = tech_level.TechLevel(energy=2)
+        p = tech_level.TechLevel(energy=500)
+        r = race.Race()
+        self.assertEqual(t.calc_cost(r, l, p), 14000)
+
+    def test_html(self):
+        l = tech_level.TechLevel()
+        self.assertEqual(l.to_html(show_zero=True), '<i class="fa-react" title="Energy"> 0</i><i class="fa-bomb" title="Weapons"> 0</i><i class="fa-tachometer-alt" title="Propulsion"> 0</i><i class="fa-wrench" title="Construction"> 0</i><i class="fa-plug" title="Electronics"> 0</i><i class="fa-seedling" title="Biotechnology"> 0</i>')

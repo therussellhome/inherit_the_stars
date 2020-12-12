@@ -1,7 +1,7 @@
-from unittest import TestCase
+import unittest
 from .. import treaties
 
-class TestTreaty(TestCase):
+class TestTreaty(unittest.TestCase):
     def setUp(self):
         self.m0 = treaties.Treaty(status = 'received',
                                   cost_p2_to_p1_titanium=0, p2_is_selling_titanium=True,

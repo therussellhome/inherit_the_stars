@@ -156,6 +156,8 @@ def __encode(obj):
             del values[name]
     if '__uuid__' not in values:
         values['__uuid__'] = cls.__name__ + '/' + uuid.uuid4()
+    if '__cache__' in values:
+        del values['__cache__']
     return values
 
 
