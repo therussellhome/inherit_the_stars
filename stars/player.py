@@ -7,7 +7,7 @@ from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
-from .treaties import Treaty
+from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 
@@ -32,8 +32,7 @@ __defaults = {
     'energy': [0, 0, sys.maxsize],
     'fleets': [[]],
     'tech': [[]], # tech tree
-    'treaties': [{}],
-    'pending_treaties': [{}],
+    'treaties': [[]],
     'build_queue': [[]], # array of BuildQueue items
     'finance_minister_construction_percent': [90, 0, 100],
     'finance_minister_mattrans_percent': [0, 0, 100],
@@ -163,6 +162,26 @@ class Player(Defaults):
                 return m
         return self.planetary_ministers[0]
     
+    """ Share treaty updates with other players """
+    def treaty_negotiations(self):
+        for t in self.treaties:
+            t.other_player.treaty_negotiation(t.for_other_player(self))
+            
+
+    """ Merge in any incoming treaty updates """
+    def treaty_negotiation(self, treaty):
+        pass #TODO
+
+    """ Get the treaty """
+    def get_treaty(self, other_player, draft=False):
+        other_player = Reference(other_player)
+        for t in self.treaties:
+            if (t.other_player == other_player) and ((not draft and t.is_active()) or (draft and t.is_draft())):
+                return t
+        if draft:
+            return None
+        return Treaty(other_player=other_player, status='active')
+
     def calc_treaty(self, whith):
         for key in self.treaties:
             t = self.treaties[key]
@@ -216,7 +235,7 @@ class Player(Defaults):
             treaty = ts
         treaties[treaty.name] = treaty
     
-    """ Calls the energy mineister to allocate the budget """
+    """ Allocate the available energy into budget categories """
     def allocate_budget(self):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:

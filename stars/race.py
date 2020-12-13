@@ -5,6 +5,7 @@ from .defaults import Defaults
 """ Default values [default, min, max]  """
 __defaults = {
     'name': [''],
+    'icon': ['fas fa-pastafarianism'],
     'start_date': [3000, 0, sys.maxsize],
     'primary_race_trait': ['Melconians'],
     'lrt_Trader': [False],

@@ -1,218 +1,144 @@
-from ..treaties import Treaty
 from .playerui import PlayerUI
-from ..player import Player #for p2 only
-from ..reference import Reference #for p2 only
+from ..reference import Reference
+from ..treaty import Treaty, TREATY_BUY_SELL_FIELDS
 
 
 """ Default values (default, min, max)  """
 __defaults = {
     'foreign_treaties': [[]],
-    'foreign_p2': [''],
-    'foreign_relation_is_neutral': [True],
+    'foreign_other_player': [''],
     'foreign_relation_is_team': [False],
+    'foreign_relation_is_neutral': [True],
     'foreign_relation_is_enemy': [False],
 }
 
+# Add all keys from the treaty object for the negotiation table
+for key in TREATY_BUY_SELL_FIELDS:
+    __defaults['foreign_' + key] = Treaty.defaults[key]
+    __defaults['foreign_' + key + '_display'] = ['Never']
 
-""" """
+
+""" Foregin misister shows current relationships / treaties and pending treaties """
 class ForeignMinister(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         if not self.player:
             return
-        self.calc_r()
-        team_true = ['gate', 'passage', 'intel']
-        enemy_false = ['ti', 'si', 'li', 'fuel', 'gate', 'passage', 'intel']
-        p = ['foreign_sell_', 'foreign_buy_']
-        if self.foreign_relation_is_team:
-            for m in p:
-                for v in team_true:
-                    setattr(self, m+v, True)
-        if self.foreign_relation_is_enemy:
-            for m in p:
-                for x in enemy_false:
-                    setattr(self, m+x, False)
-        #print(self.foreign_sell_li_at)
-        #print(self.__dict__)
-        #print(self.player.__dict__)
-        #print(self.player.treaties)
-        #for key in self.player.treaties:
-            #print(key, self.player.treaties[key].__dict__)
-        p2 = Reference(Player(name='not_to_lazy_to_name_my_race P2'))
-        try:
-            s = self.player.seen_players[0]
-            #print(s)
-        except:
-            t = Treaty(accepted_by=['not_to_lazy_to_name_my_race P2'], me=Reference(self.player), other_player=p2, buy_ti=True, buy_si=True, buy_li=True, buy_fuel=True, buy_gate=True, buy_passage=True, buy_intel=True)
-            self.player.treaties[t.name] = t
-            self.player.seen_players.append(p2)
-        #print('Hello everybody i\'m p2')
-        if action.startswith('edit='):
-            for p in self.player.seen_players:
-        #        print(p.name, action, p.name == action[5:])
-                if p.name == action[5:]:
-                    op = p
-            self.foreign_other_player = op
-            action = 'revert'
+        # Reject a treaty
         if action.startswith('reject='):
-            t = self.player.treaties[action[7:]]
-            try:
-                t.rejected_by.remove(self.player.name)
-            except:
-                try:
-                    t.accepted_by.remove(self.player.name)
-                except:
-                    pass
-            t.rejected_by.append(self.player.name)
-        if action == 'propose':
-            t = self.player.calc_p_treaty(self.foreign_other_player)
-            if t:
-                try:
-                    t.rejected_by.remove(self.player.name)
-                except:
-                    try:
-                        t.accepted_by.remove(self.player.name)
-                    except:
-                        pass
-                t.rejected_by.append(self.player.name)
-            treety = Treaty()
-            if treety.relation == 'enemy':
-                treety.relation = 'enemy'
-                treety.accepted_by = [self.player.name, self.player.name]
-                self.player.treaties[treety.name] = treety
-            else:
-                for key in Treaty.defaults:
-                    setattr(treety, key, getattr(self, 'foreign_'+key))
-            self.player.treaties[treety.name] = treety
-            action = 'accept='+treety.name
-        if action.startswith('accept='):
-            print(action)
-            t = self.player.treaties[action[7:]]
-            try:
-                t.accepted_by.remove(self.player.name)
-            except:
-                try:
-                    t.rejected_by.remove(self.player.name)
-                except:
-                    pass
-            t.accepted_by.append(self.player.name)
-        #    if action[7:] == 'p2': #TODO
-        #        self.player.treaties['p2']=self.player.pending_treaties['p2']
-        #print(self.player.treaties)
-        if action == 'revert':
-            t = self.player.calc_p_treaty(self.foreign_other_player)
-            if not t:
-                t = self.player.calc_treaty(self.foreign_other_player)
-            for key in t.__dict__:
-                setattr(self, 'foreign_'+key, t.__dict__[key])
-            self.foreign_relation_is_neutral = False
+            reject = action.split('=', 2)[1]
+            for t in self.player.treaties:
+                if t.name == reject:
+                    t.status = 'rejected'
+        # Propose a treaty
+        elif action.startswith('propose='):
+            other_player = Reference('Player/' + action.split('=', 2)[1])
+            treaty = self.player.get_treaty(other_player, True)
+            if not treaty:
+                treaty = self.player.get_treaty(other_player, False)
+            self.foreign_other_player = other_player.name
             self.foreign_relation_is_team = False
+            self.foreign_relation_is_neutral = False
             self.foreign_relation_is_enemy = False
-            setattr(self, 'foreign_relation_is_'+self.foreign_relation, True)
-        """ set display values """
-        try:
-            self.foreing_p2 = self.foreign_other_player.name
-        except:
-            pass
-        self.foreign_treaties.append('<th></th><th></th><th></th>\
-            <th><i style="font-size: 85%" class="li" title="Lithium">1</i></th>\
-            <th><i style="font-size: 85%" class="si" title="Silicon">1</i></th>\
-            <th><i style="font-size: 85%" class="ti" title="Titanium">1</i></th>\
-            <th><i style="font-size: 85%" class="fa-free-code-camp" title="fuel">10k</i></th>\
-            <th><i style="font-size: 150%" class="fab fa-galactic-republic" title="stargate"></i></th>\
-            <th><i style="font-size: 150%" class="fas fa-virus-slash" title="safe passage"></i></th>\
-            <th><i style="font-size: 150%" class="fas fa-user-secret" title="intel sharing"></i></th>')
-        for z in self.player.seen_players:
-            treaty = self.player.calc_treaty(z)
-            p_treaty = self.player.calc_p_treaty(z)
-            self.foreign_treaties.append('<td><i class="fas fa-pastafarianism"></i></td>\
-                <td colspan="11" style="font-size: 75%">' + z.name + '</td>\
-                ')
-            self.foreign_treaties.append('<td></td><td rowspan="2" style="font-size: 150%">' + self.calcR(treaty) + '</td>\
-                <td style="font-size: 70%">sell</td><td style="font-size: 75%; text-align: center">' + self.calc_ds('sell_li', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_si', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_ti', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_fuel', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_gate', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_passage', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_intel', treaty) + '</td>\
-                <td rowspan="2"><i class="button fas fa-pencil-alt button_s" title="edit" onclick="post(\'foreign_minister\', \'?edit=' + z.name + '\')"></i></td>\
-                <td rowspan="2"><i class="button far fa-trash-alt button_s" title="revoke" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>\
-                ')
-            self.foreign_treaties.append('<td></td><td style="font-size: 75%">buy</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_li', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_si', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_ti', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_fuel', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_gate', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_passage', treaty) + '</td>\
-                <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_intel', treaty) + '</td>\
-                ')
-            if p_treaty:
-                self.foreign_treaties.append('<td></td><td rowspan="2" style="font-size: 150%">' + self.calcR(p_treaty) + '</td>\
-                    <td style="font-size: 70%">sell</td><td style="font-size: 75%; text-align: center">' + self.calc_ds('sell_li', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_si', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_ti', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_fuel', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_gate', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_passage', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('sell_intel', p_treaty) + '</td>\
-                    <td rowspan="2"><i class="button far fa-check-circle button_s"' + self.calc_c(p_treaty, 'a') + 'title="accept" onclick="post(\'foreign_minister\', \'?accept=' + p_treaty.name + '\')"></i></td>\
-                    <td rowspan="2"><i class="button far fa-times-circle button_s"' + self.calc_c(p_treaty, 'r') + 'title="reject" onclick="post(\'foreign_minister\', \'?reject=' + p_treaty.name + '\')"></i></td>\
-                    ')
-                self.foreign_treaties.append('<td></td><td style="font-size: 75%">buy</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_li', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_si', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_ti', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_fuel', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_gate', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_passage', p_treaty) + '</td>\
-                    <td style="font-size: 70%; text-align: center">' + self.calc_ds('buy_intel', p_treaty) + '</td>\
-                    ')
-        self.calc_r()
-        #print(self.player.treaties)
-        #print(self.__dict__)
-        #print(self.player.__dict__)
-    
-    def calc_c(self, t, c):
-        if c == 'a' and self.player.name in t.accepted_by:
-            return ' style="color: green"'
-        if c == 'r' and self.player.name in t.rejected_by:
-            return ' style="color: red"'
-        return ''
-    
-    def calcR(self, treaty):
-        t = '<i class="fas fa-meh"></i>'
-        if treaty.relation == 'neutral':
-            t = '<i class="fas fa-meh"></i>'
-        elif treaty.relation == 'team':
-            t = '<i class="fas fa-handshake"></i>'
-        elif treaty.relation == 'enemy':
-            t = '<i class="fas fa-skull-crossbones"></i>'
-        return t
-    
-    def calc_r(self):
-        if self.foreign_relation_is_neutral:
-            setattr(self, 'foreign_relation', 'neutral')
-        elif self.foreign_relation_is_team:
-            setattr(self, 'foreign_relation', 'team')
+            if treaty.relation == 'team':
+                self.foreign_relation_is_team = True
+            elif treaty.relation == 'neutral':
+                self.foreign_relation_is_neutral = True
+            else:
+                self.foreign_relation_is_enemy = True
+            for f in TREATY_BUY_SELL_FIELDS:
+                self['foreign_' + f] = treaty[f]
+        # Save the proposal
+        elif action == 'save' and self.foreign_other_player != '':
+            other_player = Reference('Player/' + self.foreign_other_player)
+            treaty = self.player.get_treaty(other_player, True)
+            if treaty:
+                treaty.status = 'rejected'
+            treaty = Treaty(other_player=other_player)
+            if self.foreign_relation_is_team:
+                treaty.relation = 'team'
+            elif self.foreign_relation_is_enemy:
+                treaty.relation = 'enemy'
+                treaty.status = 'active'
+            for f in TREATY_BUY_SELL_FIELDS:
+                treaty[f] = self['foreign_' + f]
+            self.player.treaties.append(treaty)
+        # Treaties header
+        self.foreign_treaties.append('<th></th><th></th>'
+            + '<th><i class="ti" title="Titanium">1</i></th>'
+            + '<th><i class="li" title="Lithium">1</i></th>'
+            + '<th><i class="si" title="Silicon">1</i></th>'
+            + '<th><i class="fa-free-code-camp" title="Fuel">100</i></th>'
+            + '<th><i style="font-size: 150%" class="fab fa-galactic-republic" title="Stargate"></i></th>'
+            + '<th><i style="font-size: 150%" class="fas fa-ban" title="Hyper Denial Passage"></i></th>'
+            + '<th><i style="font-size: 150%" class="fas fa-user-secret" title="Intel Sharing"></i></th>')
+        # Display existing treaties
+        for other_player in self.player.seen_players:
+            treaty = self.player.get_treaty(other_player, False)
+            self.foreign_treaties.append('<td colspan="10" style="font-size: 150%; text-align: left; border: 1px solid silver; border-right: 0">'
+                + '<i class="' + other_player.race.icon + '"></i>' + other_player.name + '</td>'
+                + '<td style="border: 1px solid silver; border-left: 0"><i class="button fas fa-user-edit" title="Propose Treaty" onclick="post(\'foreign_minister\', \'?propose=' + treaty.other_player.name + '\')"></i></td>')
+            self._display_treaty(treaty)
+            treaty = self.player.get_treaty(other_player, True)
+            if treaty:
+                self._display_treaty(treaty)
+        # Override negotiation for team
+        if self.foreign_relation_is_team:
+            for f in ['gate', 'hyper_denial', 'intel']:
+                self['foreign_buy_' + f] = 0
+                self['foreign_sell_' + f] = 0
+        # No selling to enemies
         elif self.foreign_relation_is_enemy:
-            setattr(self, 'foreign_relation', 'enemy')
-        self.foreign_relation_is_neutral = False
-        self.foreign_relation_is_team = False
-        self.foreign_relation_is_enemy = False
-        setattr(self, 'foreign_relation_is_'+self.foreign_relation, True)
-    
-    def calc_ds(self, var, treaty):
-        l = var.split('_')
-        d = ''
-        if not getattr(treaty, var):
-            d = '-'
-        else:
-            d = '<i class="fa-bolt" title="Energy">' + str(getattr(treaty, var+'_at')) + '</i>'
-        return d
+            for f in ['ti', 'li', 'si', 'fuel', 'gate', 'hyper_denial', 'intel']:
+                self['foreign_buy_' + f] = -10000
+                self['foreign_sell_' + f] = -10000
+        # Update the negotiation display
+        for f in TREATY_BUY_SELL_FIELDS:
+            self['foreign_' + f + '_display'] = self._display_energy(self['foreign_' + f])
 
-for key in Treaty.defaults:
-    __defaults['foreign_' + key] = Treaty.defaults[key]
+    """ Build rows for a current/proposed treaty """
+    def _display_treaty(self, treaty):
+        buttons = '<td rowspan="2"></td>' \
+            + '<td rowspan="2"><i class="button far fa-trash-alt" title="Cancel" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>'
+        if treaty.status == 'pending':
+            buttons = '<td rowspan="2"><i class="button far fa-check-circle" title="Accept" onclick="post(\'foreign_minister\', \'?accept=' + treaty.name + '\')"></i></td>' \
+                + '<td rowspan="2"><i class="button far fa-trash-alt" title="Reject" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>'
+        self.foreign_treaties.append('<td rowspan="2" style="color: silver; font-size: 150%">' + self._display_relationship(treaty.relation) + '</td>'
+            + '<td>Buy</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_ti) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_li) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_si) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_fuel) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_gate) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_hyper_denial) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_intel) + '</td>'
+            + buttons)
+        self.foreign_treaties.append('<td>Sell</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_ti) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_li) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_si) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_fuel) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_gate) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_hyper_denial) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_intel) + '</td>')
+
+    """ Icon for the relationship """
+    def _display_relationship(self, relationship):
+        if relationship == 'enemy':
+            return '<i class="fas fa-skull-crossbones"></i>'
+        elif relationship == 'team':
+            return'<i class="fas fa-handshake"></i>'
+        return '<i class="fas fa-meh"></i>'
+
+    """ Format a number as energy or - if none """
+    def _display_energy(self, energy):
+        if energy < 0:
+            return '-'
+        elif energy >= 1000:
+            energy = round(energy / 1000, 2)
+            if energy % 1 == 0:
+                energy = int(energy)
+            energy = str(energy) + 'k'
+        return '<i class="fa-bolt" title="Energy">' + str(energy) + '</i>'
 
 ForeignMinister.set_defaults(ForeignMinister, __defaults, sparse_json=False)

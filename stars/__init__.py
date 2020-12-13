@@ -33,7 +33,7 @@ __all__ = [
     'tech', 
     'tech_level',
     'terraform',
-    'treaties',
+    'treaty',
     'waypoint',
     'weapon',
     'wormhole',

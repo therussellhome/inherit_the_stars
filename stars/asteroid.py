@@ -1,6 +1,7 @@
 from .defaults import Defaults
 from .location import Location
 from .reference import Reference
+from .minerals import Minerals
 import sys
 
 
@@ -15,7 +16,7 @@ __defaults = {
     'player': [Reference('Player')],
     'decay_factor': [0.01, 0.0, 1.0],
 }
-    """decay = mass * hyper**2 * decay_factor, mass -= decay"""
+#decay = mass * hyper**2 * decay_factor, mass -= decay"""
 
 
 #what does it need to have?
