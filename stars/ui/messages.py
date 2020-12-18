@@ -1,5 +1,6 @@
 import sys
 from .playerui import PlayerUI
+from .. import game_engine
 
 
 """ Default values (default, min, max)  """
@@ -16,12 +17,10 @@ class Messages(PlayerUI):
         super().__init__(**kwargs)
         if not self.player:
             return
-        # Bound the msg index
-        if self.messages_index == -1:
-            self.messages_index = self.player.messages_unread
-        self.messages_index = min(len(self.player.messages), self.messages_index)
-        self.player.messages_unread = max(self.player.messages_unread, self.messages_index)
-        self.messages_count = len(self.player.messages)
-        self.messages_text = self.player.messages[self.messages_index]
+
+        for key in game_engine.load('messages', 'Messages Format'):
+            if key.split(".")[1] == 'introduction':
+                self.player.messages.append(key)
+        self.messages_text += self.player.messages[0]
 
 Messages.set_defaults(Messages, __defaults, sparse_json=False)
