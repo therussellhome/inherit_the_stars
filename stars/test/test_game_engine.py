@@ -154,7 +154,7 @@ class GameEngineTestCase(unittest.TestCase):
         t1.__cache__ = 'abc'
         json = game_engine.to_json(t1)
         t2 = game_engine.from_json(json)
-        self.assertFalse(hasattr(t2, __cache__))
+        self.assertFalse(hasattr(t2, '__cache__'))
 
     def test_load_inspect(self):
         game_engine.unregister()
@@ -200,9 +200,3 @@ class GameEngineTestCase(unittest.TestCase):
         l = game_engine.load_list('test')
         self.assertGreater(len(l), 0)
         self.assertEqual(l[0], '_list')
-
-    def test_load_defaults(self):
-        game_engine.unregister()
-        ts = game_engine.load_defaults('Tech')
-        self.assertGreater(len(ts), 0)
-        self.assertEqual(ts[0].__class__.__name__, 'Tech')

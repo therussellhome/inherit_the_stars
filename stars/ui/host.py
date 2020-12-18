@@ -21,7 +21,7 @@ class Host(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         self.host_blocking = False
-        self.options_host_game = game_engine.load_list('host')
+        self.options_host_game = game_engine.load_list('Game')
         self.options_host_game.sort()
         if self.host_game != '':
             self.host_ready = True

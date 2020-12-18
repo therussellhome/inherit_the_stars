@@ -128,6 +128,8 @@ function launch_player(token) {
 
 // Submit data for actioning
 function post(form = '', action = '') {
+    toggle(document.getElementById('loading'), 'hide', false);
+    document.body.style.cursor = 'progress';
     if(form == '') {
         form = current_screen;
     }
@@ -247,6 +249,8 @@ function parse_json(url, json) {
     } catch(e) {
         console.log(form, e);
     }
+    document.body.style.cursor = 'default';
+    toggle(document.getElementById('loading'), 'hide', true);
 }
 
 // Refresh host screen / auto generate

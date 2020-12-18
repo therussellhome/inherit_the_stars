@@ -73,10 +73,14 @@ class Player(Defaults):
         game_engine.register(self)
         self.__cache__ = {}
 
+    """ Save player to file """
+    def save(self):
+        game_engine.save('Player', self.game_name + ' - ' + self.name, self)
+
     """ Update self from file """
     def update_from_file(self):
         global _player_fields
-        p = game_engine.load_inspect('games', self.game_name + ' - ' + self.name)
+        p = game_engine.load_inspect('Player', self.game_name + ' - ' + self.name)
         if self.player_key == p.player_key:
             for field in _player_fields:
                 self[field] = p[field]
@@ -166,13 +170,28 @@ class Player(Defaults):
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
         for t in self.treaties:
-            t.other_player.treaty_negotiation(t.for_other_player(self))
-            
+            t.other_player.negotiate_treaty(t.for_other_player(self))
 
     """ Merge in any incoming treaty updates """
-    def treaty_negotiation(self, treaty):
-        pass #TODO
+    def negotiate_treaty(self, treaty):
+        for t in self.treaties:
+            if t.name == treaty.name and t != treaty:
+                t.merge(treaty)
+                return
+        self.treaties.append(treaty)
 
+    """ Share treaty updates with other players """
+    def treaty_finalizaton(self):
+        for t in self.treaties:
+            if t.status == 'rejected':
+                self.treaties.remove(t)
+            elif t.status == 'signed':
+                # clear old active treaty (if there was one)
+                for t0 in self.treaties:
+                    if t.other_player == t0.other_player and t0.status == 'active':
+                        self.treaties.remove(t0)
+                t.status = 'active'
+            
     """ Get the treaty """
     def get_treaty(self, other_player, draft=False):
         other_player = Reference(other_player)
