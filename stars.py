@@ -21,7 +21,7 @@ _handlers = {
     '/launch': launch.Launch,
     '/messages': messages.Messages,
     '/new_game': new_game.NewGame,
-    '/planetary_minister': planetary_minister.PlanetaryMinister,
+    '/planetary_minister': planetaryministers.PlanetaryMinisters,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
     '/race_editor': race_editor.RaceEditor,
@@ -53,7 +53,7 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
             response = _handlers.get(form, None)
             self.send_response(200)
             self.end_headers()
-            #print('    post = ', post_str)
+            print('    post = ', post_str)
             if response:
                 response_str = game_engine.to_json(response(action, **json))
             else:

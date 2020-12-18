@@ -5,6 +5,7 @@ let game_mode = 'host';
 let player_tech = false;
 let current_screen = 'home';
 let current_submenu = null;
+let current_sidebar = null;
 
 // Initialize the fields from python
 function init() {
@@ -114,6 +115,28 @@ function show_home() {
     show_screen('home');
 }
 
+//show the planetary sidebar and have it populated
+function show_planetary() {
+    if(current_sidebar != 'planetary') {
+        //toggle(document.getElementById('sidebar_play'), 'hide', true);
+        toggle(document.getElementById('sidebar_planetary'), 'hide', false);
+        post('planetary_minister');
+        show_screen('planetary_ministers');
+        current_sidebar = 'planetary'
+    } else {
+        current_sidebar = null
+        toggle(document.getElementById('sidebar_planetary'), 'hide', true);
+        show_screen(null);
+    }
+}
+
+function show_minister(name) {
+    if(current_screen  != 'planetary_minister') {
+        show_screen('planetary_minister');
+    }
+    post('planetary_minister', '?' + name);
+}
+
 // Switch to play mode
 function launch_player(token) {
     if(token.value != '') {
@@ -137,14 +160,24 @@ function post(form = '', action = '') {
     }
     // Only post what is in both the map and has an element
     json_post = {}
+    //console.log(json_post);
+    //console.log(json_map);
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {
             if(element.nodeName == 'DIV') {
                 value = element.noUiSlider.get();
                 if(Array.isArray(value)) {
-                    json_post[key] = parseFloat(value[0]);
-                    json_post[key + '_stop'] = parseFloat(value[1]);
+                    if(value.length > 2) {
+                        json_post[key] = [];
+                        console.log(value);
+                        for(v in value) {
+                            json_post[key].push(parseFloat(value[v]));
+                        }
+                    } else {
+                        json_post[key] = parseFloat(value[0]);
+                        json_post[key + '_stop'] = parseFloat(value[1]);
+                    }
                 } else {
                     json_post[key] = parseFloat(value);
                 }
@@ -181,7 +214,10 @@ function parse_json(url, json) {
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
                         value = [json[key]];
-                        if(json.hasOwnProperty(key + '_stop')) {
+                        console.log(value)
+                        if(Array.isArray(value[0])) {
+                            value = json[key];
+                        } if(json.hasOwnProperty(key + '_stop')) {
                             value.push(json[key + '_stop']);
                         }
                         element.noUiSlider.set(value);
@@ -278,16 +314,28 @@ function shutdown() {
     }
 }
 
-function edit_treaty(player) {
-    player_name = player + '_name'
-    document.getElementById('foreign_p2') = document.getElementById(player_name)
+
+
+// Create a slider
+function planetary_slider(element, form, min, max, step) {
+    noUiSlider.create(element, {
+        start: [min+(max-min)/5, min+37/100*(max-min), min+7/10*(max-min)],
+        connect: [true, true, true, true],
+        step: step,
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    var connect = element.querySelectorAll('.noUi-connect');
+    var classes = ['power-color', 'factory-color', 'mine-color', 'shield-color'];
+    for (var i = 0; i < connect.length; i++) {
+        connect[i].classList.add(classes[i]);
+    }
+    element.noUiSlider.on('change', function() { post(form) });
 }
 
-function declare_war() {
-    if(confirm('this will make them your enemy and will revoke your treaty.  Are you sure that you want to delcare war?')) {
-        post('foreign_minister', '?declare_war');
-    }
-}
+
 
 // Create a slider
 function slider(element, form, min, max, step, formatter, units) {

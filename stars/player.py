@@ -10,6 +10,7 @@ from .score import Score
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 
+minister = PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)
 """ Default values (default, min, max)  """
 __defaults = {
     'game_name': [''], # name of game for when generating
@@ -21,7 +22,8 @@ __defaults = {
     'seen_players': [[]],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
-    'planetary_ministers': [[PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)]], # list of planetary ministers
+    'planets': [{}],
+    'planetary_ministers': [{minister.__uuid__: minister}], # dict of planetary ministers
     'score': [Score()],
     'tech_level': [TechLevel()], # current tech levels
     'research_partial': [TechLevel()], # energy spent toward next level
@@ -43,6 +45,7 @@ __defaults = {
 """ List of fields that are user modifable """
 _player_fields = [
     'ready_to_generate',
+    'planets',
     'planetary_ministers',
     'research_queue',
     'research_field',

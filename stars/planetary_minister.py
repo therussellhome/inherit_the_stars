@@ -5,13 +5,15 @@ from .defaults import Defaults
 __defaults = {
     'new_colony_minister': [False],
     'allow_baryogenesis': [True],
-    'min_terraform_only': [True],
+    'max_terraform': [False],
     'planets': [[]],
+    'name': ['newbie'],
     # facilities where the key matches the tech category
     'Power Plant': [25, 0, 100],
     'Factory': [25, 0, 100],
     'Mineral Extractor': [25, 0, 100],
     'Planetary Shield': [25, 0, 100],
+    'color': ['purple'],
 }
 
 
@@ -19,8 +21,6 @@ __defaults = {
 class PlanetaryMinister(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = 'Planetary Minister ' + str(id(self))
     
     """ makes shure that all effort is alocated and the total is = to 100% """
     def normalize(self):
@@ -39,5 +39,5 @@ class PlanetaryMinister(Defaults):
         setattr(self, 'Mineral Extractor', mines)
         setattr(self, 'Planetary Shield', defenses)
 
-        
+
 PlanetaryMinister.set_defaults(PlanetaryMinister, __defaults)
