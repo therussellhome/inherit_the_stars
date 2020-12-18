@@ -1,7 +1,7 @@
 {
     "name": "Death Star",
     "category": "Starbase",
-    "description": "Largest starbase hull, holding a population of up to 30 million Pa'anuri, with 192 general purpose slots and 8 orbital slots.",
+    "description": "Largest starbase hull, with 192 general purpose slots and 9 orbital slots.",
     "race_requirements": "Pa'anuri",
      "cost": {
         "titanium": 160,
@@ -22,6 +22,6 @@
     },
     "repair": 200,
     "slots_general": 192,
-    "slots_orbital": 8,
+    "slots_orbital": 9,
     "__uuid__": "Tech"
 }
