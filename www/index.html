@@ -40,6 +40,7 @@ void main() {
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
+<div class="hide" id="loading">loading...</div>
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
     <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
@@ -155,11 +156,10 @@ void main() {
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
         </tr>
+    </table><table class="hfill" id="new_game_players">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">
-            + Galaxy
-            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="new_game_num_systems"/>
-        </caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
             <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
@@ -170,78 +170,9 @@ void main() {
             <td>Diameter: Z axis</td>
             <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>System Density</td>
-            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 1, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>Player Separation</td>
-            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 25, 2000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td>Number of Systems</td>
+            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems')"/></td>
         </tr><tr class="slider_padding"></tr>
-    </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
-        <tr>
-            <td>Player 1</td>
-            <td class="hfill"><select id="new_game_player01" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 2</td>
-            <td class="hfill"><select id="new_game_player02" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 3</td>
-            <td class="hfill"><select id="new_game_player03" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 4</td>
-            <td class="hfill"><select id="new_game_player04" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 5</td>
-            <td class="hfill"><select id="new_game_player05" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 6</td>
-            <td class="hfill"><select id="new_game_player06" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 7</td>
-            <td class="hfill"><select id="new_game_player07" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 8</td>
-            <td class="hfill"><select id="new_game_player08" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 9</td>
-            <td class="hfill"><select id="new_game_player09" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 10</td>
-            <td class="hfill"><select id="new_game_player10" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 11</td>
-            <td class="hfill"><select id="new_game_player11" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 12</td>
-            <td class="hfill"><select id="new_game_player12" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 13</td>
-            <td class="hfill"><select id="new_game_player13" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 14</td>
-            <td class="hfill"><select id="new_game_player14" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 15</td>
-            <td class="hfill"><select id="new_game_player15" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 16</td>
-            <td class="hfill"><select id="new_game_player16" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
         <tr>
@@ -301,6 +232,10 @@ void main() {
         <tr>
             <td>Technology Tree</td>
             <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>System Names</td>
+            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"/></td>
         </tr>
     </table>
 </div>

@@ -1,7 +1,12 @@
 import sys
+from random import randint
 from . import game_engine
 from .defaults import Defaults
 from .fleet import Fleet
+from .location import rand_location
+from .star_system import StarSystem
+from .reference import Reference
+from . import stars_math
 
 
 """ Default values (default, min, max)  """
@@ -13,23 +18,83 @@ __defaults = {
     'wormholes': [[]], # all wormholes
     'asteroids': [[]], # all comets/mineral packets/salvage
     'mystery_traders': [[]], # myster trader ships
+    'public_player_scores': [30, 0, 200], # years till public player scores
+    'victory_after': [50, 10, 200], # minimum years till game can be won
+    'victory_conditions': [1, 1, 10], # minimum number of conditions to win
+    'victory_enemies_left': [0, -1, 15], 
+    'victory_score_number': [1000, -1, 10000], 
+    'victory_tech': [True],
+    'victory_tech_levels': [100, 10, 300], 
+    'victory_planets': [True],
+    'victory_planets_number': [200, 50, 1000], 
+    'victory_energy': [True],
+    'victory_energy_number': [10000, 1000, 100000], 
+    'victory_minerals': [True],
+    'victory_minerals_number': [10000, 1000, 100000], 
+    'victory_production': [True],
+    'victory_production_number': [10000, 1000, 100000], 
+    'victory_ships': [True],
+    'victory_ships_number': [1000, 100, 10000], 
+    'victory_shipsofthewall': [True],
+    'victory_shipsofthewall_number': [150, 50, 1000], 
+    'victory_starbases': [True],
+    'victory_starbases_number': [25, 10, 100], 
 }
 
 
 """ Class defining a game and everything in it """
 class Game(Defaults):
     """ Initialize defaults and register self """
-    def __init__(self, **kwargs):
+    def __init__(self, x=500, y=500, z=500, num_systems=1000, system_names=None, **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
-
+        if 'systems' not in kwargs:
+            num_systems = max(len(self.players), num_systems)
+            if not system_names:
+                system_names = []
+                for i in range(0, num_systems):
+                    system_names.append('System ' + str(i))
+            num_systems = min(num_systems, len(system_names))
+            # create systems
+            min_distance = 3 * stars_math.TERAMETER_2_LIGHTYEAR
+            x = max(x, 2)
+            y = max(y, 2)
+            z = max(z, 2)
+            while len(self.systems) < num_systems:
+                l = rand_location(x / 2, y / 2, z / 2)
+                for s in self.systems:
+                    if s.location - l < min_distance:
+                        break
+                else:
+                    system_name = system_names.pop(randint(0, len(system_names) - 1))
+                    self.systems.append(StarSystem(name=system_name, location=l))
+            # pick home systems
+            min_distance = max(x, y, z) * 0.8
+            homes = []
+            while len(homes) < min(len(self.players), len(self.systems)):
+                for s in self.systems:
+                    for h in homes:
+                        if s.location - h.location < min_distance:
+                            break
+                    else:
+                        s.create_system(Reference(self.players[len(homes)]))
+                        homes.append(s)
+                        if len(homes) == len(self.players):
+                            break
+                else:
+                    min_distance *= 0.8
+            # create planets
+            for s in self.systems:
+                if len(s.planets) == 0:
+                    s.create_system()
+                
     """ Save host and players to file """
     def save(self):
-        game_engine.save('host', self.name, self)
+        game_engine.save('Game', self.name, self)
         for p in self.players:
             if not p.computer_player:
                 p.ready_to_generate = False
-                game_engine.save('games', self.name + ' - ' + p.name, p)
+                p.save()
 
     """ Load updates from player files """
     def update_players(self):
@@ -125,6 +190,8 @@ class Game(Defaults):
 
     """ Check against the win conditions """
     def _check_for_winner(self):
-        pass #TODO
+        if self.hundreth >= self.victory_after * 100:
+            pass #TODO
+
 
 Game.set_defaults(Game, __defaults)

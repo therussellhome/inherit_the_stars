@@ -41,6 +41,16 @@ div.screen {
     transform: translate(-50%, 0%);
     background-color: rgba(0, 0, 44, 0.5);
 }
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    background-color: rgba(0, 0, 44, 1);
+    text-align: center;
+    transition: 0.5s;
+}
 div.overlay_message {
     position: absolute;
     left: 50%;
@@ -83,6 +93,10 @@ input {
 }
 input.vertical {
     transform: rotate(-90deg);
+}
+select {
+    color: white;
+    background-color: transparent;
 }
 img.button {
     width: 50px;

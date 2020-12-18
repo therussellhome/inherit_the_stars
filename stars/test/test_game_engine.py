@@ -200,9 +200,3 @@ class GameEngineTestCase(unittest.TestCase):
         l = game_engine.load_list('test')
         self.assertGreater(len(l), 0)
         self.assertEqual(l[0], '_list')
-
-    def test_load_defaults(self):
-        game_engine.unregister()
-        ts = game_engine.load_defaults('Tech')
-        self.assertGreater(len(ts), 0)
-        self.assertEqual(ts[0].__class__.__name__, 'Tech')
