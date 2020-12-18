@@ -16,13 +16,23 @@ class ShipDesign(Tech):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if 'name' not in kwargs:
+            self.name = self.__uuid__
 
+    """ Set the hull """
+    def set_hull(self, tech):
+        self.hull = Reference(tech)
+        self.compute_stats()
 
     """ Add a component """
     def add_component(self, tech):
         self.components.append(Reference(tech))
         self.compute_stats()
 
+    """ Remove a component """
+    def remove_component(self, tech):
+        self.components.remove(Reference(tech))
+        self.compute_stats()
 
     """ Recompute self from components """
     def compute_stats(self):

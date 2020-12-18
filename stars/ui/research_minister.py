@@ -37,25 +37,17 @@ class ResearchMinister(PlayerUI):
             link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
             research_queue.append(t.name)
             self.research_queue.append('<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
-                    + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
+
++ '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
         # Sort tech
         research_tech = []
-        research_filter = {
-            'Weapons': ['Bomb', 'Missile', 'Beam Weapon'],
-            'Defense': ['Shield', 'Armor'], 
-            'Electronics': ['Scanner', 'Cloak', 'ECM'],
-            'Engines': ['Engine'], 
-            'Hulls & Mechanicals': ['Starbase', 'Hull', 'Mechanical'], 
-            'Heavy Equipment': ['Orbital', 'Depot'], 
-            'Planetary': ['Planetary'],
-            'Other': []
-        }
+        research_filter = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Planetary', 'Other']
         research_filter_other = []
         for f in research_filter:
             research_filter_other.extend(research_filter[f])
         cat = self.research_tech_category
         for t in self.player.tech:
-            if t.category in research_filter[cat] or (cat == 'Other' and t.category not in research_filter_other):
+            if t.get_display_category == cat or (cat == 'Other' and t.category not in research_filter_other):
                 cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.research_partial)
                 if cost > 0 and t.name not in research_queue: 
                     link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')

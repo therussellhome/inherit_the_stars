@@ -663,16 +663,25 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="/shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
+    <table><tr>
+        <td>Existing Designs</td><td><select id="shipyard_existing_designs" class="hfill" onchange="post('shipyard')"></select></td>
+        <td>+</td>
+        <td>copy</td>
+        <td>trash</td>
+    </tr></table>
     <table class="hfill" id="shipyard_ship">
     </table>
-    <table class="hfill" id="shipyard_design"> 
+    <table class="hfill"> 
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
+        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_name" onchange="post('shipyard')"/></td></tr>
+        <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2"><table id="shipyard_design"></table></td></tr>
     </table>
     <table class="hfill" id="shipyard_tech">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
