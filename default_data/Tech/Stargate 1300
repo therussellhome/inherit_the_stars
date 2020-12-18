@@ -7,7 +7,7 @@
         "titanium": 36,
         "lithium": 13,
         "silicon": 15,
-        "energy": 15000,
+        "energy": 40000,
         "__uuid__": "Cost"
     },
     "level": {
