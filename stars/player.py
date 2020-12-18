@@ -28,6 +28,7 @@ __defaults = {
     'tech_level': [TechLevel()], # current tech levels
     'research_partial': [TechLevel()], # energy spent toward next level
     'research_queue': [[]], # queue of tech items to research
+    'ship_designs': [[]], # the existing designs
     'research_field': ['<LOWEST>'], # next field to research (or 'lowest')
     'energy': [0, 0, sys.maxsize],
     'fleets': [[]],
