@@ -39,12 +39,6 @@ class Game(Defaults):
 
     """ Generate hundreth """
     def generate_hundreth(self):
-        # actions only done at the beginning of a year
-        if self.hundreth % 100 == 0:
-            pass
-        #
-        self.hundreth += 1
-        #
         # players in lowest to highest score
         players = list(self.players)
         players.sort(key=lambda x: x.score.rank, reverse=False)
@@ -62,6 +56,12 @@ class Game(Defaults):
             for fleet in player.fleets:
                 fleets.append(fleet)
         fleets.sort(key=lambda x: x.initiative, reverse=False)
+        #
+        # actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            self._call(players, 'treaty_negotiations')
+            self._call(players, 'treaty_finalization')
+        self.hundreth += 1
         #
         # actions in order
         self._call(players, 'next_hundreth')
