@@ -17,5 +17,7 @@
     },
     "mass": 64,
     "hyperdenial": 90,
+    "slots_depot": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }

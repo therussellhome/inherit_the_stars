@@ -42,10 +42,14 @@ __defaults = {
     'mining_rate': [0.0, 0.0, sys.maxsize],
     'mineral_depletion_factor': [0.0, 0.0, 100],
     'mat_trans_energy': [0, 0, sys.maxsize],
-    'slots_general': [0, 0, sys.maxsize],
-    'slots_depot': [0, 0, sys.maxsize],
-    'slots_orbital': [0, 0, sys.maxsize],
+    'slots_general': [-1, -10, sys.maxsize],
+    'slots_depot': [0, -10, sys.maxsize],
+    'slots_orbital': [0, -10, sys.maxsize],
 }
+
+
+""" Grouping of tech items """
+TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Other']
 
 
 """ Represent a tech component """
@@ -54,6 +58,23 @@ class Tech(Defaults):
         super().__init__(**kwargs)
         game_engine.register(self)
 
+    """ Get tech group """
+    def tech_group(self):
+        if self.category in ['Beam Weapon', 'Bomb', 'Missile']:
+            return 'Weapons'
+        elif self.category in ['Shield', 'Armor']:
+            return 'Defense'
+        elif self.category in ['Cloak', 'ECM', 'Scanner']:
+            return 'Electronics'
+        elif self.category in ['Engine']:
+            return 'Engines'
+        elif self.category in ['Starbase', 'Hull', 'Mechanical']:
+            return 'Hulls & Mechanicals'
+        elif self.category in ['Depot', 'Orbital']:
+            return 'Heavy Equipment'
+        else:
+            return 'Other'
+        
     """ Determine if the item is available for a given tech level and race """
     def is_available(self, level=None, race=None):
         if level and not self.level.is_available(level):
@@ -75,27 +96,6 @@ class Tech(Defaults):
         c = copy.copy(self.cost)
         complete.energy = 0
         return c * (race.scrap_rate() / 100)
-
-    def get_display_category(self):
-        if self.category in ['Beam Weapon', 'Bomb', 'Missle']:
-            return 'Weapons'
-        elif self.category in ['Shield', 'Armor']:
-            return 'Defense'
-        elif self.category in ['Cloak', 'ECM', 'Scanner']:
-            return 'Electronics'
-        elif self.category in ['Engine']:
-            return 'Engines'
-        elif self.category in ['Starbase', 'Hull', 'Mechanical']:
-            return 'Hulls & Mechanicals'
-        elif self.category in ['Depot', 'Orbital']:
-            return 'Heavy Equipment'
-        elif self.category in ['Planetary Shield', 'Planetary Scanner', 'Mineral Extracter', 'Factory', 'Power Plant']:
-            return 'Planetary'        
-        else:
-            return 'Other'
-
-
-
 
 
 Tech.set_defaults(Tech, __defaults)

@@ -16,5 +16,7 @@
     },
     "mass": 15,
     "fuel_generation": 10000000,
+    "slots_orbital": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }

@@ -126,6 +126,15 @@ function launch_player(token) {
     }
 }
 
+// HTML string encoding
+function html_encode(s) {
+    return s.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/'/g, '&#39;')
+        .replace(/"/g, '&#34;');
+}
+
 // Submit data for actioning
 function post(form = '', action = '') {
     toggle(document.getElementById('loading'), 'hide', false);

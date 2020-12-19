@@ -494,14 +494,15 @@ void main() {
     </tr></table>
     <table class="hfill" id="research_level" style="font-size: 150%; text-aign: justify; text-align-last: justify; text-justify: inter-character">
     </table>
-    <table class="hfill" id="research_queue">
+    <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-<!--
-		<tr><td>Default Research Field</td><td class="hfill"><select id="research_default_field" onchange="post('research_minister')" /></td></tr>
--->
+        <tr><td colspan="2"><table id="research_queue"></table></td></tr>
+		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"/></td></tr>
     </table>
-    <table class="hfill" id="research_tech">
+    <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="research_tech_group" onchange="post('research_minister')"></select></td></tr>
+        <tr><td colspan="2"><table id="research_tech"></table></td></tr>
     </table>
 </div>
 
