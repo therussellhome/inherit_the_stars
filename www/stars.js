@@ -128,6 +128,8 @@ function launch_player(token) {
 
 // Submit data for actioning
 function post(form = '', action = '') {
+    toggle(document.getElementById('loading'), 'hide', false);
+    document.body.style.cursor = 'progress';
     if(form == '') {
         form = current_screen;
     }
@@ -148,13 +150,17 @@ function post(form = '', action = '') {
                 } else {
                     json_post[key] = parseFloat(value);
                 }
+            } else if(element.nodeName == 'SELECT') {
+                json_post[key] = element.value;
             } else if(element.matches('[type="checkbox"]')) {
                 json_post[key] = element.checked;
             } else if(element.matches('[type="radio"]')) {
                 //console.log(element.checked);
                 json_post[key] = element.checked;
-            } else {
+            } else if(element.nodeName == 'INPUT') {
                 json_post[key] = element.value;
+            } else {
+                json_post[key] = element.innerHTML;
             }
         }
     }
@@ -221,8 +227,10 @@ function parse_json(url, json) {
                         element.checked = json[key];
                     } else if(element.matches('[type="radio"]')) {
                         element.checked = json[key];
-                    } else {
+                    } else if(element.nodeName == 'INPUT') {
                         element.value = json[key];
+                    } else {
+                        element.innerHTML = json[key];
                     }
                     if(json.hasOwnProperty('disabled_' + key)) {
                         element.disabled = json['disabled_' + key];
@@ -241,6 +249,8 @@ function parse_json(url, json) {
     } catch(e) {
         console.log(form, e);
     }
+    document.body.style.cursor = 'default';
+    toggle(document.getElementById('loading'), 'hide', true);
 }
 
 // Refresh host screen / auto generate
@@ -291,13 +301,22 @@ function declare_war() {
 
 // Create a slider
 function slider(element, form, min, max, step, formatter, units) {
+    var tooltips = true;
+    if(units == null) {
+        tooltips = false;
+    }
     noUiSlider.create(element, {
         start: [min],
         connect: true,
         step: step,
-        tooltips: [true],
+        tooltips: [tooltips],
         format: {
             to: function(value) {
+                if(formatter == null) {
+                    return value;
+                } else if(units == null) {
+                    return formatter.format(value);
+                }
                 return formatter.format(value) + units;
             },
             from: function(value) {

@@ -10,6 +10,10 @@ __defaults = {
 }
 
 
+""" List of mineral types """
+MINERAL_TYPES = ['titanium', 'lithium', 'silicon']
+
+
 """ Represent 'minerals' """
 class Minerals(Defaults):
     def __init__(self, **kwargs):

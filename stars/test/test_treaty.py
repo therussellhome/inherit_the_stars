@@ -1,112 +1,72 @@
-from unittest import TestCase
-from .. import treaties
+import unittest
+from .. import treaty
+from .. import reference
 
-class TestTreaty(TestCase):
-    def setUp(self):
-        self.m0 = treaties.Treaty(status = 'received',
-                                  cost_p2_to_p1_titanium=0, p2_is_selling_titanium=True,
-                                  cost_p2_to_p1_silicon=0, p2_is_selling_silicon=True,
-                                  cost_p2_to_p1_lithium=0, p2_is_selling_lithium=True,
-                                  cost_p2_to_p1_fuel=0, p2_is_selling_fuel=True,
-                                  cost_p2_to_p1_stargate=0, p2_is_selling_stargate=True,
-                                  cost_p2_to_p1_passage=0, p2_is_selling_passage=True,
-                                  cost_p2_to_p1_intel=0, p2_is_selling_intel=True,)
-        self.m1 = treaties.Treaty(status = 'received',
-                                  cost_p1_to_p2_titanium=0, p1_is_selling_titanium=True,
-                                  cost_p1_to_p2_silicon=0, p1_is_selling_silicon=True,
-                                  cost_p1_to_p2_lithium=0, p1_is_selling_lithium=True,
-                                  cost_p1_to_p2_fuel=0, p1_is_selling_fuel=True,
-                                  cost_p1_to_p2_stargate=0, p1_is_selling_stargate=True,
-                                  cost_p1_to_p2_passage=0, p1_is_selling_passage=True,
-                                  cost_p1_to_p2_intel=0, p1_is_selling_intel=True,)
-        self.t1 = treaties.Treaty(status = 'received')
-        self.t2 = treaties.Treaty(status = 'received',
-                                  cost_p1_to_p2_titanium=0, p1_is_selling_titanium=True,
-                                  cost_p2_to_p1_titanium=0, p2_is_selling_titanium=True,
-                                  cost_p1_to_p2_silicon=0, p1_is_selling_silicon=True,
-                                  cost_p2_to_p1_silicon=0, p2_is_selling_silicon=True,
-                                  cost_p1_to_p2_lithium=0, p1_is_selling_lithium=True,
-                                  cost_p2_to_p1_lithium=0, p2_is_selling_lithium=True,
-                                  cost_p1_to_p2_fuel=0, p1_is_selling_fuel=True,
-                                  cost_p2_to_p1_fuel=0, p2_is_selling_fuel=True,
-                                  cost_p1_to_p2_stargate=0, p1_is_selling_stargate=True,
-                                  cost_p2_to_p1_stargate=0, p2_is_selling_stargate=True,
-                                  cost_p1_to_p2_passage=0, p1_is_selling_passage=True,
-                                  cost_p2_to_p1_passage=0, p2_is_selling_passage=True,
-                                  cost_p1_to_p2_intel=0, p1_is_selling_intel=True,
-                                  cost_p2_to_p1_intel=0, p2_is_selling_intel=True,)
-    def test_merge(self):
-        return #TODO LOTS OF BUGS
-        a = self.t1.merge(self.t1)
-        self.assertEqual(a[0], a[0])
-        #print(1)
-        self.assertEqual(a[1], a[0])
-        #print(2)
-        a = self.t1.merge(self.t2)
-        self.assertEqual(a[0], self.m0)
-        self.assertEqual(a[1], self.m1)
-        a = self.t1.merge(self.m0)
-        self.assertEqual(a[0], self.t1)
-        self.assertEqual(a[1], self.t1)
-        a = self.t1.merge(self.m1)
-        self.assertEqual(a[0], self.m0)
-        self.assertEqual(a[1], self.m1)
-        a = self.t2.merge(self.t1)
-        self.assertEqual(a[0], self.m1)
-        self.assertEqual(a[1], self.m0)
-        a = self.t2.merge(self.t2)
-        self.assertEqual(a[0], self.t2)
-        self.assertEqual(a[1], self.t2)
-        a = self.t2.merge(self.m0)
-        self.assertEqual(a[0], self.m1)
-        self.assertEqual(a[1], self.m0)
-        a = self.t2.merge(self.m1)
-        self.assertEqual(a[0], self.t2)
-        self.assertEqual(a[1], self.t2)
-        a = self.m0.merge(self.t1)
-        self.assertEqual(a[0], self.t1)
-        self.assertEqual(a[1], self.t1)
-        a = self.m0.merge(self.t2)
-        self.assertEqual(a[0], self.m0)
-        self.assertEqual(a[1], self.m1)
-        a = self.m0.merge(self.m0)
-        self.assertEqual(a[0], self.t1)
-        self.assertEqual(a[1], self.t1)
-        a = self.m0.merge(self.m1)
-        self.assertEqual(a[0], self.m0)
-        self.assertEqual(a[1], self.m1)
-        a = self.m1.merge(self.t1)
-        self.assertEqual(a[0], self.m1)
-        self.assertEqual(a[1], self.m0)
-        a = self.m1.merge(self.t2)
-        self.assertEqual(a[0], self.t2)
-        self.assertEqual(a[1], self.t2)
-        a = self.m1.merge(self.m0)
-        self.assertEqual(a[0], self.m1)
-        self.assertEqual(a[1], self.m0)
-        a = self.m1.merge(self.m1)
-        self.assertEqual(a[0], self.t2)
-        self.assertEqual(a[1], self.t2)
-        b = treaties.Treaty(p1 = 'a', p2 = 'b')
-        c = treaties.Treaty(p1 = 'c', p2 = 'a')
-        a = b.merge(c)
-        self.assertEqual(a[0], None)
-        self.assertEqual(a[1], None)
-    def test_flip(self):
-        return #TODO 
-        self.assertEqual(self.t1, self.t1.flip())
-        self.assertEqual(self.t2, self.t2.flip())
-        self.assertEqual(self.m1, self.m0.flip())
-        self.assertEqual(self.m0, self.m1.flip())
-        t = self.t1.flip()
-        self.assertEqual(self.t1, t.flip())
-        t = self.t2.flip()
-        self.assertEqual(self.t2, t.flip())
-        t = self.m1.flip()
-        self.assertEqual(self.m1, t.flip())
-        t = self.m0.flip()
-        self.assertEqual(self.m0, t.flip())
-        
+class TestTreaty(unittest.TestCase):
+    def test_merge1(self):
+        t0 = treaty.Treaty()
+        t1 = treaty.Treaty()
+        for f in treaty.TREATY_BUY_SELL_FIELDS:
+            t0[f] = 10
+            t1[f] = 20
+        t0.merge(t1)
+        self.assertEqual(t0.status, 'pending')
+        for f in treaty.TREATY_HALF_FIELDS:
+            self.assertEqual(t0['buy' + f], 20)
+            self.assertEqual(t0['sell' + f], 10)
 
+    def test_merge2(self):
+        t0 = treaty.Treaty()
+        t1 = treaty.Treaty(status='rejected')
+        t0.merge(t1)
+        self.assertEqual(t0.status, 'rejected')
 
+    def test_for_other_player1(self):
+        p = reference.Reference('Player')
+        t0 = treaty.Treaty(relation='enemy', status='active')
+        for f in treaty.TREATY_HALF_FIELDS:
+            t0['buy' + f] = 10
+            t0['sell' + f] = 20
+        t1 = t0.for_other_player(p)
+        self.assertEqual(t1.other_player, p)
+        self.assertEqual(t1.relation, 'enemy')
+        self.assertEqual(t1.status, 'active')
+        for f in treaty.TREATY_HALF_FIELDS:
+            self.assertEqual(t1['buy' + f], 20)
+            self.assertEqual(t1['sell' + f], 10)
 
+    def test_for_other_player2(self):
+        p = reference.Reference('Player')
+        t0 = treaty.Treaty(status='pending')
+        t1 = t0.for_other_player(p)
+        self.assertEqual(t1.status, 'proposed')
+
+    def test_for_other_player3(self):
+        p = reference.Reference('Player')
+        t0 = treaty.Treaty(status='proposed')
+        t1 = t0.for_other_player(p)
+        self.assertEqual(t1.status, 'pending')
+
+    def test_is_active1(self):
+        t0 = treaty.Treaty(status='signed')
+        self.assertTrue(t0.is_active())
+
+    def test_is_active2(self):
+        t0 = treaty.Treaty(status='pending')
+        self.assertFalse(t0.is_active())
+
+    def test_is_draft1(self):
+        t0 = treaty.Treaty(status='pending')
+        self.assertTrue(t0.is_draft())
+
+    def test_is_draft2(self):
+        t0 = treaty.Treaty(status='signed')
+        self.assertFalse(t0.is_draft())
+
+    def test_is_rejected1(self):
+        t0 = treaty.Treaty(status='rejected')
+        self.assertTrue(t0.is_rejected())
+
+    def test_is_rejected2(self):
+        t0 = treaty.Treaty(status='pending')
+        self.assertFalse(t0.is_rejected())

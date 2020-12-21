@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 """ Base directory for saved games, races, etc """
-__game_dir = Path.home() / 'Inherit!'
-__default_data = Path(__file__).parent.parent / 'default_data'
+__game_dir = Path(__file__).parent.parent / 'data'
+__user_dir = Path.home() / 'Inherit!'
 
 
 
@@ -98,9 +98,13 @@ def to_json(obj):
 def load_list(save_type):
     files = []
     dir_name = __game_dir / save_type
-    dir_name.mkdir(parents=True, exist_ok=True)
-    for f in dir_name.iterdir():
-        files.append(f.name)
+    if dir_name.exists():
+        for f in dir_name.iterdir():
+            files.append(f.name)
+    dir_name = __user_dir / save_type
+    if dir_name.exists():
+        for f in dir_name.iterdir():
+            files.append(f.name)
     files.sort()
     return files
 
@@ -108,37 +112,36 @@ def load_list(save_type):
 """ Load from file, prevent object self registration """
 def load_inspect(save_type, name):
     global __registry_block 
-    file_name = __game_dir / save_type / name
-    obj = None
     __registry_block = True
-    with open(file_name, 'r') as f:
-        obj = from_json(f.read(), str(file_name))
+    objs = load(save_type, name)
     __registry_block = False
-    return obj
+    return objs
 
 
 """ Load from file, object self registration is assumed """
 def load(save_type, name):
-    file_name = __game_dir / save_type / name
-    obj = None
-    with open(file_name, 'r') as f:
-        obj = from_json(f.read(), str(file_name))
-    return obj
-
-
-""" Load tech from loose files """
-def load_defaults(save_type):
     objs = []
-    for file_name in (__default_data / save_type).iterdir():
+    file_name = __user_dir / save_type / name
+    if not file_name.exists():
+        file_name = __game_dir / save_type / name
+    if file_name.is_dir():
+        for fname in file_name.iterdir():
+            with open(fname, 'r') as f:
+                objs.append(from_json(f.read(), str(fname)))
+    else:
         with open(file_name, 'r') as f:
-            obj = from_json(f.read(), str(file_name))
-            objs.append(obj)
-    return objs
+            objs.append(from_json(f.read(), str(file_name)))
+    if len(objs) == 0:
+        return None
+    elif len(objs) == 1:
+        return objs[0]
+    else:
+        return objs
 
 
 """ Save object to file """
 def save(save_type, name, obj):
-    dir_name = __game_dir / save_type
+    dir_name = __user_dir / save_type
     dir_name.mkdir(parents=True, exist_ok=True)
     file_name = dir_name / name
     with open(file_name, 'w') as f:
@@ -155,7 +158,9 @@ def __encode(obj):
         if sparse and name in values and defaults[name][0] == values[name]:
             del values[name]
     if '__uuid__' not in values:
-        values['__uuid__'] = cls.__name__ + '/' + uuid.uuid4()
+        values['__uuid__'] = cls.__name__ + '/' + str(uuid.uuid4())
+    if '__cache__' in values:
+        del values['__cache__']
     return values
 
 

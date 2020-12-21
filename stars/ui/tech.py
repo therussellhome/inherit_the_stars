@@ -46,7 +46,7 @@ class Tech(PlayerUI):
             player_partial = self.player.research_partial
         else:
             if len(tech_tree) < 10:
-                tech_tree = game_engine.load_defaults('Tech')
+                tech_tree = game_engine.load('Tech', 'Inherit the Stars!')
             player_race = Race()
             player_level = TechLevel()
             player_partial = TechLevel()

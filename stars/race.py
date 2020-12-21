@@ -1,10 +1,12 @@
-from .defaults import Defaults
+import sys
 from math import log, exp
+from .defaults import Defaults
 
 """ Default values [default, min, max]  """
 __defaults = {
     'name': [''],
-    'start_date': [''],
+    'icon': ['fas fa-pastafarianism'],
+    'start_date': [3000, 0, sys.maxsize],
     'primary_race_trait': ['Melconians'],
     'lrt_Trader': [False],
     'lrt_Bioengineer': [False],
@@ -47,7 +49,7 @@ __defaults = {
     'mines_per_10k_colonists': [10, 2, 50],
     'defenses_per_10k_colonists': [10, 2, 50],
     'energy_per_10k_colonists': [100, 100, 2000],
-    'cost_of_baryogenesis': [10000, 2000, 12000],
+    'cost_of_baryogenesis': [1000, 200, 1200], # YJ / kT
     'starting_factories': [10, 5, 20],
     'starting_mines': [10, 5, 20],
     'starting_power_plants': [10, 5, 20],

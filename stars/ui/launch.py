@@ -20,7 +20,7 @@ class Launch(Defaults):
         if action == 'reset':
             self.reset_to_default()
         # Always refresh the list of games
-        self.options_launch_game = game_engine.load_list('games')
+        self.options_launch_game = game_engine.load_list('Player')
         self.options_launch_game.sort()
         # Load the selected game
         if action == 'go':

@@ -48,7 +48,7 @@ class StarSystem(Defaults):
         if player:
             self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
             self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
-            self.planets[home].colonize(player, 'Default')
+            self.planets[home].colonize(player)
             self.planets[home].on_surface.population = player.race.starting_colonists
 
     """ get the sun for the system """

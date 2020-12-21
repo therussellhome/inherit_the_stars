@@ -9,6 +9,29 @@
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
 <!-- 3d UI -->
+<!-- -->
+<script type="x-shader/x-vertex" id="vertexshader">
+attribute float size;
+attribute vec3 customColor;
+varying vec3 vColor;
+void main() {
+    vColor = customColor;
+	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+    gl_PointSize = size * ( 300.0 / -mvPosition.z );
+    gl_Position = projectionMatrix * mvPosition;
+}
+</script>
+<script type="x-shader/x-fragment" id="fragmentshader">
+uniform vec3 color;
+uniform sampler2D pointTexture;
+varying vec3 vColor;
+void main() {
+	gl_FragColor = vec4( color * vColor, 1.0 );
+	gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
+	if ( gl_FragColor.a < ALPHATEST ) discard;
+}
+</script>
+<!-- -->
 <script type="module" src="render_stars.js"></script>
 <!--  -->
 <link href="stars.css" rel="stylesheet">
@@ -17,6 +40,7 @@
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
+<div class="hide" id="loading">loading...</div>
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
     <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
@@ -132,11 +156,10 @@
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
         </tr>
+    </table><table class="hfill" id="new_game_players">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">
-            + Galaxy
-            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="new_game_num_systems"/>
-        </caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
             <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
@@ -147,78 +170,9 @@
             <td>Diameter: Z axis</td>
             <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>System Density</td>
-            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 1, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>Player Separation</td>
-            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 25, 2000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td>Number of Systems</td>
+            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems')"/></td>
         </tr><tr class="slider_padding"></tr>
-    </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
-        <tr>
-            <td>Player 1</td>
-            <td class="hfill"><select id="new_game_player01" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 2</td>
-            <td class="hfill"><select id="new_game_player02" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 3</td>
-            <td class="hfill"><select id="new_game_player03" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 4</td>
-            <td class="hfill"><select id="new_game_player04" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 5</td>
-            <td class="hfill"><select id="new_game_player05" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 6</td>
-            <td class="hfill"><select id="new_game_player06" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 7</td>
-            <td class="hfill"><select id="new_game_player07" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 8</td>
-            <td class="hfill"><select id="new_game_player08" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 9</td>
-            <td class="hfill"><select id="new_game_player09" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 10</td>
-            <td class="hfill"><select id="new_game_player10" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 11</td>
-            <td class="hfill"><select id="new_game_player11" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 12</td>
-            <td class="hfill"><select id="new_game_player12" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 13</td>
-            <td class="hfill"><select id="new_game_player13" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 14</td>
-            <td class="hfill"><select id="new_game_player14" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 15</td>
-            <td class="hfill"><select id="new_game_player15" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 16</td>
-            <td class="hfill"><select id="new_game_player16" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
         <tr>
@@ -278,6 +232,10 @@
         <tr>
             <td>Technology Tree</td>
             <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
+        <tr>
+            <td>System Names</td>
+            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"/></td>
         </tr>
     </table>
 </div>
@@ -386,7 +344,7 @@
             <td class="hfill"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175, 350, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ',000 people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>cost of baryogenesis</td>
-            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 2000, 12000, 500, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 1200, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ / kT')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
@@ -552,62 +510,112 @@
         <td class="hfill" style="font-size: 200%">Foreign Minister</td>
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <table class="hfill" id="foreign_treaties">
+    <table class="hfill" id="foreign_treaties" style="text-align: center">
     </table>
-    <table class="hfill"  style="font-size: 85%">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ negotiation</caption>
-        <tr><td colspan="5">
-        <table class="hfill" style="font-size: 118%">
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Negotiation</caption>
         <tr>
-            <td><input disabled="true" id="foreign_p2" style="width: 6em; font-size: 125%"/></td>
-            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team"><i style="font-size: 125%" class="fas fa-handshake"></i></label></td>
-            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')" checked="true"><label for="foreign_relation_is_neutral"><i style="font-size: 125%" class="fas fa-meh"></i></label></td>
-            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_enemy" onchange="post('foreign_minister')"><label for="foreign_relation_is_enemy"><i style="font-size: 125%" class="fas fa-skull-crossbones"></i></label></td>
-            <td style="text-align: right"><i class="button button_s far fa-check-circle" title="save / propose" onclick="post('foreign_minister', '?propose')"></i></td>
-        </tr></table></td></tr>
-        <tr>
-            <td><i class="li" title="Lithium"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_lithium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="li" title="Lithium">1</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_lithium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="li" title="Lithium">1</i></td>
+            <td colspan="3"><table class="hfill" style="font-size: 125%"><tr>
+                <td class="hfill" id="foreign_other_player"/></td>
+                <td><input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team"> <i style="font-size: 125%" class="fas fa-handshake"></i></label></td>
+                <td><input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')" checked="true"><label for="foreign_relation_is_neutral"> <i style="font-size: 125%" class="fas fa-meh"></i></label></td>
+                <td><input type="radio" name="foreign_relation" id="foreign_relation_is_enemy" onchange="post('foreign_minister')"><label for="foreign_relation_is_enemy"> <i style="font-size: 125%" class="fas fa-skull-crossbones"></i></label></td>
+            </tr></table></td>
+            <td style="text-align: right"><i class="button far fa-check-circle" title="Save / Propose" onclick="post('foreign_minister', '?save')"></i></td>
+        <!-- titanium -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="ti" title="Titanium">1</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_buy_ti_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="si" title="Silicon"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_silicon" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_silicon" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="si" title="Silicon">1</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_silicon" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_silicon" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="si" title="Silicon">1</i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_sell_ti_display" style="text-align: center; min-width: 5em"></td>
+        <!-- lithium -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="li" title="Lithium">1</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_buy_li_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="ti" title="Titanium"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_titanium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="ti" title="Titanium">1</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_titanium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="ti" title="Titanium">1</i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_sell_li_display" style="text-align: center; min-width: 5em"></td>
+        <!-- silicon -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="si" title="Silicon">1</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_buy_si_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="fa-free-code-camp" title="fuel"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_fuel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="fa-free-code-camp">10k</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_fuel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="fa-free-code-camp">10k</i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_sell_si_display" style="text-align: center; min-width: 5em"></td>
+        <!-- fuel -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fa-free-code-camp vertical" title="Fuel">100</i></div></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td id="foreign_buy_fuel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td style="width: 6em"><i class="fab fa-galactic-republic" title="stargate" style="font-size: 160%"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_stargate" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i style="font-size: 127.5%" class="fab fa-galactic-republic" title="gate"></i></td>
-            <td>Buy <input id="foreign_p2_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_stargate" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i style="font-size: 127.5%" class="fab fa-galactic-republic" title="gate"></i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td id="foreign_sell_fuel_display" style="text-align: center; min-width: 5em"></td>
+        <!-- gates -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fab fa-galactic-republic" title="Stargate Use"> / transit</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td id="foreign_buy_gate_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td style="width: 6em"><i class="fas fa-virus-slash" title="safe passage" style="font-size: 160%"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_passage" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_passage" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
-            <td>Buy <input id="foreign_p2_is_selling_passage" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_passage" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td id="foreign_sell_gate_display" style="text-align: center; min-width: 5em"></td>
+        <!-- hyper denial -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-ban" title="Hyper Denial"> / year</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_buy_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="fas fa-user-secret" title="intel sharing" style="font-size: 160%"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_intel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_intel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
-            <td>Buy <input id="foreign_p2_is_selling_intel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_intel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_sell_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
+        <!-- intel -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-user-secret" title="Intel Sharing"> / year</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_buy_intel_display" style="text-align: center; min-width: 5em"></td>
+        </tr><tr>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_sell_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr></table></td></tr>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="/shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
+    <table><tr>
+        <td>Existing Designs</td><td><select id="shipyard_existing_designs" class="hfill" onchange="post('shipyard')"></select></td>
+        <td>+</td>
+        <td>copy</td>
+        <td>trash</td>
+    </tr></table>
     <table class="hfill" id="shipyard_ship">
     </table>
-    <table class="hfill" id="shipyard_design"> 
+    <table class="hfill"> 
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
+        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_name" onchange="post('shipyard')"/></td></tr>
+        <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2"><table id="shipyard_design"></table></td></tr>
     </table>
     <table class="hfill" id="shipyard_tech">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
