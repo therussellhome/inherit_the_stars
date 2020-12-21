@@ -21,6 +21,8 @@ class Messages(PlayerUI):
         for key in game_engine.load('messages', 'Messages Format'):
             if key.split(".")[1] == 'introduction':
                 self.player.messages.append(key)
-        self.messages_text += self.player.messages[0]
+            messages_sender = key.split(".")[0]
+            self.messages_sender = '<td><img title="' + messages_sender + '" src="/' + messages_sender + '.png"/></td><td>' + messages_sender + '</td>'
+        self.messages_text = self.player.messages[0]
 
 Messages.set_defaults(Messages, __defaults, sparse_json=False)
