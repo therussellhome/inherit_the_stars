@@ -69,6 +69,15 @@ div.submenu {
     padding-left: 70px;
     transition: 0.5s;
 }
+div.sidebarr {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    height: 100%;
+    background-color: rgba(0, 0, 44, 0.5);
+    transition: 0.5s;
+}
 div.toc {
     position: fixed;
     top: 0;
@@ -133,6 +142,7 @@ table {
 table.topbar {
     border: 2px solid silver;
     padding-left: 10px;
+    padding-right: 10px;
 }
 caption {
     margin-top: 20px;
@@ -178,6 +188,9 @@ textarea:disabled {
     width: 100%;
     white-space: nowrap;
 }
+.vertical {
+    writing-mode: sideways-lr;
+}
 .hide {
     display: none;
 }
@@ -193,6 +206,12 @@ textarea:disabled {
 #race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
     background: black;
 }
+
+.power-color { background: cyan; }/* power-plants */
+.factory-color { background: goldenrod; }/* factories */
+.mine-color { background: silver; }/* mines */
+.shield-color { background: mediumslateblue; }/* defences */
+
 
 i {
     font-style: normal;
@@ -258,6 +277,10 @@ i.fa-free-code-camp {
 i.fa-free-code-camp:after {
     content: '₥';
     border-top: 1px solid magenta;
+}
+i.fa-free-code-camp.vertical:after {
+    border-top: 0;
+    border-left: 1px solid magenta;
 }
 
 i.ti:after, i.li:after, i.si:after, i.fa-weight-hanging:after, i.fa-luggage-cart:after {

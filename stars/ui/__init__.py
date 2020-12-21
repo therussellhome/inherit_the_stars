@@ -7,7 +7,7 @@ __all__ = [
     'launch',
     'messages',
     'new_game',
-    'planetary_minister',
+    'planetaryministers',
     'planets',
     'plans',
     'race_editor',

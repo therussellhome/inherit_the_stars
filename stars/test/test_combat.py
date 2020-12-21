@@ -1,6 +1,6 @@
 import unittest
 from .. import *
-#from .. import weapon
+
 
 class TestCombat(unittest.TestCase):
     def setUp(self):

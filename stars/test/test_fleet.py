@@ -1,5 +1,6 @@
 import unittest
 from .. import *
+
 class FleetCase(unittest.TestCase):
     def test_addships_compile_returnn(self):
         ship_1 = ship.Ship(

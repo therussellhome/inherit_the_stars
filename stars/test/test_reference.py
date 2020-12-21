@@ -78,6 +78,11 @@ class ReferenceTestCase(unittest.TestCase):
         r = reference.Reference('int/')
         with self.assertRaises(LookupError):
             r.get_name()
+    
+    def test_get6(self):
+        game_engine.unregister()
+        r = reference.Reference('_TestReference/get')
+        self.assertEqual(r['abc'], 0)
 
     def test_set1(self):
         game_engine.unregister()
@@ -108,6 +113,12 @@ class ReferenceTestCase(unittest.TestCase):
         r = reference.Reference('int/')
         with self.assertRaises(LookupError):
             r.abc = 123
+
+    def test_set6(self):
+        game_engine.unregister()
+        r = reference.Reference('_TestReference/set')
+        r['abc'] = 6
+        self.assertEqual(r.abc, 6)
 
     def test_eq1(self):
         r1 = reference.Reference('_TestReference/eq')
