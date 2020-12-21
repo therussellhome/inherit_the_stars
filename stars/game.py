@@ -70,8 +70,7 @@ class Game(Defaults):
         self._call(planets, 'mine_minerals')
         self._call(planets, 'operate_factories')
         self._call(players, 'allocate_budget')
-        self._call(planets, 'build_from_queue')
-        self._call(planets, 'build_with_baryogenesis')
+        self._call(players, 'build_from_queue')
         self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)
         self._call(self.wormholes, 'move')
@@ -101,10 +100,10 @@ class Game(Defaults):
         self._call(fleets, 'patrol')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
-        self._call(players, 'deallocate_budget')
         #
         # actions only done at the end of a year
         if self.hundreth % 100 == 0:
+            self._call(planets, 'deallocate_build_queue')
             self._call(planets, 'scan')
             self._call(self.asteroids, 'scan')
             self._call(fleets, 'scan')

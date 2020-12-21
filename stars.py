@@ -53,7 +53,7 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
             response = _handlers.get(form, None)
             self.send_response(200)
             self.end_headers()
-            print('    post = ', post_str)
+            #print('    post = ', post_str)
             if response:
                 response_str = game_engine.to_json(response(action, **json))
             else:

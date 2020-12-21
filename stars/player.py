@@ -7,6 +7,7 @@ from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
 from .score import Score
+from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 
@@ -22,8 +23,8 @@ __defaults = {
     'seen_players': [[]],
     'intel': [{}], # map of intel objects indexed by object reference
     'messages': [[]], # list of messages from oldest to newest
-    'planets': [{}],
-    'planetary_ministers': [{minister.__uuid__: minister}], # dict of planetary ministers
+    'planetary_ministers': [[PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)]], # list of planetary ministers
+    'planetary_minister_map': [{}], # map of planet references to minister references
     'score': [Score()],
     'tech_level': [TechLevel()], # current tech levels
     'research_partial': [TechLevel()], # energy spent toward next level
@@ -32,30 +33,31 @@ __defaults = {
     'energy': [0, 0, sys.maxsize],
     'fleets': [[]],
     'tech': [[]], # tech tree
-    'treaties': [{}],
-    'pending_treaties': [{}],
-    'energy_minister_construction_percent': [90, 0, 100],
-    'energy_minister_mattrans_percent': [0, 0, 100],
-    'energy_minister_mattrans_use_surplus': [False],
-    'energy_minister_research_percent': [10, 0, 100],
-    'energy_minister_research_use_surplus': [False],
+    'treaties': [[]],
+    'build_queue': [[]], # array of BuildQueue items
+    'finance_minister_construction_percent': [90, 0, 100],
+    'finance_minister_mattrans_percent': [0, 0, 100],
+    'finance_minister_mattrans_use_surplus': [False],
+    'finance_minister_research_percent': [10, 0, 100],
+    'finance_minister_research_use_surplus': [False],
+    'finance_minister_baryogenesis_default': [True],
     'historical': [{}], # map of category to value by year (not hundreth)
 }
 
 """ List of fields that are user modifable """
 _player_fields = [
     'ready_to_generate',
-    'planets',
+    'planetary_minister_map',
     'planetary_ministers',
     'research_queue',
     'research_field',
     'fleets',
     'treaties',
-    'energy_minister_construction_percent',
-    'energy_minister_mattrans_percent',
-    'energy_minister_mattrans_use_surplus',
-    'energy_minister_research_percent',
-    'energy_minister_research_use_surplus',
+    'finance_minister_construction_percent',
+    'finance_minister_mattrans_percent',
+    'finance_minister_mattrans_use_surplus',
+    'finance_minister_research_percent',
+    'finance_minister_research_use_surplus',
 ]
 
 """ A player in a game """
@@ -79,7 +81,13 @@ class Player(Defaults):
         if self.player_key == p.player_key:
             for field in _player_fields:
                 self[field] = p[field]
-
+    
+    def get_planetary_minister(self, uuid):
+        for minister in self.planetary_ministers:
+            if minister.__uuid__ == uuid:
+                return minister
+        return self.planetary_ministers[0]
+    
     """ Update the date """
     def next_hundreth(self):
         self.date = round(self.date + 0.01, 2)
@@ -101,7 +109,7 @@ class Player(Defaults):
     """ Return the id for use as a temporary player token """
     def token(self):
         return str(id(self))
-
+    
     """ Add an intel report """
     def add_intel(self, obj, **kwargs):
         # Intentionally allowing this to fail if the object does not have a name attribute
@@ -115,7 +123,7 @@ class Player(Defaults):
             reference = 'Player/' + kwargs['player']
             if reference not in self.intel:
                 self.intel[reference] = Intel(reference=reference)
-
+    
     """ Get intel about an object or objects """
     def get_intel(self, reference):
         if '/' in reference:
@@ -127,7 +135,7 @@ class Player(Defaults):
             if k.startswith(reference + '/'):
                 reports.append(i)
         return reports
-
+    
     """ 'Recieve' intel reports """
     def calc_intel(self):
         # First run includes all of the stars
@@ -146,12 +154,12 @@ class Player(Defaults):
     """ Add a message """
     def add_message(self, source, subject, body, link):
         self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
-
+    
     """ Compute score based on intel """
     def calc_score(self):
         #TODO
         pass
-
+    
     """ Get the minister for a given planet """
     def get_minister(self, planet):
         for m in self.planetary_ministers:
@@ -162,13 +170,85 @@ class Player(Defaults):
                 return m
         return self.planetary_ministers[0]
     
-    """ Calls the energy mineister to allocate the budget """
+    """ Share treaty updates with other players """
+    def treaty_negotiations(self):
+        for t in self.treaties:
+            t.other_player.treaty_negotiation(t.for_other_player(self))
+            
+
+    """ Merge in any incoming treaty updates """
+    def treaty_negotiation(self, treaty):
+        pass #TODO
+
+    """ Get the treaty """
+    def get_treaty(self, other_player, draft=False):
+        other_player = Reference(other_player)
+        for t in self.treaties:
+            if (t.other_player == other_player) and ((not draft and t.is_active()) or (draft and t.is_draft())):
+                return t
+        if draft:
+            return None
+        return Treaty(other_player=other_player, status='active')
+
+    def calc_treaty(self, whith):
+        for key in self.treaties:
+            t = self.treaties[key]
+            if whith == t.other_player:
+                if len(t.accepted_by) == 2:
+                    if not t.replaced_by == '':
+                        mt = self.treaties[replaced_by]
+                        if len(mt.accepted_by) == 2:
+                            return mt
+                    return t
+        return Treaty(me = Reference(self), other_player = whith)
+    
+    def calc_p_treaty(self, whith):
+        for key in self.treaties:
+            t = self.treaties[key]
+            if whith == t.other_player:
+                if len(t.accepted_by) <= 1 and len(t.rejected_by) == 0:
+                    return t
+        return None
+    
+    def resolve_treaties(self):
+        for player in self.seen_players:
+            for key in self.treaties:
+                treaty = self.treaties[key]
+                if treaty.other_player == player:
+                    player.up_date_treaty(treaty.flip(), self)
+    
+    def up_date_treaty(self, treaty, other):
+        try:
+            if not self.treaties[treaty.name].eq(treaty):
+                self.get_proposal(treaty, other)
+            elif len(treaty.rejected_by) > 0:
+                del self.treaties[treaty.name]
+            elif treaty.replaced_by != '':
+                if len(self.treaties[treaty.reglaced_by].rejected_by) == 0:
+                    del self.treaties[treaty.name]
+                else:
+                    treaty.replaced_by = ''
+                    self.treaties[treaty.name] = treaty
+            elif None:
+                #TODO
+                pass
+        except IndexError:
+            self.get_proposal(treaty, other)
+    
+    def get_proposal(self, treaty, other):
+        tp = self.calc_p_treaty(treaty.other_player)
+        if tp and other.name in treaty.accepted_by:
+            ts = tp.merge(treaty)
+            other.get_proposal(ts.flip)
+            treaty = ts
+        treaties[treaty.name] = treaty
+    
+    """ Allocate the available energy into budget categories """
     def allocate_budget(self):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:
-            allocation = min(round(total * self['energy_minister_' + category + '_percent'] / 100), self.energy)
+            allocation = min(round(total * self['finance_minister_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
-            self.energy -= allocation
 
     """ Request to spend energy for a category """
     def spend(self, sub_category, request=sys.maxsize, spend=True):
@@ -179,38 +259,35 @@ class Player(Defaults):
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':
             budget = self.__cache__['budget_mattrans']
-            if self.energy_minister_mattrans_use_surplus:
+            if self.finance_minister_mattrans_use_surplus:
                 budget += self.__cache__['budget_construction']
         elif category == 'research':
             budget = self.__cache__['budget_research']
-            if self.energy_minister_research_use_surplus:
+            if self.finance_minister_research_use_surplus:
                 budget += self.__cache__['budget_construction']
                 budget += self.__cache__['budget_mattrans']
         # All other categories pull from the unallocated budget and surplus
         else:
-            category = 'unallocated'
+            category = 'other'
             budget = self.energy
-            budget += self.__cache__['budget_construction']
-            budget += self.__cache__['budget_mattrans']
-            budget += self.__cache__['budget_research']
+        budget = min(self.energy, budget)
         # If not enough budget then adjust request
         if request > budget:
             request = budget
         if spend:
             self.add_historical('spend_' + sub_category, request)
-            if category == 'unallocated':
-                self.energy -= request
-            else:
+            self.energy -= request
+            if category != 'other':
                 self.__cache__['budget_' + category] -= request
         # Return approved or adjusted request
         return request
 
-    """ Calls the energy mineister to return unused budget """
-    def deallocate_budget(self):
-        for category in ['construction', 'mattrans', 'research']:
-            self.energy += self.__cache__['budget_' + category]
-            self.__cache__['budget_' + category] = 0
-    
+    """ Attempt to build the items in the build queue """
+    def build_from_queue(self):
+        for b in self.build_queue:
+            if b.planet.build(b):
+                self.build_queue.remove(b)
+
     """ Research """
     def research(self):
         budget = self.spend('research')
@@ -264,5 +341,5 @@ class Player(Defaults):
                 if t.level.is_available(self.tech_level):
                     self.research_queue.remove(t)
 
-
+                    
 Player.set_defaults(Player, __defaults)

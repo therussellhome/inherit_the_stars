@@ -1,0 +1,22 @@
+import unittest
+from .. import *
+
+class FacilityTestCase(unittest.TestCase):
+    def test_cost1(self):
+        f = facility.Facility(facility_type='power_plants')
+        self.assertEqual(f.cost.energy, 250)
+
+    def test_cost2(self):
+        with self.assertRaises(LookupError):
+            f = facility.Facility()
+
+    def test_finish1(self):
+        f = facility.Facility(facility_type='power_plants')
+        f.finish()
+        self.assertEqual(f.planet.power_plants, 1)
+
+    def test_finish2(self):
+        f = facility.Facility(facility_type='power_plants')
+        f.planet.power_plants = 4
+        f.finish()
+        self.assertEqual(f.planet.power_plants, 5)
