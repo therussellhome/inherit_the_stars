@@ -26,7 +26,7 @@ class Launch(Defaults):
         if action == 'go':
             game_engine.unregister()
             #TODO validate password
-            p = game_engine.load('games', self.launch_game)
+            p = game_engine.load('Player', self.launch_game)
             # Fail if player not found
             self.player_token = str(id(p))
             

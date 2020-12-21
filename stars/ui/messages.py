@@ -18,11 +18,17 @@ class Messages(PlayerUI):
         if not self.player:
             return
 
-        for key in game_engine.load('messages', 'Messages Format'):
+        dictionary = game_engine.load('messages', 'Messages Format')
+        for key in dictionary:
             if key.split(".")[1] == 'introduction':
-                self.player.messages.append(key)
+                self.player.messages.append(dictionary[key])
             messages_sender = key.split(".")[0]
             self.messages_sender = '<td><img title="' + messages_sender + '" src="/' + messages_sender + '.png"/></td><td>' + messages_sender + '</td>'
-        self.messages_text = self.player.messages[0]
+        index = 0
+        if action.startswith('prev') and index > 0:
+            index -= 1
+        if action.startswith('next') and index < len(self.player.messages):
+            index += 1
+        self.messages_text = self.player.messages[index]
 
 Messages.set_defaults(Messages, __defaults, sparse_json=False)
