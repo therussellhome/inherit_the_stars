@@ -599,28 +599,60 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post()">
+<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post(); ship_display()">
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="/shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
-        <td>Existing Designs</td><td><select id="shipyard_existing_designs" class="hfill" onchange="post('shipyard')"></select></td>
-        <td>+</td>
-        <td>copy</td>
-        <td>trash</td>
+        <td>Existing Designs</td><td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
+        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
+        <td><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
+        <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
     </tr></table>
-    <table class="hfill" id="shipyard_ship">
+    <table class="hfill" id="shipyard_ship_overview">
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Combat Effectivity</caption>
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
+            <td><canvas id="shipyard_combat_chart" style="width: 550px"></canvas></td>
+        </tr><tr>
+            <td style="font-size: 85%; text-align: center">Range (terameters)</td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanning</caption>
+        <tr>
+            <td style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
+            <td><canvas id="shipyard_sensor_chart" style="width: 550px"></canvas></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engine</caption>
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
+            <td><canvas id="shipyard_engine_chart" style="width: 550px"></canvas></td>
+        </tr><tr>
+            <td style="font-size: 85%; text-align: center">Hyper</td>
+        </tr>
+    </table>
+    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
+    <table class="hfill tech_guts hide" id="shipyard_ship_guts" style="font-size: 85%">
     </table>
     <table class="hfill"> 
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
         <tr><td>Design Name</td><td><input class="hfill" id="shipyard_name" onchange="post('shipyard')"/></td></tr>
         <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
+            <td>General Slots</td><td id="shipyard_slots_general"></td>
+            <td>Depot Slots</td><td id="shipyard_slots_depot"></td>
+            <td>Orbital Slots</td><td id="shipyard_slots_orbital"></td>
+        </tr></table></td></tr>
         <tr><td colspan="2"><table id="shipyard_design"></table></td></tr>
     </table>
-    <table class="hfill" id="shipyard_tech">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2"><table id="shipyard_tech"></table></td></tr>
     </table>
 </div>
 

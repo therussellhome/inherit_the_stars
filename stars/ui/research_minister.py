@@ -1,4 +1,3 @@
-import sys
 from .playerui import PlayerUI
 from ..reference import Reference
 from ..tech import TECH_GROUPS
@@ -57,9 +56,9 @@ class ResearchMinister(PlayerUI):
         # Sort tech
         research_tech = []
         for t in self.player.tech:
-            if t.tech_group() == self.research_tech_group:
+            if t.tech_group() == self.research_tech_group and t.is_available(race=self.player.race) and t.name not in research_queue:
                 cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.research_partial)
-                if cost > 0 and t.name not in research_queue: 
+                if cost > 0: 
                     link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
                     row = '<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
                         + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
