@@ -438,11 +438,14 @@ void main() {
         <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
+        <tr><td id="messages_sender"></td></tr>
         <tr><td id="messages_text" style="white-space: normal"></td></tr>
+        <tr style="display: none"><td id="messages_index">0</td></tr>
     </table><table class="hfill">
         <tr>
-            <td>Keep</td><td><input type="checkbox" onchange="post('messages')"/></td>
             <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"></i></td>
+            <td>Keep</td><td><input id="messages_keep" type="checkbox" onchange="post('messages')"/></td>
+            <td id="messages_number"></td>
             <td class="hfill"></td>
             <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"></i></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"></i></td>

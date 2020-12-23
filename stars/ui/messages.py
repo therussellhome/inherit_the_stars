@@ -5,9 +5,10 @@ from .. import game_engine
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'messages_index': [-1, -1, sys.maxsize],
-    'messages_count': [0, 0, sys.maxsize],
     'messages_text': [''],
+    'messages_index': [0, 0, sys.maxsize],
+    'messages_number': [''],
+    'messages_keep': [False],
 }
 
 
@@ -20,15 +21,18 @@ class Messages(PlayerUI):
 
         dictionary = game_engine.load('messages', 'Messages Format')
         for key in dictionary:
-            if key.split(".")[1] == 'introduction':
+            if key.split(".")[1] == 'introduction' and dictionary[key] not in self.player.messages:
                 self.player.messages.append(dictionary[key])
             messages_sender = key.split(".")[0]
-            self.messages_sender = '<td><img title="' + messages_sender + '" src="/' + messages_sender + '.png"/></td><td>' + messages_sender + '</td>'
-        index = 0
+            self.messages_sender = '<td><img title="' + messages_sender + '" src="/' + messages_sender + '.png"/></td><td>' + messages_sender.replace('_', ' ') + '</td>'
+        #print('length', len(self.player.messages))
         if action.startswith('prev') and index > 0:
-            index -= 1
-        if action.startswith('next') and index < len(self.player.messages):
-            index += 1
-        self.messages_text = self.player.messages[index]
+            self.messages_index -= 1
+            print(self.messages_index)
+        if action.startswith('next') and self.messages_index < len(self.player.messages) - 1:
+            self.messages_index += 1
+            print(self.messages_index)
+        self.messages_text = self.player.messages[self.messages_index]
+        self.messages_number = str(self.messages_index + 1) + ' of ' + str(len(self.player.messages))
 
 Messages.set_defaults(Messages, __defaults, sparse_json=False)
