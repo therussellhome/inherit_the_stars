@@ -60,6 +60,7 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
                 response_str = '{}'
             #print('    resp = ', response_str)
             self.wfile.write(response_str.encode())
+            game_engine.auto_save()
 
 
 with socketserver.TCPServer(("", 0), Httpd) as httpd:

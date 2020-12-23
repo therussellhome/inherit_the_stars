@@ -31,38 +31,38 @@ __defaults = {
 class Shipyard(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player:
+        if not self.player():
             return
         design = None
-        if 'ship_designs' not in self.player.__cache__:
-            self.player.__cache__['ship_designs'] = list(self.player.ship_designs)
-        for existing_design in self.player.__cache__['ship_designs']:
+        if 'ship_designs' not in self.player().__cache__:
+            self.player().__cache__['ship_designs'] = list(self.player().ship_designs)
+        for existing_design in self.player().__cache__['ship_designs']:
             if existing_design.name == self.shipyard_existing_design:
                 design = existing_design
                 break
         # Actions
         if action == 'new_design':
             design = ShipDesign()
-            self.player.__cache__['ship_designs'].append(design)
+            self.player().__cache__['ship_designs'].append(design)
             self.shipyard_existing_design = design.name
             self.shipyard_name = ''
             self.shipyard_hull = ''
         elif action == 'copy_design':
             design = design.clone_design()
-            self.player.__cache__['ship_designs'].append(design)
+            self.player().__cache__['ship_designs'].append(design)
             self.shipyard_existing_design = design.name
             self.shipyard_name = ''
         elif action == 'delete_design':
-            if design in self.player.ship_designs:
-                self.player.ship_designs.remove(design)
-            self.player.__cache__['ship_designs'].remove(design)
+            if design in self.player().ship_designs:
+                self.player().ship_designs.remove(design)
+            self.player().__cache__['ship_designs'].remove(design)
             self.shipyard_name = ''
             design = None
         # Load / create design
         if design == None:
-            if len(self.player.__cache__['ship_designs']) == 0:
-                self.player.__cache__['ship_designs'].append(ShipDesign())
-            design = self.player.__cache__['ship_designs'][0]
+            if len(self.player().__cache__['ship_designs']) == 0:
+                self.player().__cache__['ship_designs'].append(ShipDesign())
+            design = self.player().__cache__['ship_designs'][0]
         # Design name
         if self.shipyard_name == '':
             self.shipyard_name = design.name
@@ -70,13 +70,13 @@ class Shipyard(PlayerUI):
             design.name = self.shipyard_name
         # Build design list after any chance for the name to change
         self.options_shipyard_existing_design = []
-        for existing_design in self.player.__cache__['ship_designs']:
+        for existing_design in self.player().__cache__['ship_designs']:
             self.options_shipyard_existing_design.append(existing_design.name)
         self.shipyard_existing_design = design.name
 
         # Hull selection
-        for t in self.player.tech: 
-            if t.is_available(self.player.tech_level, self.player.race) and t.category in ['Hull', 'Starbase']:
+        for t in self.player().tech: 
+            if t.is_available(self.player().tech_level, self.player().race) and t.category in ['Hull', 'Starbase']:
                 self.options_shipyard_hull.append(t.name)
         if self.shipyard_hull != '':
             design.set_hull('Tech/' + self.shipyard_hull)
@@ -93,11 +93,11 @@ class Shipyard(PlayerUI):
         # Check validity of design
         # valid designs are stored in the player's ship_designs
         # invalid designs are stored in the __cache__ and, if not fixed, will be lost when the player file is closed
-        if design.is_valid(self.player.tech_level, self.player.race):
-            if design not in self.player.ship_designs:
-                self.player.ship_designs.append(design)
-        elif design in self.player.ship_designs:
-            self.player.ship_designs.remove(design)
+        if design.is_valid(self.player().tech_level, self.player().race):
+            if design not in self.player().ship_designs:
+                self.player().ship_designs.append(design)
+        elif design in self.player().ship_designs:
+            self.player().ship_designs.remove(design)
 
         # Display stats
         self.shipyard_ship_overview = design.html_overview()
@@ -127,8 +127,8 @@ class Shipyard(PlayerUI):
             self.shipyard_slots_orbital = '<span style="color: red">' + self.shipyard_slots_orbital + '</span>'
         # Sort tech
         shipyard_tech = []
-        for t in self.player.tech:
-            if t.tech_group() == self.shipyard_tech_group and t.is_available(level=self.player.tech_level, race=self.player.race):
+        for t in self.player().tech:
+            if t.tech_group() == self.shipyard_tech_group and t.is_available(level=self.player().tech_level, race=self.player().race):
                 link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
                 row = '<td ><div class="tech tech_template">' + t.name + '</div></td>' \
                     + '<td><i class="button fas fa-cart-plus" title="Add to ship" onclick="post(\'shipyard\', \'?add=' + link + '\')"></i></td>'
