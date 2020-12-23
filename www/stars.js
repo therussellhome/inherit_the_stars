@@ -41,14 +41,6 @@ function toggle(start, css_class, force = null) {
     }
 }
 
-function save_race() {
-    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
-        alert('cannot save, negitive avantage points');
-    } else {
-        post('race_editor', '?save');
-    }
-}
-
 // Show a given screen, hide all others, highlight the clicked button
 function show_screen(show) {
     // Handle button toggle
@@ -287,6 +279,23 @@ function host_generate() {
     }
 }
 
+// Save the race?
+function save_race() {
+    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
+        alert('Cannot save, race has negitive avantage points');
+    } else {
+        post('race_editor', '?save');
+    }
+}
+
+// Hide the load race if the race editor is in viewer mode
+function race_viewer(element) {
+    if(game_mode == 'play') {
+        toggle(element, 'hide', true);
+    } else {
+        toggle(element, 'hide', false);
+    }
+}
 
 // Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
 function play_generate() {

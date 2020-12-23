@@ -15,6 +15,7 @@ class Defaults(game_engine.BaseClass):
             object.__setattr__(self, name, copy.copy(defaults[name][0]))
         # override with provided kwargs
         self.update(**kwargs)
+        self.__cache__ = {}
 
     """ Override the subscript operator """
     def __getitem__(self, name):

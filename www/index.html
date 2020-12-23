@@ -105,7 +105,7 @@ void main() {
 
 
 <div class="submenu hide" id="submenu_help_menu" onmouseleave="show_menu(null)">
-    <img class="button" id="button_race_viewer" title="Race" src="/race.png" onclick="show_screen('race_viewer')"/>
+    <img class="button" id="button_race_viewer" title="Race Viewer" src="/race.png" onclick="show_screen('race_editor')"/>
     <img class="button" id="button_tech_browser" title="Technology" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
     <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/>
 </div>
@@ -243,10 +243,10 @@ void main() {
 
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
-        <td class="hfill" style="font-size: 200%">Race Editor</td>
-        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
+        <td class="hfill" style="font-size: 200%" id="race_editor_screen_title"></td>
+        <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
     </tr></table><table class="hfill">
-        <tr>
+        <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
