@@ -29,6 +29,8 @@ class Launch(Defaults):
             p = game_engine.load('Player', self.launch_game)
             # Fail if player not found
             self.player_token = str(id(p))
+            # Set the player object to autosave
+            game_engine.set_auto_save(p)
             
 
 Launch.set_defaults(Launch, __defaults, sparse_json=False)
