@@ -15,7 +15,7 @@ __defaults = {
 class Launch(Defaults):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        self.launch_game = ['<th style="padding-right: 1em">Game</th><th style="text-align: left">Player</th><th colspan="2">Ready</th>']
+        self.launch_game = ['<th style="padding-right: 1em">Game</th><th style="text-align: left">Player</th><th colspan="2">Complete</th>']
         # Load the selected game
         if action.startswith('go='):
             game_engine.unregister()
@@ -31,13 +31,13 @@ class Launch(Defaults):
                 link = f.replace('\'', '\\\'').replace('\"', '\\\"')
                 p = game_engine.load_inspect('Player', f)
                 if p:
-                    ready = ''
+                    ready = 'No'
                     if p.ready_to_generate:
-                        ready = ' checked'
+                        ready = '<i class="fas fa-check" style="color: green"></i>'
                     self.launch_game.append('<td class="rows" style="padding-right: 1em">' + p.game_name 
                         + '</td><td class="rows hfill">' + p.race.name 
-                        + '</td><td class="rows"><input type="checkbox" disabled' + ready + '/>'
-                        + '</td><td class="rows"><i class="button fas fa-external-link-alt" onclick="post(\'launch\', \'?go=' + link + '\')"></i></td>')            
+                        + '</td><td class="rows">' + ready
+                        + '</td><td class="rows" style="text-align: right"><i class="button fas fa-external-link-alt" onclick="post(\'launch\', \'?go=' + link + '\')"></i></td>')            
             
 
 Launch.set_defaults(Launch, __defaults, sparse_json=False)

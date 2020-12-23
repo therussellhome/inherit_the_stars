@@ -260,7 +260,7 @@ function parse_json(url, json) {
 
 // Refresh host screen / auto generate
 function host_auto() {
-    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').checked) {
+    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
         document.getElementById('host_blocking').checked = true;
         post('host', '?generate');
     } else if(document.getElementById('host_name').innerHTML != '') {
@@ -270,7 +270,7 @@ function host_auto() {
 
 // Refresh
 function host_post() {
-    if(document.body.style.cursor != 'progress') {
+    if(current_screen == 'host' && document.body.style.cursor != 'progress') {
         post('host');
     }
 }
@@ -278,8 +278,8 @@ function host_post() {
 // Confirm if everyone is submitted before generating
 function host_generate() {
     if(!document.getElementById('host_blocking').checked) {
-        var ready = document.getElementById('host_ready').checked;
-        if(ready || confirm('Not all players are turned in.  Generate anyway?')) {
+        var ready = document.getElementById('host_ready').innerHTML;
+        if(ready == 'Ready' || confirm('Not all players are turned in.  Generate anyway?')) {
             document.getElementById('host_blocking').checked = true;
             post('host', '?generate');
         }

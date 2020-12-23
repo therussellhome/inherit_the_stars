@@ -181,7 +181,7 @@ class Player(Defaults):
         self.treaties.append(treaty)
 
     """ Share treaty updates with other players """
-    def treaty_finalizaton(self):
+    def treaty_finalization(self):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)

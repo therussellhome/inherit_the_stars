@@ -1,5 +1,5 @@
 import sys
-from .ui import UI
+from .playerui import PlayerUI
 from .. import game_engine
 
 
@@ -20,7 +20,7 @@ __defaults = {
 
 
 """ """
-class Host(UI):
+class PlayComplete(PlayerUI):
     def __init__(self, action, **kwargs):
         global _not_ready
         super().__init__(**kwargs)
@@ -65,4 +65,4 @@ class Host(UI):
                     + '</td><td class="rows"><i class="button fas fa-external-link-alt" onclick="post(\'host\', \'?host=' + link + '\')"></i></td>')
 
 
-Host.set_defaults(Host, __defaults, sparse_json=False)
+PlayComplete.set_defaults(PlayComplete, __defaults, sparse_json=False)
