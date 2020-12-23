@@ -16,5 +16,7 @@
     },
     "mass": 22,
     "is_trading_post": true,
+    "slots_orbital": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }

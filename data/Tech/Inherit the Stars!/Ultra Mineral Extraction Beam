@@ -17,5 +17,7 @@
     "mass": 400,
     "mining_rate": 5.0,
     "mineral_depletion_rate": 1.12,
+    "slots_depot": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }

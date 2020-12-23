@@ -17,5 +17,7 @@
     },
     "mass": 80,
     "stargate": 1000000000000,
+    "slots_orbital": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }

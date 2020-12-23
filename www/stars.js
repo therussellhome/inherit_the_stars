@@ -126,6 +126,15 @@ function launch_player(token) {
     }
 }
 
+// HTML string encoding
+function html_encode(s) {
+    return s.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/'/g, '&#39;')
+        .replace(/"/g, '&#34;');
+}
+
 // Submit data for actioning
 function post(form = '', action = '') {
     toggle(document.getElementById('loading'), 'hide', false);
@@ -192,24 +201,28 @@ function parse_json(url, json) {
                         }
                         element.noUiSlider.set(value);
                     } else if(element.nodeName == 'SELECT') {
-                        var options = []
-                        for(var i = 0; i < element.length; i++) {
-                            options.push(element.options[i].text);
-                        }
                         if(json.hasOwnProperty('options_' + key)) {
+                            var options = [];
+                            for(var i = 0; i < element.length; i++) {
+                                options.push(element.options[i].text);
+                            }
+                            var json_options = [];
                             for(opt_text of json['options_' + key]) {
+                                json_options.push(opt_text)
                                 if(!options.includes(opt_text)) {
                                     var new_option = document.createElement("option");
                                     new_option.text = opt_text;
                                     element.add(new_option); 
                                 }
-                                options.splice(options.indexOf(opt_text), 1);
                             }
+                            element.value = json[key];
                             for(var i = 0; i < options.length; i++) {
-                                for(var j = 0; j < element.length; j++) {
-                                    if(element.options[j].text == options[i]) {
-                                        element.remove(j);
-                                        break;
+                                if(!json_options.includes(options[i])) {
+                                    for(var j = 0; j < element.length; j++) {
+                                        if(element.options[j].text == options[i]) {
+                                            element.remove(j);
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -656,6 +669,15 @@ function tech_expand(div, expand_guts) {
     }
 }
 
+// Render the ship charts
+function ship_display() {
+    if(current_screen == 'shipyard') {
+        combat_chart(document.getElementById('shipyard_combat_chart'), json_map['shipyard']['shipyard_combat_chart']);
+        sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart']);
+        engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart']);
+    }
+}
+
 // Create a chart for combat defense/weapon curves
 function combat_chart(chart, data) {
     labels = [];
@@ -723,9 +745,9 @@ function combat_chart(chart, data) {
                         if(tooltipItem.datasetIndex == 0) {
                             label += Math.round(tooltipItem.value);
                         } else if(tooltipItem.datasetIndex == 2) {
-                            label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
+                            label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
                         } else if(tooltipItem.datasetIndex == 3) {
-                            base = json_map['tech']['armor'] + json_map['tech']['shield'];
+                            base = data.datasets[1].data[0] + data.datasets[2].data[0];
                             value = parseInt(tooltipItem.value);
                             label += Math.round(value / base * 100) + '%';
                         } else {

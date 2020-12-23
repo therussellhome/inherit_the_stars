@@ -16,5 +16,7 @@
     "mass": 300,
     "shipyard": 500,
     "repair": 2000,
+    "slots_orbital": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }
