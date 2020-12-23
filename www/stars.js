@@ -263,8 +263,15 @@ function host_auto() {
     if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').checked) {
         document.getElementById('host_blocking').checked = true;
         post('host', '?generate');
-    } else {
-        window.setTimeout(post, 10000);
+    } else if(document.getElementById('host_name').innerHTML != '') {
+        window.setTimeout(host_post, 10000);
+    }
+}
+
+// Refresh
+function host_post() {
+    if(document.body.style.cursor != 'progress') {
+        post('host');
     }
 }
 

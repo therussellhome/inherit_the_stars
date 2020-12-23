@@ -44,11 +44,11 @@ void main() {
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
     <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
-    <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
-    <tr><td><img class="button" id="button_host" title="Generate" src="/generate.gif" onclick="show_screen('host')"/></td></tr>
+    <tr><td><img class="button" id="button_launch" title="Launch" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_host" title="Host / Generate" src="/generate.png" onclick="show_screen('host')"/></td></tr>
     <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
     <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
-    <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
 </table></div>
 
 
@@ -64,7 +64,7 @@ void main() {
     <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
     <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
     <tr><td><img class="button" id="button_game" title="Game" src="/launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
-    <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu_play" title="Help" src="/help.png" onclick="show_menu('help_menu_play')" onmouseover="show_menu('help_menu_play')"/></td></tr>
 </table></div>
 
 
@@ -105,9 +105,15 @@ void main() {
 
 
 <div class="submenu hide" id="submenu_help_menu" onmouseleave="show_menu(null)">
+    <img class="button" id="button_tech_browser" title="Technology Browser" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_host" title="Help" src="/help.png" onclick="show_screen('help')"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_help_menu_play" onmouseleave="show_menu(null)">
     <img class="button" id="button_race_viewer" title="Race Viewer" src="/race.png" onclick="show_screen('race_editor')"/>
-    <img class="button" id="button_tech_browser" title="Technology" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
-    <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/>
+    <img class="button" id="button_tech_browser_play" title="Technology Browser" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help')"/>
 </div>
 
 
@@ -119,26 +125,32 @@ void main() {
 
 <div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
+        <td><img title="Launch" src="/launch.gif"/></td>
         <td class="hfill" style="font-size: 200%">Launch</td>
+        <td><i class="button far fa-times-circle" title="Close Launch" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <select id="launch_game" class="hfill" size="15" onchange="post('launch', '?go')" style="background: transparent; color: white; font-size: 100%"></select>
+    <table id="launch_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em"></table>
     <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
 </div>
 
 
 <div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host', '?reset')" onsubmit="host_auto()">
     <table class="topbar hfill"><tr>
-        <td class="hfill" style="font-size: 200%">Host</td>
-        <td>Auto Generate: <input id="host_autogen" type="checkbox"/></td>
+        <td><img title="Host / Generate" src="/generate.png"/></td>
+        <td class="hfill" style="font-size: 200%">Host / Generate</td>
+        <td><i class="button far fa-times-circle" title="Close Host" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <select id="host_game" class="hfill" size="15" onchange="post('host')" style="background: transparent; color: white; font-size: 100%"></select>
+    <table id="host_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Select Game</caption>
+    </table>
     <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
     <input id="host_ready" type="checkbox" disabled="true" style="display: none"/>
-    <table class="hfill"><tr>
-        <td>Game: <input id="host_name" disabled="true"/></td>
-        <td rowspan="2" class="hfill" style="text-align: right"><img class="button" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
+    <table class="hfill" style="background: black"><tr>
+        <td rowspan="2" class="hfill" id="host_name" style="font-size: 200%"></td>
+        <td id="host_turn" style="text-align: right"></td>
+        <td rowspan="2" style="text-align: right"><img class="button" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
     </tr><tr>
-        <td>Turn #: <input id="host_turn" disabled="true"/></td>
+        <td style="text-align: right">Auto Generate <input id="host_autogen" type="checkbox"/></td>
     </tr></table>
     <table class="hfill" id="host_status">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Player Status</caption>
@@ -148,8 +160,10 @@ void main() {
 
 <div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
+        <td><img title="New Game" src="/new_game.png"/></td>
         <td class="hfill" style="font-size: 200%">New Game</td>
         <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create'); show_screen('launch')"></i></td>
+        <td><i class="button far fa-times-circle" title="Close New Game" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>
@@ -243,8 +257,10 @@ void main() {
 
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
+        <td><img title="Race Editor / Viewer" src="/race.png"/></td>
         <td class="hfill" style="font-size: 200%" id="race_editor_screen_title"></td>
         <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
         <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
             <td>Load Existing</td>
@@ -408,11 +424,20 @@ void main() {
     </table>
 </div>
 
-</td></tr></table>
+
+<div class="screen hide onload onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onload="post('tech_browser')" onsubmit="tech_post()">
+    <table class="topbar hfill"><tr>
+        <td><img title="Technology Browser" src="/tech_browser.png"/></td>
+        <td class="hfill" style="font-size: 200%">Technology Browser</td> 
+        <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table id="tech_browser"></table>
+</div>
 
 
-<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
-    <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
+<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%; overflow: hidden">
+    <iframe src="/help.html" style="border: 0; width: 100%; height: 100%"></iframe>
 </div></div>
 
 
