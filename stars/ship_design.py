@@ -81,7 +81,7 @@ class ShipDesign(Tech):
         d = ShipDesign()
         d.set_hull(self.hull)
         for c in self.components:
-            d.compoents[t] = self.components[t]
+            d.components[c] = self.components[c]
         d.compute_stats()
         return d
 

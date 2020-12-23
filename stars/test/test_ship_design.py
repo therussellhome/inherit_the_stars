@@ -2,12 +2,17 @@ import unittest
 from .. import *
 
 class ShipDesignTestCase(unittest.TestCase):
+    def test_hull(self):
+        s = ship_design.ShipDesign()
+        s.set_hull(tech.Tech(name='hull', armor=321))
+        self.assertEqual(s.armor, 321)
+
     def test_armor_strength(self):
         s = ship_design.ShipDesign()
         self.assertEqual(s.armor, 0)
         s.add_component(tech.Tech(name='a123', armor=123))
-        s.add_component(tech.Tech(name='a321', armor=321))
-        self.assertEqual(s.armor, 444)
+        s.add_component(tech.Tech(name='a123', armor=123))
+        self.assertEqual(s.armor, 246)
 
     def test_shield_strength(self):
         s = ship_design.ShipDesign()
@@ -36,3 +41,57 @@ class ShipDesignTestCase(unittest.TestCase):
         s.add_component(tech.Tech(name='f123', fuel_max=123))
         s.add_component(tech.Tech(name='f321', fuel_max=321))
         self.assertEqual(s.fuel_max, 444)
+
+    def test_remove1(self):
+        s = ship_design.ShipDesign()
+        s.add_component(tech.Tech(name='a123', armor=123))
+        s.add_component(tech.Tech(name='a321', armor=321))
+        self.assertEqual(s.armor, 444)
+        s.remove_component(tech.Tech(name='a321', armor=321))
+        self.assertEqual(s.armor, 123)
+
+    def test_remove2(self):
+        s = ship_design.ShipDesign()
+        t = tech.Tech(name='a123', armor=123)
+        s.add_component(t)
+        s.add_component(t)
+        s.remove_component(t)
+        s.remove_component(t)
+        s.remove_component(t)
+        self.assertEqual(s.armor, 0)
+
+    def test_valid1(self):
+        s = ship_design.ShipDesign()
+        s.set_hull(tech.Tech(name='hull1', slots_general=1))
+        self.assertTrue(s.is_valid())
+
+    def test_valid2(self):
+        s = ship_design.ShipDesign()
+        s.set_hull(tech.Tech(name='hull1', slots_general=1))
+        s.add_component(tech.Tech(name='a123', armor=123))
+        s.add_component(tech.Tech(name='a123', armor=123))
+        self.assertFalse(s.is_valid())
+
+    def test_valid3(self):
+        s = ship_design.ShipDesign()
+        l = tech_level.TechLevel()
+        s.set_hull(tech.Tech(name='hull2', slots_general=1))
+        s.hull.level.energy = 10
+        self.assertFalse(s.is_valid(level=l))
+
+    def test_valid4(self):
+        s = ship_design.ShipDesign()
+        t = tech.Tech(name='level9')
+        l = tech_level.TechLevel()
+        t.level.biotechnology = 9
+        s.set_hull(tech.Tech(name='hull1', slots_general=1))
+        s.add_component(t)
+        self.assertFalse(s.is_valid(level=l))
+
+    def test_clone(self):
+        s1 = ship_design.ShipDesign()
+        s1.add_component(tech.Tech(name='a123', armor=123))
+        s1.add_component(tech.Tech(name='a321', armor=321))
+        s2 = s1.clone_design()
+        self.assertEqual(s2.armor, 444)
+        self.assertNotEqual(s1.name, s2.name)
