@@ -13,7 +13,8 @@ __defaults = {
 class PlayerUI(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.player = game_engine.get('Player/' + self.player_token)
 
+    def player(self):
+        return game_engine.get('Player/' + self.player_token)
 
 PlayerUI.set_defaults(PlayerUI, __defaults, sparse_json=False)
