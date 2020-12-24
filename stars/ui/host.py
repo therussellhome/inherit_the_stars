@@ -38,9 +38,7 @@ class Host(UI):
             self.host_name = game.name
             game.update_players()
             if action == 'generate':
-                for i in range(0, 100):
-                    game.generate_hundreth()
-                game.save()
+                game.new_turn()
             self.host_turn = 'Turn ' + str(int(game.hundreth / 100))
             if len(game.players) > 0:
                 self.host_ready = 'Ready'

@@ -100,7 +100,7 @@ void main() {
 <div class="submenu hide" id="submenu_game" onmouseleave="show_menu(null)">
     <img class="button" id="button_score" title="Score" src="score.png" onclick="show_screen('score')"/>
     <img class="button" id="button_settings" title="Settings" src="settings.png" onclick="show_screen('settings')"/>
-    <img class="button" id="button_generate" title="Generate" src="generate.gif" onclick="play_generate()"/>
+    <img class="button" id="button_generate" title="Generate" src="generate.gif" onclick="show_screen('play_complete')"/>
 </div>
 
 
@@ -134,7 +134,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host'); post('play_complete')" onsubmit="host_auto()">
+<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host')" onsubmit="host_auto()">
     <table class="topbar hfill"><tr>
         <td><img title="Host / Generate" src="generate.png"/></td>
         <td class="hfill" style="font-size: 200%">Host / Generate</td>
@@ -683,14 +683,6 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
-    <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Score</td>
-    </tr></table>
-    <table class="hfill">
-        <tr>
-            <td></td>
-
 <div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
 </div>
 
@@ -756,6 +748,16 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+</div>
+
+
+<div class="screen overlay_message hide onload onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onload="post('play_complete')" onsubmit="play_complete_auto()">
+    <table class="topbar hfill"><tr>
+        <td><img title="Play Complete" src="generate.png"/></td>
+        <td class="hfill" style="font-size: 200%">Waiting for new turn</td> 
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <input id="player_ready" disabled="true" style="display: none"/>
 </div>
 
 

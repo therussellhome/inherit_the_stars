@@ -73,14 +73,18 @@ class Player(Defaults):
         game_engine.register(self)
         self.__cache__ = {}
 
+    """ Player filename """
+    def filename(self):
+        return self.game_name + ' - ' + self.name
+
     """ Save player to file """
     def save(self):
-        game_engine.save('Player', self.game_name + ' - ' + self.name, self)
+        game_engine.save('Player', self.filename(), self)
 
     """ Update self from file """
     def update_from_file(self):
         global _player_fields
-        p = game_engine.load_inspect('Player', self.game_name + ' - ' + self.name)
+        p = game_engine.load_inspect('Player', self.filename())
         if self.player_key == p.player_key:
             for field in _player_fields:
                 self[field] = p[field]
