@@ -17,5 +17,7 @@
     },
     "mass": 60,
     "mines_laid": 150000000000,
+    "slots_depot": -1,
+    "slots_general": 0,
     "__uuid__": "Tech"
 }

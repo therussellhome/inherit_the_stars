@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
-<link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<link rel='icon' href='favicon.ico' type='image/x-icon'/>
 <!-- icons -->
 <link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
@@ -43,71 +43,77 @@ void main() {
 <div class="hide" id="loading">loading...</div>
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
-    <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
-    <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
-    <tr><td><img class="button" id="button_host" title="Generate" src="/generate.gif" onclick="show_screen('host')"/></td></tr>
-    <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
-    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
-    <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
+    <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
+    <tr><td><img class="button" id="button_launch" title="Launch" src="launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_host" title="Host / Generate" src="generate.png" onclick="show_screen('host')"/></td></tr>
+    <tr><td><img class="button" id="button_new_game" title="New Game" src="new_game.png" onclick="show_screen('new_game')"/></td></tr>
+    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="race.png" onclick="show_screen('race_editor')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu" title="Help" src="help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
 </table></div>
 
 
 <div class="submenu hide" id="submenu_home" onmouseleave="show_menu(null)">
-    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
-    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+    <img class="button" id="button_splashscreen" title="Home" src="S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="shutdown.png" onclick="shutdown()"/>
 </div>
     
 
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
-    <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
-    <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
-    <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
-    <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
-    <tr><td><img class="button" id="button_game" title="Game" src="/launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
-    <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
+    <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
+    <tr><td><img class="button" id="button_reports" title="Reports" src="reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
+    <tr><td><img class="button" id="button_ministers" title="Ministers" src="ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
+    <tr><td><img class="button" id="button_admirality" title="Admirality" src="admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
+    <tr><td><img class="button" id="button_game" title="Game" src="launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu_play" title="Help" src="help.png" onclick="show_menu('help_menu_play')" onmouseover="show_menu('help_menu_play')"/></td></tr>
 </table></div>
 
 
 <div class="submenu hide" id="submenu_home2" onmouseleave="show_menu(null)">
-    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
-    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+    <img class="button" id="button_splashscreen" title="Home" src="S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="shutdown.png" onclick="shutdown()"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
-    <img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/>
-    <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
-    <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
-    <img class="button" id="button_interstellar" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
-    <img class="button" id="button_battles" title="Battles" src="/battles.png" onclick="show_screen('battles')"/>
+    <img class="button" id="button_messages" title="Messages" src="messages.png" onclick="show_screen('messages')"/>
+    <img class="button" id="button_planets" title="Planets" src="planets.png" onclick="show_screen('planets')"/>
+    <img class="button" id="button_fleets" title="Fleets" src="ships.png" onclick="show_screen('fleets')"/>
+    <img class="button" id="button_interstellar" title="Interstellar Objects" src="interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
+    <img class="button" id="button_battles" title="Battles" src="battles.png" onclick="show_screen('battles')"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
-    <img class="button" id="button_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
-    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="/planetary_minister.png" onclick="show_screen('planetary_minister')"/>
-    <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
-    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
+    <img class="button" id="button_energy_minister" title="Energy Minister" src="energy_minister.png" onclick="show_screen('energy_minister')"/>
+    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="planetary_minister.png" onclick="show_screen('planetary_minister')"/>
+    <img class="button" id="button_research_minister" title="Research Minister" src="research_minister.png" onclick="show_screen('research_minister')"/>
+    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="foreign_minister.png" onclick="show_screen('foreign_minister')"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_admirality" onmouseleave="show_menu(null)">
-    <img class="button" id="button_shipyard" title="Shipyard" src="/shipyard.png" onclick="show_screen('shipyard')"/>
-    <img class="button" id="button_plans" title="Operational Plans" src="/plans.png" onclick="show_screen('plans')"/>
+    <img class="button" id="button_shipyard" title="Shipyard" src="shipyard.png" onclick="show_screen('shipyard')"/>
+    <img class="button" id="button_plans" title="Operational Plans" src="plans.png" onclick="show_screen('plans')"/>
 </div>
 
 
 <div class="submenu hide" id="submenu_game" onmouseleave="show_menu(null)">
-    <img class="button" id="button_score" title="Score" src="/score.png" onclick="show_screen('score')"/>
-    <img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/>
-    <img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="play_generate()"/>
+    <img class="button" id="button_score" title="Score" src="score.png" onclick="show_screen('score')"/>
+    <img class="button" id="button_settings" title="Settings" src="settings.png" onclick="show_screen('settings')"/>
+    <img class="button" id="button_generate" title="Generate" src="generate.gif" onclick="show_screen('play_complete')"/>
 </div>
 
 
 <div class="submenu hide" id="submenu_help_menu" onmouseleave="show_menu(null)">
-    <img class="button" id="button_race_viewer" title="Race" src="/race.png" onclick="show_screen('race_viewer')"/>
-    <img class="button" id="button_tech_browser" title="Technology" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
-    <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/>
+    <img class="button" id="button_tech_browser" title="Technology Browser" src="tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_host" title="Help" src="help.png" onclick="show_screen('help')"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_help_menu_play" onmouseleave="show_menu(null)">
+    <img class="button" id="button_race_viewer" title="Race Viewer" src="race.png" onclick="show_screen('race_editor')"/>
+    <img class="button" id="button_tech_browser_play" title="Technology Browser" src="tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_play" title="Help" src="help.png" onclick="show_screen('help')"/>
 </div>
 
 
@@ -117,28 +123,35 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
+<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch')">
     <table class="topbar hfill"><tr>
+        <td><img title="Launch" src="launch.gif"/></td>
         <td class="hfill" style="font-size: 200%">Launch</td>
+        <td><i class="button far fa-times-circle" title="Close Launch" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <select id="launch_game" class="hfill" size="15" onchange="post('launch', '?go')" style="background: transparent; color: white; font-size: 100%"></select>
+    <table id="launch_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em"></table>
     <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
 </div>
 
 
-<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host', '?reset')" onsubmit="host_auto()">
+<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host')" onsubmit="host_auto()">
     <table class="topbar hfill"><tr>
-        <td class="hfill" style="font-size: 200%">Host</td>
-        <td>Auto Generate: <input id="host_autogen" type="checkbox"/></td>
+        <td><img title="Host / Generate" src="generate.png"/></td>
+        <td class="hfill" style="font-size: 200%">Host / Generate</td>
+        <td><i class="button far fa-times-circle" title="Close Host" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <select id="host_game" class="hfill" size="15" onchange="post('host')" style="background: transparent; color: white; font-size: 100%"></select>
+    <table id="host_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Select Game</caption>
+    </table>
     <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
-    <input id="host_ready" type="checkbox" disabled="true" style="display: none"/>
-    <table class="hfill"><tr>
-        <td>Game: <input id="host_name" disabled="true"/></td>
-        <td rowspan="2" class="hfill" style="text-align: right"><img class="button" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
+    <table class="hfill" style="background: black"><tr>
+        <td rowspan="3" class="hfill" id="host_name" style="font-size: 200%"></td>
+        <td id="host_turn" style="text-align: right"></td>
+        <td rowspan="3" style="text-align: right"><img class="button" title="Generate Now" src="generate.gif" onclick="host_generate()"/></td>
     </tr><tr>
-        <td>Turn #: <input id="host_turn" disabled="true"/></td>
+        <td style="text-align: right">Auto Generate <input id="host_autogen" type="checkbox"/></td>
+    </tr><tr>
+        <td style="text-align: right" id="host_ready"></td>
     </tr></table>
     <table class="hfill" id="host_status">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Player Status</caption>
@@ -146,10 +159,12 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
+<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game')">
     <table class="topbar hfill"><tr>
+        <td><img title="New Game" src="new_game.png"/></td>
         <td class="hfill" style="font-size: 200%">New Game</td>
         <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create'); show_screen('launch')"></i></td>
+        <td><i class="button far fa-times-circle" title="Close New Game" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>
@@ -241,12 +256,14 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
+<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor')">
     <table class="topbar hfill"><tr>
-        <td class="hfill" style="font-size: 200%">Race Editor</td>
-        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
+        <td><img title="Race Editor / Viewer" src="race.png"/></td>
+        <td class="hfill" style="font-size: 200%" id="race_editor_screen_title"></td>
+        <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
-        <tr>
+        <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
@@ -408,11 +425,20 @@ void main() {
     </table>
 </div>
 
-</td></tr></table>
+
+<div class="screen hide onload onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onload="post('tech_browser')" onsubmit="tech_post()">
+    <table class="topbar hfill"><tr>
+        <td><img title="Technology Browser" src="tech_browser.png"/></td>
+        <td class="hfill" style="font-size: 200%">Technology Browser</td> 
+        <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table id="tech_browser"></table>
+</div>
 
 
-<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
-    <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
+<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%; overflow: hidden">
+    <iframe src="help.html" style="border: 0; width: 100%; height: 100%"></iframe>
 </div></div>
 
 
@@ -452,7 +478,7 @@ void main() {
         </tr>
     </table><table class="hfill">
         <tr>
-            <td rowspan="2"><img class="button" src="/ministers.png"/></td>
+            <td rowspan="2"><img class="button" src="ministers.png"/></td>
             <td colspan="2" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
         </tr><tr>
             <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 75%"/></td>
@@ -490,26 +516,27 @@ void main() {
 
 <div class="screen hide onload onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onload="post('research_minister')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
-        <td><img title="Research Minister" src="/research_minister.png"/></td>
+        <td><img title="Research Minister" src="research_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Research Minister</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill" id="research_level" style="font-size: 150%; text-aign: justify; text-align-last: justify; text-justify: inter-character">
     </table>
-    <table class="hfill" id="research_queue">
+    <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-<!--
-		<tr><td>Default Research Field</td><td class="hfill"><select id="research_default_field" onchange="post('research_minister')" /></td></tr>
--->
+        <tr><td colspan="2"><table id="research_queue"></table></td></tr>
+		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"/></td></tr>
     </table>
-    <table class="hfill" id="research_tech">
+    <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="research_tech_group" onchange="post('research_minister')"></select></td></tr>
+        <tr><td colspan="2"><table id="research_tech"></table></td></tr>
     </table>
 </div>
 
 <div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
     <table class="topbar hfill"><tr>
-        <td><img title="Foreign Minister" src="/foreign_minister.png"/></td>
+        <td><img title="Foreign Minister" src="foreign_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Foreign Minister</td>
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
@@ -600,39 +627,63 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post()">
+<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post(); ship_display()">
     <table class="topbar hfill"><tr>
-        <td><img title="Shipyard" src="/shipyard.png"/></td>
+        <td><img title="Shipyard" src="shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
-        <td>Existing Designs</td><td><select id="shipyard_existing_designs" class="hfill" onchange="post('shipyard')"></select></td>
-        <td>+</td>
-        <td>copy</td>
-        <td>trash</td>
+        <td>Existing Designs</td><td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
+        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
+        <td><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
+        <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
     </tr></table>
-    <table class="hfill" id="shipyard_ship">
+    <table class="hfill" id="shipyard_ship_overview">
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Combat Effectivity</caption>
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
+            <td><canvas id="shipyard_combat_chart" style="width: 550px"></canvas></td>
+        </tr><tr>
+            <td style="font-size: 85%; text-align: center">Range (terameters)</td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanning</caption>
+        <tr>
+            <td style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
+            <td><canvas id="shipyard_sensor_chart" style="width: 550px"></canvas></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engine</caption>
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
+            <td><canvas id="shipyard_engine_chart" style="width: 550px"></canvas></td>
+        </tr><tr>
+            <td style="font-size: 85%; text-align: center">Hyper</td>
+        </tr>
+    </table>
+    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
+    <table class="hfill tech_guts hide" id="shipyard_ship_guts" style="font-size: 85%">
     </table>
     <table class="hfill"> 
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
         <tr><td>Design Name</td><td><input class="hfill" id="shipyard_name" onchange="post('shipyard')"/></td></tr>
         <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
+            <td>General Slots</td><td id="shipyard_slots_general"></td>
+            <td>Depot Slots</td><td id="shipyard_slots_depot"></td>
+            <td>Orbital Slots</td><td id="shipyard_slots_orbital"></td>
+        </tr></table></td></tr>
         <tr><td colspan="2"><table id="shipyard_design"></table></td></tr>
     </table>
-    <table class="hfill" id="shipyard_tech">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2"><table id="shipyard_tech"></table></td></tr>
     </table>
 </div>
 
-
-<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
-    <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Score</td>
-    </tr></table>
-    <table class="hfill">
-        <tr>
-            <td></td>
 
 <div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
 </div>
@@ -699,6 +750,16 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+</div>
+
+
+<div class="screen overlay_message hide onload onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onload="post('play_complete')" onsubmit="play_complete_auto()">
+    <table class="topbar hfill"><tr>
+        <td><img title="Play Complete" src="generate.png"/></td>
+        <td class="hfill" style="font-size: 200%">Waiting for new turn</td> 
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <input id="player_ready" disabled="true" style="display: none"/>
 </div>
 
 

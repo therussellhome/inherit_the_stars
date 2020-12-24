@@ -54,6 +54,13 @@ class TechLevel(Defaults):
             cost += max(0, level.cost_for_next_level(field, race, increase) - partial[field])
         return cost
 
+    """ Sum of levels """
+    def total_levels(self):
+        levels = 0
+        for field in TECH_FIELDS:
+            levels += self[field]
+        return levels
+
     """ Format the tech level for HTML """
     def to_html(self, show_zero=False):
         html = ''

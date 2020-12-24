@@ -81,7 +81,7 @@
     "facility_output": 0.0,
     "mineral_depletion_rate": 0,
     "mat_trans_energy": 0,
-    "slots_general": 0,
+    "slots_general": -1,
     "slots_depot": 0,
     "slots_orbital": 0,
     "__uuid__": "Tech"

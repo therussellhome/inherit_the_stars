@@ -9,6 +9,9 @@ __game_dir = Path(__file__).parent.parent / 'data'
 __user_dir = Path.home() / 'Inherit!'
 
 
+""" Autosave object """
+__auto_save = None
+
 
 """ Registry of all registered classes and objects """
 __registry = []
@@ -28,11 +31,15 @@ def register(obj):
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj=None):
+    global __auto_save
     global __registry
     if obj:
         __registry.remove(obj)
+        if __auto_save == obj:
+            __auto_save = None
     else:
         __registry = []
+        __auto_save = None
 
 
 """ Base class for use in creating classes by name """
@@ -79,6 +86,19 @@ def get(reference, create_new=False):
         obj = __new(ref[0], None, name=ref[1])
         return obj
     return None
+
+
+""" Auto save """
+def auto_save():
+    global __auto_save
+    if __auto_save:
+        __auto_save.save()
+
+
+""" Set auto save object """
+def set_auto_save(obj):
+    global __auto_save
+    __auto_save = obj
 
 
 """ Decode a string into an object """
