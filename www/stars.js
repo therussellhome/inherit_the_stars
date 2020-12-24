@@ -41,14 +41,6 @@ function toggle(start, css_class, force = null) {
     }
 }
 
-function save_race() {
-    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
-        alert('cannot save, negitive avantage points');
-    } else {
-        post('race_editor', '?save');
-    }
-}
-
 // Show a given screen, hide all others, highlight the clicked button
 function show_screen(show) {
     // Handle button toggle
@@ -60,9 +52,9 @@ function show_screen(show) {
         }
     }
     current_screen = show;
-    // Reset associated data
+    // Get updated data
     if(json_map.hasOwnProperty(show)) {
-        post(show, '?reset');
+        post(show);
     }
     // Hide all screens
     for(screen of document.getElementsByClassName('screen')) {
@@ -268,29 +260,66 @@ function parse_json(url, json) {
 
 // Refresh host screen / auto generate
 function host_auto() {
-    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').checked) {
+    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
         document.getElementById('host_blocking').checked = true;
         post('host', '?generate');
-    } else {
-        window.setTimeout(post, 10000);
+    } else if(document.getElementById('host_name').innerHTML != '') {
+        window.setTimeout(host_post, 10000);
+    }
+}
+
+// Refresh
+function host_post() {
+    if(current_screen == 'host' && document.body.style.cursor != 'progress') {
+        post('host');
     }
 }
 
 // Confirm if everyone is submitted before generating
 function host_generate() {
     if(!document.getElementById('host_blocking').checked) {
-        var ready = document.getElementById('host_ready').checked;
-        if(ready || confirm('Not all players are turned in.  Generate anyway?')) {
+        var ready = document.getElementById('host_ready').innerHTML;
+        if(ready == 'Ready' || confirm('Not all players are turned in.  Generate anyway?')) {
             document.getElementById('host_blocking').checked = true;
             post('host', '?generate');
         }
     }
 }
 
+// Refresh the player complete screen
+function play_complete_auto() {
+    if(document.getElementById('player_ready').value) {
+        document.getElementById('player_ready').value = false;
+        show_screen(null);
+        //TODO refresh render stars
+    } else {
+        window.setTimeout(play_complete_post, 10000);
+    }
+}
 
-// Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
-function play_generate() {
-    alert('TODO');
+// Refresh
+function play_complete_post() {
+    if(current_screen == 'play_complete' && document.body.style.cursor != 'progress') {
+        post('play_complete', '?refresh');
+    }
+}
+
+// Save the race?
+function save_race() {
+    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
+        alert('Cannot save, race has negative advantage points');
+    } else {
+        post('race_editor', '?save');
+    }
+}
+
+// Hide the load race if the race editor is in viewer mode
+function race_viewer(element) {
+    if(game_mode == 'play') {
+        toggle(element, 'hide', true);
+    } else {
+        toggle(element, 'hide', false);
+    }
 }
 
 // Confirm shutdown before executing

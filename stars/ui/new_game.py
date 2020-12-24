@@ -11,6 +11,7 @@ from ..race import Race
 from ..reference import Reference
 from ..star_system import StarSystem
 from ..tech import Tech
+from .ui import UI
 
 
 """ Default values (default, min, max)  """
@@ -42,7 +43,7 @@ __defaults = {
 
 
 """ Represent Open Game action """
-class NewGame(Defaults):
+class NewGame(UI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         # Always refresh the list of races
@@ -55,10 +56,10 @@ class NewGame(Defaults):
             if getattr(self, key, '') != '':
                 r = game_engine.load('Race', self[key])
                 if not isinstance(r, Race):
-                    self.user_alert = getattr(self, 'user_alert', []).append('File does not contain a race: ' + self[key])
+                    self.user_alerts.append('File does not contain a race: ' + self[key])
                     #TODO these need to pop-up on the gui
                 elif r.calc_points() < 0:
-                    self.user_alert = getattr(self, 'user_alert', []).append('Race has negative advantage points: ' + self[key])
+                    self.user_alerts.append('Race has negative advantage points: ' + self[key])
                 else:
                     player_races.append(r)
                     self.new_game_players.append(self._races(key, races))

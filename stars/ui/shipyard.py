@@ -96,8 +96,13 @@ class Shipyard(PlayerUI):
         if design.is_valid(self.player().tech_level, self.player().race):
             if design not in self.player().ship_designs:
                 self.player().ship_designs.append(design)
-        elif design in self.player().ship_designs:
-            self.player().ship_designs.remove(design)
+        else:
+            if design.is_valid():
+                self.user_alerts.append(design.name + ' exceedes the allowed component slots')
+            else:
+                self.user_alerts.append(design.name + ' contains unbuildable technology')
+            if design in self.player().ship_designs:
+                self.player().ship_designs.remove(design)
 
         # Display stats
         self.shipyard_ship_overview = design.html_overview()

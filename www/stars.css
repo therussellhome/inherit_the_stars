@@ -143,6 +143,7 @@ i.button:hover {
 }
 table {
     border: 0;
+    border-collapse: collapse;
 }
 table.topbar {
     border: 2px solid silver;
@@ -167,6 +168,11 @@ tr.slider_padding {
 }
 td {
     white-space: nowrap;
+}
+td.rows {
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver;
+    color: silver;
 }
 td.tech_title {
     text-align: center;
