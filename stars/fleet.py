@@ -35,7 +35,7 @@ class Fleet(Defaults):
                 self.location = copy.copy(ship.location)
                 self.ships.append(ship)
             else:
-                if (self.location - ship.location) <= (stars_math.TERAMETER_2_LIGHTYEAR * 2):
+                if (self.location - ship.location) <= (stars_math.TERAMETER_2_LIGHTYEAR * 2) and ship not in self.ships:
                     self.ships.append(ship)
     
     #""" checks if can upgrade and then stops moving if comanded to """
@@ -104,62 +104,47 @@ class Fleet(Defaults):
             if not ship.speed_is_damaging(speed, num_denials):
                 return False
         return True
-        
-    """ chooses the ship to return the fuel to """
-    def return_cargo(self):
-        check = [[(ship.cargo.titanium + ship.cargo.lithium + ship.cargo.silicon + ship.cargo.people) / ship.cargo.cargo_max, ship] for ship in self.ships]
-        least = 1
-        lest = 0
-        for i in range(len(check)):
-            if check[i][0] <= least:
-                least = check[i][0]
-                lest = i
-        return check[lest][1]
     
     """ evenly distributes the fuel between the ships """
-    def return_fuel(self):
-        check = []
+    def distribute_fuel(self, fuel, fleet_fuel_max):
+        if fleet_fuel_max == 0:
+            return
+        fuel_left = fuel
         for ship in self.ships:
-            check.append([ship.fuel / ship.fuel_max, ship])
-        least = 1
-        lest = 0
-        for i in range(len(check)):
-            if check[i][0] <= least:
-                least = check[i][0]
-                lest = i
-        return check[lest][1]
+            ship.fuel = int(fuel * ship.fuel_max / fleet_fuel_max)
+            fuel_left -= ship.fuel
+        for i in range(fuel_left):
+            self.ships[i].fuel += 1
     
     """ evenly distributes the cargo back to the ships """
-    def returnn(self):
-        while self.fuel > 0:
-            ship = self.return_fuel()
-            ship.fuel += 1
-            self.fuel -= 1
-        while (self.cargo.titanium + self.cargo.lithium + self.cargo.silicon + self.cargo.people) > 0:
-            ship = self.return_cargo()
-            if self.cargo.titanium > 0:
-                ship.cargo.titanium += 1
-                self.cargo.titanium -= 1
-            elif self.cargo.lithium > 0:
-                ship.cargo.lithium += 1
-                self.cargo.lithium -= 1
-            elif self.cargo.silicon > 0:
-                ship.cargo.silicon += 1
-                self.cargo.silicon -= 1
-            elif self.cargo.people > 0:
-                ship.cargo.people += 1
-                self.cargo.people -= 1
-    
-    """ gathers all of the minerals and fuel from the ships to the fleet """
-    def compile(self):
-        self.fuel_max = 0
+    def distribute_cargo(self, cargo, cargo_type, fleet_cargo_max):
+        if fleet_cargo_max == 0:
+            return
+        cargo_left = cargo
         for ship in self.ships:
-            self.cargo += ship.cargo
-            cargo_max = copy.copy(ship.cargo.cargo_max)
-            ship.cargo = Cargo(cargo_max=cargo_max)
-            self.fuel_max += ship.fuel_max
-            self.fuel += ship.fuel
-            ship.fuel = 0
+            ship.cargo[cargo_type] = int(cargo[cargo_type] * ship.cargo.cargo_max / fleet_cargo_max)
+            cargo_left[cargo_type] -= ship.cargo[cargo_type]
+        for i in range(int(cargo_left[cargo_type])):
+            ship = min(self.ships, key=lambda x:x.cargo.percent_full())
+            ship.cargo[cargo_type] += 1
+    
+    """ gathers all of the cargo from the ships to the fleet """
+    def get_cargo(self):
+        fleet_cargo_max = 0
+        fleet_cargo = Cargo()
+        for ship in self.ships:
+            fleet_cargo += ship.cargo
+            fleet_cargo_max = copy.copy(ship.cargo.cargo_max)
+        return fleet_cargo, fleet_cargo_max
+
+    """ gathers all of the fuel from the ships to the fleet """
+    def get_fuel(self):
+        fleet_fuel_max = 0
+        fleet_fuel = 0
+        for ship in self.ships:
+            fleet_fuel_max += ship.fuel_max
+            fleet_fuel += ship.fuel
+        return fleet_fuel, fleet_fuel_max
     
     """ makes a hyper_denial """
     def deploy_hyper_denial(self, player):
@@ -196,27 +181,38 @@ class Fleet(Defaults):
     def unload(self, recipiant, player):
         if not self.check_self(recipiant, player) and not recipiant.is_colonized():
             return
-        self.compile()
+        self_cargo, self_cargo_max = self.get_cargo()
+        self_fuel, self_fuel_max = self.get_fuel()
         if recipiant in player.fleets:
-            recipiant.compile()
-            load_fuel_to = recipiant
-            load_cargo_to = recipiant.cargo
+            load_cargo, load_cargo_max = recipiant.get_cargo()
+            load_fuel, load_fuel_max = recipiant.get_fuel()
         else:
-            load_fuel_to = recipiant.space_station
-            load_cargo_to = recipiant.on_surface
+            load_fuel = recipiant.space_station.fuel
+            load_fuel_max = recipiant.space_station.fuel_max
+            load_cargo = recipiant.on_surface
+            load_cargo_max = recipiant.on_surface.cargo_max
         for transfer in self.waypoints[0].transfers['unload']:
             item = transfer[0]
             amount = transfer[1]
-            amount = self.handle_cargo(self, load_fuel_to, item, amount, load_cargo_to, self.cargo)
+            amount = self.handle_cargo(self_fuel, self_fuel_max, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo, self_cargo_max)
             if item == 'fuel':
-                setattr(load_fuel_to, item, getattr(load_fuel_to, item) + amount)
-                setattr(self, item, getattr(self, item) - amount)
+                load_fuel += amount
+                self_fuel -= amount
             else:
-                setattr(load_cargo_to, item, getattr(load_cargo_to, item) + amount)
-                setattr(self.cargo, item, getattr(self.cargo, item) - amount)    
-        self.returnn()
+                load_cargo[item] += amount
+                self_cargo[item] -= amount
+        for item in ["titanium", "silicon", "lithium", "people"]:
+            self.distribute_cargo(self_cargo, item, self_cargo_max)
+        self.distribute_fuel(self_fuel, self_fuel_max)
+        print('loaded sucsesfully?')
         if recipiant in player.fleets:
-            recipiant.returnn()
+            for item in ["titanium", "silicon", "lithium", "people"]:
+                recipiant.distribute_cargo(load_cargo, item, load_cargo_max)
+            recipiant.distribute_fuel(load_fuel, load_fuel_max)
+        else:
+            for item in ["titanium", "silicon", "lithium", "people"]:
+                recipiant.on_surface[item] = load_cargo[item]
+            recipiant.space_station.fuel = load_fuel
     
     """ executes the sell function """
     def sell(self, recipiant, player):
@@ -247,29 +243,28 @@ class Fleet(Defaults):
                 recipiant.player.energy += recipiant.player.energy_minister.spend_budget("trade", -getattr(traety, "cost_"+item) * true_amount)
         self.returnn()
     
-    def handle_cargo(self, unload_fuel_from, load_fuel_to, item, amount, load_cargo_to, unload_cargo_from):
-        #print(amount, item, 'with problem', end=' ')
-        sum_cargo = (load_cargo_to.titanium + load_cargo_to.silicon + load_cargo_to.lithium + load_cargo_to.people)
+    def handle_cargo(self, unload_fuel, unload_fuel_max, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, unload_cargo, unload_cargo_max):
+        print(amount, item, 'with problem', end=' ')
         if item in ["fuel", "titanium", "silicon", "lithium", "people"]:
             if item == 'fuel':
-                if unload_fuel_from.fuel < amount and (load_fuel_to.fuel_max - load_fuel_to.fuel) >= unload_fuel_from.fuel:
-                    #print("'not enough "+item+"'", "{'fuel': "+str(unload_fuel_from.fuel)+", 'fuel_max': "+str(unload_fuel_from.fuel_max)+"}", end=' ')
-                    amount = unload_fuel_from.fuel
-                elif (load_fuel_to.fuel_max - load_fuel_to.fuel) < amount and unload_fuel_from.fuel >= (load_fuel_to.fuel_max - load_fuel_to.fuel):
-                    #print("'not enough capacity'", "{'fuel': "+str(unload_fuel_from.fuel)+", 'fuel_max': "+str(unload_fuel_from.fuel_max)+"}", end=' ')
-                    amount = (load_fuel_to.fuel_max - load_fuel_no.fuel)
-                #else:
-                #    print('none', end=' ')
+                if unload_fuel < amount and (load_fuel_max - load_fuel) >= unload_fuel:
+                    print("'not enough "+item+"'", "{'fuel': "+str(unload_fuel)+", 'fuel_max': "+str(unload_fuel_max)+"}", end=' ')
+                    amount = unload_fuel
+                elif (load_fuel_max - load_fuel) < amount and unload_fuel >= (load_fue_max - load_fuel):
+                    print("'not enough capacity'", "{'fuel': "+str(unload_fuel)+", 'fuel_max': "+str(unload_fuel_max)+"}", end=' ')
+                    amount = (load_fuel_max - load_fuel)
+                else:
+                    print('none ', end='')
             else:
-                if getattr(unload_cargo_from, item) < amount and (load_cargo_to.cargo_max - sum_cargo) >= getattr(unload_cargo_from, item):
-                    #print("'not enough "+item+"'", unload_cargo_from.__dict__, end=' ')
-                    amount = getattr(unload_cargo_from, item)
-                elif (load_cargo_to.cargo_max - sum_cargo) < amount and getattr(unload_cargo_from, item) >= (load_cargo_to.cargo_max - sum_cargo):
-                    #print("'not enough capacity'", unload_cargo_from.__dict__, end=' ')
-                    amount = (load_cargo_to.cargo_max - sum_cargo)
-                #else:
-                #    print('none', end=' ')
-        #print('becomes', amount)
+                if unload_cargo[item] < amount and (load_cargo_max - load_cargo._sum()) >= unload_cargo[item]:
+                    print("'not enough "+item+"'", unload_cargo.__dict__, end=' ')
+                    amount = unload_cargo[item]
+                elif (load_cargo_max - load_cargo._sum()) < amount and unload_cargo[item] >= (load_cargo_max - load_cargo._sum()):
+                    print("'not enough capacity'", unload_cargo.__dict__, end=' ')
+                    amount = (load_cargo_max - load_cargo._sum())
+                else:
+                    print('none ', end='')
+        print('becomes', amount)
         return amount
     
     """ executes the buy function """
@@ -326,16 +321,16 @@ class Fleet(Defaults):
     
     def check_self(self, recipiant, player):
         if recipiant in player.fleets:
-            #print('Fleet-Yours')
+            print('Fleet-Yours')
             return True
         if recipiant in game_engine.get('Planet'):
-            #print('\nPlanet-', end='')
+            print('Planet-', end='')
             if recipiant.player.name == player.name:
-                #print('Yours')
+                print('Yours')
                 return True
-            #print('Nither')
-            #print(recipiant.player.name)
-            #print(player.name)
+            print('Other')
+            print(recipiant.player.name)
+            print(player.name)
         return False
     
     def check_team(self, recipiant, player):
@@ -347,29 +342,40 @@ class Fleet(Defaults):
     
     """ executes the load function """
     def load(self, recipiant, player):
-        if not self.check_self(recipiant, player) and not recipiant.is_colonized():
+        if not self.check_self(recipiant, player):
             return
-        self.compile()
+        self_cargo, self_cargo_max = self.get_cargo()
+        self_fuel, self_fuel_max = self.get_fuel()
         if recipiant in player.fleets:
-            recipiant.compile()
-            unload_fuel_from = recipiant
-            unload_cargo_from = recipiant.cargo
+            unload_cargo, unload_cargo_max = recipiant.get_cargo()
+            unload_fuel, unload_fuel_max = recipiant.get_fuel()
         else:
-            unload_fuel_from = recipiant.space_station
-            unload_cargo_from = recipiant.on_surface
+            unload_fuel = recipiant.space_station.fuel
+            unload_fuel_max = recipiant.space_station.fuel_max
+            unload_cargo = recipiant.on_surface
+            unload_cargo_max = recipiant.on_surface.cargo_max
         for transfer in self.waypoints[0].transfers['load']:
             item = transfer[0]
             amount = transfer[1]
-            amount = self.handle_cargo(unload_fuel_from, self, item, amount, self.cargo, unload_cargo_from)
+            amount = self.handle_cargo(unload_fuel, unload_fuel_max, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo, unload_cargo_max)
             if item == 'fuel':
-                setattr(unload_fuel_from, item, getattr(unload_fuel_from, item) - amount)
-                setattr(self, item, getattr(self, item) + amount)
+                unload_fuel -= amount
+                self_fuel +=  amount
             else:
-                setattr(unload_cargo_from, item, getattr(unload_cargo_from, item) - amount)
-                setattr(self.cargo, item, getattr(self.cargo, item) + amount)    
-        self.returnn()
+                unload_cargo[item] -= amount
+                self_cargo[item] += amount
+        for item in ["titanium", "silicon", "lithium", "people"]:
+            self.distribute_cargo(self_cargo, item, self_cargo_max)
+        self.distribute_fuel(self_fuel, self_fuel_max)
+        print('unloaded sucsesfully?')
         if recipiant in player.fleets:
-            recipiant.returnn()
+            for item in ["titanium", "silicon", "lithium", "people"]:
+                recipiant.distribute_cargo(unload_cargo, item, unload_cargo_max)
+            recipiant.distribute_fuel(unload_fuel, unload_fuel_max)
+        else:
+            for item in ["titanium", "silicon", "lithium", "people"]:
+                recipiant.on_surface[item] = unload_cargo[item]
+            recipiant.space_station.fuel = unload_fuel
     
     def repair(self, player):
         repair_points = 0
@@ -421,7 +427,9 @@ class Fleet(Defaults):
     
     def bomb(self, player):
         planet = self.waypoints[0].recipiants['bomb']
-        if planet in game_engine.get('Planet') and planet.is_colonized() and planet.player != player and player.treaties[planet.player.name].relation == 'enemy':
+        #print("player.get_treaty(planet.player).__dict__ :\n", player.get_treaty(planet.player).__dict__)
+        print("player.get_treaty(planet.player).relation == 'enemy'", player.get_treaty(planet.player).relation == 'enemy')
+        if planet in game_engine.get('Planet') and planet.is_colonized() and planet.player != player and player.get_treaty(planet.player).relation == 'enemy':
             shields = planet.raise_shields()
             pop = planet.on_surface.people
             facility_kill = 0
@@ -433,10 +441,12 @@ class Fleet(Defaults):
                 pop_kill += p_kill
             planet.facilities['defenses'].quantity -= round(facility_kill)
             planet.on_surface.people -= round(pop_kill)
-            #print(planet.facilities['defenses'].quantity, planet.on_surface.people)
+            print(planet.on_surface.people)
     
     """ runs all of the actions """
     def execute(self, action, player):
+        print('action in self.waypoints[0].actions', action in self.waypoints[0].actions)
+        print('(self.waypoints[0].location - self.location) == 0', (self.waypoints[0].location - self.location) == 0)
         if action == 'move':
             self.move(player)
         elif action in self.waypoints[0].actions and (self.waypoints[0].location - self.location) == 0:

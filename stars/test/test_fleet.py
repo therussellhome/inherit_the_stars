@@ -2,33 +2,56 @@ import unittest
 from .. import *
 
 class FleetCase(unittest.TestCase):
-    def test_addships_compile_returnn(self):
-        return # TODO
-        ship_1 = ship.Ship(
-            location=location.Location(),
-            cargo=cargo.Cargo(titanium=100, cargo_max=200)
-            )
-        ship_2 = ship.Ship(
-            location=location.Location(),
-            cargo=cargo.Cargo(people=100, cargo_max=200)
-            )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+    def test_distribute_cargo(self):
+        ship_1 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
+        ship_2 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
+        ship_3 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
+        fleet_1 = fleet.Fleet(ships = [ship_1, ship_2, ship_3])
+        fleet_1.distribute_cargo(cargo.Cargo(titanium = 1), 'titanium', 600)
+        self.assertEqual(ship_1.cargo.titanium, 1)
+        fleet_1.distribute_cargo(cargo.Cargo(people = 13), 'people', 600)
+        self.assertEqual(ship_2.cargo.people, 5)
+        self.assertEqual(ship_3.cargo.people, 4)
+    
+    def test_distribute_fuel(self):
+        ship_1 = ship.Ship(fuel_max = 200)
+        ship_2 = ship.Ship(fuel_max = 200)
+        fleet_1 = fleet.Fleet(ships = [ship_1, ship_2])
+        fleet_1.distribute_fuel(1, 400)
+        self.assertEqual(ship_1.fuel, 1)
+        fleet_1.distribute_fuel(2, 400)
+        self.assertEqual(ship_2.fuel, 1)
+    
+    def test_addships_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         fleet_one = fleet.Fleet()
         fleet_one.add_ships([ship_1, ship_2])
-        fleet_one.compile()
-        fleet_one.returnn()
-        self.assertEqual(ship_1.cargo.titanium, 50)
-        self.assertEqual(ship_1.cargo.people, 50)
-        self.assertEqual(ship_2.cargo.titanium, 50)
-        self.assertEqual(ship_2.cargo.people, 50)
+        self.assertEqual(fleet_one.ships[0], ship_1)
+        self.assertEqual(fleet_one.ships[1], ship_2)
+    
+    def test_addships_2(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet()
+        fleet_one.add_ships([ship_2])
+        fleet_one.add_ships([ship_2])
+        self.assertEqual(fleet_one.ships[0], ship_2)
+        self.assertEqual(len(fleet_one.ships), 1)
+    
+    def test_addships_3(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet()
+        fleet_one.add_ships([ship_1])
+        fleet_one.add_ships([ship_2])
+        self.assertEqual(fleet_one.ships[0], ship_1)
+        self.assertEqual(fleet_one.ships[1], ship_2)
     
     def test_merge(self):
         return # TODO
-        ship_1 = ship.Ship(location = location.Location())
-        ship_2 = ship.Ship(location = location.Location())
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         fleet_one = fleet.Fleet(ships = [ship_1])
         fleet_two = fleet.Fleet(
             ships = [ship_2],
@@ -271,19 +294,7 @@ class FleetCase(unittest.TestCase):
         
     def test_trade(self):
         return # TODO
-        buy = defaults.Defaults(
-            cost_titanium = 6,
-            cost_lithium = 4,
-            cost_silicon = 3,
-            cost_fuel = 2
-            )
-        sell = defaults.Defaults(
-            cost_titanium = 9,
-            cost_lithium = 7,
-            cost_silicon = 7,
-            cost_fuel = 2
-            )
-        treaty1 = defaults.Defaults(
+        treaty1 = treaty.Treaty(
             sell = sell,
             buy = buy,
             relation = 'team',
@@ -291,23 +302,19 @@ class FleetCase(unittest.TestCase):
         treaty2 = defaults.Defaults(
             sell = buy,
             buy = sell,
-            relation = 'teamm',
+            relation = 'team',
             )
         p1 = player.Player(
-            energy_minister = energy_minister.EnergyMinister(
-                energy_minister_construction_percent = 0,
-                energy_minister_mattrans_percent = 0,
-                energy_minister_research_percent = 0,
-                ),
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
             energy = 90000,
             name = 'Alpha',
             )
         p2 = player.Player(
-            energy_minister = energy_minister.EnergyMinister(
-                energy_minister_construction_percent = 0,
-                energy_minister_mattrans_percent = 0,
-                energy_minister_research_percent = 0,
-                ),
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
             name = 'Beta',
             energy = 90000,
             )
@@ -329,27 +336,23 @@ class FleetCase(unittest.TestCase):
                 lithium = 1000,
                 silicon = 1000,
                 people = 1000,
-                cargo_max = 10000000000000000000000000000000
+                cargo_max = -1
                 ),
-            location=location.Location(),
             )
         ship_7 = ship.Ship(
             name = 'ship_1',
-            location = location.Location(),
             cargo = cargo.Cargo(silicon=100, cargo_max=100),
             fuel = 10000,
             fuel_max = 10000
             )
         ship_8 = ship.Ship(
             name = 'ship_3',
-            location = location.Location(),
             cargo = cargo.Cargo(lithium=100, cargo_max=300),
             fuel = 10000,
             fuel_max = 30000
             )
         ship_6 = ship.Ship(
             name = 'ship_2',
-            location = location.Location(),
             cargo = cargo.Cargo(titanium=100, cargo_max=200),
             fuel = 10000,
             fuel_max = 20000
@@ -419,164 +422,198 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_8.fuel, 15000)
         
         
-    def test_load_unload_fleet(self):
-        return # TODO
+    def test_unload_fleet_cargo(self):
         ship_1 = ship.Ship(
-            name = 'ship_1',
-            location = location.Location(),
-            cargo = cargo.Cargo(titanium = 100, cargo_max = 200),
-            fuel_max = 200
+            cargo = cargo.Cargo(cargo_max = 200)
             )
+        fleet_one = fleet.Fleet(ships = [ship_1])
         ship_2 = ship.Ship(
-            name = 'ship_2',
-            location = location.Location(),
-            cargo = cargo.Cargo(people = 100, cargo_max = 200),
+            cargo = cargo.Cargo(silicon = 100, cargo_max = 300)
+            )
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['unload'],
+                    transfers = {'unload':[['silicon', 40]]},
+                    recipiants = {'unload':fleet_one},
+                    location = location.LocationReference(fleet_one)
+                    )])
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.execute('unload', p1)
+        self.assertEqual(ship_1.cargo.silicon, 40)
+        self.assertEqual(ship_2.cargo.silicon, 60)
+    
+    def test_unload_fleet_fuel(self):
+        ship_1 = ship.Ship(
             fuel_max = 200
             )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
-        fleet_one = fleet.Fleet(
-            ships = [ship_1, ship_2]
-            )
-        ship_3 = ship.Ship(
-            name = 'ship_3',
-            location = location.Location(),
-            cargo = cargo.Cargo(lithium = 100, cargo_max = 100),
-            fuel_max = 100
-            )
-        ship_4 = ship.Ship(
-            name = 'ship_4',
-            location = location.Location(),
-            cargo = cargo.Cargo(silicon = 100, cargo_max = 300),
+        fleet_one = fleet.Fleet(ships = [ship_1])
+        ship_2 = ship.Ship(
             fuel = 100,
             fuel_max = 300
             )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_2],
             waypoints = [
                 waypoint.Waypoint(
-                    actions = ['load', 'unload'],
-                    transfers = {'unload':[['lithium', 40], ['silicon', 60], ['fuel', 40]], 'load':[['titanium', 60], ['people', 40]]},
-                    recipiants = {'load':fleet_one, 'unload':fleet_one},
+                    actions = ['unload'],
+                    transfers = {'unload':[['fuel', 40]]},
+                    recipiants = {'unload':fleet_one},
                     location = location.LocationReference(fleet_one)
-                    )
-                ]
+                    )])
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.execute('unload', p1)
+        self.assertEqual(ship_1.fuel, 40)
+        self.assertEqual(ship_2.fuel, 60)
+    
+    def test_load_fleet_cargo(self):
+        ship_1 = ship.Ship(
+            cargo = cargo.Cargo(silicon = 100, cargo_max = 200)
             )
+        fleet_one = fleet.Fleet(ships = [ship_1])
+        ship_2 = ship.Ship(
+            cargo = cargo.Cargo(cargo_max = 300)
+            )
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load':[['silicon', 60]]},
+                    recipiants = {'load':fleet_one},
+                    location = location.LocationReference(fleet_one)
+                    )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
         fleet_two.execute('load', p1)
-        """
-        print()
-        for fleett in p1.fleets:
-            for shipp in fleett.ships:
-                print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-                for key in shipp.cargo.__dict__:
-                    if key != 'cargo_max':
-                        print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-                print("}")
-        #"""
-        self.assertEqual(ship_1.cargo.titanium, 20)
-        self.assertEqual(ship_1.cargo.people, 30)
-        self.assertEqual(ship_2.cargo.titanium, 20)
-        self.assertEqual(ship_2.cargo.people, 30)
-        self.assertEqual(ship_3.cargo.titanium, 15)
-        self.assertEqual(ship_3.cargo.people, 10)
-        self.assertEqual(ship_4.cargo.titanium, 45)
-        self.assertEqual(ship_4.cargo.people, 30)
-        fleet_two.execute('unload', p1)
-        self.assertEqual(ship_1.cargo.lithium, 20)
-        self.assertEqual(ship_1.cargo.silicon, 30)
-        self.assertEqual(ship_1.fuel, 20)
-        self.assertEqual(ship_2.cargo.lithium, 20)
-        self.assertEqual(ship_2.cargo.silicon, 30)
-        self.assertEqual(ship_2.fuel, 20)
-        self.assertEqual(ship_3.cargo.lithium, 15)
-        self.assertEqual(ship_3.cargo.silicon, 10)
-        self.assertEqual(ship_3.fuel, 15)
-        self.assertEqual(ship_4.cargo.lithium, 45)
-        self.assertEqual(ship_4.cargo.silicon, 30)
-        self.assertEqual(ship_4.fuel, 45)
+        self.assertEqual(ship_1.cargo.silicon, 40)
+        self.assertEqual(ship_2.cargo.silicon, 60)
     
-    def test_load_unload_planet(self):
-        return # TODO
+    def test_load_fleet_fuel(self):
         ship_1 = ship.Ship(
-            name = 'ship_1',
-            location = location.Location(),
-            cargo = cargo.Cargo(lithium = 100, cargo_max = 200),
             fuel = 100,
-            fuel_max = 100
+            fuel_max = 200
             )
+        fleet_one = fleet.Fleet(ships = [ship_1])
         ship_2 = ship.Ship(
-            name = 'ship_2',
-            location = location.Location(),
-            cargo = cargo.Cargo(silicon = 100, cargo_max = 200),
-            fuel_max = 100
+            fuel_max = 300
             )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
-        p1 = player.Player()
-        ultimantico = planet.Planet(
-            name = 'ultimantico',
-            space_station = defaults.Defaults(
-                fuel_max = 1000000,
-                fuel = 100000
-                ),
-            on_surface = cargo.Cargo(
-                titanium = 100,
-                people = 100,
-                cargo_max = 1000000000000
-                ),
-            location=location.Location()
-            )
-        fleet_one = fleet.Fleet(
-            ships = [ship_1, ship_2],
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
             waypoints = [
                 waypoint.Waypoint(
-                    actions = ['load', 'unload'],
-                    transfers = {'unload':[['lithium', 40], ['silicon', 60]], 'load':[['titanium', 40], ['people', 60], ['fuel', 40]]},
-                    recipiants = {'load':ultimantico, 'unload':ultimantico},
-                    location = location.LocationReference(ultimantico)
-                    )
-                ]
-            )
-        p1.fleets = [fleet_one]
-        fleet_one.execute('load', p1)
-        ultimantico.player = reference.Reference(p1)
-        fleet_one.execute('load', p1)
-        """
-        print()
-        for shipp in fleet_one.ships:
-            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-            for key in shipp.cargo.__dict__:
-                if key != 'cargo_max':
-                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-            print("}")
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
-        #"""
-        self.assertEqual(ship_1.cargo.titanium, 20)
-        self.assertEqual(ship_1.cargo.people, 30)
-        self.assertEqual(ship_1.fuel, 70)
-        self.assertEqual(ship_2.cargo.titanium, 20)
-        self.assertEqual(ship_2.cargo.people, 30)
-        self.assertEqual(ship_2.fuel, 70)
-        self.assertEqual(ultimantico.on_surface.titanium, 60)
-        self.assertEqual(ultimantico.on_surface.people, 40)
-        self.assertEqual(ultimantico.space_station.fuel, 99960)
-        ultimantico.player = reference.Reference('Player')
-        fleet_one.execute('unload', p1)
-        ultimantico.player = reference.Reference(p1)
-        fleet_one.execute('unload', p1)
-        self.assertEqual(ship_1.cargo.lithium, 30)
-        self.assertEqual(ship_1.cargo.silicon, 20)
-        self.assertEqual(ship_2.cargo.lithium, 30)
-        self.assertEqual(ship_2.cargo.silicon, 20)
-        self.assertEqual(ultimantico.on_surface.lithium, 40)
-        self.assertEqual(ultimantico.on_surface.silicon, 60)
+                    actions = ['load'],
+                    transfers = {'load':[['fuel', 60]]},
+                    recipiants = {'load':fleet_one},
+                    location = location.LocationReference(fleet_one)
+                    )])
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.execute('load', p1)
+        self.assertEqual(ship_1.fuel, 40)
+        self.assertEqual(ship_2.fuel, 60)
     
+    def test_unload_planet_cargo(self):
+        ship_1 = ship.Ship(cargo = cargo.Cargo(people = 100, cargo_max = 200))
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            space_station = defaults.Defaults(
+                fuel_max = 1000,
+                fuel = 100
+                ),
+            on_surface = cargo.Cargo(people = 100, cargo_max = -1)
+            )
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['unload'],
+                    transfers = {'unload': [['people', 40]]},
+                    recipiants = {'unload': ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.unload(fleet_one.waypoints[0].recipiants['unload'], p1)
+        self.assertEqual(ship_1.cargo.people, 60)
+        self.assertEqual(ultimantico.on_surface.people, 140)
+    
+    def test_unload_planet_fuel(self):
+        ship_1 = ship.Ship(
+            fuel = 100,
+            fuel_max = 200
+            )
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            space_station = defaults.Defaults(
+                fuel_max = 1000,
+                fuel = 100
+                ))
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['unload'],
+                    transfers = {'unload': [['fuel', 40]]},
+                    recipiants = {'unload': ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.unload(fleet_one.waypoints[0].recipiants['unload'], p1)
+        self.assertEqual(ship_1.fuel, 60)
+        self.assertEqual(ultimantico.space_station.fuel, 140)
+    
+    def test_load_planet_cargo(self):
+        ship_1 = ship.Ship(cargo = cargo.Cargo(people = 100, cargo_max = 200))
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            space_station = defaults.Defaults(
+                fuel_max = 1000,
+                fuel = 100
+                ),
+                on_surface = cargo.Cargo(people = 100, cargo_max = -1)
+                )
+        fleet_one = fleet.Fleet(
+            location = location.LocationReference(ultimantico),
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load': [['people', 60]]},
+                    recipiants = {'load': ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.load(fleet_one.waypoints[0].recipiants['load'], p1)
+        self.assertEqual(ship_1.cargo.people, 160)
+        self.assertEqual(ultimantico.on_surface.people, 40)
+    
+    def test_load_planet_fuel(self):
+        ship_1 = ship.Ship(
+            fuel = 100,
+            fuel_max = 200
+            )
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            space_station = defaults.Defaults(
+                fuel_max = 1000,
+                fuel = 100
+                ))
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load': [['fuel', 60]]},
+                    recipiants = {'load': ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.load(fleet_one.waypoints[0].recipiants['load'], p1)
+        self.assertEqual(ship_1.fuel, 160)
+        self.assertEqual(ultimantico.space_station.fuel, 40)
     
     def test_self_repair(self):
         return # TODO
@@ -669,46 +706,23 @@ class FleetCase(unittest.TestCase):
         ultimantico.on_surface.people = 0
         fleet_two.execute('orbital_mining', p1)
         self.assertEqual(ultimantico.on_surface.titanium, 16)
-        self.assertEqual(ultimantico.on_surface.lithium, 16)
-        self.assertEqual(ultimantico.on_surface.silicon, 16)
         self.assertEqual(ultimantico.remaining_minerals.titanium, 39977)
-        self.assertEqual(ultimantico.remaining_minerals.lithium, 39977)
-        self.assertEqual(ultimantico.remaining_minerals.silicon, 39977)
-    
+        
     def test_lay_mines(self):
         return # TODO
         p1 = player.Player(name = 'caltorez')
         system = star_system.StarSystem(
             mines = {p1.name: 0},
-            location = location.Location(),
             planets = [
-                planet.Planet(
-                    gravity = 70,
-                    ),
-                planet.Planet(
-                    gravity = 50,
-                    ),
-                planet.Planet(
-                    gravity = 30,
-                    ),
-                planet.Planet(
-                    gravity = 50,
-                    ),
-                planet.Planet(
-                    gravity = 50,
-                    ),
-                ],
+                planet.Planet(gravity = 70),
+                planet.Planet(gravity = 50),
+                planet.Planet(gravity = 30),
+                planet.Planet(gravity = 50),
+                planet.Planet(gravity = 50)
+                ]
             )
-        ship_3 = ship.Ship(
-            location = location.Location(),
-            mines_laid = 500000000000,
-            )
-        ship_4 = ship.Ship(
-            location = location.Location(),
-            mines_laid = 500000000000,
-            )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
+        ship_3 = ship.Ship(mines_laid = 500000000000)
+        ship_4 = ship.Ship(mines_laid = 500000000000)
         fleet_two = fleet.Fleet(
             ships = [ship_3, ship_4],
             waypoints = [
@@ -729,664 +743,26 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(system.mines['caltorez'], 985000000000)
         
     def test_bomb(self):
-        return # TODO
-        p1 = player.Player(
-            race = race.Race(
-                colonists_to_operate_defense = 1,
-                ),
-            name = 'p1',
-            planetary_ministers = [
-                planetary_minister.PlanetaryMinister(
-                    name = 'New Colony Minister',
-                    new_colony_minister = True,
-                    ),
-                planetary_minister.PlanetaryMinister(
-                    name = 'target',
-                    defenses = 97,
-                    power_plants = 1,
-                    factories = 1,
-                    mines = 1,
-                    ),
-                ],
-            )
-        game_engine.register(p1)
-        ultimantico = planet.Planet(
-            player = reference.Reference(p1),
-            on_surface = cargo.Cargo(
-                people = 200
-                ),
-            location = location.Location(),
-            facilities = {
-                'defenses': facility.Facility(
-                    quantity = 20,
-                    tech = tech.Tech(shields = 600)
-                    ),
-                },
-            )
-        game_engine.register(ultimantico)
-        p1.planetary_ministers[1].planets.append(ultimantico.name)
-        ship_3 = ship.Ship(
-            location = location.Location(),
-            bombs = [
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                ],
-            )
-        game_engine.register(ship_3)
+        return # activate when pulled Pam's fixes to bomb.py
+        ultimantico = planet.Planet()
+        ultimantico.on_surface.people = 200
+        p1 = player.Player()
+        ultimantico.colonize(p1)
+        bombs = []
+        for i in range(101):
+            bombs.append(bomb.Bomb(percent_pop_kill = 0.2, shield_kill = 20, max_defense = 85))
+        ship_3 = ship.Ship(bombs = bombs)
         fleet_two = fleet.Fleet(
             ships = [ship_3],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['bomb'],
-                    recipiants = {'bomb': ultimantico},
-                    location = location.Location()
-                    )
-                ]
-            )
-        p2 = player.Player(fleets = [fleet_two], name = 'p2')
-        game_engine.register(p2)
-        p2.treaties[p1.name] = defaults.Defaults(relation = 'enemy')
+                    location = location.Location(),
+                    recipiants = {'bomb': ultimantico})])
+        p2 = player.Player(fleets = [fleet_two])
+        p2.treaties.append(treaty.Treaty(relation = 'enemy', status = 'active', other_player = reference.Reference(p1)))
         fleet_two.execute('bomb', p2)
-        self.assertLess(ultimantico.on_surface.people, 192, 'NOTE: this will somtimes fail as it is statistical in nature')
-        self.assertLess(ultimantico.facilities['defenses'].quantity, 17, 'NOTE: this will somtimes fail as it is statistical in nature')
+        self.assertLess(ultimantico.on_surface.people, 120, 'NOTE: this will somtimes fail as it is statistical in nature')
     
     def test_colonize(self):
         return # TODO
