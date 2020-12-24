@@ -102,6 +102,20 @@ class Game(Defaults):
             if not p.computer_player:
                 p.update_from_file()
 
+    """ Check if all players are ready """
+    def is_ready_to_generate(self):
+        for p in self.players:
+            if not p.computer_player and not p.ready_to_generate:
+                return False
+        return True
+
+    """ Generate and save """
+    def new_turn(self):
+        self.update_players()
+        for i in range(0, 100):
+            self.generate_hundreth()
+        self.save()
+
     """ Generate hundreth """
     def generate_hundreth(self):
         # players in lowest to highest score

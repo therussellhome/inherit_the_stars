@@ -60,6 +60,10 @@ __defaults = {
     'starting_titanium': [200, 200, 700], 
 }
 
+
+PRIMARY_RACE_TRAITS = ['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']
+
+
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
     'Aku\'Ultani': 2817, 

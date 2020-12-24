@@ -14,7 +14,6 @@ from .fleet import Fleet
 """ Default values (default, min, max)  """
 __defaults = {
     'game_name': [''], # name of game for when generating
-    'player_key': [''], # used to validate the player file
     'ready_to_generate': [False],
     'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
@@ -51,6 +50,7 @@ _player_fields = [
     'research_queue',
     'research_field',
     'fleets',
+    'ship_designs',
     'treaties',
     'finance_minister_construction_percent',
     'finance_minister_mattrans_percent',
@@ -68,20 +68,22 @@ class Player(Defaults):
             self.name = self.race.name
         if 'date' not in kwargs:
             self.date = self.race.start_date
-        if 'player_key' not in kwargs:
-            self.player_key = str(id(self))
         game_engine.register(self)
         self.__cache__ = {}
 
+    """ Player filename """
+    def filename(self):
+        return self.game_name + ' - ' + self.name
+
     """ Save player to file """
     def save(self):
-        game_engine.save('Player', self.game_name + ' - ' + self.name, self)
+        game_engine.save('Player', self.filename(), self)
 
     """ Update self from file """
     def update_from_file(self):
         global _player_fields
-        p = game_engine.load_inspect('Player', self.game_name + ' - ' + self.name)
-        if self.player_key == p.player_key:
+        p = game_engine.load_inspect('Player', self.filename())
+        if self.__uuid__ == p.__uuid__:
             for field in _player_fields:
                 self[field] = p[field]
 
@@ -181,7 +183,7 @@ class Player(Defaults):
         self.treaties.append(treaty)
 
     """ Share treaty updates with other players """
-    def treaty_finalizaton(self):
+    def treaty_finalization(self):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)
