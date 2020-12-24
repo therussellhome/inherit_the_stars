@@ -14,7 +14,6 @@ from .fleet import Fleet
 """ Default values (default, min, max)  """
 __defaults = {
     'game_name': [''], # name of game for when generating
-    'player_key': [''], # used to validate the player file
     'ready_to_generate': [False],
     'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
@@ -51,6 +50,7 @@ _player_fields = [
     'research_queue',
     'research_field',
     'fleets',
+    'ship_designs',
     'treaties',
     'finance_minister_construction_percent',
     'finance_minister_mattrans_percent',
@@ -68,8 +68,6 @@ class Player(Defaults):
             self.name = self.race.name
         if 'date' not in kwargs:
             self.date = self.race.start_date
-        if 'player_key' not in kwargs:
-            self.player_key = str(id(self))
         game_engine.register(self)
         self.__cache__ = {}
 
@@ -85,7 +83,7 @@ class Player(Defaults):
     def update_from_file(self):
         global _player_fields
         p = game_engine.load_inspect('Player', self.filename())
-        if self.player_key == p.player_key:
+        if self.__uuid__ == p.__uuid__:
             for field in _player_fields:
                 self[field] = p[field]
 
