@@ -1,18 +1,29 @@
 import sys
 from .playerui import PlayerUI
+from ..reference import Reference
+from ..ship_design import ShipDesign
+from ..tech import TECH_GROUPS
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'shipyard_ship': [[]],
+    'shipyard_existing_design': [''],
+    'options_shipyard_existing_design': [[]],
+    'shipyard_ship_overview': [[]], # table with ship tech display
+    'shipyard_combat_chart': [{}],
+    'shipyard_sensor_chart': [[]],
+    'shipyard_engine_chart': [{}],
+    'shipyard_ship_guts': [[]],
+    'shipyard_name': [''],
+    'shipyard_hull': [''],
+    'options_shipyard_hull': [[]],
     'shipyard_design': [[]],
+    'shipyard_slots_general': ['0/0'],
+    'shipyard_slots_depot': ['0/0'],
+    'shipyard_slots_orbital': ['0/0'],
     'shipyard_tech': [[]],
-    'shipyard_existing_designs': [''],
-    'shipyard_hull': ['Scout'],
-    'shipyard_general_slots': [0, 0, sys.maxsize],
-    'shipyard_orbital_slots': [0, 0, sys.maxsize],
-    'shipyard_depot_slots': [0, 0, sys.maxsize],
-    
+    'shipyard_tech_group':['Weapons'],
+    'options_shipyard_tech_group': [TECH_GROUPS],
 }
 
 
@@ -20,71 +31,116 @@ __defaults = {
 class Shipyard(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        self.shipyard_existing_designs = self.player.existing_designs[0]
-        self.shipyard_hull = self.player.hulls[0]
-        self.shipyard_general_slots = max(0, self.shipyard_general_slots)
-        self.shipyard_orbital_slots = max(0, self.shipyard_orbital_slots)
-        self.shipyard_depot_slots = max(0, self.shipyard_depot_slots)
+        if not self.player():
+            return
+        design = None
+        if 'ship_designs' not in self.player().__cache__:
+            self.player().__cache__['ship_designs'] = list(self.player().ship_designs)
+        for existing_design in self.player().__cache__['ship_designs']:
+            if existing_design.name == self.shipyard_existing_design:
+                design = existing_design
+                break
+        # Actions
+        if action == 'new_design':
+            design = ShipDesign()
+            self.player().__cache__['ship_designs'].append(design)
+            self.shipyard_existing_design = design.name
+            self.shipyard_name = ''
+            self.shipyard_hull = ''
+        elif action == 'copy_design':
+            design = design.clone_design()
+            self.player().__cache__['ship_designs'].append(design)
+            self.shipyard_existing_design = design.name
+            self.shipyard_name = ''
+        elif action == 'delete_design':
+            if design in self.player().ship_designs:
+                self.player().ship_designs.remove(design)
+            self.player().__cache__['ship_designs'].remove(design)
+            self.shipyard_name = ''
+            design = None
+        # Load / create design
+        if design == None:
+            if len(self.player().__cache__['ship_designs']) == 0:
+                self.player().__cache__['ship_designs'].append(ShipDesign())
+            design = self.player().__cache__['ship_designs'][0]
+        # Design name
+        if self.shipyard_name == '':
+            self.shipyard_name = design.name
+        else:
+            design.name = self.shipyard_name
+        # Build design list after any chance for the name to change
+        self.options_shipyard_existing_design = []
+        for existing_design in self.player().__cache__['ship_designs']:
+            self.options_shipyard_existing_design.append(existing_design.name)
+        self.shipyard_existing_design = design.name
+
+        # Hull selection
+        for t in self.player().tech: 
+            if t.is_available(self.player().tech_level, self.player().race) and t.category in ['Hull', 'Starbase']:
+                self.options_shipyard_hull.append(t.name)
+        if self.shipyard_hull != '':
+            design.set_hull('Tech/' + self.shipyard_hull)
+
+        # Add to ship design
+        if action.startswith('add='):
+            tech = Reference('Tech/' + action[4:])
+            design.add_component(tech)
+        # Remove from ship design
+        if action.startswith('del='):
+            tech = Reference('Tech/' + action[4:])
+            design.remove_component(tech)
+
+        # Check validity of design
+        # valid designs are stored in the player's ship_designs
+        # invalid designs are stored in the __cache__ and, if not fixed, will be lost when the player file is closed
+        if design.is_valid(self.player().tech_level, self.player().race):
+            if design not in self.player().ship_designs:
+                self.player().ship_designs.append(design)
+        else:
+            if design.is_valid():
+                self.user_alerts.append(design.name + ' exceedes the allowed component slots')
+            else:
+                self.user_alerts.append(design.name + ' contains unbuildable technology')
+            if design in self.player().ship_designs:
+                self.player().ship_designs.remove(design)
+
+        # Display stats
+        self.shipyard_ship_overview = design.html_overview()
+        self.shipyard_combat_chart = design.html_combat(True)
+        self.shipyard_sensor_chart = design.html_sensor(True)
+        self.shipyard_engine_chart = design.html_engine(True)
+        self.shipyard_ship_guts = design.html_guts()
 
         # Ship components
-        ship_components = []
-        for t in self.player.ship_components:
-            link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
-            ship_components.append(t.name)
-            self.ship_components.append('<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
-                    + '<td><i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'Shipyard\', \'?del=' + link + '\')"></i></td>')
+        for t in design.components:
+            link = t.replace('\'', '\\\'').replace('\"', '\\\"')
+            count = ''
+            if design.components[t] > 1:
+                count = '<div style="color: lightseagreen">x' + str(design.components[t]) + '</div>'
+            self.shipyard_design.append('<td class="hfill"><div class="tech tech_template">' + t + '</div></td>' \
+                    + '<td style="text-align: right;">' + count + '<i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
+
+        # Slots
+        self.shipyard_slots_general = str(design.hull.slots_general - design.slots_general) + '/' + str(design.hull.slots_general)
+        if design.slots_general < 0:
+            self.shipyard_slots_general = '<span style="color: red">' + self.shipyard_slots_general + '</span>'
+        self.shipyard_slots_depot = str(design.hull.slots_depot - design.slots_depot) + '/' + str(design.hull.slots_depot)
+        if design.slots_depot < 0:
+            self.shipyard_slots_depot = '<span style="color: red">' + self.shipyard_slots_depot + '</span>'
+        self.shipyard_slots_orbital = str(design.hull.slots_orbital - design.slots_orbital) + '/' + str(design.hull.slots_orbital)
+        if design.slots_orbital < 0:
+            self.shipyard_slots_orbital = '<span style="color: red">' + self.shipyard_slots_orbital + '</span>'
         # Sort tech
         shipyard_tech = []
-        shipyard_filter = {
-            'Weapons': ['Bomb', 'Missile', 'Beam Weapon'],
-            'Defense': ['Shield', 'Armor'], 
-            'Electronics': ['Scanner', 'Cloak', 'ECM'],
-            'Engines': ['Engine'], 
-            'Hulls & Mechanicals': ['Starbase', 'Hull', 'Mechanical'], 
-            'Heavy Equipment': ['Orbital', 'Depot'], 
-            'Planetary': ['Planetary'],
-            'Other': []
-        }
-        shipyard_filter_other = []
-        for f in shipyard_filter:
-            shipyard_filter_other.extend(shipyard_filter[f])
-        cat = self.shipyard_tech_category
-        for t in self.player.tech:
-            if t.category in shipyard_filter[cat] or (cat == 'Other' and t.category not in shipyard_filter_other):
-                cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.shipyard_partial)
-                if t.is_available(): 
-                    link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
-                    row = '<td class="hfill"><div class="tech tech_template">' + t.name + '</div></td>' \
-                        + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'shipyard\', \'?add=' + link + '\')"></i></td>'
-                    shipyard_tech.append((cost, row))
+        for t in self.player().tech:
+            if t.tech_group() == self.shipyard_tech_group and t.is_available(level=self.player().tech_level, race=self.player().race):
+                link = t.name.replace('\'', '\\\'').replace('\"', '\\\"')
+                row = '<td ><div class="tech tech_template">' + t.name + '</div></td>' \
+                    + '<td><i class="button fas fa-cart-plus" title="Add to ship" onclick="post(\'shipyard\', \'?add=' + link + '\')"></i></td>'
+                shipyard_tech.append((t.level.total_levels(), row))
         shipyard_tech.sort(key = lambda x: x[0])
-        r = ''
-        for key in shipyard_filter:
-            s = '<option>' + key + '</option>'
-            if key == cat:
-                s = '<option selected="true">' + key + '</option>'
-            r += s
-        self.shipyard_tech.append('<tr><td style="text-align: center" colspan="2" class="hfill">Category <select id="shipyard_tech_category" onchange="post(\'shipyard\')">' \
-            + r + '</select></td></tr>')
         for t in shipyard_tech:
             self.shipyard_tech.append(t[1])
 
-        # Ship Design table
-        ship_design.append('<td class="hfill"><input id="shipyard_design_name" class="hfill" onchange="post(\'shipyard\')"/></td>')
-        hulls = []
-        for t in self.player.tech:
-            if t.is_available(player.tech_levels, player.race):
-                if t.category in ['Hulls', 'Starbase']:
-                    hulls.append(t)
-                elif t.category not in ['Hulls', 'Starbase']:
-                    shipyard_tech.append(t)
-        r = ''
-        for h in hulls:
-            s = '<option>' + h + '</option>'
-            if h == shipyard_hull:
-                s = '<option selected="true">' + h + '</option>'
-            r += s
-        self.shipyard_design.append('<tr><td style="text-align: center" colspan="2" class="hfill">Hull <select id="shipyard_hull" onchange="post(\'shipyard\')">' \
-            + r + '</select></td></tr>')
 
 Shipyard.set_defaults(Shipyard, __defaults, sparse_json=False)

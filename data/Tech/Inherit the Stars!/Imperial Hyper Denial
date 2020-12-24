@@ -1,0 +1,23 @@
+{
+    "name": "Imperial Hyper Denial",
+    "category": "Depot",
+    "description": "Generates a hyper-denial field with a 300 light-year radius, which can damage the engines of enemy ships traveling through it and prevents them from traveling quickly.  It also detects any active engines within the field.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "race_requirements": "Gaerhule",
+    "cost": {
+        "titanium": 37,
+        "lithium": 17,
+        "silicon": 99,
+        "energy": 16000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "propulsion": 17,
+        "electronics": 22,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 144,
+    "hyperdenial": 300,
+    "slots_depot": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

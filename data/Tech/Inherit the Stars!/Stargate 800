@@ -1,0 +1,23 @@
+{
+    "name": "Stargate 800",
+    "category": "Orbital",
+    "description": "Has a range of 800 minus the ship's mass (including cargo!). Any number of ships can use the gate. Only Patryns can jump with colonists.",
+    "race_requirements": "-Formics",
+    "cost": {
+        "titanium": 50,
+        "lithium": 20,
+        "silicon": 20,
+        "energy": 50000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "propulsion": 10,
+        "construction": 7,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 80,
+    "stargate": 800,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

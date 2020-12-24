@@ -1,0 +1,22 @@
+{
+    "name": "Trading Post",
+    "category": "Orbital",
+    "description": "allows you to trade with other players",
+    "cost": {
+        "titanium": 4,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 3000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 5,
+        "construction": 4,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 22,
+    "is_trading_post": true,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

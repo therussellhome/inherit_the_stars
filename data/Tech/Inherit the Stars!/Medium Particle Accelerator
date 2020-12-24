@@ -1,0 +1,22 @@
+{
+    "name": "Medium Particle Accelerator",
+    "category": "Orbital",
+    "description": "Particle Accelerators are what you put on a starbase to produce antimatter fuel for your ships.  This one can generate up to 6 million units per year.",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 6,
+        "energy": 25000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 8,
+        "electronics": 7,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 9,
+    "fuel_generation": 6000000,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

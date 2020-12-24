@@ -13,12 +13,12 @@ __defaults = {
 class RenderStars(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player:
+        if not self.player():
             return
         # Copy all suns
         self.suns = []
         self.plants = []
-        for s in self.player.get_intel('Sun'):
+        for s in self.player().get_intel('Sun'):
             self.suns.append({
                 'name': s.get('name'), 
                 'x': s.get('location').x,
@@ -27,7 +27,7 @@ class RenderStars(PlayerUI):
                 'color': s.get('color'),
                 'size': s.get('size'),
             })
-        for s in self.player.get_intel('Planets'):
+        for s in self.player().get_intel('Planets'):
             self.planets.append({
                 'name': s.get('name'), 
                 'x': s.get('location').x,

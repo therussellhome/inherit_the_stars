@@ -5,9 +5,12 @@ from pathlib import Path
 
 
 """ Base directory for saved games, races, etc """
-__game_dir = Path.home() / 'Inherit!'
-__default_data = Path(__file__).parent.parent / 'default_data'
+__game_dir = Path(__file__).parent.parent / 'data'
+__user_dir = Path.home() / 'Inherit!'
 
+
+""" Autosave object """
+__auto_save = None
 
 
 """ Registry of all registered classes and objects """
@@ -28,11 +31,15 @@ def register(obj):
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj=None):
+    global __auto_save
     global __registry
     if obj:
         __registry.remove(obj)
+        if __auto_save == obj:
+            __auto_save = None
     else:
         __registry = []
+        __auto_save = None
 
 
 """ Base class for use in creating classes by name """
@@ -81,6 +88,19 @@ def get(reference, create_new=False):
     return None
 
 
+""" Auto save """
+def auto_save():
+    global __auto_save
+    if __auto_save:
+        __auto_save.save()
+
+
+""" Set auto save object """
+def set_auto_save(obj):
+    global __auto_save
+    __auto_save = obj
+
+
 """ Decode a string into an object """
 def from_json(raw, name='<Internal>'):
     try:
@@ -98,9 +118,13 @@ def to_json(obj):
 def load_list(save_type):
     files = []
     dir_name = __game_dir / save_type
-    dir_name.mkdir(parents=True, exist_ok=True)
-    for f in dir_name.iterdir():
-        files.append(f.name)
+    if dir_name.exists():
+        for f in dir_name.iterdir():
+            files.append(f.name)
+    dir_name = __user_dir / save_type
+    if dir_name.exists():
+        for f in dir_name.iterdir():
+            files.append(f.name)
     files.sort()
     return files
 
@@ -108,37 +132,36 @@ def load_list(save_type):
 """ Load from file, prevent object self registration """
 def load_inspect(save_type, name):
     global __registry_block 
-    file_name = __game_dir / save_type / name
-    obj = None
     __registry_block = True
-    with open(file_name, 'r') as f:
-        obj = from_json(f.read(), str(file_name))
+    objs = load(save_type, name)
     __registry_block = False
-    return obj
+    return objs
 
 
 """ Load from file, object self registration is assumed """
 def load(save_type, name):
-    file_name = __game_dir / save_type / name
-    obj = None
-    with open(file_name, 'r') as f:
-        obj = from_json(f.read(), str(file_name))
-    return obj
-
-
-""" Load tech from loose files """
-def load_defaults(save_type):
     objs = []
-    for file_name in (__default_data / save_type).iterdir():
+    file_name = __user_dir / save_type / name
+    if not file_name.exists():
+        file_name = __game_dir / save_type / name
+    if file_name.is_dir():
+        for fname in file_name.iterdir():
+            with open(fname, 'r') as f:
+                objs.append(from_json(f.read(), str(fname)))
+    else:
         with open(file_name, 'r') as f:
-            obj = from_json(f.read(), str(file_name))
-            objs.append(obj)
-    return objs
+            objs.append(from_json(f.read(), str(file_name)))
+    if len(objs) == 0:
+        return None
+    elif len(objs) == 1:
+        return objs[0]
+    else:
+        return objs
 
 
 """ Save object to file """
 def save(save_type, name, obj):
-    dir_name = __game_dir / save_type
+    dir_name = __user_dir / save_type
     dir_name.mkdir(parents=True, exist_ok=True)
     file_name = dir_name / name
     with open(file_name, 'w') as f:

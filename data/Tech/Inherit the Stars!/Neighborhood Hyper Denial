@@ -1,0 +1,23 @@
+{
+    "name": "Neighborhood Hyper Denial",
+    "category": "Depot",
+    "description": "Generates a hyper-denial field with a 30 light-year radius, which can damage the engines of enemy ships traveling through it and prevents them from traveling quickly.  It also detects any active engines within the field.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "race_requirements": "Gaerhule",
+    "cost": {
+        "titanium": 12,
+        "lithium": 1,
+        "silicon": 19,
+        "energy": 3000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "propulsion": 5,
+        "electronics": 6,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 32,
+    "hyperdenial": 30,
+    "slots_depot": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

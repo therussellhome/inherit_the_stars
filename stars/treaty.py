@@ -36,7 +36,7 @@ proposed = proposed by me, awaiting other player's acceptance
 pending = prosed by other player, awaiting my acceptance
 signed = proposed by other player, accepted by me, awaiting finaliation by game engine
 """
-TREATY_STATUS = ['active', 'rejected', 'proposed', 'pending', 'signed']
+TREATY_STATUS = ['proposed', 'pending', 'signed', 'active', 'rejected']
 
 
 """ field list for merge/flip """
@@ -55,18 +55,24 @@ class Treaty(Defaults):
             self.name = self.__uuid__
 
     """ Both players proposed a treaty so copy each one's sell at into a combined treaty """
-    # treaty status is not checked but should only be called with both treaties in the proposed state
     def merge(self, other):
+        global TREATY_STATUS
         global TREATY_HALF_FIELDS
-        self.status = 'pending'
-        for f in TREATY_HALF_FIELDS:
-            self['buy' + f] = other['sell' + f]
+        if TREATY_STATUS.index(other.status) > 1:
+            self.status = TREATY_STATUS[max(TREATY_STATUS.index(self.status), TREATY_STATUS.index(other.status))]
+        else:
+            self.status = 'pending'
+            for f in TREATY_HALF_FIELDS:
+                self['buy' + f] = other['sell' + f]
 
     """ Present to the other player contextualized/flipped for their reading """
     def for_other_player(self, me):
         global TREATY_HALF_FIELDS
         t = Treaty()
         t.other_player = Reference(me)
+        t.name = self.name
+        t.relation = self.relation
+        t.status = self.status
         if self.status == 'pending':
             t.status = 'proposed'
         elif self.status == 'proposed':

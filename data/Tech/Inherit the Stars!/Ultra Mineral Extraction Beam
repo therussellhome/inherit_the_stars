@@ -1,0 +1,23 @@
+{
+    "name": "Ultra Mineral Extraction Beam",
+    "category": "Depot",
+    "description": "Mines minerals from an uninhabited planet.",
+    "race_requirements": "SpacedOut",
+    "cost": {
+        "titanium": 16,
+        "lithium": 48,
+        "silicon": 20,
+        "energy": 18000,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "construction": 10,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 400,
+    "mining_rate": 5.0,
+    "mineral_depletion_rate": 1.12,
+    "slots_depot": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

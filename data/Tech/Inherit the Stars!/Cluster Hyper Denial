@@ -1,0 +1,23 @@
+{
+    "name": "Cluter Hyper Denial",
+    "category": "Depot",
+    "description": "Generates a hyper-denial field with a 90 light-year radius, which can damage the engines of enemy ships traveling through it and prevents them from traveling quickly.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
+    "race_requirements": "-Aku'Ultan",
+    "cost": {
+        "titanium": 23,
+        "lithium": 5,
+        "silicon": 37,
+        "energy": 7500,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "propulsion": 10,
+        "electronics": 11,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 64,
+    "hyperdenial": 90,
+    "slots_depot": -1,
+    "slots_general": 0,
+    "__uuid__": "Tech"
+}

@@ -68,7 +68,6 @@ class Planet(Defaults):
             self.orbit_speed = uniform(0.01, 1.0)
         if 'age' not in kwargs:
             self.age = randint(0, 3000)
-        self.__cache__ = {}
         game_engine.register(self)
 
     """ Get the planets color """

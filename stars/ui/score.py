@@ -62,14 +62,14 @@ __defaults = {
 class Score(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player:
+        if not self.player():
             return
         # Show self first
-        my_reference = 'PlayerUI/' + self.player.name
-        self.copy_score(1, self.player.get_intel(my_reference))
-        self.set(1, 'player', self.player.name)
+        my_reference = 'PlayerUI/' + self.player().name
+        self.copy_score(1, self.player().get_intel(my_reference))
+        self.set(1, 'player', self.player().name)
         i = 2
-        for intel in self.player.get_intel('PlayerUI'):
+        for intel in self.player().get_intel('PlayerUI'):
             if intel.reference != my_reference:
                 self.copy_score(i, intel)
                 i += 1

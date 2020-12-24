@@ -15,7 +15,6 @@ minister = PlanetaryMinister(name='New Colony Minister', new_colony_minister=Tru
 """ Default values (default, min, max)  """
 __defaults = {
     'game_name': [''], # name of game for when generating
-    'player_key': [''], # used to validate the player file
     'ready_to_generate': [False],
     'date': [0.0, 0.0, sys.maxsize],
     'race': [Race()],
@@ -29,6 +28,7 @@ __defaults = {
     'tech_level': [TechLevel()], # current tech levels
     'research_partial': [TechLevel()], # energy spent toward next level
     'research_queue': [[]], # queue of tech items to research
+    'ship_designs': [[]], # the existing designs
     'research_field': ['<LOWEST>'], # next field to research (or 'lowest')
     'energy': [0, 0, sys.maxsize],
     'fleets': [[]],
@@ -52,6 +52,7 @@ _player_fields = [
     'research_queue',
     'research_field',
     'fleets',
+    'ship_designs',
     'treaties',
     'finance_construction_percent',
     'finance_mattrans_percent',
@@ -69,16 +70,22 @@ class Player(Defaults):
             self.name = self.race.name
         if 'date' not in kwargs:
             self.date = self.race.start_date
-        if 'player_key' not in kwargs:
-            self.player_key = str(id(self))
         game_engine.register(self)
         self.__cache__ = {}
+
+    """ Player filename """
+    def filename(self):
+        return self.game_name + ' - ' + self.name
+
+    """ Save player to file """
+    def save(self):
+        game_engine.save('Player', self.filename(), self)
 
     """ Update self from file """
     def update_from_file(self):
         global _player_fields
-        p = game_engine.load_inspect('games', self.game_name + ' - ' + self.name)
-        if self.player_key == p.player_key:
+        p = game_engine.load_inspect('Player', self.filename())
+        if self.__uuid__ == p.__uuid__:
             for field in _player_fields:
                 self[field] = p[field]
     
@@ -173,13 +180,28 @@ class Player(Defaults):
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
         for t in self.treaties:
-            t.other_player.treaty_negotiation(t.for_other_player(self))
-            
+            t.other_player.negotiate_treaty(t.for_other_player(self))
 
     """ Merge in any incoming treaty updates """
-    def treaty_negotiation(self, treaty):
-        pass #TODO
+    def negotiate_treaty(self, treaty):
+        for t in self.treaties:
+            if t.name == treaty.name and t != treaty:
+                t.merge(treaty)
+                return
+        self.treaties.append(treaty)
 
+    """ Share treaty updates with other players """
+    def treaty_finalization(self):
+        for t in self.treaties:
+            if t.status == 'rejected':
+                self.treaties.remove(t)
+            elif t.status == 'signed':
+                # clear old active treaty (if there was one)
+                for t0 in self.treaties:
+                    if t.other_player == t0.other_player and t0.status == 'active':
+                        self.treaties.remove(t0)
+                t.status = 'active'
+            
     """ Get the treaty """
     def get_treaty(self, other_player, draft=False):
         other_player = Reference(other_player)
