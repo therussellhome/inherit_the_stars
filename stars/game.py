@@ -111,6 +111,7 @@ class Game(Defaults):
 
     """ Generate and save """
     def new_turn(self):
+        self.update_players()
         for i in range(0, 100):
             self.generate_hundreth()
         self.save()

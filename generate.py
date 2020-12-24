@@ -12,4 +12,4 @@ else:
         game.generate_hundreth()
         print('.', end='')
     print(game.hundreth)
-#    game.save()
+    game.save()
