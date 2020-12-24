@@ -20,18 +20,16 @@ class Messages(PlayerUI):
             return
 
         dictionary = game_engine.load('messages', 'Messages Format')
+        i = 0
         for key in dictionary:
             if key.split(".")[1] == 'introduction' and dictionary[key] not in self.player.messages:
-                self.player.messages.append(dictionary[key])
-            messages_sender = key.split(".")[0]
-            self.messages_sender = '<td><img title="' + messages_sender + '" src="/' + messages_sender + '.png"/></td><td>' + messages_sender.replace('_', ' ') + '</td>'
+                self.player.messages['3000.00:' + str(i)] = (dictionary[key])
+                i += 1
         #print('length', len(self.player.messages))
-        if action.startswith('prev') and index > 0:
+        if action.startswith('prev') and self.messages_index > 0:
             self.messages_index -= 1
-            print(self.messages_index)
         if action.startswith('next') and self.messages_index < len(self.player.messages) - 1:
             self.messages_index += 1
-            print(self.messages_index)
         self.messages_text = self.player.messages[self.messages_index]
         self.messages_number = str(self.messages_index + 1) + ' of ' + str(len(self.player.messages))
 
