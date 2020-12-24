@@ -8,6 +8,7 @@ __defaults = {
     'cost': [Cost()], # cost remaining
     'planet': [Reference('Planet')],
     'baryogenesis': [False],
+    'origonal_cost': [Cost()], #origonal cost
 }
 
 
@@ -16,7 +17,7 @@ class BuildQueue(Defaults):
     """ Get the cost for the buildable """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+    
     """ Child classes need to override this """
     def finish(self):
         pass

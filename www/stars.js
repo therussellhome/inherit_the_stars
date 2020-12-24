@@ -55,7 +55,7 @@ function show_screen(show) {
     current_screen = show;
     // Get updated data
     if(json_map.hasOwnProperty(show)) {
-        post(show);
+        post(show, '?show_screen');
     }
     // Hide all screens
     for(screen of document.getElementsByClassName('screen')) {
@@ -164,7 +164,7 @@ function post(form = '', action = '') {
     // Only post what is in both the map and has an element
     json_post = {}
     //console.log(json_post);
-    //console.log(json_map);
+    console.log('data is: ', json_map);
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {
@@ -198,6 +198,7 @@ function post(form = '', action = '') {
             }
         }
     }
+    console.log('posting: ', json_post);
     // Fetch and process the response
     fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_post) }).then(response => 
         response.json().then(json => ({
@@ -213,6 +214,7 @@ function post(form = '', action = '') {
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
     try {
+        console.log('recived: ', json);
         // Store the entire response to the cache
         json_map[form] = json;
         for(key in json) {
@@ -221,7 +223,7 @@ function parse_json(url, json) {
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
                         value = [json[key]];
-                        console.log(value)
+                        //console.log(value)
                         if(Array.isArray(value[0])) {
                             value = json[key];
                         } if(json.hasOwnProperty(key + '_stop')) {
@@ -281,6 +283,7 @@ function parse_json(url, json) {
                 console.log(form, key, e);
             }
         }
+        //console.log();
         // Let objects update themselves
         var submit_event = document.createEvent("HTMLEvents");
         submit_event.initEvent("submit", false, false);

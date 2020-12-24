@@ -35,10 +35,10 @@ __defaults = {
     'tech': [[]], # tech tree
     'treaties': [[]],
     'build_queue': [[]], # array of BuildQueue items
-    'finance_construction_percent': [90, 0, 100],
-    'finance_mattrans_percent': [0, 0, 100],
+    'finance_construction_percent': [90.0, 0.0, 100.0],
+    'finance_mattrans_percent': [0.0, 0.0, 100.0],
     'finance_mattrans_use_surplus': [False],
-    'finance_research_percent': [10, 0, 100],
+    'finance_research_percent': [10.0, 0.0, 100.0],
     'finance_research_use_surplus': [False],
     'finance_baryogenesis_default': [True],
     'historical': [{}], # map of category to value by year (not hundreth)
@@ -266,7 +266,7 @@ class Player(Defaults):
         treaties[treaty.name] = treaty
     
     """ prodict the next years budget """
-    def prodict_budget(self):
+    def predict_budget(self):
         return 10000
     
     """ Allocate the available energy into budget categories """
