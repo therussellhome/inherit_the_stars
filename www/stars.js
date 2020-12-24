@@ -321,6 +321,24 @@ function shutdown() {
 }
 
 
+// Create a slider
+function finance_slider(element, form, min, max, step) {
+    noUiSlider.create(element, {
+        start: [min+31/100*(max-min), min+61/100*(max-min), min+91/100*(max-min)],
+        connect: [true, true, true, true],
+        step: step,
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    var connect = element.querySelectorAll('.noUi-connect');
+    var classes = ['factory-color', 'mat-trans-color', 'research-color', 'mine-color'];
+    for (var i = 0; i < connect.length; i++) {
+        connect[i].classList.add(classes[i]);
+    }
+    element.noUiSlider.on('change', function() { post(form) });
+}
 
 // Create a slider
 function planetary_slider(element, form, min, max, step) {
@@ -340,7 +358,6 @@ function planetary_slider(element, form, min, max, step) {
     }
     element.noUiSlider.on('change', function() { post(form) });
 }
-
 
 
 // Create a slider

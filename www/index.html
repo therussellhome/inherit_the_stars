@@ -83,7 +83,7 @@ void main() {
     
 
 <div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
-    <img class="button" id="button_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
+    <img class="button" id="button_finance_minister" title="Finance Minister" src="/finance_minister.png" onclick="show_screen('finance_minister')"/>
     <img class="button" id="button_planetary_ministers" title="Planetary Minister" src="/planetary_minister.png" onclick="show_planetary()"/>
     <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
     <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
@@ -545,7 +545,29 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_energy_minister" style="width: 600px" onload="post('energy_minister')">
+<div class="screen hide onload" id="screen_finance_minister" style="width: 600px" onload="post('finance_minister')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Finance Minister" src="/finance_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Finance Minister</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table><table class="hfill">
+        <tr>
+            <td>construction budget</td><td>mattrans budget</td><td>research budget</td><td title="trade and savings">other</td>
+        </tr><tr>
+            <td id="finance_constuction"></td>
+            <td id="finance_mattrans"></td>
+            <td id="finance_research"></td>
+            <td id="finance_other"></td>
+        </tr><tr>
+            <td colspan="4" class="hfill"><div class="onload" id="finance_slider" onload="finance_slider(this, 'finance_minister', 0, 100, 0.2)"></div></td>
+        </tr><tr>
+            <td colspan="4"><input type="checkbox" id="finance_mattrans_use_surplus" onchange="post('finance_minister')"/> allow mattrans to use surplus</td>
+        </tr><tr>
+            <td colspan="4"><input type="checkbox" id="finance_research_use_surplus" onchange="post('finance_minister')"/> allow research to use surplus</td>
+        </tr>
+    </table><table class="hfill" id="finance_queue">
+    </table><table class="hfill" id="finance_bildable">
+    </table>
 </div>
 
 

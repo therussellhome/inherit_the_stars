@@ -35,12 +35,12 @@ __defaults = {
     'tech': [[]], # tech tree
     'treaties': [[]],
     'build_queue': [[]], # array of BuildQueue items
-    'finance_minister_construction_percent': [90, 0, 100],
-    'finance_minister_mattrans_percent': [0, 0, 100],
-    'finance_minister_mattrans_use_surplus': [False],
-    'finance_minister_research_percent': [10, 0, 100],
-    'finance_minister_research_use_surplus': [False],
-    'finance_minister_baryogenesis_default': [True],
+    'finance_construction_percent': [90, 0, 100],
+    'finance_mattrans_percent': [0, 0, 100],
+    'finance_mattrans_use_surplus': [False],
+    'finance_research_percent': [10, 0, 100],
+    'finance_research_use_surplus': [False],
+    'finance_baryogenesis_default': [True],
     'historical': [{}], # map of category to value by year (not hundreth)
 }
 
@@ -53,11 +53,11 @@ _player_fields = [
     'research_field',
     'fleets',
     'treaties',
-    'finance_minister_construction_percent',
-    'finance_minister_mattrans_percent',
-    'finance_minister_mattrans_use_surplus',
-    'finance_minister_research_percent',
-    'finance_minister_research_use_surplus',
+    'finance_construction_percent',
+    'finance_mattrans_percent',
+    'finance_mattrans_use_surplus',
+    'finance_research_percent',
+    'finance_research_use_surplus',
 ]
 
 """ A player in a game """
@@ -243,11 +243,15 @@ class Player(Defaults):
             treaty = ts
         treaties[treaty.name] = treaty
     
+    """ prodict the next years budget """
+    def prodict_budget(self):
+        return 10000
+    
     """ Allocate the available energy into budget categories """
     def allocate_budget(self):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:
-            allocation = min(round(total * self['finance_minister_' + category + '_percent'] / 100), self.energy)
+            allocation = min(round(total * self['finance_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
 
     """ Request to spend energy for a category """
@@ -259,11 +263,11 @@ class Player(Defaults):
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':
             budget = self.__cache__['budget_mattrans']
-            if self.finance_minister_mattrans_use_surplus:
+            if self.finance_mattrans_use_surplus:
                 budget += self.__cache__['budget_construction']
         elif category == 'research':
             budget = self.__cache__['budget_research']
-            if self.finance_minister_research_use_surplus:
+            if self.finance_research_use_surplus:
                 budget += self.__cache__['budget_construction']
                 budget += self.__cache__['budget_mattrans']
         # All other categories pull from the unallocated budget and surplus

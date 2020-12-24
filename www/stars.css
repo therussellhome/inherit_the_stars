@@ -208,9 +208,11 @@ textarea:disabled {
 }
 
 .power-color { background: cyan; }/* power-plants */
-.factory-color { background: goldenrod; }/* factories */
-.mine-color { background: silver; }/* mines */
+.factory-color { background: limegreen; }/* factories */
+.mine-color { background: lightcoral; }/* mines */
 .shield-color { background: mediumslateblue; }/* defences */
+.reserch-color { background: olive; }
+.mat-trans-color { background: violet; }
 
 
 i {
