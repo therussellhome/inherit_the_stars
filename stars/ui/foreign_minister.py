@@ -73,7 +73,7 @@ class ForeignMinister(PlayerUI):
             + '<th><i style="font-size: 150%" class="fas fa-ban" title="Hyper Denial Passage"></i></th>'
             + '<th><i style="font-size: 150%" class="fas fa-user-secret" title="Intel Sharing"></i></th>')
         # Display existing treaties
-        for other_player in self.player().seen_players:
+        for other_player in self.player().get_intel(by_type='Player'):
             treaty = self.player().get_treaty(other_player, False)
             self.foreign_treaties.append('<td colspan="10" style="font-size: 150%; text-align: left; border: 1px solid silver; border-right: 0">'
                 + '<i class="' + other_player.race.icon + '"></i>' + other_player.name + '</td>'

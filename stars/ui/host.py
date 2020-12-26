@@ -10,7 +10,7 @@ _not_ready = '<span style="color: red">Not Ready</span>'
 """ Default values (default, min, max)  """
 __defaults = {
     'host_game': [],
-    'host_name': '',
+    'host_ID': '',
     'host_turn': '',
     'host_ready': _not_ready,
     'host_autogen': False,
@@ -30,12 +30,12 @@ class Host(UI):
             game_engine.unregister()
             self.host_autogen = False
             game = game_engine.load('Game', action[5:])
-        elif self.host_name != '':
-            game = game_engine.get('Game/' + self.host_name)
+        elif self.host_ID != '':
+            game = game_engine.get('Game/' + self.host_ID)
         self.host_blocking = False
         self.host_ready = _not_ready
         if game:
-            self.host_name = game.ID
+            self.host_ID = game.ID
             game.update_players()
             if action == 'generate':
                 game.new_turn()
@@ -50,7 +50,7 @@ class Host(UI):
                 self.host_status.append('<td>' + p.ID + '</td>' \
                     + '<td style="text-align: right">' + ready + '</td>')
         else:
-            self.host_name = ''
+            self.host_ID = ''
             self.host_turn = ''
         # List of games
         self.host_game = []

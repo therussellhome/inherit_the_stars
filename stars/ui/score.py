@@ -54,7 +54,7 @@ __defaults = {
 
     # Chart
     'score_chart': 'Economy',
-    'options_score_chart': [['Planets', 'Ships', 'Economy']],
+    'options_score_chart': ['Planets', 'Ships', 'Economy'],
 }
 
 
