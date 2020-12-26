@@ -6,19 +6,19 @@ from ..tech_level import TECH_FIELDS
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'research_level': [[]],
-    'research_queue': [[]],
-    'research_default_field': [''],
-    'options_research_default_field': [['<LOWEST>']],
+    'research_level': [],
+    'research_queue': [],
+    'research_default_field': '',
+    'options_research_default_field': ['<LOWEST>'],
     'research_tech_group':['Weapons'],
-    'options_research_tech_group': [TECH_GROUPS],
-    'research_tech': [[]],
+    'options_research_tech_group': TECH_GROUPS,
+    'research_tech': [],
 }
 
 
 # Build the default field list
 for f in TECH_FIELDS:
-    __defaults['options_research_default_field'][0].append(f.capitalize())
+    __defaults['options_research_default_field'].append(f.capitalize())
 
 
 """ """

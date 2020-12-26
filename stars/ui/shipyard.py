@@ -7,23 +7,23 @@ from ..tech import TECH_GROUPS
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'shipyard_existing_design': [''],
-    'options_shipyard_existing_design': [[]],
-    'shipyard_ship_overview': [[]], # table with ship tech display
-    'shipyard_combat_chart': [{}],
-    'shipyard_sensor_chart': [[]],
-    'shipyard_engine_chart': [{}],
-    'shipyard_ship_guts': [[]],
-    'shipyard_name': [''],
-    'shipyard_hull': [''],
-    'options_shipyard_hull': [[]],
-    'shipyard_design': [[]],
-    'shipyard_slots_general': ['0/0'],
-    'shipyard_slots_depot': ['0/0'],
-    'shipyard_slots_orbital': ['0/0'],
-    'shipyard_tech': [[]],
-    'shipyard_tech_group':['Weapons'],
-    'options_shipyard_tech_group': [TECH_GROUPS],
+    'shipyard_existing_design': '',
+    'options_shipyard_existing_design': [],
+    'shipyard_ship_overview': [], # table with ship tech display
+    'shipyard_combat_chart': {},
+    'shipyard_sensor_chart': [],
+    'shipyard_engine_chart': {},
+    'shipyard_ship_guts': [],
+    'shipyard_name': '',
+    'shipyard_hull': '',
+    'options_shipyard_hull': [],
+    'shipyard_design': [],
+    'shipyard_slots_general': '0/0',
+    'shipyard_slots_depot': '0/0',
+    'shipyard_slots_orbital': '0/0',
+    'shipyard_tech': [],
+    'shipyard_tech_group': 'Weapons',
+    'options_shipyard_tech_group': TECH_GROUPS,
 }
 
 

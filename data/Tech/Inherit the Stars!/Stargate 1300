@@ -1,5 +1,5 @@
 {
-    "name": "Stargate 1300",
+    "ID": "Stargate 1300",
     "category": "Orbital",
     "description": "Has a range of 1300 minus the ship's mass (including cargo!). Any number of ships can use the gate. Only Patryns can jump with colonists.",
     "race_requirements": "Patryns",
@@ -8,16 +8,16 @@
         "lithium": 13,
         "silicon": 15,
         "energy": 40000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "propulsion": 13,
         "construction": 8,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 80,
     "stargate": 1300,
     "slots_orbital": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

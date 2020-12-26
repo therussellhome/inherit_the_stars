@@ -9,13 +9,13 @@ _not_ready = '<span style="color: red">Not Ready</span>'
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'host_game': [[]],
-    'host_name': [''],
-    'host_turn': [''],
-    'host_ready': [_not_ready],
-    'host_autogen': [False],
-    'host_status': [[]],
-    'host_blocking': [False],
+    'host_game': [],
+    'host_name': '',
+    'host_turn': '',
+    'host_ready': _not_ready,
+    'host_autogen': False,
+    'host_status': [],
+    'host_blocking': False,
 }
 
 
@@ -35,7 +35,7 @@ class Host(UI):
         self.host_blocking = False
         self.host_ready = _not_ready
         if game:
-            self.host_name = game.name
+            self.host_name = game.ID
             game.update_players()
             if action == 'generate':
                 game.new_turn()
@@ -47,7 +47,7 @@ class Host(UI):
                 if not p.ready_to_generate:
                     ready = _not_ready
                     self.host_ready = _not_ready
-                self.host_status.append('<td>' + p.name + '</td>' \
+                self.host_status.append('<td>' + p.ID + '</td>' \
                     + '<td style="text-align: right">' + ready + '</td>')
         else:
             self.host_name = ''
@@ -58,7 +58,7 @@ class Host(UI):
             link = f.replace('\'', '\\\'').replace('\"', '\\\"')
             g = game_engine.load_inspect('Game', f)
             if g:
-                self.host_game.append('<td class="hfill rows">' + g.name
+                self.host_game.append('<td class="hfill rows">' + g.ID
                     + '</td><td class="rows">Turn ' + str(int(g.hundreth / 100))
                     + '</td><td class="rows"><i class="button fas fa-external-link-alt" onclick="post(\'host\', \'?host=' + link + '\')"></i></td>')
 

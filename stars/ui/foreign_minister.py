@@ -5,11 +5,11 @@ from ..treaty import Treaty, TREATY_BUY_SELL_FIELDS
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'foreign_treaties': [[]],
-    'foreign_other_player': [''],
-    'foreign_relation_is_team': [False],
-    'foreign_relation_is_neutral': [True],
-    'foreign_relation_is_enemy': [False],
+    'foreign_treaties': [],
+    'foreign_other_player': '',
+    'foreign_relation_is_team': False,
+    'foreign_relation_is_neutral': True,
+    'foreign_relation_is_enemy': False,
 }
 
 # Add all keys from the treaty object for the negotiation table

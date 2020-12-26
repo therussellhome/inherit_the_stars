@@ -5,7 +5,7 @@ from .ui import UI
 """ Default values (default, min, max)  """
 __defaults = {
     # Shared with other forms and used to identify player
-    'player_token': [''],
+    'player_token': '',
 }
 
 

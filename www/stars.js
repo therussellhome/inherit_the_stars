@@ -260,11 +260,13 @@ function parse_json(url, json) {
 
 // Refresh host screen / auto generate
 function host_auto() {
-    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
-        document.getElementById('host_blocking').checked = true;
-        post('host', '?generate');
-    } else if(document.getElementById('host_name').innerHTML != '') {
-        window.setTimeout(host_post, 10000);
+    if(current_screen == 'host') {
+        if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
+            document.getElementById('host_blocking').checked = true;
+            post('host', '?generate');
+        } else if(document.getElementById('host_name').innerHTML != '') {
+            window.setTimeout(host_post, 10000);
+        }
     }
 }
 
@@ -288,12 +290,14 @@ function host_generate() {
 
 // Refresh the player complete screen
 function play_complete_auto() {
-    if(document.getElementById('player_ready').value) {
-        document.getElementById('player_ready').value = false;
-        show_screen(null);
-        //TODO refresh render stars
-    } else {
-        window.setTimeout(play_complete_post, 10000);
+    if(current_screen == 'play_complete') {
+        if(document.getElementById('player_ready').value) {
+            document.getElementById('player_ready').value = false;
+            show_screen(null);
+            //TODO refresh render stars
+        } else {
+            window.setTimeout(play_complete_post, 10000);
+        }
     }
 }
 

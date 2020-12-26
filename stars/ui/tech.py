@@ -8,16 +8,16 @@ from ..tech import Tech as StarsTech
 from ..tech_level import TechLevel
 
 __defaults = {
-    'overview': [{}],
+    'overview': {},
 #    'repair': [0, 0, sys.maxsize],
 #    'fuel_generation': [0, 0, sys.maxsize],
-#    'special_type': [''],
-#    'colonizer': [False],
+#    'special_type': '',
+#    'colonizer': False,
 
-    'combat': [{}], # power over range (computed for 0..99)
-    'sensor': [{}], # visability over range (standard, penetrating, anti-cloak, self-cloak)
-    'engine': [{}], # tacometer over hyper (computed for 1..10)
-    'guts': [{}],
+    'combat': {}, # power over range (computed for 0..99)
+    'sensor': {}, # visability over range (standard, penetrating, anti-cloak, self-cloak)
+    'engine': {}, # tacometer over hyper (computed for 1..10)
+    'guts': {},
 #    'engine_siphon': [0, 0, sys.maxsize],
 
 #    'ecm': [0, 0, 100],
@@ -50,17 +50,17 @@ class Tech(PlayerUI):
             player_level = TechLevel()
             player_partial = TechLevel()
         for tech in tech_tree:
-            self.overview[tech.name] = tech.html_overview(player_race, player_level, player_partial)
+            self.overview[tech.ID] = tech.html_overview(player_race, player_level, player_partial)
             combat = tech.html_combat()
             if combat:
-                self.combat[tech.name] = combat
+                self.combat[tech.ID] = combat
             sensor = tech.html_sensor()
             if sensor:
-                self.sensor[tech.name] = sensor
+                self.sensor[tech.ID] = sensor
             engine = tech.html_engine()
             if engine:
-                self.engine[tech.name] = engine
-            self.guts[tech.name] = tech.html_guts()
+                self.engine[tech.ID] = engine
+            self.guts[tech.ID] = tech.html_guts()
     
 
 Tech.set_defaults(Tech, __defaults, sparse_json=False)
