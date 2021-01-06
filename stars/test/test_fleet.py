@@ -439,8 +439,8 @@ class FleetCase(unittest.TestCase):
         p1.allocate_budget()
         p2.allocate_budget()
         fleet_three.sell(fleet_three.waypoints[0].recipiants['sell'], p2)
-        self.assertEqual(p1.energy, 1150)
-        self.assertEqual(p2.energy, 850)
+        self.assertEqual(p1.energy, 650)
+        self.assertEqual(p2.energy, 1350)
         self.assertEqual(ultimantico.on_surface.silicon, 150)
         self.assertEqual(ship_1.cargo.silicon, 50)
         
@@ -489,10 +489,10 @@ class FleetCase(unittest.TestCase):
         p1.allocate_budget()
         p2.allocate_budget()
         fleet_three.sell(fleet_three.waypoints[0].recipiants['sell'], p2)
-        self.assertEqual(p1.energy, 90150)
-        self.assertEqual(p2.energy, 89850)
-        self.assertEqual(ultimantico.space_station.fuel, 130000)
-        self.assertEqual(ship_1.fuel, 10000)
+        self.assertEqual(p1.energy, 900)
+        self.assertEqual(p2.energy, 1100)
+        self.assertEqual(ultimantico.space_station.fuel, 100050)
+        self.assertEqual(ship_1.fuel, 9950)
         
     def test_unload_fleet_cargo(self):
         ship_1 = ship.Ship(

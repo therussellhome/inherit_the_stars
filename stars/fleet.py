@@ -237,7 +237,7 @@ class Fleet(Defaults):
                 abreve = item
             if item in ['titanium', 'silicon', 'lithium']:
                 abreve = item[0:2]
-            if abreve and traety['buy_' + abreve] >= 0:
+            if abreve and traety['sell_' + abreve] >= 0:
                 amount = self.handle_cargo(self_fuel, self_fuel_max, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo, self_cargo_max)
                 true_amount = int(recipiant.player.spend('trade', traety['sell_' + abreve] * amount, False) / traety['sell_' + abreve])
                 if item == 'fuel':
@@ -246,7 +246,7 @@ class Fleet(Defaults):
                 else:
                     load_cargo[item] += true_amount
                     self_cargo[item] -= true_amount
-                player.energy += recipiant.player.spend('trade', traety['sell_' + abreve] * true_amount, True)
+                player.energy += recipiant.player.spend('trade', traety['sell_' + abreve] * true_amount)
         for item in ["titanium", "silicon", "lithium", "people"]:
             self.distribute_cargo(self_cargo, item, self_cargo_max)
         self.distribute_fuel(self_fuel, self_fuel_max)
