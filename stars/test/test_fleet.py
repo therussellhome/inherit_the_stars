@@ -292,135 +292,207 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(fleet_one.location.z, 1)
         #"""
         
-    def test_trade(self):
-        return # TODO
-        treaty1 = treaty.Treaty(
-            sell = sell,
-            buy = buy,
-            relation = 'team',
-            )
-        treaty2 = defaults.Defaults(
-            sell = buy,
-            buy = sell,
-            relation = 'team',
-            )
+    def test_buy_minerals(self):
         p1 = player.Player(
             finance_minister_construction_percent = 0,
             finance_minister_mattrans_percent = 0,
             finance_minister_research_percent = 0,
-            energy = 90000,
-            name = 'Alpha',
+            energy = 1000
+            )
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            buy_si = 3
             )
         p2 = player.Player(
             finance_minister_construction_percent = 0,
             finance_minister_mattrans_percent = 0,
             finance_minister_research_percent = 0,
-            name = 'Beta',
-            energy = 90000,
+            energy = 1000
             )
-        p2.treaties[p1.name] = treaty1
-        p1.treaties[p2.name] = treaty2
-        game_engine.register(p1)
-        game_engine.register(p2)
-        space_station = defaults.Defaults(
-            fuel = 100000,
-            is_trading_post = True,
-            fuel_max = 500000
-            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
         ultimantico = planet.Planet(
-            name = 'ultimantico',
             player = reference.Reference(p1),
-            space_station = space_station,
-            on_surface = cargo.Cargo(
-                titanium = 1000,
-                lithium = 1000,
-                silicon = 1000,
-                people = 1000,
-                cargo_max = -1
+            space_station = defaults.Defaults(
+                fuel = 100000,
+                is_trading_post = True,
+                fuel_max = 500000
                 ),
+            on_surface = cargo.Cargo(
+                silicon = 100,
+                cargo_max = -1
+                ))
+        ship_1 = ship.Ship(cargo = cargo.Cargo(silicon = 100, cargo_max = 1000))
+        fleet_three = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['buy'],
+                    transfers = {'buy':[['silicon', 50]]},
+                    recipiants = {'buy':ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p2.fleets = [fleet_three]
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.buy(fleet_three.waypoints[0].recipiants['buy'], p2)
+        self.assertEqual(p1.energy, 1150)
+        self.assertEqual(p2.energy, 850)
+        self.assertEqual(ultimantico.on_surface.silicon, 50)
+        self.assertEqual(ship_1.cargo.silicon, 150)
+    
+    def test_buy_fuel(self):
+        p1 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
             )
-        ship_7 = ship.Ship(
-            name = 'ship_1',
-            cargo = cargo.Cargo(silicon=100, cargo_max=100),
-            fuel = 10000,
-            fuel_max = 10000
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            buy_fuel = 2
             )
-        ship_8 = ship.Ship(
-            name = 'ship_3',
-            cargo = cargo.Cargo(lithium=100, cargo_max=300),
+        p2 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            space_station = defaults.Defaults(
+                fuel = 100000,
+                is_trading_post = True,
+                fuel_max = 500000
+                ))
+        ship_1 = ship.Ship(
             fuel = 10000,
             fuel_max = 30000
             )
-        ship_6 = ship.Ship(
-            name = 'ship_2',
-            cargo = cargo.Cargo(titanium=100, cargo_max=200),
-            fuel = 10000,
-            fuel_max = 20000
-            )
         fleet_three = fleet.Fleet(
-            ships = [ship_6, ship_7, ship_8],
+            ships = [ship_1],
             waypoints = [
                 waypoint.Waypoint(
-                    actions = ['buy', 'sell'],
-                    transfers = {'buy':[['lithium', 50], ['silicon', 50], ['fuel', 30000]], 'sell':[['titanium', 40], ['fuel', 30000]]},
-                    recipiants = {'buy':ultimantico, 'sell':ultimantico},
+                    actions = ['buy'],
+                    transfers = {'buy':[['fuel', 50]]},
+                    recipiants = {'buy':ultimantico},
                     location = location.LocationReference(ultimantico)
-                    )
-                ]
-            )
+                    )])
         p2.fleets = [fleet_three]
-        p1.get_budget()
-        p2.get_budget()
-        fleet_three.compile()
-        fleet_three.returnn()
-        """
-        print()
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
-        for p in game_engine.get('Player'):
-            print(p.name, " : {'energy': ", p.energy, "}", sep='')
-            for f in p.fleets:
-                for s in f.ships:
-                    print(s.name, ": {'fuel':", s.fuel, end='')
-                    for key in s.cargo.__dict__:
-                        if key != 'cargo_max':
-                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
-                    print("}")
-        #"""
-        fleet_three.execute('sell', p2)
-        p1.treaties[p2.name].relation = 'team'
-        fleet_three.execute('sell', p2)
-        self.assertEqual(p1.energy, 29640)
-        self.assertEqual(p2.energy, 150360)
-        self.assertEqual(ultimantico.on_surface.titanium, 1040)
-        self.assertEqual(ultimantico.space_station.fuel, 130000)
-        self.assertEqual(ship_6.cargo.titanium, 20)
-        self.assertEqual(ship_6.fuel, 0)
-        self.assertEqual(ship_7.cargo.titanium, 10)
-        self.assertEqual(ship_7.fuel, 0)
-        self.assertEqual(ship_8.cargo.titanium, 30)
-        self.assertEqual(ship_8.fuel, 0)
-        p1.treaties[p2.name].relation = 'teamm'
-        fleet_three.execute('buy', p2)
-        p1.treaties[p2.name].relation = 'team'
-        fleet_three.execute('buy', p2)
-        self.assertEqual(p1.energy, 90340)
-        self.assertEqual(p2.energy, 89660)
-        self.assertEqual(ultimantico.on_surface.lithium, 950)
-        self.assertEqual(ultimantico.on_surface.silicon, 950)
-        self.assertEqual(ultimantico.space_station.fuel, 100000)
-        self.assertEqual(ship_6.cargo.lithium, 50)
-        self.assertEqual(ship_6.cargo.silicon, 50)
-        self.assertEqual(ship_6.fuel, 10000)
-        self.assertEqual(ship_7.cargo.lithium, 25)
-        self.assertEqual(ship_7.cargo.silicon, 25)
-        self.assertEqual(ship_7.fuel, 5000)
-        self.assertEqual(ship_8.cargo.lithium, 75)
-        self.assertEqual(ship_8.cargo.silicon, 75)
-        self.assertEqual(ship_8.fuel, 15000)
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.buy(fleet_three.waypoints[0].recipiants['buy'], p2)
+        self.assertEqual(p1.energy, 1100)
+        self.assertEqual(p2.energy, 900)
+        self.assertEqual(ultimantico.space_station.fuel, 99950)
+        self.assertEqual(ship_1.fuel, 10050)
         
+    def test_sell_minerals(self):
+        p1 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            sell_si = 7
+            )
+        p2 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            space_station = defaults.Defaults(
+                fuel = 100000,
+                is_trading_post = True,
+                fuel_max = 500000
+                ),
+            on_surface = cargo.Cargo(
+                silicon = 100,
+                cargo_max = -1
+                ))
+        ship_1 = ship.Ship(cargo = cargo.Cargo(silicon=100, cargo_max=1000))
+        fleet_three = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['sell'],
+                    transfers = {'sell':[['silicon', 50]]},
+                    recipiants = {'sell':ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p2.fleets = [fleet_three]
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.sell(fleet_three.waypoints[0].recipiants['sell'], p2)
+        self.assertEqual(p1.energy, 1150)
+        self.assertEqual(p2.energy, 850)
+        self.assertEqual(ultimantico.on_surface.silicon, 150)
+        self.assertEqual(ship_1.cargo.silicon, 50)
+        
+    def test_sell_fuel(self):
+        p1 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            sell_fuel = 2
+            )
+        p2 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            space_station = defaults.Defaults(
+                fuel = 100000,
+                is_trading_post = True,
+                fuel_max = 500000
+                ))
+        ship_1 = ship.Ship(
+            fuel = 10000,
+            fuel_max = 30000
+            )
+        fleet_three = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['sell'],
+                    transfers = {'sell':[['fuel', 50]]},
+                    recipiants = {'sell':ultimantico},
+                    location = location.LocationReference(ultimantico)
+                    )])
+        p2.fleets = [fleet_three]
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.sell(fleet_three.waypoints[0].recipiants['sell'], p2)
+        self.assertEqual(p1.energy, 90150)
+        self.assertEqual(p2.energy, 89850)
+        self.assertEqual(ultimantico.space_station.fuel, 130000)
+        self.assertEqual(ship_1.fuel, 10000)
         
     def test_unload_fleet_cargo(self):
         ship_1 = ship.Ship(
@@ -440,7 +512,7 @@ class FleetCase(unittest.TestCase):
                     location = location.LocationReference(fleet_one)
                     )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        fleet_two.execute('unload', p1)
+        fleet_two.unload(fleet_two.waypoints[0].recipiants['unload'], p1)
         self.assertEqual(ship_1.cargo.silicon, 40)
         self.assertEqual(ship_2.cargo.silicon, 60)
     
@@ -463,7 +535,7 @@ class FleetCase(unittest.TestCase):
                     location = location.LocationReference(fleet_one)
                     )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        fleet_two.execute('unload', p1)
+        fleet_two.unload(fleet_two.waypoints[0].recipiants['unload'], p1)
         self.assertEqual(ship_1.fuel, 40)
         self.assertEqual(ship_2.fuel, 60)
     
@@ -485,7 +557,7 @@ class FleetCase(unittest.TestCase):
                     location = location.LocationReference(fleet_one)
                     )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        fleet_two.execute('load', p1)
+        fleet_two.load(fleet_two.waypoints[0].recipiants['load'], p1)
         self.assertEqual(ship_1.cargo.silicon, 40)
         self.assertEqual(ship_2.cargo.silicon, 60)
     
@@ -508,7 +580,7 @@ class FleetCase(unittest.TestCase):
                     location = location.LocationReference(fleet_one)
                     )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        fleet_two.execute('load', p1)
+        fleet_two.load(fleet_two.waypoints[0].recipiants['load'], p1)
         self.assertEqual(ship_1.fuel, 40)
         self.assertEqual(ship_2.fuel, 60)
     

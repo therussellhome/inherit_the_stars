@@ -91,11 +91,6 @@ class Player(Defaults):
     def next_hundreth(self):
         self.date = round(self.date + 0.01, 2)
 
-    """ calles fleets to do actions """
-    def ship_action(self, action):
-        for fleet in self.fleets:
-            fleet.execute(action, self)
-    
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
     

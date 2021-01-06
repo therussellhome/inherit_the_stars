@@ -27,8 +27,10 @@ class Cargo(Minerals):
         c.people = self.people + other.people
         c.cargo_max = self.cargo_max + other.cargo_max
         return c
+
     def _sum(self):
         return (self.titanium + self.lithium + self.silicon + self.people)
+
     def percent_full(self):
         return self._sum() / self.cargo_max
 
