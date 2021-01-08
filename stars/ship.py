@@ -68,7 +68,7 @@ class Ship(ShipDesign):
         return False
     
     def colonize(self, player, planet):
-        planet.colonize(player, player.get_minister(planet).name)
+        planet.colonize(player)#, player.get_minister(planet).name)
         planet.on_surface += self.cargo
     
     def scan(self, player):
@@ -101,13 +101,13 @@ class Ship(ShipDesign):
     
     """ Mines the planet if it is not colonized """
     def orbital_mining(self, planet):
-        if not planet.is_colonized:
-            planet.on_surface.titanium += round(self.mining_rate * planet.get_availability('titanium'))
-            planet.on_surface.silicon += round(self.mining_rate * planet.get_availability('silicon'))
-            planet.on_surface.lithium += round(self.mining_rate * planet.get_availability('lithium'))
-            planet.remaining_minerals.titanium -= round(self.mining_rate * planet.get_availability('titanium') * self.percent_wasted)
-            planet.remaining_minerals.silicon -= round(self.mining_rate * planet.get_availability('silicon') * self.percent_wasted)
-            planet.remaining_minerals.lithium -= round(self.mining_rate * planet.get_availability('lithium') * self.percent_wasted)
+        if not planet.is_colonized():
+            planet.on_surface.titanium += round(self.mining_rate * planet.mineral_availability('titanium'))
+            planet.on_surface.silicon += round(self.mining_rate * planet.mineral_availability('silicon'))
+            planet.on_surface.lithium += round(self.mining_rate * planet.mineral_availability('lithium'))
+            planet.remaining_minerals.titanium -= round(self.mining_rate * planet.mineral_availability('titanium') * self.percent_wasted)
+            planet.remaining_minerals.silicon -= round(self.mining_rate * planet.mineral_availability('silicon') * self.percent_wasted)
+            planet.remaining_minerals.lithium -= round(self.mining_rate * planet.mineral_availability('lithium') * self.percent_wasted)
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):

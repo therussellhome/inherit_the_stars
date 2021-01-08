@@ -194,7 +194,7 @@ class Fleet(Defaults):
         for transfer in self.waypoints[0].transfers['unload']:
             item = transfer[0]
             amount = transfer[1]
-            amount = self.handle_cargo(self_fuel, self_fuel_max, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo, self_cargo_max)
+            amount = self.handle_cargo(self_fuel, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo)
             if item == 'fuel':
                 load_fuel += amount
                 self_fuel -= amount
@@ -221,8 +221,8 @@ class Fleet(Defaults):
         self_cargo, self_cargo_max = self.get_cargo()
         self_fuel, self_fuel_max = self.get_fuel()
         if recipiant.__class__.__name__ == 'fleet':
-            load_cargo, unload_cargo_max = recipiant.get_cargo()
-            load_fuel, unload_fuel_max = recipiant.get_fuel()
+            load_cargo, load_cargo_max = recipiant.get_cargo()
+            load_fuel, load_fuel_max = recipiant.get_fuel()
         else:
             load_fuel = recipiant.space_station.fuel
             load_fuel_max = recipiant.space_station.fuel_max
@@ -238,7 +238,7 @@ class Fleet(Defaults):
             if item in ['titanium', 'silicon', 'lithium']:
                 abreve = item[0:2]
             if abreve and traety['sell_' + abreve] >= 0:
-                amount = self.handle_cargo(self_fuel, self_fuel_max, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo, self_cargo_max)
+                amount = self.handle_cargo(self_fuel, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo)
                 true_amount = int(recipiant.player.spend('trade', traety['sell_' + abreve] * amount, False) / traety['sell_' + abreve])
                 if item == 'fuel':
                     load_fuel += true_amount
@@ -259,24 +259,24 @@ class Fleet(Defaults):
                 recipiant.on_surface[item] = load_cargo[item]
             recipiant.space_station.fuel = load_fuel
     
-    def handle_cargo(self, unload_fuel, unload_fuel_max, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, unload_cargo, unload_cargo_max):
+    def handle_cargo(self, unload_fuel, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, unload_cargo):
         print(amount, item, 'with problem', end=' ')
         if item in ["fuel", "titanium", "silicon", "lithium", "people"]:
             if item == 'fuel':
                 if unload_fuel < amount and (load_fuel_max - load_fuel) >= unload_fuel:
-                    print("'not enough "+item+"'", "{'fuel': "+str(unload_fuel)+", 'fuel_max': "+str(unload_fuel_max)+"}", end=' ')
+                    print("'not enough", item + "'", "{'fuel':", str(unload_fuel) + "}", end=' ')
                     amount = unload_fuel
-                elif (load_fuel_max - load_fuel) < amount and unload_fuel >= (load_fue_max - load_fuel):
-                    print("'not enough capacity'", "{'fuel': "+str(unload_fuel)+", 'fuel_max': "+str(unload_fuel_max)+"}", end=' ')
+                elif (load_fuel_max - load_fuel) < amount and unload_fuel >= (load_fuel_max - load_fuel):
+                    print("'not enough capacity'", "{'fuel':", str(load_fuel_max) + ", 'fuel_max':", str(load_fuel_max) + "}", end=' ')
                     amount = (load_fuel_max - load_fuel)
                 else:
                     print('none ', end='')
             else:
                 if unload_cargo[item] < amount and (load_cargo_max - load_cargo._sum()) >= unload_cargo[item]:
-                    print("'not enough "+item+"'", unload_cargo.__dict__, end=' ')
+                    print("'not enough", item + "'", unload_cargo.__dict__, end=' ')
                     amount = unload_cargo[item]
                 elif (load_cargo_max - load_cargo._sum()) < amount and unload_cargo[item] >= (load_cargo_max - load_cargo._sum()):
-                    print("'not enough capacity'", unload_cargo.__dict__, end=' ')
+                    print("'not enough capacity'", load_cargo.__dict__, "'cargo_max':", load_cargo_max, end=' ')
                     amount = (load_cargo_max - load_cargo._sum())
                 else:
                     print('none ', end='')
@@ -294,9 +294,7 @@ class Fleet(Defaults):
             unload_fuel, unload_fuel_max = recipiant.get_fuel()
         else:
             unload_fuel = recipiant.space_station.fuel
-            unload_fuel_max = recipiant.space_station.fuel_max
             unload_cargo = recipiant.on_surface
-            unload_cargo_max = recipiant.on_surface.cargo_max
         for transfer in self.waypoints[0].transfers['buy']:
             item = transfer[0]
             amount = transfer[1]
@@ -306,7 +304,7 @@ class Fleet(Defaults):
             if item in ['titanium', 'silicon', 'lithium']:
                 abreve = item[0:2]
             if traety['buy_' + abreve] >= 0:
-                amount = self.handle_cargo(unload_fuel, unload_fuel_max, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo, unload_cargo_max)
+                amount = self.handle_cargo(unload_fuel, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo)
                 true_amount = int(player.spend('trade', traety['buy_' + abreve] * amount, False) / traety['buy_' + abreve])
                 if item == 'fuel':
                     unload_fuel -= true_amount
@@ -381,13 +379,11 @@ class Fleet(Defaults):
             unload_fuel, unload_fuel_max = recipiant.get_fuel()
         else:
             unload_fuel = recipiant.space_station.fuel
-            unload_fuel_max = recipiant.space_station.fuel_max
             unload_cargo = recipiant.on_surface
-            unload_cargo_max = recipiant.on_surface.cargo_max
         for transfer in self.waypoints[0].transfers['load']:
             item = transfer[0]
             amount = transfer[1]
-            amount = self.handle_cargo(unload_fuel, unload_fuel_max, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo, unload_cargo_max)
+            amount = self.handle_cargo(unload_fuel, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo)
             if item == 'fuel':
                 unload_fuel -= amount
                 self_fuel +=  amount
