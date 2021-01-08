@@ -1,16 +1,16 @@
  {
-    "name": "Robert E. Lee",
+    "ID": "Robert E. Lee",
     "category": "Beam Weapon",
     "description": "Very short range and high power.  Barely more expensive than Beauregard but far more powerful.",
     "race_requirements": "Aku'Ultan",
     "cost": {
         "lithium": 23,
         "energy": 1000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 19,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 10,
     "weapons": [
@@ -21,8 +21,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

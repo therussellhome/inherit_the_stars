@@ -1,15 +1,15 @@
  {
-    "name": "Montgomery",
+    "ID": "Montgomery",
     "category": "Beam Weapon",
     "description": "High power but small range.  More range and more power than Beauregard.",
     "cost": {
         "lithium": 14,
         "energy": 1200,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 18,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "weapons": [
@@ -20,8 +20,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

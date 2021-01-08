@@ -9,25 +9,26 @@ from .cargo import Cargo
 
 
 __defaults = {
-    'planets': [[]],
-    'location': [Location()],
+    'ID': '@UUID',
+    'planets': [],
+    'location': Location(),
 }
 
+
 _roman = ["I", "II", "III", "IV", "V"]
+
 
 """ Star System with its planets """
 class StarSystem(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = 'System ' + str(id(self))
         game_engine.register(self)
 
     """ create planets """
     def create_system(self, player=None):
         planet_args = {
-            'name': self.name + "'s " + 'Star',
+            'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
         }
         num_planets = round(random() * 5)
@@ -42,14 +43,15 @@ class StarSystem(Defaults):
         self.planets.append(Sun(**planet_args))
         for i in range(num_planets):
             segment = 100.0 / num_planets
-            planet_args['name'] = self.name + ' ' + _roman[i]
+            planet_args['ID'] = self.ID + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
             self.planets.append(Planet(**planet_args))
         if player:
+            self.planets[home].homeworld = True
             self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
             self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
             self.planets[home].colonize(player)
-            self.planets[home].on_surface.population = player.race.starting_colonists
+            self.planets[home].on_surface.people = player.race.starting_colonists
 
     """ get the sun for the system """
     def sun(self):

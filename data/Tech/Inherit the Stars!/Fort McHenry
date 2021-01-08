@@ -1,5 +1,5 @@
 {
-    "name": "Fort McHenry",
+    "ID": "Fort McHenry",
     "category": "Shield",
     "description": "the best shipboard shield",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 15,
         "energy": 2000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 22,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "shield": 500,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

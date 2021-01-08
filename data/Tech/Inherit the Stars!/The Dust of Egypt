@@ -1,5 +1,5 @@
 {
-    "name": "The Dust of Egypt",
+    "ID": "The Dust of Egypt",
     "category": "Missile",
     "description": "One of the most accurate missiles, the same range as Lightning Strike and slightly more powerful.  (the same as Plague of Hail but cheaper to build)",
     "race_requirements": "Aku'Ultan",
@@ -8,12 +8,12 @@
         "lithium": 9,
         "silicon": 6,
         "energy": 900,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 18,
         "propulsion": 4,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -24,8 +24,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 75,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

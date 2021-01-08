@@ -1,5 +1,5 @@
 {
-    "name": "Horse Crippler Cactus Minelayer",
+    "ID": "Horse Crippler Cactus Minelayer",
     "category": "Depot",
     "description": "Deploys a minefield for defending a star system.  This minelayer deploys up to 30 trillion mines per year.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
     "race_requirements": "-Aku'Ultan",
@@ -8,16 +8,16 @@
         "lithium": 13,
         "silicon": 14,
         "energy": 5500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 10,
         "biotechnology": 21,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 100,
     "mines_laid": 30000000000000,
     "slots_depot": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

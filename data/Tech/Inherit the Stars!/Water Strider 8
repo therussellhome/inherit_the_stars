@@ -1,5 +1,5 @@
 {
-    "name": "Water Strider 8",
+    "ID": "Water Strider 8",
     "category": "Engine",
     "description": "Can go 64 light years per year with reasonable mass-to-engine ratios, if you can provide the fuel",
     "cost": {
@@ -7,11 +7,11 @@
         "lithium": 0,
         "silicon": 3,
         "energy": 2800,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "propulsion": 7,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 17,
     "engines": [
@@ -20,8 +20,8 @@
             "speed_divisor": 10,
             "speed_exponent": 7.0,
             "antimatter_siphon": 0,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

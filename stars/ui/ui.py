@@ -4,7 +4,7 @@ from ..defaults import Defaults
 """ Default values (default, min, max)  """
 __defaults = {
     # Alerts/errors to send back to the player
-    'user_alerts': [[]],
+    'user_alerts': [],
 }
 
 

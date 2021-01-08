@@ -1,5 +1,5 @@
 {
-    "name": "Manatee",
+    "ID": "Manatee",
     "category": "Engine",
     "description": "This engine forages its own fuel while moving and gives you infinite range at only propulsion level 7.",
     "race_requirements": "Forager",
@@ -8,12 +8,12 @@
         "lithium": 4,
         "silicon": 7,
         "energy": 1200,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
     	"energy": 2,
     	"propulsion": 7,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 20,
     "engines": [
@@ -22,8 +22,8 @@
             "speed_divisor": 9,
             "speed_exponent": 3.0,
             "antimatter_siphon": 500,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

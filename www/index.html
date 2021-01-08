@@ -145,7 +145,7 @@ void main() {
     </table>
     <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
     <table class="hfill" style="background: black"><tr>
-        <td rowspan="3" class="hfill" id="host_name" style="font-size: 200%"></td>
+        <td rowspan="3" class="hfill" id="host_ID" style="font-size: 200%"></td>
         <td id="host_turn" style="text-align: right"></td>
         <td rowspan="3" style="text-align: right"><img class="button" title="Generate Now" src="generate.gif" onclick="host_generate()"/></td>
     </tr><tr>
@@ -268,7 +268,7 @@ void main() {
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td>Race Name</td>
-            <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+            <td class="hfill" style="padding-right: 6px"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
         </tr>
@@ -666,7 +666,7 @@ void main() {
     </table>
     <table class="hfill"> 
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
-        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_name" onchange="post('shipyard')"/></td></tr>
+        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
         <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
         <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
             <td>General Slots</td><td id="shipyard_slots_general"></td>

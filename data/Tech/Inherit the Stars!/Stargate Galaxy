@@ -1,5 +1,5 @@
 {
-    "name": "Stargate Galaxy",
+    "ID": "Stargate Galaxy",
     "category": "Orbital",
     "description": "Unlimited range!  Allows ships to jump to another stargate.",
     "race_requirements": "Patryns",
@@ -8,16 +8,16 @@
         "lithium": 13,
         "silicon": 15,
         "energy": 56000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "propulsion": 25,
         "construction": 19,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 80,
     "stargate": 1000000000000,
     "slots_orbital": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

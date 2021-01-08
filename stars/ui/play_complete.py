@@ -5,7 +5,7 @@ from .. import game_engine
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'player_ready': [False],
+    'player_ready': False,
 }
 
 

@@ -1,5 +1,5 @@
 {
-    "name": "Plague of Flies",
+    "ID": "Plague of Flies",
     "category": "Missile",
     "description": "Almost twice as powerful as Plague of Gnats, with longer range and slightly better accuracy.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 10,
         "silicon": 6,
         "energy": 1000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 14,
         "propulsion": 3,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 66,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }
