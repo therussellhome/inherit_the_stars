@@ -1,16 +1,16 @@
  {
-    "name": "Alexander the Great",
+    "ID": "Alexander the Great",
     "category": "Beam Weapon",
     "description": "Shoots all enemies within range at once, but power is less than Leonidas. Also has a x6 advantage clearing system defenses. Beam weapons have 100% accuracy but power decreases with range.",
     "race_requirements": "Gaerhule",
     "cost": {
         "lithium": 10,
         "energy": 1000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 5,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 3,
     "weapons": [
@@ -21,8 +21,8 @@
             "is_beam": true,
             "is_multishot": true,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Plague of Darkness",
+    "ID": "Plague of Darkness",
     "category": "Missile",
     "description": "More powerful than Plague of Boils and more than 2/3 as powerful as Plague of Locusts, with more than double the accuracy, which can make up for it not being a capital ship missile; almost twice as powerful as Plague of Hail.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 14,
         "silicon": 9,
         "energy": 1500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 22,
         "propulsion": 5,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 75,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

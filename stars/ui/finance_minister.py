@@ -3,19 +3,19 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'finance_constuction': [''],
-    'finance_mattrans': [''],
-    'finance_research': [''],
-    'finance_other': [''],
-    'finance_construction_percent': [65.0, 0.0, 100.0],
-    'finance_mattrans_percent': [10.0, 0.0, 100.0],
-    'finance_research_percent': [15.0, 0.0, 100.0], 
-    'finance_mattrans_use_surplus': [True],
-    'finance_research_use_surplus': [False],
-    'finance_slider': [[65.0, 75.0, 90.0]],
-    'finance_queue': [[]],
-    'finance_buildable': [[]],
-#    'finance_': [''],
+    'finance_constuction': '',
+    'finance_mattrans': '',
+    'finance_research': '',
+    'finance_other': '',
+    'finance_construction_percent': (65.0, 0.0, 100.0),
+    'finance_mattrans_percent': (10.0, 0.0, 100.0),
+    'finance_research_percent': (15.0, 0.0, 100.0), 
+    'finance_mattrans_use_surplus': True,
+    'finance_research_use_surplus': False,
+    'finance_slider': [65.0, 75.0, 90.0],
+    'finance_queue': [],
+    'finance_buildable': [],
+#    'finance_': '',
 }
 
 
@@ -46,7 +46,13 @@ class FinanceMinister(PlayerUI):
         self.finance_mattrans = '<i class="fa-bolt">' + str(round(self.player().finance_mattrans_percent * self.player().predict_budget() / 100)) + '</i>'
         self.finance_research = '<i class="fa-bolt">' + str(round(self.player().finance_research_percent * self.player().predict_budget() / 100)) + '</i>'
         self.finance_other = '<i class="fa-bolt">' + str(round((((100-self.player().finance_construction_percent) - self.player().finance_research_percent) - self.player().finance_mattrans_percent) * self.player().predict_budget() / 100)) + '</i>'
+        # build queue
+        build_queue = []
+        for t in self.player().build_queue:
+            link = t.ID.replace('\'', '\\\'').replace('\"', '\\\"')
+            build_queue.append(t.ID)
+            self.build_queue.append('<td class="hfill"><div class="tech queue_template">' + t.ID + '</div></td>'
+                + '<td><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + link + '\')"></i></td>')
         
-
 
 FinanceMinister.set_defaults(FinanceMinister, __defaults, sparse_json=False)

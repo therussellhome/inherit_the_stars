@@ -1,5 +1,5 @@
 {
-    "name": "Cat Scanner",
+    "ID": "Cat Scanner",
     "category": "Scanner",
     "description": "This scanner has a penetrating range, which means it can detect starbases and ships inside solar systems and it can tell you habitability of planets in its penetrating range.  It also detects ships based on their apparent mass, but its ability to do so decreases quickly as the apparent mass decreases.",
     "race_requirements": "2ndSight",
@@ -8,18 +8,18 @@
         "lithium": 0,
         "silicon": 8,
         "energy": 3600,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 3,
         "electronics": 7,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 2,
     "scanner": {
         "penetrating": 75.0,
         "normal": 125.0,
-        "__uuid__": "Scanner"
+        "__class__": "Scanner"
     },
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

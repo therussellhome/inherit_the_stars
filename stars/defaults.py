@@ -1,5 +1,5 @@
 import copy
-import traceback
+import uuid
 from . import game_engine
 
 
@@ -8,13 +8,11 @@ class Defaults(game_engine.BaseClass):
     """ Load all defaults into the object """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # populate with initial defaults
-        cls = object.__getattribute__(self, '__class__')
-        defaults = cls.get_defaults(cls)
-        for name in defaults:
-            object.__setattr__(self, name, copy.copy(defaults[name][0]))
+        apply_defaults(self)
         # override with provided kwargs
-        self.update(**kwargs)
+        for (k, v) in kwargs.items():
+            setattr(self, k, v)
+        # create a dictionary that is not written to file
         self.__cache__ = {}
 
     """ Override the subscript operator """
@@ -28,21 +26,24 @@ class Defaults(game_engine.BaseClass):
     """ Override to enforce type and bounds checking """
     def __setattr__(self, name, value):
         if name[0] != '_':
-            cls = object.__getattribute__(self, '__class__')
-            defaults = cls.get_defaults(cls)
-            if name in defaults:
-                default = defaults[name]
+            default = getattr(self.__class__, 'defaults', {}).get(name, None)
+            if default is not None:
                 try:
-                    if type(default[0]) == int:
-                        value = max([default[1], min([default[2], int(value)])])
-                    elif type(default[0]) == float:
-                        value = max([default[1], min([default[2], float(value)])])
-                    elif type(default[0]) == bool:
+                    if isinstance(default, int):
+                        value = int(value)
+                    elif isinstance(default, float):
+                        value = float(value)
+                    elif isinstance(default, bool):
                         value = bool(value)
-                    elif type(default[0]) != type(value):
-                        value = copy.copy(default[0])
+                    elif isinstance(value, type(default)):
+                        pass
+                    else:
+                        return
+                    default_range = getattr(self.__class__, 'default_ranges', {}).get(name, None)
+                    if default_range:
+                        value = max(default_range[0], min(default_range[1], value))
                 except:
-                    value = copy.copy(default[0])
+                    return
         object.__setattr__(self, name, value)
 
     """ provide a default shallow equality """
@@ -51,63 +52,39 @@ class Defaults(game_engine.BaseClass):
             return False
         if self.__dict__.keys() != other.__dict__.keys():
             return False
+        classname = self.__class__.__name__ + '/'
         for f in self.__dict__.keys():
-            if f != '__uuid__' and f != '__cache__' and self.__dict__[f] != other.__dict__[f]:
+            if f != '__cache__' and self.__dict__[f] != other.__dict__[f]:
                 return False
         return True
 
-    """ prints the entire __dict__ in a readable way so you can debug if somthing is wrong """
-    def debug_display(self, depth=0):
-        #TODO REMOVE=(add '#' at the begining of all lines of this function and those pertaining to this function) before release, after finished all tests
-        print('{', 'class: ', self.__class__, sep='')
-        for attribute in self.__dict__:
-            try:
-                print('    '*(depth+1), str(attribute), ": ", sep='', end='')
-                self.__dict__[attribute].debug_display(depth+1)
-            except:
-                print(getattr(self, attribute))
-        print('    '*depth, '}', sep='')
-
-    """ Bulk update values """
-    def update(self, **kwargs):
-        for name in kwargs:
-            setattr(self, name, kwargs[name])
-
-    """ List of default fields """
-    def list_of_defaults(self):
-        cls = object.__getattribute__(self, '__class__')
-        return cls.get_defaults(cls).keys()
-
-    """ Reset values to default """
-    def reset_to_default(self):
-        cls = object.__getattribute__(self, '__class__')
-        defaults = cls.get_defaults(cls)
-        no_reset = getattr(cls, 'no_reset', [])
-        for name in defaults:
-            if name not in no_reset:
-                object.__setattr__(self, name, copy.copy(defaults[name][0]))
-
 
 """ Store defaults on the class """
-def __set_defaults(cls, defaults, sparse_json=True, no_reset=[]):
+def __set_defaults(cls, defaults, sparse_json=True):
     cls.defaults = {}
+    cls.default_ranges = {}
     cls.sparse_json = {}
     for parent in cls.__bases__:
         cls.defaults.update(getattr(parent, 'defaults', {}))
-        for (name, value) in getattr(parent, 'sparse_json', {}).items():
-            cls.sparse_json[name] = (cls.sparse_json.get(name, sparse_json) and value)
-    cls.defaults.update(defaults)
-    for name in defaults:
-        cls.sparse_json[name] = (cls.sparse_json.get(name, sparse_json) and sparse_json)
-    cls.no_reset = no_reset
-    for parent in cls.__bases__:
-        cls.no_reset.extend(getattr(parent, 'no_reset', []))
+        cls.default_ranges.update(getattr(parent, 'default_ranges', {}))
+        for (k, v) in getattr(parent, 'sparse_json', {}).items():
+            cls.sparse_json[k] = (cls.sparse_json.get(k, sparse_json) and v)
+    for (k, default) in defaults.items():
+        if isinstance(default, tuple):
+            cls.defaults[k] = default[0]
+            cls.default_ranges[k] = (default[1], default[2])
+        else:
+            cls.defaults[k] = default
+        cls.sparse_json[k] = (cls.sparse_json.get(k, sparse_json) and sparse_json)
 Defaults.set_defaults = __set_defaults
 
 
-""" Get defaults from the class """
-def __get_defaults(cls):
-    if not hasattr(cls, 'defaults'):
-        cls.set_defaults(cls, {})
-    return cls.defaults
-Defaults.get_defaults = __get_defaults
+""" Write/overwrite with defaults """
+def apply_defaults(obj, field=None):
+    # populate with initial defaults
+    for (k, default) in getattr(obj.__class__, 'defaults', {}).items():
+        if k == field or field == None:
+            if  isinstance(default, str) and default == '@UUID':
+                obj[k] = str(uuid.uuid4())
+            else:
+                obj[k] = copy.copy(default)

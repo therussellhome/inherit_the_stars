@@ -1,5 +1,5 @@
 {
-    "name": "Bunny Ear Cactus Minelayer",
+    "ID": "Bunny Ear Cactus Minelayer",
     "category": "Depot",
     "description": "Deploys a minefield for defending a star system.  This minelayer deploys up to 7.5 billion mines per year.  That sounds like a lot, but for defending an entire solar system, it's not.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
     "race_requirements": "-Aku'Ultan",
@@ -8,16 +8,16 @@
         "lithium": 3,
         "silicon": 2,
         "energy": 4000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 1,
         "biotechnology": 1,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 40,
     "mines_laid": 7500000000,
     "slots_depot": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

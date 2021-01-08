@@ -1,5 +1,5 @@
 {
-    "name": "Red Sea",
+    "ID": "Red Sea",
     "category": "Missile",
     "description": "Not as powerful as Plague on Firstborn but more than twice as accurate and nearly as long a range.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 18,
         "silicon": 12,
         "energy": 1800,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 25,
         "propulsion": 6,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 80,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

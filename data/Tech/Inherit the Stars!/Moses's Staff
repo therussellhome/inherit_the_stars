@@ -1,5 +1,5 @@
 {
-    "name": "Moses's Staff",
+    "ID": "Moses's Staff",
     "category": "Missile",
     "description": "More accurate and more powerful than the tech-level-zero missile.  All missiles are less accurate the farther you are from your target. (the same as Plague of Frogs but cheaper to build)",
     "race_requirements": "Aku'Ultan",
@@ -8,12 +8,12 @@
         "lithium": 5,
         "silicon": 3,
         "energy": 400,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 5,
         "propulsion": 1,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -24,8 +24,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 50,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Goliath",
+    "ID": "Goliath",
     "category": "Beam Weapon",
     "description": "Intended for Aku'Ultan at the start of the game, but requires Weapons Tech 4; is the same as Themistocles but costs less.",
     "race_requirements": "Aku'Ultan",
@@ -8,11 +8,11 @@
         "lithium": 6,
         "silicon": 0,
         "energy": 500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 4,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

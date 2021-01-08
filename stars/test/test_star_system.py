@@ -2,10 +2,10 @@ import unittest
 from .. import *
 
 class StarSystemTestCase(unittest.TestCase):
-    def test_name_planet(self):
-        s = star_system.StarSystem(name='Tribond')
+    def test_ID_planet(self):
+        s = star_system.StarSystem(ID='Tribond')
         s.create_system(reference.Reference(player.Player()))
-        self.assertEqual(s.name, 'Tribond')
-        self.assertEqual(s.planets[0].name, "Tribond's Star")
-        self.assertEqual(s.planets[1].name, 'Tribond I')
-        self.assertEqual(s.planets[2].name, 'Tribond II')
+        self.assertEqual(s.ID, 'Tribond')
+        self.assertEqual(s.planets[0].ID, "Tribond's Star")
+        self.assertEqual(s.planets[1].ID, 'Tribond I')
+        self.assertEqual(s.planets[2].ID, 'Tribond II')

@@ -1,8 +1,9 @@
 import sys
+import uuid
 from math import ceil
 from . import game_engine
 from .defaults import Defaults
-from .intel import Intel
+from .intel import Intel, IntelHistory
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
@@ -11,38 +12,39 @@ from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 
-minister = PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)
 """ Default values (default, min, max)  """
 __defaults = {
-    'game_name': [''], # name of game for when generating
-    'ready_to_generate': [False],
-    'date': [0.0, 0.0, sys.maxsize],
-    'race': [Race()],
-    'computer_player': [False],
-    'seen_players': [[]],
-    'intel': [{}], # map of intel objects indexed by object reference
-    'messages': [[]], # list of messages from oldest to newest
-    'planetary_ministers': [[PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)]], # list of planetary ministers
-    'planetary_minister_map': [{}], # map of planet references to minister references
-    'score': [Score()],
-    'tech_level': [TechLevel()], # current tech levels
-    'research_partial': [TechLevel()], # energy spent toward next level
-    'research_queue': [[]], # queue of tech items to research
-    'ship_designs': [[]], # the existing designs
-    'research_field': ['<LOWEST>'], # next field to research (or 'lowest')
-    'energy': [0, 0, sys.maxsize],
-    'fleets': [[]],
-    'tech': [[]], # tech tree
-    'treaties': [[]],
-    'build_queue': [[]], # array of BuildQueue items
-    'finance_construction_percent': [90.0, 0.0, 100.0],
-    'finance_mattrans_percent': [0.0, 0.0, 100.0],
-    'finance_mattrans_use_surplus': [False],
-    'finance_research_percent': [10.0, 0.0, 100.0],
-    'finance_research_use_surplus': [False],
-    'finance_baryogenesis_default': [True],
-    'historical': [{}], # map of category to value by year (not hundreth)
+    'ID': '@UUID', # player ID defaulted to a UUID if not provided from the race ID
+    'validation_key': '', # used to verify this file against the game file
+    'game_ID': '', # name of game for when generating
+    'ready_to_generate': False,
+    'date': '0.00',
+    'race': Race(),
+    'computer_player': False,
+    'intel': {}, # map of intel objects indexed by object reference
+    'messages': [], # list of messages from oldest to newest
+    'planetary_ministers': [PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)], # list of planetary ministers
+    'planetary_minister_map': {}, # map of planet references to minister references
+    'score': Score(),
+    'tech_level': TechLevel(), # current tech levels
+    'research_partial': TechLevel(), # energy spent toward next level
+    'research_queue': [], # queue of tech items to research
+    'ship_designs': [], # the existing designs
+    'research_field': '<LOWEST>', # next field to research (or 'lowest')
+    'energy': (0, 0, sys.maxsize),
+    'fleets': [],
+    'tech': [], # tech tree
+    'treaties': [],
+    'build_queue': [], # array of BuildQueue items
+    'finance_construction_percent': (90, 0, 100),
+    'finance_mattrans_percent': (0, 0, 100),
+    'finance_mattrans_use_surplus': False,
+    'finance_research_percent': (10, 0, 100),
+    'finance_research_use_surplus': False,
+    'finance_baryogenesis_default': True,
+    'historical': {}, # map of category to value by year (not hundreth)
 }
+
 
 """ List of fields that are user modifable """
 _player_fields = [
@@ -54,6 +56,7 @@ _player_fields = [
     'fleets',
     'ship_designs',
     'treaties',
+    'build_queue',
     'finance_construction_percent',
     'finance_mattrans_percent',
     'finance_mattrans_use_surplus',
@@ -61,21 +64,24 @@ _player_fields = [
     'finance_research_use_surplus',
 ]
 
-""" A player in a game """
+
+""" A player in a gaproductionme """
 class Player(Defaults):
     """ Initialize """
     def __init__(self, **kwargs):
+        if 'ID' not in kwargs and 'race' in kwargs and kwargs['race'].ID != '':
+            kwargs['ID'] = kwargs['race'].ID
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = self.race.name
+        if 'validation_key' not in kwargs:
+            self.validation_key = str(uuid.uuid4())
         if 'date' not in kwargs:
-            self.date = self.race.start_date
+            self.date = '{:01.2f}'.format(self.race.start_date)
         game_engine.register(self)
         self.__cache__ = {}
 
     """ Player filename """
     def filename(self):
-        return self.game_name + ' - ' + self.name
+        return self.game_ID + ' - ' + self.ID
 
     """ Save player to file """
     def save(self):
@@ -85,7 +91,7 @@ class Player(Defaults):
     def update_from_file(self):
         global _player_fields
         p = game_engine.load_inspect('Player', self.filename())
-        if self.__uuid__ == p.__uuid__:
+        if self.validation_key == p.validation_key:
             for field in _player_fields:
                 self[field] = p[field]
     
@@ -97,7 +103,7 @@ class Player(Defaults):
     
     """ Update the date """
     def next_hundreth(self):
-        self.date = round(self.date + 0.01, 2)
+        self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
     """ calles fleets to do actions """
     def ship_action(self, action):
@@ -116,40 +122,31 @@ class Player(Defaults):
     """ Return the id for use as a temporary player token """
     def token(self):
         return str(id(self))
-    
+
     """ Add an intel report """
     def add_intel(self, obj, **kwargs):
-        # Intentionally allowing this to fail if the object does not have a name attribute
-        reference = obj.__class__.__name__ + '/' + obj.name
+        reference = Reference(obj)
         if reference not in self.intel:
-            self.intel[reference] = Intel(reference=reference)
+            if reference ^ 'Ship' or reference ^ 'Asteroid':
+                self.intel[reference] = IntelHistory()
+            else:
+                self.intel[reference] = Intel()
+            self.intel[reference].name = reference.ID
         self.intel[reference].add_report(date=self.date, **kwargs)
-        # If seeing a new player then capture that
-        # TODO put player name in seen_players
-        if 'player' in kwargs:
-            reference = 'Player/' + kwargs['player']
-            if reference not in self.intel:
-                self.intel[reference] = Intel(reference=reference)
-    
+
     """ Get intel about an object or objects """
-    def get_intel(self, reference):
-        if '/' in reference:
+    def get_intel(self, reference=None, by_type=None):
+        if reference:
             if reference in self.intel:
                 return self.intel[reference]
-            return Intel()
-        reports = []
-        for k, i in self.intel.items():
-            if k.startswith(reference + '/'):
-                reports.append(i)
-        return reports
+            return None
+        elif by_type:
+            intel = {}
+            for (k, v) in self.intel.items():
+                if k ^ by_type:
+                    intel[k] = v
+            return intel
     
-    """ 'Recieve' intel reports """
-    def calc_intel(self):
-        # First run includes all of the stars
-        if len(self.intel) == 0:
-            for s in game_engine.get('Sun'):
-                self.add_intel(s, name=s.name, location=s.location, color=s.get_color(), size=s.gravity)
-
     """ Store historical values - accumulates across the year """
     def add_historical(self, category, value):
         history = self.historical.get(category, [])
@@ -185,7 +182,7 @@ class Player(Defaults):
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
         for t in self.treaties:
-            if t.name == treaty.name and t != treaty:
+            if t.treaty_key == treaty.treaty_key and t != treaty:
                 t.merge(treaty)
                 return
         self.treaties.append(treaty)
@@ -211,59 +208,6 @@ class Player(Defaults):
         if draft:
             return None
         return Treaty(other_player=other_player, status='active')
-
-    def calc_treaty(self, whith):
-        for key in self.treaties:
-            t = self.treaties[key]
-            if whith == t.other_player:
-                if len(t.accepted_by) == 2:
-                    if not t.replaced_by == '':
-                        mt = self.treaties[replaced_by]
-                        if len(mt.accepted_by) == 2:
-                            return mt
-                    return t
-        return Treaty(me = Reference(self), other_player = whith)
-    
-    def calc_p_treaty(self, whith):
-        for key in self.treaties:
-            t = self.treaties[key]
-            if whith == t.other_player:
-                if len(t.accepted_by) <= 1 and len(t.rejected_by) == 0:
-                    return t
-        return None
-    
-    def resolve_treaties(self):
-        for player in self.seen_players:
-            for key in self.treaties:
-                treaty = self.treaties[key]
-                if treaty.other_player == player:
-                    player.up_date_treaty(treaty.flip(), self)
-    
-    def up_date_treaty(self, treaty, other):
-        try:
-            if not self.treaties[treaty.name].eq(treaty):
-                self.get_proposal(treaty, other)
-            elif len(treaty.rejected_by) > 0:
-                del self.treaties[treaty.name]
-            elif treaty.replaced_by != '':
-                if len(self.treaties[treaty.reglaced_by].rejected_by) == 0:
-                    del self.treaties[treaty.name]
-                else:
-                    treaty.replaced_by = ''
-                    self.treaties[treaty.name] = treaty
-            elif None:
-                #TODO
-                pass
-        except IndexError:
-            self.get_proposal(treaty, other)
-    
-    def get_proposal(self, treaty, other):
-        tp = self.calc_p_treaty(treaty.other_player)
-        if tp and other.name in treaty.accepted_by:
-            ts = tp.merge(treaty)
-            other.get_proposal(ts.flip)
-            treaty = ts
-        treaties[treaty.name] = treaty
     
     """ prodict the next years budget """
     def predict_budget(self):
@@ -334,7 +278,7 @@ class Player(Defaults):
             elif self.research_field == '<LOWEST>':
                 lowest = -1
                 for f in TECH_FIELDS:
-                    if self.tech_level[f] > lowest[1]:
+                    if self.tech_level[f] > lowest:
                         lowest = self.tech_level[f]
                         field = f
             # Cost to get to the next level in the selected field
@@ -357,11 +301,11 @@ class Player(Defaults):
             budget -= spend
             # Check for tech level-ups
             for f in TECH_FIELDS:
-                cost_next = self.tech_level.cost_for_next_level(f, race)
-                while self.research_partial[f] > cost_next:
+                cost_next = self.tech_level.cost_for_next_level(f, self.race)
+                while self.research_partial[f] >= cost_next:
                     self.tech_level[f] += 1
                     self.research_partial[f] -= cost_next
-                    cost_next = self.tech_level.cost_for_next_level(f, race)
+                    cost_next = self.tech_level.cost_for_next_level(f, self.race)
             # Scrub the research queue
             for t in self.research_queue:
                 if t.level.is_available(self.tech_level):

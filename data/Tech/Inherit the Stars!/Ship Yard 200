@@ -1,5 +1,5 @@
 {
-    "name": "Ship Yard 200",
+    "ID": "Ship Yard 200",
     "category": "Orbital",
     "description": "Ship yards are the components which allow your starbases to build ships.  This one enables you to build ships with a mass of up to 200kT per ship.  Ship yard capacity has no effect on the number of ships you can build per year.  It does affect the amount of repair work your starbase can do (on itself or ships) in a year.",
     "cost": {
@@ -7,16 +7,16 @@
         "lithium": 4,
         "silicon": 6,
         "energy": 3500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 0,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 150,
     "shipyard": 200,
     "repair": 1200,
     "slots_orbital": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

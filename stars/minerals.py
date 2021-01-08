@@ -4,9 +4,9 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'titanium': [0.0, 0.0, sys.maxsize],
-    'lithium': [0.0, 0.0, sys.maxsize],
-    'silicon': [0.0, 0.0, sys.maxsize]
+    'titanium': (0.0, 0.0, sys.maxsize),
+    'lithium': (0.0, 0.0, sys.maxsize),
+    'silicon': (0.0, 0.0, sys.maxsize),
 }
 
 
@@ -16,14 +16,11 @@ MINERAL_TYPES = ['titanium', 'lithium', 'silicon']
 
 """ Represent 'minerals' """
 class Minerals(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-
+    """ Test if the minerals are zero """
     def is_zero(self):
         return (self.titanium == 0 and self.lithium == 0 and self.silicon == 0)
 
-
+    """ Addition operator """
     def __add__(self, other):
         m = Minerals()
         m.titanium = self.titanium + other.titanium
@@ -31,7 +28,7 @@ class Minerals(Defaults):
         m.silicon = self.silicon + other.silicon
         return m
 
-
+    """ Subtracton operator """
     def __sub__(self, other):
         m = Minerals()
         m.titanium = self.titanium - other.titanium
@@ -39,7 +36,7 @@ class Minerals(Defaults):
         m.silicon = self.silicon - other.silicon
         return m
 
-
+    """ Mutiply operator """
     def __mul__(self, other):
         m = Minerals()
         m.titanium = self.titanium * other
