@@ -1,5 +1,6 @@
 import sys
 import copy
+from . import stars_math
 from . import game_engine
 from .defaults import Defaults
 from .location import Location
@@ -9,7 +10,7 @@ from .reference import Reference
 """ Default values (default, min, max)  """
 __defaults = {
     'actions': [[]], # see fleet.feet_actions
-    'location': [],
+    'location': [Location()],
     'fly_to': [Location()],
     'speed': [1, 0, 10],
     'description': [''],
@@ -35,14 +36,15 @@ class Waypoint(Defaults):
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.name = 'Waypoint #'+str(hex(id(self)))[-7:-1]
     
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet):
         self.fly_to = copy.copy(self.location)
         if self.standoff == 'No Standoff':
-            if self.location.reference and self.location.reference.__class__.__name__ == "Planet":
+            if hasattr(self.location, 'reference') and self.location.reference.__class__.__name__ == "Planet":
                 self.fly_to = planet.system.get_outer_system(fleet.location)
-            if self.location.reference and self.location.reference.__class__.__name__ == "Ship":
+            if hasattr(self.location, 'reference') and self.location.reference.__class__.__name__ == "Ship":
                 self.calc_intercept(fleet, self.location.reference)            
         else:
             fleet.compile_scanning()
@@ -58,7 +60,7 @@ class Waypoint(Defaults):
                         distance = normal_scanner
                 if distance < fleet.pennetrating_scanner:
                     distance = fleet.pennetrating_scanner
-                self.calc_standoff(fleet, distance+1)
+                self.calc_standoff(fleet, distance + 1)
             elif standoff == 'Penetrating Minimum':
                 if fleet.pennetrating_scanner >= 1:
                     self.calc_standoff(fleet, fleet.pennetrating_scanner-1)
@@ -124,4 +126,5 @@ class Waypoint(Defaults):
         top_speed, pre_location, ship = fleet.player.find_intel(str(ship.name))
         cords = self.predict_movment(top_speed, ship.location, pre_location)
         self.fly_to = self.chose_intercept(cords)
-    
+
+Waypoint.set_defaults(Waypoint, __defaults) 

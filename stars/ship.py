@@ -70,6 +70,8 @@ class Ship(ShipDesign):
     def colonize(self, player, planet):
         planet.colonize(player)#, player.get_minister(planet).name)
         planet.on_surface += self.cargo
+        for attr in ['titanium', 'people', 'lithium', 'silicon']:
+            self.cargo[attr] = 0
     
     def scan(self, player):
         self.scanner.scan(player, self.location)

@@ -49,8 +49,7 @@ class Fleet(Defaults):
     def move(self, player):
         self.waypoints[1].move_to(self)
         num_denials = 0
-        for ship in self.ships:
-            self.fuel += ship.fuel
+        fuel, fleet_fuel_max = self.get_fuel()
         #for hyper_denial in game_engine.hyper_denials:
         #    distance_to_denial = self.location - hyper_denial.location
         #    if distance_to_denial >= hyper_denial.range and hyper_denial.player.treaties[player.name].relation == 'enemy':
@@ -68,7 +67,7 @@ class Fleet(Defaults):
                 self.move(player)
             else:
                 return
-        while self.test_fuel(speed, num_denials, distance) or self.test_damage(speed, num_denials):
+        while self.test_fuel(speed, num_denials, distance, fuel) or self.test_damage(speed, num_denials):
             speed -= 1
             distance_at_hyper = (speed**2)/100
             if distance_to_waypoint < distance_at_hyper:
@@ -78,22 +77,23 @@ class Fleet(Defaults):
             if speed == 0:
                 return
         self.location = self.location.move(self.waypoints[1].fly_to, distance)
-        self.burn_fuel(speed, num_denials, self.waypoints[1].fly_to, distance)
-        self.returnn()
+        fuel = self.burn_fuel(speed, num_denials, self.waypoints[1].fly_to, distance, fuel)
+        self.distribute_fuel(fuel, fleet_fuel_max)
     
     """ calles the move for each of the ships """
-    def burn_fuel(self, speed, num_denials, fly_to, distance):
+    def burn_fuel(self, speed, num_denials, fly_to, distance, fuel):
         fuel_1_ly = 0
         for ship in self.ships:
             fuel_1_ly += ship.move(speed, num_denials, fly_to, distance)
-        self.fuel -= fuel_1_ly
+        fuel -= fuel_1_ly
+        return fuel
     
     """ checks if you can move at a certain speed with your entire fleet """
-    def test_fuel(self, speed, num_denials, dis):
+    def test_fuel(self, speed, num_denials, dis, fuel):
         fuel_1_ly = 0
         for ship in self.ships:
             fuel_1_ly += ship.fuel_check(speed, num_denials, dis)
-        if (self.fuel - fuel_1_ly) >= 0:
+        if (fuel - fuel_1_ly) >= 0:
             return False
         else:
             return True
@@ -113,7 +113,7 @@ class Fleet(Defaults):
         for ship in self.ships:
             ship.fuel = int(fuel * ship.fuel_max / fleet_fuel_max)
             fuel_left -= ship.fuel
-        for i in range(fuel_left):
+        for i in range(int(fuel_left)):
             self.ships[i].fuel += 1
     
     """ evenly distributes the cargo back to the ships """
@@ -179,7 +179,7 @@ class Fleet(Defaults):
     
     """ executes the unload function """
     def unload(self, recipiant, player):
-        if not self.check_self(recipiant, player) and not recipiant.is_colonized():
+        if not self.check_self(recipiant, player) and recipiant.is_colonized():
             return
         self_cargo, self_cargo_max = self.get_cargo()
         self_fuel, self_fuel_max = self.get_fuel()
@@ -221,8 +221,8 @@ class Fleet(Defaults):
         self_cargo, self_cargo_max = self.get_cargo()
         self_fuel, self_fuel_max = self.get_fuel()
         if recipiant.__class__.__name__ == 'fleet':
-            load_cargo, load_cargo_max = recipiant.get_cargo()
-            load_fuel, load_fuel_max = recipiant.get_fuel()
+            pass#TODO load_cargo, load_cargo_max = recipiant.get_cargo()
+            #TODO load_fuel, load_fuel_max = recipiant.get_fuel()
         else:
             load_fuel = recipiant.space_station.fuel
             load_fuel_max = recipiant.space_station.fuel_max
@@ -251,9 +251,9 @@ class Fleet(Defaults):
             self.distribute_cargo(self_cargo, item, self_cargo_max)
         self.distribute_fuel(self_fuel, self_fuel_max)
         if recipiant.__class__.__name__ == 'fleet':
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.distribute_cargo(load_cargo, item, load_cargo_max)
-            recipiant.distribute_fuel(load_fuel, load_fuel_max)
+            pass#TODO for item in ["titanium", "silicon", "lithium", "people"]:
+            #TODO    recipiant.distribute_cargo(load_cargo, item, load_cargo_max)
+            #TODO recipiant.distribute_fuel(load_fuel, load_fuel_max)
         else:
             for item in ["titanium", "silicon", "lithium", "people"]:
                 recipiant.on_surface[item] = load_cargo[item]
@@ -290,8 +290,8 @@ class Fleet(Defaults):
         self_cargo, self_cargo_max = self.get_cargo()
         self_fuel, self_fuel_max = self.get_fuel()
         if recipiant.__class__.__name__ == 'fleet':
-            unload_cargo, unload_cargo_max = recipiant.get_cargo()
-            unload_fuel, unload_fuel_max = recipiant.get_fuel()
+            pass#TODO unload_cargo, unload_cargo_max = recipiant.get_cargo()
+            #TODO unload_fuel, unload_fuel_max = recipiant.get_fuel()
         else:
             unload_fuel = recipiant.space_station.fuel
             unload_cargo = recipiant.on_surface
@@ -317,9 +317,9 @@ class Fleet(Defaults):
             self.distribute_cargo(self_cargo, item, self_cargo_max)
         self.distribute_fuel(self_fuel, self_fuel_max)
         if recipiant.__class__.__name__ == 'fleet':
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.distribute_cargo(unload_cargo, item, unload_cargo_max)
-            recipiant.distribute_fuel(unload_fuel, unload_fuel_max)
+            pass#TODO for item in ["titanium", "silicon", "lithium", "people"]:
+            #TODO    recipiant.distribute_cargo(unload_cargo, item, unload_cargo_max)
+            #TODO recipiant.distribute_fuel(unload_fuel, unload_fuel_max)
         else:
             for item in ["titanium", "silicon", "lithium", "people"]:
                 recipiant.on_surface[item] = unload_cargo[item]
@@ -328,13 +328,15 @@ class Fleet(Defaults):
     """ telles the ships in the fleet that can colonize to colonize the planet """
     def colonize(self, player):
         planet = self.waypoints[0].recipiants['colonize']
-        if planet.player.is_valid:
-            return
+        #TODO if planet not in game_engine.get('Planet/') or planet.is_colonized():
+            #return
         for ship in self.ships:
             if ship.colonizer and ship.cargo.people > 0:
                 ship.colonize(Reference(player), planet)
                 ship.scrap(planet, self.location)
                 self.ships.remove(ship)
+                if len(self.ships) == 0:
+                    player.remove_fleet(self)
                 break
     
     """ scraps the fleet """
