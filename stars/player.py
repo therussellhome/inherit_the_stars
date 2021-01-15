@@ -10,12 +10,14 @@ from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
+from .message import Message
+
 
 """ Default values (default, min, max)  """
 __defaults = {
     'game_name': [''], # name of game for when generating
     'ready_to_generate': [False],
-    'date': [0.0, 0.0, sys.maxsize],
+    'date': ['0.00'],
     'race': [Race()],
     'computer_player': [False],
     'seen_players': [[]],
@@ -43,6 +45,7 @@ __defaults = {
     'historical': [{}], # map of category to value by year (not hundreth)
 }
 
+
 """ List of fields that are user modifable """
 _player_fields = [
     'ready_to_generate',
@@ -50,6 +53,7 @@ _player_fields = [
     'research_queue',
     'research_field',
     'fleets',
+    'messages',
     'ship_designs',
     'treaties',
     'finance_minister_construction_percent',
@@ -67,7 +71,7 @@ class Player(Defaults):
         if 'name' not in kwargs:
             self.name = self.race.name
         if 'date' not in kwargs:
-            self.date = self.race.start_date
+            self.date = '{:01.2f}'.format(self.race.start_date)
         game_engine.register(self)
         self.__cache__ = {}
 
@@ -89,7 +93,7 @@ class Player(Defaults):
 
     """ Update the date """
     def next_hundreth(self):
-        self.date = round(self.date + 0.01, 2)
+        self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
     """ calles fleets to do actions """
     def ship_action(self, action):
@@ -151,8 +155,8 @@ class Player(Defaults):
         self.historical[category] = history
 
     """ Add a message """
-    def add_message(self, source, subject, body, link):
-        self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
+    def add_message(self, **kwargs):
+        self.messages.append(Message(**kwargs, date=self.date))
     
     """ Compute score based on intel """
     def calc_score(self):
