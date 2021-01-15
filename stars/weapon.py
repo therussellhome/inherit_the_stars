@@ -6,19 +6,16 @@ from random import randint
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'power': [0, 0, sys.maxsize],
-    'armor_multiplier': [1, 0, 200],
-    'is_beam': [True],
-    'is_multishot': [False],
-    'range_tm': [0.0, 0.0, sys.maxsize], # terameters
-    'accuracy': [100, 0, 200]
+    'power': (0, 0, sys.maxsize),
+    'armor_multiplier': (1, 0, 200),
+    'is_beam': True,
+    'is_multishot': False,
+    'range_tm': (0.0, 0.0, sys.maxsize), # terameters
+    'accuracy': (100, 0, 200),
 }
 
 """ Represent 'a weapon' """
 class Weapon(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     """ Get the accuracy of the weapon at a given range """
     def get_accuracy(self, target_ly):
         range_ly = self.range_tm * stars_math.TERAMETER_2_LIGHTYEAR 
@@ -50,5 +47,6 @@ class Weapon(Defaults):
             return (0, 0)
         damage = self.get_power(target_ly, shield, armor)
         return (damage[0], damage[1])
+
 
 Weapon.set_defaults(Weapon, __defaults)

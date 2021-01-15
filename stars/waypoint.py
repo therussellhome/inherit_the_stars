@@ -9,16 +9,16 @@ from .reference import Reference
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'actions': [[]], # see fleet.feet_actions
-    'location': [Location()],
-    'fly_to': [Location()],
-    'speed': [1, 0, 10],
-    'description': [''],
-    'standoff': ['No Standoff'],
+    'actions': [], # see fleet.feet_actions
+    'location': Location(),
+    'fly_to': Location(),
+    'speed': (1, 0, 10),
+    'description': '',
+    'standoff': 'No Standoff',
     # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'=(intercept if target is a ship)
-    'move_on': [False],
-    'upgrade_if_commanded': [False],
-    'recipiants': [{}],
+    'move_on': False,
+    'upgrade_if_commanded': False,
+    'recipiants': {},
     # 'load':"your; Planet(), Fleet() or empty_space, salvage",
     # 'unload':"your; Planet(), Fleet() or salvege",
     # 'sell':"other; Planet()",
@@ -26,18 +26,12 @@ __defaults = {
     # 'merge':Reference(Fleet())
     # 'transfer':Reference(Fleet().player)
     #?'piracy':"other; Fleet()"?
-    'transfers': [{}], # 'action':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
-    
+    'transfers': {}, # 'action':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
 }
 
 
 """ Class defining waypoints - edited by the player through fleet """
 class Waypoint(Defaults):
-    """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.name = 'Waypoint #'+str(hex(id(self)))[-7:-1]
-    
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet):
         self.fly_to = copy.copy(self.location)
@@ -127,4 +121,4 @@ class Waypoint(Defaults):
         cords = self.predict_movment(top_speed, ship.location, pre_location)
         self.fly_to = self.chose_intercept(cords)
 
-Waypoint.set_defaults(Waypoint, __defaults) 
+Waypoint.set_defaults(Waypoint, __defaults)

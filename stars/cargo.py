@@ -4,23 +4,20 @@ from .minerals import Minerals
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'people': [0.0, 0.0, sys.maxsize],
-    'cargo_max': [0, -1, sys.maxsize]
+    'people': (0.0, 0.0, sys.maxsize),
+    'cargo_max': (0, -1, sys.maxsize),
 }
 
 
 """ Represent 'cargo' that can be held """
-""" A cargo_max of -1 is used to indicate no maximum """
 class Cargo(Minerals):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
     def __getattribute__(self, name):
         if name == 'cargo_max' and super().__getattribute__(name) == -1:
             return sys.maxsize
         else:
             return super().__getattribute__(name)
     
+    """ Provide an addition operator """
     def __add__(self, other):
         m = super().__add__(other)
         c = Cargo(**m.__dict__)

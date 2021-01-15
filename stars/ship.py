@@ -13,30 +13,26 @@ from .ship_design import ShipDesign
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'location': [Location()],
-    'battle_plan': [BattlePlan()],
-    'initative': [0, 0, sys.maxsize],
-    'armor': [10, 0, sys.maxsize],
-    'armor_damage': [0, 0, sys.maxsize],
-    'shields': [0, 0, sys.maxsize],
-    'shields_damage': [0, 0, sys.maxsize],
-    'max_distance': [0.0, 0.0, sys.maxsize],
-    'damage_armor': [0, 0, sys.maxsize],
-    'fuel': [0, 0, sys.maxsize],
-    'fuel_max': [0, 0, sys.maxsize],
-    'engines': [[]],
-    'cargo': [Cargo()],
-    'expirence': [Expirence()],
-    'cloak_percent': [0.0, 0.0, 100.0],
-    'player': [Reference()]
+    'location': Location(),
+    'battle_plan': BattlePlan(),
+    'initative': (0, 0, sys.maxsize),
+    'armor': (10, 0, sys.maxsize),
+    'armor_damage': (0, 0, sys.maxsize),
+    'shields': (0, 0, sys.maxsize),
+    'shields_damage': (0, 0, sys.maxsize),
+    'max_distance': (0.0, 0.0, sys.maxsize),
+    'damage_armor': (0, 0, sys.maxsize),
+    'fuel': (0, 0, sys.maxsize),
+    'fuel_max': (0, 0, sys.maxsize),
+    'engines': [],
+    'cargo': Cargo(),
+    'expirence': Expirence(),
+    'cloak_percent': (0.0, 0.0, 100.0),
+    'player': Reference(),
 }
 
 
 class Ship(ShipDesign):
-    """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """

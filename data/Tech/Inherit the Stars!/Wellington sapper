@@ -1,16 +1,16 @@
  {
-    "name": "Wellington sapper",
+    "ID": "Wellington sapper",
     "category": "Beam Weapon",
     "description": "Sappers drain shields very efficiently and have good range but have no effect on armor.",
     "cost": {
         "silicon": 8,
         "energy": 2100,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 11,
         "weapons": 21,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "weapons": [
@@ -21,8 +21,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

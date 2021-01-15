@@ -1,5 +1,5 @@
 {
-    "name": "Fire from the LORD",
+    "ID": "Fire from the LORD",
     "category": "Missile",
     "description": "A much more powerful and slightly longer-range capital ship missile.  (the same as Plague of Locusts but cheaper to build)",
     "race_requirements": "Aku'Ultan",
@@ -8,12 +8,12 @@
         "lithium": 15,
         "silicon": 10,
         "energy": 1500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 20,
         "propulsion": 10,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 35,
     "weapons": [
@@ -24,8 +24,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 35,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Cut Purse Pod",
+    "ID": "Cut Purse Pod",
     "category": "Mechanical",
     "description": "The Cut Purse Pod is a fuel tank that allows you to steal fuel from other ships in the same location, Arrr!  Beware matey, that be close enough for them to fire upon ye.",
     "race_requirements": "Kender",
@@ -8,14 +8,14 @@
         "lithium": 2,
         "silicon": 16,
         "energy": 9000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 6,
 	"electronics": 15,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 12,
     "fuel_max": 1000000,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

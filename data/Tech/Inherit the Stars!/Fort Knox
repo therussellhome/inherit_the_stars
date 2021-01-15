@@ -1,5 +1,5 @@
 {
-    "name": "Fort Knox",
+    "ID": "Fort Knox",
     "category": "Shield",
     "description": "shipboard shield",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 10,
         "energy": 1500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 18,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "shield": 300,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Coconut",
+    "ID": "Coconut",
     "category": "Hull",
     "description": "The Coconut is a mini-colonizer ship available only to Formic races.  The engine and colony module are built in.  It has no slots for adding other components.  The engine goes Hyper 6 for very little fuel, but fuel usage rises fairly quickly at higher speeds.",
     "race_requirements": "Formics",
@@ -8,11 +8,11 @@
         "lithium": 10,
         "silicon": 11,
         "energy": 1800,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 0,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 32,
     "cargo_max": 15,
@@ -20,7 +20,7 @@
     "armor": 5,
     "scanner": {
         "penetrating": 0.0002115,
-        "__uuid__": "Scanner"
+        "__class__": "Scanner"
     },
     "engines": [
         {
@@ -28,11 +28,11 @@
             "speed_divisor": 10.0,
             "speed_exponent": 3.0,
             "antimatter_siphon": 600.0,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
     "repair": 2,
     "colonizer": true,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

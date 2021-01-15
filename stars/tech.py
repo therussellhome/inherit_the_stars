@@ -14,38 +14,38 @@ from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'name': ['Tech the GM made up himself'],
-    'category': [''],
-    'description': ['I\'m a horrible scanner, a zero range weapon, and an engine that only works on Saturday'],
-    'cost': [Cost()],
-    'race_requirements': [''],
-    'level': [TechLevel()],
-    'mass': [0, 0, sys.maxsize],
-    'cargo_max': [0, 0, sys.maxsize],
-    'fuel_max': [0, 0, sys.maxsize],
-    'shield': [0, 0, sys.maxsize],
-    'armor': [0, 0, sys.maxsize],
-    'ecm': [0, 0, 100],
-    'weapons': [[]], # weapon.Weapon()
-    'bombs': [[]], # bomb.Bomb()
-    'scanner': [Scanner()],
-    'cloak': [Cloak()],
-    'engines': [[]], # engine.Engine()
-    'shipyard': [0, 0, sys.maxsize],
-    'repair': [0, 0, sys.maxsize],
-    'mines_laid': [0, 0, sys.maxsize],
-    'fuel_generation': [0, 0, sys.maxsize],
-    'hyperdenial': [HyperDenial()],
-    'is_colonizer': [False],
-    'is_starbase': [False],
-    'is_trading_post': [False],
-    'facility_output': [0.0, 0.0, sys.maxsize],
-    'mining_rate': [0.0, 0.0, sys.maxsize],
-    'mineral_depletion_factor': [0.0, 0.0, 100],
-    'mat_trans_energy': [0, 0, sys.maxsize],
-    'slots_general': [-1, -sys.maxsize, sys.maxsize],
-    'slots_depot': [0, -sys.maxsize, sys.maxsize],
-    'slots_orbital': [0, -sys.maxsize, sys.maxsize],
+    'ID': '@UUID',
+    'category': '',
+    'description': 'I\'m a horrible scanner, a zero range weapon, and an engine that only works on Saturday',
+    'cost': Cost(),
+    'race_requirements': '',
+    'level': TechLevel(),
+    'mass': (0, 0, sys.maxsize),
+    'cargo_max': (0, 0, sys.maxsize),
+    'fuel_max': (0, 0, sys.maxsize),
+    'shield': (0, 0, sys.maxsize),
+    'armor': (0, 0, sys.maxsize),
+    'ecm': (0, 0, 100),
+    'weapons': [], # weapon.Weapon()
+    'bombs': [], # bomb.Bomb()
+    'scanner': Scanner(),
+    'cloak': Cloak(),
+    'engines': [], # engine.Engine()
+    'shipyard': (0, 0, sys.maxsize),
+    'repair': (0, 0, sys.maxsize),
+    'mines_laid': (0, 0, sys.maxsize),
+    'fuel_generation': (0, 0, sys.maxsize),
+    'hyperdenial': HyperDenial(),
+    'is_colonizer': False,
+    'is_starbase': False,
+    'is_trading_post': False,
+    'facility_output': (0.0, 0.0, sys.maxsize),
+    'mining_rate': (0.0, 0.0, sys.maxsize),
+    'mineral_depletion_factor': (0.0, 0.0, 100),
+    'mat_trans_energy': (0, 0, sys.maxsize),
+    'slots_general': (-1, -sys.maxsize, sys.maxsize),
+    'slots_depot': (0, -sys.maxsize, sys.maxsize),
+    'slots_orbital': (0, -sys.maxsize, sys.maxsize),
 }
 
 
@@ -55,6 +55,7 @@ TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanic
 
 """ Represent a tech component """
 class Tech(Defaults):
+    """ Register with game engine """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
@@ -117,7 +118,7 @@ class Tech(Defaults):
         if self.fuel_max > 0:
             quick_stats += '<i class="fa-free-code-camp"> ' + str(self.fuel_max) + '</i>'
         return ['<td><img style="width: 50px; height: 50px" src="tech_browser.png"/></td><td class="hfill">' \
-            + '<div style="font-size: 180%; position: relative">' + self.name \
+            + '<div style="font-size: 180%; position: relative">' + self.ID \
             + '<div style="font-size: 50%; position: absolute; top: 0; right: 0">' + requirements + '</div>' \
             + '<div style="font-size: 50%; position: absolute; bottom: 0; right: 0">' + research + '</div>' \
             + '</div>' \
@@ -231,5 +232,6 @@ class Tech(Defaults):
             if not formatter:
                 formatter = '<i class="fa-check"></i>'
         html.append('<td>[' + category + ']</td><td class="hfill">' + name + '</td><td class="tech_value">' + formatter.format(value) + '</td>')
+
 
 Tech.set_defaults(Tech, __defaults)

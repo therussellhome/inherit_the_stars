@@ -5,12 +5,12 @@ from .. import game_engine
 
 
 __defaults = {
-    'options_race_editor_primary_race_trait': [PRIMARY_RACE_TRAITS],
-    'race_editor_habitability_message': [''],
-    'race_editor_file_to_load': [''],
-    'options_race_editor_file_to_load': [[]],
-    'race_editor_advantage_points_left': [0, -2000000, 2000000],
-    'race_editor_screen_title': ['Race Editor'],
+    'options_race_editor_primary_race_trait': PRIMARY_RACE_TRAITS,
+    'race_editor_habitability_message': '',
+    'race_editor_file_to_load': '',
+    'options_race_editor_file_to_load': [],
+    'race_editor_advantage_points_left': (0, -2000000, 2000000),
+    'race_editor_screen_title': 'Race Editor',
 }
 
 
@@ -41,9 +41,9 @@ class RaceEditor(PlayerUI):
         """validate that race has non-negative advantage points left"""
         self.race_editor_advantage_points_left = int(race.calc_points())
         if self.race_editor_advantage_points_left < 0:
-            self.user_alerts.append(self.race_editor_name + ' has negative advantage points')
+            self.user_alerts.append(self.race_editor_ID + ' has negative advantage points')
         elif action == 'save':
-            game_engine.save('Race', race.name, race)
+            game_engine.save('Race', race.ID, race)
 
 
 for key in Race.defaults:
