@@ -4,6 +4,7 @@ from math import cos, sin
 from random import randint, uniform
 from . import game_engine
 from . import stars_math
+from .fleet import Fleet
 from .cargo import Cargo
 from .cost import Cost
 from .defaults import Defaults
@@ -34,7 +35,7 @@ __defaults = {
     'homeworld': False,
     'location': Location(),
     'star_system': Reference('StarSystem'),
-    'space_station': [],
+    'space_stations': Fleet(),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
@@ -79,7 +80,7 @@ class Planet(Defaults):
         color = hls_to_rgb(t, .5, r)
         color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X')
         return color_string
-
+    
     """ Code the planet orbiting its star """
     # t = years it takes planet to orbit, min 1 year, max 30 years
     # m = the sun's gravity clicks
