@@ -47,12 +47,18 @@ class FinanceMinister(PlayerUI):
         self.finance_research = '<i class="fa-bolt">' + str(round(self.player().finance_research_percent * self.player().predict_budget() / 100)) + '</i>'
         self.finance_other = '<i class="fa-bolt">' + str(round((((100-self.player().finance_construction_percent) - self.player().finance_research_percent) - self.player().finance_mattrans_percent) * self.player().predict_budget() / 100)) + '</i>'
         # build queue
-        build_queue = []
-        for t in self.player().build_queue:
-            link = t.ID.replace('\'', '\\\'').replace('\"', '\\\"')
-            build_queue.append(t.ID)
-            self.build_queue.append('<td class="hfill"><div class="tech queue_template">' + t.ID + '</div></td>'
-                + '<td><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + link + '\')"></i></td>')
-        
+        queue = self.player().build_queue
+        for i in range(len(queue)):
+            item = queue[i]
+            self.finance_queue.append('<td rowspan="2">' + item.calc_type() + '</td><td>' + item.cost.to_html() + '</td>'\
+                + '<td rowspan=2><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + str(i) + '\')"></i></td>')
+            self.finance_queue.append('<td></td>') # TODO calc years to get
+        self.finance_buildable.append('<td>planet to build on</td><td colspan="2"><select id="finance_planet" onchange="post(\'finance_minister\')"/></td>')
+        buildable = self.player().ship_designs
+        for i in range(len(buildable)):
+            item = buildable[i]
+            self.finance_buildable.append('<td>' + item.calc_type() + '</td><td>' + item.cost.to_html() + '</td>'\
+                + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'finance_minister\', \'?add=' + i + '\')"></i></td>')
+
 
 FinanceMinister.set_defaults(FinanceMinister, __defaults, sparse_json=False)

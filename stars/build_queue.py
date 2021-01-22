@@ -21,6 +21,21 @@ class BuildQueue(Defaults):
     """ Child classes need to override this """
     def finish(self):
         pass
+    
+    """ for child classes to use for their name in the production queue """
+    def calc_type(self):
+        print(type(self))
+        tipe = str(type(self))
+        if type(self) == "<class 'stars.facility.Facility'>":
+            return self.facility_type
+        if type(self) == "<class 'stars.ship_design.ShipDesign'>":
+            return self.name
+        if type(self) == "<class 'stars.ship.Ship'>":
+            return self.ship_design.name
+        if type(self) == "<class 'stars.terraform.Terraform'>":
+            return self.name
+        return 'unknown'
+#        if type(self) == 'fleet'?
 
 
 BuildQueue.set_defaults(BuildQueue, __defaults)

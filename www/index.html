@@ -527,7 +527,9 @@ void main() {
             <td colspan="4"><input type="checkbox" id="finance_research_use_surplus" onchange="post('finance_minister')"/> allow research to use surplus</td>
         </tr>
     </table><table class="hfill" id="finance_queue">
-    </table><table class="hfill" id="finance_bildable">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Build Queue</caption>
+    </table><table class="hfill" id="finance_buildable">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Buildable</caption>
     </table>
 </div>
 

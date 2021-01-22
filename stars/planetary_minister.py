@@ -9,9 +9,8 @@ __defaults = {
     'allow_baryogenesis': True,
     'max_terraform': False,
     'planets': [],
-    'name': 'newbie', #TODO
     'color': 'purple',
-    'name': '@UUID', #TODO
+    'name': '@UUID',
     # percent population operating each falicity type where the key matches the facility types
     'power_plants': (30, 0, 100),
     'factories': (30, 0, 100),
@@ -22,12 +21,9 @@ __defaults = {
 
 """ The planetary minister controls the planetary construction phase of turn generation """
 class PlanetaryMinister(Defaults):
-<<<<<<< HEAD
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-=======
->>>>>>> e4680c560adb73cb962cd1dabe06280af8b28196
     """ makes shure that all effort is alocated and the total is = to 100% """
     def normalize(self):
         factor = self.power_plants + self.factories + self.mines + self.defenses

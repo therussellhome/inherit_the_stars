@@ -11,6 +11,8 @@ from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
+from .facility import Facility #for testing
+from .terraform import Terraform # for testing
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -35,11 +37,11 @@ __defaults = {
     'fleets': [],
     'tech': [], # tech tree
     'treaties': [],
-    'build_queue': [], # array of BuildQueue items
-    'finance_construction_percent': (90, 0, 100),
-    'finance_mattrans_percent': (0, 0, 100),
+    'build_queue': [Facility()], # array of BuildQueue items
+    'finance_construction_percent': (90.0, 0.0, 100.0),
+    'finance_mattrans_percent': (0.0, 0.0, 100.0),
     'finance_mattrans_use_surplus': False,
-    'finance_research_percent': (10, 0, 100),
+    'finance_research_percent': (10.0, 0.0, 100.0),
     'finance_research_use_surplus': False,
     'finance_baryogenesis_default': True,
     'historical': {}, # map of category to value by year (not hundreth)

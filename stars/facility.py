@@ -4,7 +4,7 @@ from .cost import Cost
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'facility_type': '',
+    'facility_type': 'power_plants',
 }
 
 

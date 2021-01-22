@@ -209,14 +209,14 @@ class Game(Defaults):
                 eval('obj.' + method + '()')
                 t = (time.time() - s)
                 if t > 0.1:
-                    print(obj.__uuid__, method, t)
+                    print(obj.ID, method, t)
         else:
             for obj in objs:
                 s = time.time()
                 eval('obj.' + method + '()')
                 t = (time.time() - s)
                 if t > 0.1:
-                    print(obj.__uuid__, method, t)
+                    print(obj.ID, method, t)
 
     """ Execute combat after determining where combat will occur """
     def _combat(self):
