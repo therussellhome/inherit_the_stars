@@ -59,8 +59,15 @@ class Fleet(Defaults):
             distance = distance_to_waypoint
         else:
             distance = distance_at_hyper
-        if distance_to_waypoint == 0:
-            if self.waypoints[2] and self.waypoints[2].location - self.location != 0:
+        if self.waypoints[1].depart == 'after x years':
+            self.waypoints[1].years -= 0.01
+        repair_check = 0
+        if self.waypoints[1].depart == 'repair to x':
+            for ship in self.ships:
+                repair_check += ship.max_armor() / ship.armor * 100
+            repair_check /= len(self.ships)
+        if distance_to_waypoint == 0
+            if self.waypoints[1].depart == 'immediately' or self.waypoints[1].depart == 'after x years' and self.waypoint[1].years == 0 or self.waypoints[1].depart == 'repair to x' and self.waypoints[1].repair_to <= repair_check:
                 self.waypoints.pop(0)
                 self.move(player)
             else:
@@ -175,6 +182,8 @@ class Fleet(Defaults):
     
     """ Transfers ownership of the fleet to the specified player """
     def transfer(self, player):
+        if self.cargo.people > 0:
+            return
         player_2 = self.waypoints[0].recipiants['transfer']
         self.waypoints = [self.waypoints[0]]
         player_2.add_fleet(self)
@@ -443,41 +452,37 @@ class Fleet(Defaults):
                 recipiant.on_surface[item] = unload_cargo[item]
             recipiant.space_stations.distribute_fuel(unload_fuel, unload_fuel_max)
     
-    """ Repairs friendly ships, prioitizing your fleet and then your other fleets """
-    def repair(self, player):
-        return #TODO
-        '''
+    """ Repairs ships, prioitizing your fleet and then your other fleets before other friendly units """
+    def repair_friendlys(self, player):
         repair_points = 0
         ships_here = {'self':{'ships':[], 'damage':0}, 'you':{'ships':[], 'damage':0}, 'friendly':{'ships':[], 'damage':0}}
         for ship in self.ships:
-            repair_points += ship.open_repair_bays()
+            repair_points += ship.open_repair_bays() + ship.damage_control()
             ships_here['self']['ships'].append(ship)
-            ships_here['self']['damage'] += ship.damage_armor
+            ships_here['self']['damage'] += ship.max_armor() - ship.armor
         for fleet in player.fleets
             if (self.location - fleet.location) == 0 and fleet != self:
                 for ship in fleet.ships:
                     ships_here['you']['ships'].append(ship)
-                    ships_here['you']['damage'] += ship.damage_armor
-        for ship in find_bin(self.location):
-            if ship.PlayerID != player.ID and get_player(ship.PlayerID).get_treaty(player).relation == 'team':
-                if (self.location - ship.location) == 0:
-                    ships_here['friendly']['ships'].append(ship)
-                    ships_here['friendly']['damage'] += ship.damage_armor
+                    ships_here['you']['damage'] += ship.max_armor() - ship.armor
+        #TODO Repair bays enable repair of ships, belonging to other players, that are at the same location.  
+        #for ship in find_bin(self.location):
+        #    if ship.PlayerID != player.ID and get_player(ship.PlayerID).get_treaty(player).relation == 'team':
+        #        if (self.location - ship.location) == 0:
+        #            ships_here['friendly']['ships'].append(ship)
+        #            ships_here['friendly']['damage'] += ship.max_armor() - ship.armor
         repair_points = self.distribute_repair(ships_here['self'], repair_points)
         repair_points = self.distribute_repair(ships_here['you'], repair_points)
         repair_points = self.distribute_repair(ships_here['friendly'], repair_points)
-        '''
     
     """ Tells the ships to repair """
     def distribute_repair(self, ships_here, repair_points):
-        return #TODO
-        '''
         repair_points_left = repair_points
         damage = ships_here['damage']
-        damage_fixed = copy.copy(ships_here['damage'])
+        damage_fixed = 0
         temp_repair = min(repair_points, damage)
         for ship in ships_here['ships']:
-            amount = int(temp_repair * (ship.damage_armor / damage) * (temp_repair / damage))
+            amount = int(temp_repair * ((ship.max_armor() - ship.armor) / damage) * (temp_repair / damage))
             ship.repair_self(amount)
             repair_points_left -= amount
             damage_fixed += amount
@@ -488,7 +493,6 @@ class Fleet(Defaults):
                 repair_points_left -= 1
         ships_here['damage'] -= damage_fixed
         return repair_points_left
-        '''
     
     """ Tells any ships that can lay mines to lay mines """
     def lay_mines(self, player):
@@ -497,8 +501,8 @@ class Fleet(Defaults):
             ship.lay_mines(player, system)
     
     """ Tells all the ships to repair themselves (damage_control) """
-    def self_repair(self):
-        repair_points = 0
+    def repair_ship(self):
+        if 
         for ship in self.ships:
             repair_self(ship.damage_control())
     

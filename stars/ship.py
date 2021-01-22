@@ -5,11 +5,13 @@ from . import game_engine
 from .cargo import Cargo
 from random import randint
 from .engine import Engine
+from .scanner import Scanner
 from .location import Location
 from .expirence import Expirence
 from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
+from .hyper_denial import HyperDenial
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -67,7 +69,7 @@ class Ship(ShipDesign):
                 return True
         return False
     
-    """ tells the planet that it has been colonized and unloads and sraps the ship """
+    """ Tells the planet that it has been colonized and unloads and sraps the ship """
     def colonize(self, player, planet):
         planet.colonize(player)
         planet.on_surface += self.cargo
@@ -77,8 +79,7 @@ class Ship(ShipDesign):
     
     """ Scans stuff """
     def scan(self, player):
-        return#TODO for scanner in self.scanners:
-        #    scanner.scan(player, self.location)
+        scanner.scan(player, self.location)
     
     """ Lays mines """
     def lay_mines(self, player, system):
@@ -86,15 +87,15 @@ class Ship(ShipDesign):
     
     """ Returns the repair value of the repair bay """
     def open_repair_bays(self):
-        return#TODO self.repair_bay
+        return self.repair_bay
     
     """ Recurns the self repair value """
     def damage_control(self):
-        return#TODO self.repair
+        return self.repair
     
     """ Creates a hyper denial object """
     def deploy_hyper_denial(self, player):
-        return#TODO
+        self.hyper_denial.on = True
     
     """ Creates a salvage at a location """
     def create_salvage(self, location, cargo):
@@ -123,8 +124,10 @@ class Ship(ShipDesign):
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):
-        return#TODO if self.damage_armor > 0:
-            #self.damage_armor -= amount
+        max_armor = self.max_armor()
+        if (max_armor - self.armor) > 0:
+            self.armor += min((max_armor - self.armor), amount)
+            return amount - min((max_armor - self.armor), amount)
     
     """ Returns the number of facilities and amount of population that is killed """
     def bomb(self, planet, shields, pop):
@@ -147,7 +150,7 @@ class Ship(ShipDesign):
         #    mass = self.mass
         return mass + self.cargo.people
     
-    """ executes the on_destruction sequence """
+    """ Executes the on_destruction sequence """
     def blow_up(self):
         return#TODO self.scrap(self.location, self.location)
 

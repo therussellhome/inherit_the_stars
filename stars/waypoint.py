@@ -16,8 +16,8 @@ __defaults = {
     'description': '',
     'standoff': 'No Standoff',
     # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'=(intercept if target is a ship)
-    'move_on': False,
     'upgrade_if_commanded': False,
+    'depart': 'immediately',# 'after x years', 'repair to x', 'remain indef',
     'recipiants': {},
     # 'load':"your; Planet(), Fleet() or empty_space, salvage",
     # 'unload':"your; Planet(), Fleet() or salvege",

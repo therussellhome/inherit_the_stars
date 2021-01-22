@@ -2,6 +2,7 @@ import unittest
 from .. import *
 
 class FleetCase(unittest.TestCase):
+    """ Test distribute_cargo()"""
     def test_distribute_cargo(self):
         ship_1 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
         ship_2 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
@@ -13,6 +14,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_2.cargo.people, 5)
         self.assertEqual(ship_3.cargo.people, 4)
     
+    """ Test distribute_fuel()"""
     def test_distribute_fuel(self):
         ship_1 = ship.Ship(fuel_max = 200)
         ship_2 = ship.Ship(fuel_max = 200)
@@ -22,6 +24,7 @@ class FleetCase(unittest.TestCase):
         fleet_1.distribute_fuel(2, 400)
         self.assertEqual(ship_2.fuel, 1)
     
+    """ Test adding ships as one list """
     def test_addships_1(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
