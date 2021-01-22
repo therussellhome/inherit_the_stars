@@ -22,21 +22,28 @@ class Messages(PlayerUI):
         if not self.player():
             return
         
+        # Loads the file of messages
         dictionary = game_engine.load('Message', 'Inherit the Stars!') 
         for msg in self.player().messages:
+            # Gives the parameters to the message text
             if msg.msg_key in dictionary:
                 text = dictionary[msg.msg_key]
             text = text.format(*msg.parameters)
-            self.messages_inbox.append('<td>' + msg.date + '</td>')
+            # Sets up the inbox
+            # TODO sender icon
+            self.messages_inbox.append('<td style="color: mediumslateblue; text-decoration: underline;">' + msg.date + '</td>')
+            # Adds the '...' if needed
             d = ''
-            if len(text) > 61:
+            if len(text) > 63:
                 d = '...'
-            self.messages_inbox.append('<td>' + text[0:min(61, len(text))] + d + '</td>')
+            self.messages_inbox.append('<td style="color:mediumslateblue; text-decoration: underline;">' + text[0:min(61, len(text))] + d + '</td>')
+        # Makes the previous and next arrows work
         if action.startswith('prev') and self.messages_index > 0:
             self.messages_index -= 1 
         if action.startswith('next') and self.messages_index < len(self.player().messages) - 1:
             self.messages_index += 1
         message = self.player().messages[self.messages_index]
+        # Sets the message text, number, sender and date
         if message.msg_key in dictionary:
             self.messages_text = dictionary[message.msg_key]
         self.messages_number = str(self.messages_index + 1) + ' of ' + str(len(self.player().messages))
