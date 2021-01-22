@@ -173,7 +173,7 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].ID, 'sparse')
-        self.assertEqual(ts[0].abc, 123)
+        self.assertEqual(ts[0].abc, 555)
 
     def test_list(self):
         game_engine.unregister()
