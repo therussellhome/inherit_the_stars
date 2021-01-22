@@ -31,10 +31,9 @@ __defaults = {
     'player': Reference(),
 }
 
-
+""" All methods of ship are called through fleet, except maybe scan """
 class Ship(ShipDesign):
     """ Calculates how much fuel it will take to move """
-    """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
     def fuel_check(self, speed, num_denials, distance):
         if len(self.engines) == 0:
@@ -45,49 +44,64 @@ class Ship(ShipDesign):
             fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
         return fuel
     
-    """ TODO """
     """ Calculates how much fuel it will take to move """
-    """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def move(self, speed, num_denials, fly_to, distance):
-        self.location = self.location.move(fly_to, distance)
+    def move(self, speed, num_denials, distance):
+        damage = 0
+        if len(self.engines) == 0:
+            damage = sys.maxsize
+            return 0
+        mass_per_engine = self.calc_mass()/len(self.engines)
+        for engine in self.engines:
+            damage += engine.damage_calc(speed, mass_per_engine, distance, num_denials)
+            #TODO do something with the damage number
         return self.fuel_check(speed, num_denials, distance)
     
-    """ checks if speed will damage ship """
+    """ Checks if speed will damage ship, returns True if speed will damage ship """
     def speed_is_damaging(self, speed, num_denials):
         if len(self.engines) == 0:
-            return True
+            return None
         mass_per_engine = self.calc_mass()/len(self.engines)
         for engine in self.engines:
             if engine.tachometer(speed, mass_per_engine, num_denials) >= 100:
                 return True
         return False
     
+    """ tells the planet that it has been colonized and unloads and sraps the ship """
     def colonize(self, player, planet):
-        planet.colonize(player)#, player.get_minister(planet).name)
+        planet.colonize(player)
         planet.on_surface += self.cargo
         for attr in ['titanium', 'people', 'lithium', 'silicon']:
             self.cargo[attr] = 0
+        self.scrap(planet, self.location, 0.95)
     
+    """ Scans stuff """
     def scan(self, player):
-        self.scanner.scan(player, self.location)
+        return#TODO for scanner in self.scanners:
+        #    scanner.scan(player, self.location)
     
+    """ Lays mines """
     def lay_mines(self, player, system):
-        system.mines[player.name] += self.mines_laid
+        return#TODO system.mines[player.name] += self.mines_laid
     
+    """ Returns the repair value of the repair bay """
     def open_repair_bays(self):
-        return self.repair_bay
+        return#TODO self.repair_bay
     
+    """ Recurns the self repair value """
     def damage_control(self):
-        return self.repair
+        return#TODO self.repair
     
+    """ Creates a hyper denial object """
     def deploy_hyper_denial(self, player):
-        pass
+        return#TODO
     
+    """ Creates a salvage at a location """
     def create_salvage(self, location, cargo):
-        pass
+        return#TODO
     
-    def scrap(self, planet, location, scrap_factor=0.9):
+    """ Scraps the ship """
+    def scrap(self, planet, location, scrap_factor = 0.9):
         t = round(self.cost.titanium * scrap_factor)
         l = round(self.cost.lithium * scrap_factor)
         s = round(self.cost.silicon * scrap_factor)
@@ -97,7 +111,7 @@ class Ship(ShipDesign):
         else:
             planet.on_surface += cargoo + self.cargo
     
-    """ Mines the planet if it is not colonized """
+    """ Mines the planet if the planet is not colonized """
     def orbital_mining(self, planet):
         if not planet.is_colonized():
             planet.on_surface.titanium += round(self.mining_rate * planet.mineral_availability('titanium'))
@@ -109,10 +123,10 @@ class Ship(ShipDesign):
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):
-        if self.damage_armor > 0:
-            self.damage_armor -= amount
+        return#TODO if self.damage_armor > 0:
+            #self.damage_armor -= amount
     
-    """ Bombs the planet if the planet is colonized """
+    """ Returns the number of facilities and amount of population that is killed """
     def bomb(self, planet, shields, pop):
         facility_kill = 0
         pop_kill = 0
@@ -121,18 +135,20 @@ class Ship(ShipDesign):
             pop_kill += bomb.kill_population(pop, shields)
         return facility_kill, pop_kill
 
+    """ Returns the apparent mass of the ship """
     def calc_apparent_mass(self):
-        return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
+        return self.calc_mass() * (1 - self.cloak_percent)# - self.cloak_KT
     
+    """ Returns the actual mass of the ship, excluding cargo if the ship was made by a trader race """
     def calc_mass(self):
         mass = self.mass + self.cargo.silicon + self.cargo.titanium + self.cargo.lithium
         #TODO check if crew is trader
-        #if self.player.is_valid and self.player.race.lrt_trader:
+        #if self.player.is_valid and self.race.lrt_trader:
         #    mass = self.mass
         return mass + self.cargo.people
     
+    """ executes the on_destruction sequence """
     def blow_up(self):
-        self.scrap(self.location, self.location)
-        pass
+        return#TODO self.scrap(self.location, self.location)
 
 Ship.set_defaults(Ship, __defaults)
