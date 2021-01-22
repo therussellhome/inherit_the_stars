@@ -11,6 +11,7 @@ __defaults = {
     'parameters': [[]],
     'sender': [''],
     'link': [''],
+    'keep': [False],
 }
 
 
