@@ -18,7 +18,7 @@
     "mass": 6,
     "scanner": {
         "penetrating": 100.0,
-        "normal": 150.0,
+        "normal": 450.0,
         "__class__": "Scanner"
     },
       "cloak": {
