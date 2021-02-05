@@ -180,6 +180,8 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
+        if treaty.status = 'pending':
+            self.add_message(msg_key='foreign_minister.proposed_treaty', parameters=[treaty.other_player])
         for t in self.treaties:
             if t.name == treaty.name and t != treaty:
                 t.merge(treaty)
@@ -191,7 +193,9 @@ class Player(Defaults):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)
+                self.add_message(msg_key='foreign_minister.rejected_treaty', parameters=[t.other_player])
             elif t.status == 'signed':
+                self.add_message(msg_key='foreign_minister.accepted_treaty', parameters=[t.other_player])
                 # clear old active treaty (if there was one)
                 for t0 in self.treaties:
                     if t.other_player == t0.other_player and t0.status == 'active':
