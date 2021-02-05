@@ -1,7 +1,7 @@
 {
     "ID": "Battleship",
     "category": "Hull",
-    "description": "Ship hull with 32 general-purpose slots.",
+    "description": "Ship hull with 32 general-purpose slots",
     "cost": {
         "titanium": 20,
         "lithium": 9,
@@ -16,10 +16,6 @@
     "mass": 64,
     "fuel_max": 600000,
     "armor": 160,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 32,
     "slots_general": 32,
     "__class__": "Tech"
