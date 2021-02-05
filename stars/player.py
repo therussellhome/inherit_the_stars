@@ -354,6 +354,10 @@ class Player(Defaults):
                     self.tech_level[f] += 1
                     self.research_partial[f] -= cost_next
                     cost_next = self.tech_level.cost_for_next_level(f, race)
+                    # Send messages about new tech
+                    for t in self.tech:
+                        if t.is_available and tech.level[f] == self.tech_level[f]:
+                            self.add_message(msg_key='research_minister.new_tech', parameters=[t.name])
             # Scrub the research queue
             for t in self.research_queue:
                 if t.level.is_available(self.tech_level):
