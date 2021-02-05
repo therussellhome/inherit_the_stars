@@ -33,6 +33,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(fleet_one.ships[0], ship_1)
         self.assertEqual(fleet_one.ships[1], ship_2)
     
+    """ Test adding same ship twice """
     def test_addships_2(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -42,6 +43,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(fleet_one.ships[0], ship_2)
         self.assertEqual(len(fleet_one.ships), 1)
     
+    """ Test adding ships to an established fleet """
     def test_addships_3(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -51,6 +53,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(fleet_one.ships[0], ship_1)
         self.assertEqual(fleet_one.ships[1], ship_2)
     
+    """ Test normal merge """
     def test_merge_1(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -66,6 +69,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(len(p1.fleets), 1)
         self.assertEqual(ship_2 in fleet_one.ships, True)
 
+    """ Test that merge does execute when it would transfer player ownership of the ships in the merging fleet """
     def test_merge_2(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -82,6 +86,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(len(p1.fleets), 1)
         self.assertEqual(ship_2 in fleet_two.ships, True)
         
+    """ Test normal split """
     def test_split_1(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -97,6 +102,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_2 in p1.fleets[1].ships, True)
         self.assertEqual(len(fleet_one.ships), 1)
     
+    """ Test putting all ships into one other fleet and removeing emptey fleets """
     def test_split_2(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -108,10 +114,12 @@ class FleetCase(unittest.TestCase):
                 )])
         p1 = player.Player(fleets = [fleet_one])
         fleet_one.split(p1)
+        self.assertEqual(len(p1.fleets), 1)
         self.assertEqual(ship_1 in p1.fleets[0].ships, True)
         self.assertEqual(ship_2 in p1.fleets[0].ships, True)
         self.assertEqual(len(fleet_one.ships), 0)
         
+    """ Test putting all ships into other fleets and removeing emptey fleets """
     def test_split_3(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -127,6 +135,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(ship_2 in p1.fleets[0].ships, True)
         self.assertEqual(len(fleet_one.ships), 0)
         
+    """ Test normal transfer """
     def test_transfer(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -141,6 +150,7 @@ class FleetCase(unittest.TestCase):
         fleet_one.transfer(p1)
         self.assertEqual(fleet_one in p2.fleets, True)
     
+    """ Test normal deployment of hyper denial """
     def test_hyper_denial(self):
         return # TODO
         ship_1 = ship.Ship()
@@ -155,6 +165,7 @@ class FleetCase(unittest.TestCase):
         fleet_one.execute('deploy_hyper_denial', p1)
         self.assertEqual(True, False, "Not Testing")
     
+    """ Test normal movement """
     def test_move_1(self):
         ship_1 = ship.Ship(
             fuel = 0,
@@ -180,6 +191,7 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(fleet_one.location == location.Location(x = 1), True)
         self.assertEqual(len(fleet_one.waypoints), 3)
     
+    """ Test movement with massive ship and low distance """
     def test_move_2(self):
         ship_1 = ship.Ship(
             fuel = 0,
