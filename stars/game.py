@@ -102,12 +102,12 @@ class Game(Defaults):
                 
     """ Save host and players to file """
     def save(self):
+        game_engine.save('Game', self.ID, self)
         for p in self.players:
             if not p.computer_player:
                 p.ready_to_generate = False
                 p.save()
-        game_engine.save('Game', self.ID, self)
-
+    
     """ Load updates from player files """
     def update_players(self):
         for p in self.players:
@@ -228,7 +228,7 @@ class Game(Defaults):
         reset_scan_bins(self.players)
         for p in self.__cache__.get('planets', []):
             bin_for_scanning(p, p.location, 1, False, True)
-            for s in p.space_station.ships:
+            for s in p.space_stations.ships:
                 bin_for_scanning(s, s.location, s.calc_apparent_mass(), s.has_cloak(), True)
         for a in self.asteroids:
             bin_for_scanning(a, a.location, a.mass, False, a.location.in_system)

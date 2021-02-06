@@ -86,10 +86,11 @@ class Player(Defaults):
     def save(self):
         colonized_planets = []
         for planet in game_engine.get('Planet'):
-            if planet.player.ID == self.ID:
+            if planet.is_colonized() and planet.player.ID == self.ID:
                 colonized_planets.append(planet)
         self.__colonized_planets = colonized_planets
         game_engine.save('Player', self.filename(), self)
+            
 
     """ Update self from file """
     def update_from_file(self):
