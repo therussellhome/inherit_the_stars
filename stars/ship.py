@@ -11,7 +11,7 @@ from .expirence import Expirence
 from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from .hyper_denial import HyperDenial
+from .hyperdenial import HyperDenial
 
 """ Default values (default, min, max)  """
 __defaults = {

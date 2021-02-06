@@ -15,6 +15,7 @@ __defaults = {
     'speed': (1, 0, 10),
     'description': '',
     'standoff': 'No Standoff',
+    'mode': 'auto',
     # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'=(intercept if target is a ship)
     'upgrade_if_commanded': False,
     'depart': 'immediately',# 'after x years', 'repair to x', 'remain indef',
