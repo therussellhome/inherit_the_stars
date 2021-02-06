@@ -16,14 +16,18 @@ class Location(game_engine.BaseClass):
         self_dict['y'] = kwargs.get('y', 0.0)
         self_dict['z'] = kwargs.get('z', 0.0)
         if 'reference' in kwargs:
-            self_dict['reference'] = kwargs['reference']
-            if 'offset' in kwargs:
-                offset = kwargs.get('offset', 0.0)
-                lat = kwargs.get('lat', random() * 180 - 90)
-                lon = kwargs.get('lon', random() * 360 - 180)
-                self_dict['x'] = round(cos(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
-                self_dict['y'] = round(sin(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
-                self_dict['z'] = round(sin(lon * pi / 180) * offset, 5)
+            reference = Reference(kwargs['reference'])
+            if hasattr(reference, 'location'):
+                self_dict['reference'] = reference
+                if kwargs.get('in_system', False) or reference.location.in_system:
+                    self_dict['in_system'] = True
+                if 'offset' in kwargs:
+                    offset = kwargs.get('offset', 0.0)
+                    lat = kwargs.get('lat', random() * 180 - 90)
+                    lon = kwargs.get('lon', random() * 360 - 180)
+                    self_dict['x'] = round(cos(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
+                    self_dict['y'] = round(sin(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
+                    self_dict['z'] = round(sin(lon * pi / 180) * offset, 5)
         if 'random' in kwargs and kwargs['random']:
             # loop until a point is created inside a radius=1 sphere
             while True:
@@ -92,6 +96,8 @@ class Location(game_engine.BaseClass):
             return self_dict['reference'].location.y + self_dict['y']
         elif 'reference' in self_dict and name == 'z':
             return self_dict['reference'].location.z + self_dict['z']
+        elif name == 'in_system':
+            return self_dict.get('in_system', False)
         else:
             return object.__getattribute__(self, name)
 

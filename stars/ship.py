@@ -29,8 +29,7 @@ __defaults = {
     'engines': [],
     'cargo': Cargo(),
     'expirence': Expirence(),
-    'cloak_percent': (0.0, 0.0, 100.0),
-    'player': Reference(),
+    'player': Reference('Player'),
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
@@ -137,10 +136,18 @@ class Ship(ShipDesign):
             facility_kill += bomb.kill_shield_facilities(pop, shields)
             pop_kill += bomb.kill_population(pop, shields)
         return facility_kill, pop_kill
-
-    """ Returns the apparent mass of the ship """
+    
+    """ Does the ship have any cloak that would show up on anti-cloak scanners """
+    def has_cloaked(self):
+        if self.race.primary_race_trait == 'Kender' or self.cloak.percent > 0:
+            return True
+        return False
+    
+    """ Adjust the mass for cloaking """
     def calc_apparent_mass(self):
-        return self.calc_mass() * (1 - self.cloak_percent)# - self.cloak_KT
+        if self.race.primary_race_trait == 'Kender':
+            return self.calc_mass() * (1 - self.cloak.percent / 100) - 25
+        return self.calc_mass() * (1 - self.cloak.percent / 100)
     
     """ Returns the actual mass of the ship, excluding cargo if the ship was made by a trader race """
     def calc_mass(self):

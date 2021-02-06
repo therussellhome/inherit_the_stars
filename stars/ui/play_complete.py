@@ -21,7 +21,8 @@ class PlayComplete(PlayerUI):
             self.player().ready_to_generate = True
             self.player().save()
             filename = self.player().filename()
-            game = game_engine.load_inspect('Game', self.player().game_name)
+            game_engine.unregister()
+            game = game_engine.load('Game', self.player().game_ID)
             game.update_players()
             if game.is_ready_to_generate():
                 game.new_turn()
