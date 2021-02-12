@@ -12,6 +12,7 @@ __defaults = {
     'sender': [''],
     'link': [''],
     'keep': [False],
+    'read': [False],
 }
 
 

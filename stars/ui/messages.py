@@ -24,7 +24,10 @@ class Messages(PlayerUI):
         
         # Loads the file of messages
         dictionary = game_engine.load('Message', 'Inherit the Stars!')
-        for i, msg in enumerate(self.player().messages):
+        display = -1
+        for i, msg in reversed(enumerate(self.player().messages)):
+            if i > display and not msg.read:
+                display = i
             # Gives the parameters to the message text
             if msg.msg_key in dictionary:
                 text = dictionary[msg.msg_key]
@@ -35,8 +38,13 @@ class Messages(PlayerUI):
             if len(text) > 58:
                 d = '...'
             # TODO sender icon
-            self.messages_inbox.append('<td>' + msg.date + '</td><td style="color: mediumslateblue; text-decoration: underline;" onclick="post(\'messages\', \'?id=' + str(i) + '\')">' + text[0:min(55, len(text))] + d + '</td>')
-        
+            m = ''
+            if not msg.read:
+                m = ' font-weight:bold;'
+            self.messages_inbox.append('<td>' + msg.date + '</td><td style="color: mediumslateblue; text-decoration: underline;' + m + " onclick="post(\'messages\', \'?id=' + str(i) + '\')">' + text[0:min(55, len(text))] + d + '</td>')
+            if display == -1:
+                display = len(msg) -1
+
         # Makes the previous and next arrows work
         if action.startswith('prev') and self.messages_index > 0:
             self.messages_index -= 1 
@@ -48,6 +56,9 @@ class Messages(PlayerUI):
         
         # Makes the keep checkbox work
         message = self.player().messages[self.messages_index]
+        for msg in self.player().messages:
+            if msg == message:
+                msg.read = True
         if action.startswith('keep'):
             if not message.keep:
                 message.keep = True

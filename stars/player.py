@@ -157,6 +157,12 @@ class Player(Defaults):
     """ Add a message """
     def add_message(self, **kwargs):
         self.messages.append(Message(**kwargs, date=self.date))
+
+    """ Cleanup messages """
+    def cleanup_messages(self):
+        for msg in self.messages:
+            if msg.keep == False and msg.read == True:
+                self.messages.remove(msg)
     
     """ Compute score based on intel """
     def calc_score(self):
