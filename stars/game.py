@@ -64,7 +64,7 @@ class Game(Defaults):
             y = max(y, 2)
             z = max(z, 2)
             while len(self.systems) < num_systems:
-                l = Location(random=True, scale_x=x / 2, scale_y=y / 2, scale_z=z / 2)
+                l = Location(random_in=(x / 2, y / 2, z / 2))
                 for s in self.systems:
                     if s.location - l < min_distance:
                         break

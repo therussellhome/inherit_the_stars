@@ -7,90 +7,92 @@ from .reference import Reference
 
 """ Location binning """
 __RANGE_BIN_SIZE = 50
-__MASS_BIN_MAX = 5000
 # First level of bins is the player
-# Second level for the cloak, insystem, and bymass bins is a tuple of (x_bin, y_bin, z_bin)
-# The bymass bins are further indexed by a mass bin where objects are in all mass bins from 0 to their apparent mass
-# Objects larger than __MASS_BIN_MAX go in the 'massive' bin
-__bins_cloak = {}
-__bins_penetrating = {}
-__bins_bymass = {}
-__bins_massive = {}
+# Second level is a tuple of (x_bin, y_bin, z_bin)
+__bins = {}
 
 
 """ Clear the bins prior to updating them """
 def reset_scan_bins(players):
-    global __bins_cloak, __bins_penetrating, __bins_bymass, __bins_massive
-    __bins_cloak = {}
-    __bins_penetrating = {}
-    __bins_bymass = {}
-    __bins_massive = {}
+    global __bins
+    __bins = {}
     for p in players:
-        p_ref = Reference(p)
-        __bins_cloak[p_ref] = {}
-        __bins_penetrating[p_ref] = {}
-        __bins_bymass[p_ref] = {}
-        __bins_massive[p_ref] = {}
+        __bins[Reference(p)] = {}
 
 
 """ Update a location """
-def bin_for_scanning(obj, location, apparent_mass, has_cloak=False, in_system=False):
-    global __bins_cloak, __bins_penetrating, __bins_bymass, __bins_massive, __RANGE_BIN_SIZE, __MASS_BIN_SIZE, __MASS_BIN_MAX
-    o_ref = Reference(obj)
+def bin_for_scanning(obj, location, ke, apparent_mass, has_cloak=False):
+    global __bins, __RANGE_BIN_SIZE
     b = (int(location.x / __RANGE_BIN_SIZE), int(location.y / __RANGE_BIN_SIZE), int(location.z / __RANGE_BIN_SIZE))
-    if has_cloak:
-        _add_to_bin(__bins_cloak, o_ref, b)
-    if apparent_mass > 0:
-        _add_to_bin(__bins_penetrating, o_ref, b)
-        if not in_system:
-            if apparent_mass > __MASS_BIN_MAX:
-                _add_to_bin(__bins_massive, o_ref, b)
-            else:
-                _add_to_bin(__bins_bymass, o_ref, b, int(apparent_mass / __MASS_BIN_SIZE))
-
-
-""" Add to bin """
-def _add_to_bin(which_bin, o_ref, b, mass_bin = None):
-    global __MASS_BIN_SIZE, __MASS_BIN_MAX
-    for p_ref in which_bin:
-        if not mass_bin:
-            if b not in which_bin[p_ref]:
-                which_bin[p_ref][b] = []
-            which_bin[p_ref][b].append(o_ref)
-        else:
-            if b not in which_bin[p_ref]:
-                which_bin[p_ref][b] = [[]] * int(__MASS_BIN_MAX / __MASS_BIN_SIZE)
-            for m in range(mass_bin + 1):
-                which_bin[p_ref][b][m].append(o_ref)
-            print(which_bin[p_ref][b])
+    o = {'obj':obj, 'location':location, 'ke':ke, 'apparent_mass':apparent_mass, 'has_cloak':has_cloak, 'bin':b}
+    for p in __bins:
+        if b not in __bins[p]:
+            __bins[p][b] = []
+        __bins[p][b].append(o)
 
 
 """ ONLY FOR TESTING """
-def _bin_testing(cloak=False, penetrating=False, bymass=False, massive=False):
-    global __bins_cloak, __bins_penetrating, __bins_bymass, __bins_massive
-    if cloak:
-        return __bins_cloak
-    if penetrating:
-        return __bins_penetrating
-    if bymass:
-        return __bins_bymass
-    if massive:
-        return __bins_massive
+def _bin_testing():
+    global __bins
+    return __bins
+
+
+""" Basic bin list """
+def _bin_scan(p_ref, location, rng):
+    global __bins, __RANGE_BIN_SIZE
+    objs = []
+    for x in range(int((location.x - rng) / __RANGE_BIN_SIZE), int((location.x + rng) / __RANGE_BIN_SIZE) + 1):
+        for y in range(int((location.y - rng) / __RANGE_BIN_SIZE), int((location.y + rng) / __RANGE_BIN_SIZE) + 1):
+            for z in range(int((location.z - rng) / __RANGE_BIN_SIZE), int((location.z + rng) / __RANGE_BIN_SIZE) + 1):
+                objs.extend(__bins[p_ref].get((x, y, z), []))
+    return objs
+
+
+""" Found in bin """
+def _bin_found(p_ref, o):
+    global __bins, __RANGE_BIN_SIZE
+    __bins[Reference(p_ref)][o.bin].remove(o)
 
 
 """ Search the bins and return the ships seen """
-def _bin_scan_cloak(p_ref, location, anti_cloak):
-    return []
+def _bin_scan_hyperdenial(p_ref, location, hyperdenial):
+    objs = []
+    for o in _bin_scan(p_ref, location, hyperdenial):
+        if o.ke > 0 and location - o.location < hyperdenial:
+            _bin_found(p_ref, o)
+            objs.append(o)
+    return objs
+
+
+""" Search the bins and return the ships seen """
+def _bin_scan_anticloak(p_ref, location, anti_cloak):
+    objs = []
+    for o in _bin_scan(p_ref, location, anti_cloak):
+        if o.has_cloak and location - o.location < anti_cloak:
+            _bin_found(p_ref, o)
+            objs.append(o)
+    return objs
 
 
 """ Search the bins and return the ships seen """
 def _bin_scan_penetrating(p_ref, location, penetrating):
-    return []
+    objs = []
+    for o in _bin_scan(p_ref, location, penetrating):
+        if o.apparent_mass > 0 and location - o.location < penetrating:
+            _bin_found(p_ref, o)
+            objs.append(o)
+    return objs
 
 
 """ Search the bins and return the ships seen """
 def _bin_scan_normal(p_ref, location, normal):
-    return []
+    objs = []
+    for o in _bin_scan(p_ref, location, normal):
+        distance = location - o.location
+        if not o.location.in_system and o.apparent_mass > 0 and distance < normal and o.ke > ((-500000 * normal) / (distance - normal) - 500000):
+            _bin_found(p_ref, o)
+            objs.append(o)
+    return objs
 
 
 """ Default values (default, min, max)  """
