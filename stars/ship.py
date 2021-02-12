@@ -13,30 +13,25 @@ from .ship_design import ShipDesign
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'location': [Location()],
-    'battle_plan': [BattlePlan()],
-    'initative': [0, 0, sys.maxsize],
-    'armor': [10, 0, sys.maxsize],
-    'armor_damage': [0, 0, sys.maxsize],
-    'shields': [0, 0, sys.maxsize],
-    'shields_damage': [0, 0, sys.maxsize],
-    'max_distance': [0.0, 0.0, sys.maxsize],
-    'damage_armor': [0, 0, sys.maxsize],
-    'fuel': [0, 0, sys.maxsize],
-    'fuel_max': [0, 0, sys.maxsize],
-    'engines': [[]],
-    'cargo': [Cargo()],
-    'expirence': [Expirence()],
-    'cloak_percent': [0.0, 0.0, 100.0],
-    'player': [Reference()]
+    'location': Location(),
+    'battle_plan': BattlePlan(),
+    'initative': (0, 0, sys.maxsize),
+    'armor': (10, 0, sys.maxsize),
+    'armor_damage': (0, 0, sys.maxsize),
+    'shields': (0, 0, sys.maxsize),
+    'shields_damage': (0, 0, sys.maxsize),
+    'max_distance': (0.0, 0.0, sys.maxsize),
+    'damage_armor': (0, 0, sys.maxsize),
+    'fuel': (0, 0, sys.maxsize),
+    'fuel_max': (0, 0, sys.maxsize),
+    'engines': [],
+    'cargo': Cargo(),
+    'expirence': Expirence(),
+    'player': Reference('Player'),
 }
 
 
 class Ship(ShipDesign):
-    """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
@@ -123,8 +118,17 @@ class Ship(ShipDesign):
             pop_kill += bomb.kill_population(pop, shields)
         return facility_kill, pop_kill
 
+    """ Does the ship have any cloak that would show up on anti-cloak scanners """
+    def has_cloaked(self):
+        if self.race.primary_race_trait == 'Kender' or self.cloak.percent > 0:
+            return True
+        return False
+
+    """ Adjust the mass for cloaking """
     def calc_apparent_mass(self):
-        return self.mass * (1 - self.cloak_percent)# - self.cloak_KT
+        if self.race.primary_race_trait == 'Kender':
+            return self.calc_mass() * (1 - self.cloak.percent / 100) - 25
+        return self.calc_mass() * (1 - self.cloak.percent / 100)
     
     def calc_mass(self):
         mass = self.mass + self.cargo.silicon + self.cargo.titanium + self.cargo.lithium

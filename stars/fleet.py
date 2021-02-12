@@ -6,18 +6,18 @@ from .cargo import Cargo
 from .defaults import Defaults
 from .location import Location
 from .waypoint import Waypoint
-from .location import LocationReference
+from .location import Location
 from .reference import Reference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'waypoints': [[]],
-    'fuel': [0, 0, sys.maxsize],
-    'fuel_max': [0, 0, sys.maxsize],
-    'ships': [[]],
-    'cargo': [Cargo()],
-    'location':[Location()]
+    'waypoints': [],
+    'fuel': (0, 0, sys.maxsize),
+    'fuel_max': (0, 0, sys.maxsize),
+    'ships': [],
+    'cargo': Cargo(),
+    'location': Location(),
 }
 
 

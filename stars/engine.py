@@ -4,24 +4,22 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'kt_exponent': [0.0, 0.0, sys.maxsize],
-    'speed_divisor': [0.000001, 0.000001, sys.maxsize],
-    'speed_exponent': [0.0, 0.0, sys.maxsize],
-    'antimatter_siphon': [0.0, 0.0, sys.maxsize],
+    'kt_exponent': (0.0, 0.0, sys.maxsize),
+    'speed_divisor': (0.000001, 0.000001, sys.maxsize),
+    'speed_exponent': (0.0, 0.0, sys.maxsize),
+    'antimatter_siphon': (0.0, 0.0, sys.maxsize),
 }
+
 
 """ Represent 'an engine' """
 class Engine(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
+    """ What is the fastest speed the engine can go without exceeding the tacometer """
     def speed_at_tach_100(self, mass, denials):
         mass = max(0, int(mass))
         denials = max(0, int(denials))
         if denials > 0:
             mass *= speed * (1 - 0.5 ** denials) * 2
         return (100 / mass**self.kt_exponent) ** (1 / self.speed_exponent) * self.speed_divisor + 1
-
     
     """ What is the tachometer for the given mass the engine is driving """
     def tachometer(self, speed, mass, denials):
@@ -44,5 +42,6 @@ class Engine(Defaults):
     """ How much antimatter is captured for the distance traveled """
     def siphon_calc(self, ly):
         return self.antimatter_siphon * ly
+
 
 Engine.set_defaults(Engine, __defaults)

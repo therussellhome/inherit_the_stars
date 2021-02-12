@@ -5,14 +5,14 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'date': [''],
-    'timestamp': [0, 0, sys.maxsize],
-    'msg_key': [''],
-    'parameters': [[]],
-    'sender': [''],
-    'link': [''],
-    'keep': [False],
-    'read': [False],
+    'date': '',
+    'timestamp': (0, 0, sys.maxsize),
+    'msg_key': '',
+    'parameters': [],
+    'sender': '',
+    'link': '',
+    'keep': False,
+    'read': False,
 }
 
 

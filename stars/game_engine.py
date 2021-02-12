@@ -21,6 +21,10 @@ __registry = []
 __registry_block = False
 
 
+""" Special reference class defined in the reference.py class but needed here for encode/decode indicated by the ® symbol """
+_reference_class = None
+
+
 """ Receive registration of classes and objects as they self-register """
 def register(obj):
     global __registry
@@ -44,16 +48,13 @@ def unregister(obj=None):
 
 """ Base class for use in creating classes by name """
 class BaseClass:
-    """ Get a uid """
     def __init__(self, **kwargs):
-        if '__uuid__' in kwargs and '/' in kwargs['__uuid__']:
-            self.__uuid__ = kwargs['__uuid__']
-        else:
-            self.__uuid__ = self.__class__.__name__ + '/' + str(uuid.uuid4())
+        pass
+
 
 """ 
 Get all registered objects of a type or a specific object
-reference is 'Class', 'Class/uid', 'Class/id', or 'Class/Name' 
+reference is 'Class', 'Class/ID', or 'Class/'+id(obj) 
 """
 def get(reference, create_new=False):
     global __registry
@@ -71,19 +72,16 @@ def get(reference, create_new=False):
         return objs
     # find a specific object
     for obj in __registry:
-        # match by uid
-        if getattr(obj, '__uuid__', '') == reference:
-            return obj
-        elif obj.__class__.__name__ == ref[0]:
+        if obj.__class__.__name__ == ref[0]:
             # match by id
             if str(id(obj)) == ref[1]:
                 return obj
             # match by name
-            elif getattr(obj, 'name', '') == ref[1]:
+            elif getattr(obj, 'ID', '') == ref[1]:
                 return obj
     # create and register new object
     if create_new:
-        obj = __new(ref[0], None, name=ref[1])
+        obj = __new(ref[0], None, ID=ref[1])
         return obj
     return None
 
@@ -104,14 +102,14 @@ def set_auto_save(obj):
 """ Decode a string into an object """
 def from_json(raw, name='<Internal>'):
     try:
-        return json.loads(raw, object_hook=__decode)
+        return __decode(json.loads(raw))
     except Exception as e:
         print('Decode error ' + str(e) + ' in ' + name + '\n' + raw)
 
 
 """ Encode an object into a string """
 def to_json(obj):
-    return json.dumps(obj, indent='    ', default=__encode)
+    return json.dumps(__encode(obj), indent='    ', ensure_ascii=False)
 
 
 """ List files in the game dir """
@@ -169,27 +167,68 @@ def save(save_type, name, obj):
 
 
 """ Custom encoder to handle classes """
-def __encode(obj):
-    values = obj.__dict__.copy()
-    cls = obj.__class__
-    # special handling for children of Defaults
-    defaults = getattr(cls, 'defaults', {})
-    for (name, sparse) in getattr(cls, 'sparse_json', {}).items():
-        if sparse and name in values and defaults[name][0] == values[name]:
-            del values[name]
-    if '__uuid__' not in values:
-        values['__uuid__'] = cls.__name__ + '/' + str(uuid.uuid4())
-    if '__cache__' in values:
-        del values['__cache__']
-    return values
+def __encode(o):
+    # Instances of Reference
+    if isinstance(o, _reference_class):
+        return '«' + o.__reference__ + '»'
+    # Handle children of BaseClass and Defaults
+    elif isinstance(o, BaseClass):
+        encoded = {}
+        defaults = getattr(o.__class__, 'defaults', {})
+        sparse = getattr(o.__class__, 'sparse_json', {})
+        for (k, v) in o.__dict__.items():
+            if not sparse.get(k, True):
+                encoded[k] = v
+            elif k in defaults:
+                if v != defaults[k]:
+                    encoded[k] = v
+            elif k != '__cache__':
+                encoded[k] = v
+        # Add class
+        encoded['__class__'] = o.__class__.__name__
+        return __encode(encoded)
+    # Encode each key and value
+    elif isinstance(o, dict):
+        encoded = {}
+        for (k, v) in o.items():
+            encoded[__encode(k)] = __encode(v)
+        return encoded
+    # Encode each value
+    elif isinstance(o, list) or isinstance(o, tuple):
+        encoded = []
+        for v in o:
+            encoded.append(__encode(v))
+        return encoded
+    # Finally down to a primitive
+    else:
+        return o
 
 
 """ Custom decoder to handle classes """
-def __decode(values):
-    if '__uuid__' in values:
-        classname = values['__uuid__'].split('/')[0]
-        return __new(classname, values, **values)
-    return values
+def __decode(o):
+    # Decode each key and value, could be a class
+    if isinstance(o, dict):
+        decoded = {}
+        for (k, v) in o.items():
+            decoded[__decode(k)] = __decode(v)
+        # It's a class
+        if '__class__' in o:
+            del decoded['__class__']
+            return __new(o['__class__'], decoded, **decoded)
+        else:
+            return decoded
+    # Decode each value
+    elif isinstance(o, list) or isinstance(o, tuple):
+        decoded = []
+        for v in o:
+            decoded.append(__decode(v))
+        return decoded
+    # Could be a reference
+    elif isinstance(o, str) and len(o) > 2:
+        if o[0] == '«' and o[-1] == '»':
+            return _reference_class(o[1:-1])
+    # Just a primitive
+    return o
 
 
 """ Find child of BaseClass """

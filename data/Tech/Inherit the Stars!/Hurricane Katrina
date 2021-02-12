@@ -1,5 +1,5 @@
 {
-    "name": "Hurricane Katrina",
+    "ID": "Hurricane Katrina",
     "category": "Bomb",
     "description": "A bomb specifically for destroying planetary shields. Kills very few colonists. Planetary shields defend against these at the same rate as smart bombs.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 33,
         "silicon": 15,
         "energy": 1400,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 15,
         "electronics": 12,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 180,
     "bombs": [
@@ -21,8 +21,8 @@
             "minimum_pop_kill": 0,
             "shield_kill": 50,
             "max_defense": 85,
-            "__uuid__": "Bomb"
+            "__class__": "Bomb"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -4,63 +4,64 @@ from .defaults import Defaults
 
 """ Default values [default, min, max]  """
 __defaults = {
-    'name': [''],
-    'icon': ['fas fa-pastafarianism'],
-    'start_date': [3000, 0, sys.maxsize],
-    'primary_race_trait': ['Melconians'],
-    'lrt_Trader': [False],
-    'lrt_Bioengineer': [False],
-    'lrt_SpacedOut': [False],
-    'lrt_WasteNot': [False],
-    'lrt_Hypermiler': [False],
-    'lrt_McMansion': [False],
-    'lrt_MadScientist': [False],
-    'lrt_QuickHeal': [False],
-    'lrt_BleedingEdge': [False],
-    'lrt_Forager': [False],
-    'lrt_2ndSight': [False],
-    'lrt_JuryRigged': [False],
-    'research_modifier_energy': [500, 250, 1000],
-    'research_modifier_weapons': [500, 250, 1000],
-    'research_modifier_propulsion': [500, 250, 1000],
-    'research_modifier_construction': [500, 250, 1000],
-    'research_modifier_electronics': [500, 250, 1000],
-    'research_modifier_biotechnology': [500, 250, 1000],
-    'starting_tech_energy': [0, 0, 25],
-    'starting_tech_weapons': [0, 0, 25],
-    'starting_tech_propulsion': [0, 0, 25],
-    'starting_tech_construction': [0, 0, 25],
-    'starting_tech_electronics': [0, 0, 25],
-    'starting_tech_biotechnology': [0, 0, 25],
-    'hab_gravity': [0, 0, 100],
-    'hab_gravity_stop': [100, 0, 100],
-    'hab_gravity_immune': [False],
-    'hab_temperature': [0, 0, 100],
-    'hab_temperature_stop': [100, 0, 100],
-    'hab_temperature_immune': [False],
-    'hab_radiation': [0, 0, 100],
-    'hab_radiation_stop': [100, 0, 100],
-    'hab_radiation_immune': [False],
-    'growth_rate': [15, 5, 20],
-    'body_mass': [80, 10, 150],
-    'starting_colonists': [250000, 175000, 350000],
-    'power_plants_per_10k_colonists': [10, 2, 50],
-    'factories_per_10k_colonists': [10, 2, 50],
-    'mines_per_10k_colonists': [10, 2, 50],
-    'defenses_per_10k_colonists': [10, 2, 50],
-    'energy_per_10k_colonists': [100, 100, 2000],
-    'cost_of_baryogenesis': [1000, 200, 1200], # YJ / kT
-    'starting_factories': [10, 5, 20],
-    'starting_mines': [10, 5, 20],
-    'starting_power_plants': [10, 5, 20],
-    'starting_defenses': [10, 5, 20],
-    'starting_energy': [50000, 25000, 100000],
-    'starting_lithium': [200, 200, 700], 
-    'starting_silicon': [200, 200, 700], 
-    'starting_titanium': [200, 200, 700], 
+    'ID': '@UUID',
+    'icon': 'fas fa-pastafarianism',
+    'start_date': (3000, 0, sys.maxsize),
+    'primary_race_trait': 'Melconians',
+    'lrt_Trader': False,
+    'lrt_Bioengineer': False,
+    'lrt_SpacedOut': False,
+    'lrt_WasteNot': False,
+    'lrt_Hypermiler': False,
+    'lrt_McMansion': False,
+    'lrt_MadScientist': False,
+    'lrt_QuickHeal': False,
+    'lrt_BleedingEdge': False,
+    'lrt_Forager': False,
+    'lrt_2ndSight': False,
+    'lrt_JuryRigged': False,
+    'research_modifier_energy': (500, 250, 1000),
+    'research_modifier_weapons': (500, 250, 1000),
+    'research_modifier_propulsion': (500, 250, 1000),
+    'research_modifier_construction': (500, 250, 1000),
+    'research_modifier_electronics': (500, 250, 1000),
+    'research_modifier_biotechnology': (500, 250, 1000),
+    'starting_tech_energy': (0, 0, 25),
+    'starting_tech_weapons': (0, 0, 25),
+    'starting_tech_propulsion': (0, 0, 25),
+    'starting_tech_construction': (0, 0, 25),
+    'starting_tech_electronics': (0, 0, 25),
+    'starting_tech_biotechnology': (0, 0, 25),
+    'hab_gravity': (0, 0, 100),
+    'hab_gravity_stop': (100, 0, 100),
+    'hab_gravity_immune': (False),
+    'hab_temperature': (0, 0, 100),
+    'hab_temperature_stop': (100, 0, 100),
+    'hab_temperature_immune': (False),
+    'hab_radiation': (0, 0, 100),
+    'hab_radiation_stop': (100, 0, 100),
+    'hab_radiation_immune': (False),
+    'growth_rate': (15, 5, 20),
+    'body_mass': (80, 10, 150),
+    'starting_colonists': (250000, 175000, 350000),
+    'power_plants_per_10k_colonists': (10, 2, 50),
+    'factories_per_10k_colonists': (10, 2, 50),
+    'mines_per_10k_colonists': (10, 2, 50),
+    'defenses_per_10k_colonists': (10, 2, 50),
+    'energy_per_10k_colonists': (100, 100, 2000),
+    'cost_of_baryogenesis': (1000, 200, 1200), # YJ / kT
+    'starting_factories': (10, 5, 20),
+    'starting_mines': (10, 5, 20),
+    'starting_power_plants': (10, 5, 20),
+    'starting_defenses': (10, 5, 20),
+    'starting_energy': (50000, 25000, 100000),
+    'starting_lithium': (200, 200, 700), 
+    'starting_silicon': (200, 200, 700), 
+    'starting_titanium': (200, 200, 700), 
 }
 
 
+""" List of allowed primary race types """
 PRIMARY_RACE_TRAITS = ['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']
 
 
@@ -121,14 +122,9 @@ habitability_cost = {
     'rad_immunity_cost': 405,
 }
 
+
 """ Storage class for race parameters """
 class Race(Defaults):
-    """ Store values but do not load defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.name == '':
-            self.name = 'too lazy to name my race ' + str(id(self))
-
     """ Make a list of the selected primary/lesser traits for this race """
     def list_traits(self):
         traits = [self.primary_race_trait]

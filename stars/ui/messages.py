@@ -5,13 +5,13 @@ from .. import game_engine
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'messages_sender': [''],
-    'messages_date': [''],
-    'messages_text': [''],
-    'messages_index': [0, 0, sys.maxsize],
-    'messages_number': [''],
-    'messages_keep': [False],
-    'messages_inbox': [[]],
+    'messages_sender': '',
+    'messages_date': '',
+    'messages_text': '',
+    'messages_index': (0, 0, sys.maxsize),
+    'messages_number': '',
+    'messages_keep': False,
+    'messages_inbox': [],
 }
 
 

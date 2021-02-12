@@ -3,7 +3,8 @@ from random import randint
 from . import game_engine
 from .defaults import Defaults
 from .fleet import Fleet
-from .location import rand_location
+from .location import Location
+from .scanner import reset_scan_bins, bin_for_scanning
 from .star_system import StarSystem
 from .reference import Reference
 from . import stars_math
@@ -11,34 +12,36 @@ from . import stars_math
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'name': [''],
-    'hundreth': [0, 0, sys.maxsize],
-    'players': [[]], # all players for the game, these are updated/overwritten when the players are loaded from file
-    'systems': [[]], # all systems - suns and planets are part of systems
-    'wormholes': [[]], # all wormholes
-    'asteroids': [[]], # all comets/mineral packets/salvage
-    'mystery_traders': [[]], # myster trader ships
-    'public_player_scores': [30, 0, 200], # years till public player scores
-    'victory_after': [50, 10, 200], # minimum years till game can be won
-    'victory_conditions': [1, 1, 10], # minimum number of conditions to win
-    'victory_enemies_left': [0, -1, 15], 
-    'victory_score_number': [1000, -1, 10000], 
-    'victory_tech': [True],
-    'victory_tech_levels': [100, 10, 300], 
-    'victory_planets': [True],
-    'victory_planets_number': [200, 50, 1000], 
-    'victory_energy': [True],
-    'victory_energy_number': [10000, 1000, 100000], 
-    'victory_minerals': [True],
-    'victory_minerals_number': [10000, 1000, 100000], 
-    'victory_production': [True],
-    'victory_production_number': [10000, 1000, 100000], 
-    'victory_ships': [True],
-    'victory_ships_number': [1000, 100, 10000], 
-    'victory_shipsofthewall': [True],
-    'victory_shipsofthewall_number': [150, 50, 1000], 
-    'victory_starbases': [True],
-    'victory_starbases_number': [25, 10, 100], 
+    'ID': '@UUID', # ID defaulted to a UUID if not provided from the new game screen
+    'hundreth': (0, 0, sys.maxsize),
+    'players': [], # all players for the game, these are updated/overwritten when the players are loaded from file
+    'systems': [], # all systems - suns and planets are part of systems
+    'wormholes': [], # all wormholes
+    'blackholes': [], # all blackholes
+    'nebulae': [], # all nebulae
+    'asteroids': [], # all comets/mineral packets/salvage
+    'mystery_traders': [], # myster trader ships
+    'public_player_scores': (30, 0, 200), # years till public player scores
+    'victory_after': (50, 10, 200), # minimum years till game can be won
+    'victory_conditions': (1, 1, 10), # minimum number of conditions to win
+    'victory_enemies_left': (0, -1, 15), 
+    'victory_score_number': (1000, -1, 10000), 
+    'victory_tech': True,
+    'victory_tech_levels': (100, 10, 300), 
+    'victory_planets': True,
+    'victory_planets_number': (200, 50, 1000), 
+    'victory_energy': True,
+    'victory_energy_number': (10000, 1000, 100000), 
+    'victory_minerals': True,
+    'victory_minerals_number': (10000, 1000, 100000), 
+    'victory_production': True,
+    'victory_production_number': (10000, 1000, 100000), 
+    'victory_ships': True,
+    'victory_ships_number': (1000, 100, 10000), 
+    'victory_shipsofthewall': True,
+    'victory_shipsofthewall_number': (150, 50, 1000), 
+    'victory_starbases': True,
+    'victory_starbases_number': (25, 10, 100), 
 }
 
 
@@ -61,13 +64,13 @@ class Game(Defaults):
             y = max(y, 2)
             z = max(z, 2)
             while len(self.systems) < num_systems:
-                l = rand_location(x / 2, y / 2, z / 2)
+                l = Location(random=True, scale_x=x / 2, scale_y=y / 2, scale_z=z / 2)
                 for s in self.systems:
                     if s.location - l < min_distance:
                         break
                 else:
                     system_name = system_names.pop(randint(0, len(system_names) - 1))
-                    self.systems.append(StarSystem(name=system_name, location=l))
+                    self.systems.append(StarSystem(ID=system_name, location=l))
             # pick home systems
             min_distance = max(x, y, z) * 0.8
             homes = []
@@ -87,14 +90,23 @@ class Game(Defaults):
             for s in self.systems:
                 if len(s.planets) == 0:
                     s.create_system()
+            # initial intel
+            for s in self.systems:
+                for p in self.players:
+                    p.add_intel(s, location=s.location, color=s.sun().get_color(), size=s.sun().gravity)
+            for b in self.blackholes:
+                for p in self.players:
+                    p.add_intel(b, location=b.location, size=b.range)
+            self._scan([])
+            self._call(self.players, 'calc_score')
                 
     """ Save host and players to file """
     def save(self):
-        game_engine.save('Game', self.name, self)
         for p in self.players:
             if not p.computer_player:
                 p.ready_to_generate = False
                 p.save()
+        game_engine.save('Game', self.ID, self)
 
     """ Load updates from player files """
     def update_players(self):
@@ -116,6 +128,19 @@ class Game(Defaults):
             self.generate_hundreth()
         self.save()
 
+    """ Get all populated planets """
+    def get_planets(self):
+        planets = []
+        if 'planets' not in self.__cache__:
+            self.__cache__['planets'] = []
+            for system in self.systems:
+                for planet in system.planets:
+                    self.__cache__['planets'].append(planet)
+        for planet in self.__cache__['planets']:
+            if planet.on_surface.people > 0:
+                planets.append(planet)
+        return planets
+
     """ Generate hundreth """
     def generate_hundreth(self):
         # players in lowest to highest score
@@ -123,12 +148,8 @@ class Game(Defaults):
         players.sort(key=lambda x: x.score.rank, reverse=False)
         # planets in lowest to highest population
         # planets call actions on their starbase
-        planets = []
-        for system in self.systems:
-            for planet in system.planets:
-                if planet.on_surface.people > 0:
-                    planets.append(planet)
-        planets.sort(key=lambda x: x.on_planet.people, reverse=False)
+        planets = self.get_planets()
+        planets.sort(key=lambda x: x.on_surface.people, reverse=False)
         # fleets in lowest to highest initiative
         fleets = []
         for player in players:
@@ -156,9 +177,7 @@ class Game(Defaults):
         self._call(self.asteroids, 'move')
         self._call(self.mystery_traders, 'move')
         self._call(fleets, 'move')
-        self._call(planets, 'scan')
-        self._call(self.asteroids, 'scan')
-        self._call(fleets, 'scan')
+        self._scan(fleets)
         self._combat()
         self._call(fleets, 'move_in_system')
         self._call(planets, 'generate_fuel')
@@ -182,21 +201,50 @@ class Game(Defaults):
         #
         # actions only done at the end of a year
         if self.hundreth % 100 == 0:
-            self._call(planets, 'deallocate_build_queue')
-            self._call(planets, 'scan')
-            self._call(self.asteroids, 'scan')
-            self._call(fleets, 'scan')
+            self._scan(fleets)
             self._call(players, 'calc_score')
             self._check_for_winner()
 
     """ Call a method on a list of classes """
     def _call(self, objs, method, reverse=False):
+        import time
         if reverse:
             for obj in reversed(objs):
+                s = time.time()
                 eval('obj.' + method + '()')
+                t = (time.time() - s)
+                if t > 0.1:
+                    print('    ', obj.ID, method, t)
         else:
             for obj in objs:
+                s = time.time()
                 eval('obj.' + method + '()')
+                t = (time.time() - s)
+                if t > 0.1:
+                    print('    ', obj.ID, method, t)
+
+    """ Update binning then call scanning """
+    def _scan(self, fleets):
+        reset_scan_bins(self.players)
+        for p in self.__cache__.get('planets', []):
+            bin_for_scanning(p, p.location, 1, False, True)
+            for s in p.space_station.ships:
+                bin_for_scanning(s, s.location, s.calc_apparent_mass(), s.has_cloak(), True)
+        for a in self.asteroids:
+            bin_for_scanning(a, a.location, a.mass, False, a.location.in_system)
+        for f in fleets:
+            for s in f.ships:
+                bin_for_scanning(s, s.location, s.calc_apparent_mass(), s.has_cloak(), a.location.in_system)
+        for w in self.wormholes:
+            bin_for_scanning(w, w.location, 50, False, False)
+        for n in self.nebulae:
+            bin_for_scanning(n, n.location, 0, True, False)
+        for m in self.mystery_traders:
+            bin_for_scanning(m, m.location, m.mass, False, False)
+        self._call(self.get_planets(), 'scan')
+        self._call(self.asteroids, 'scan')
+        self._call(fleets, 'scan')
+
 
     """ Execute combat after determining where combat will occur """
     def _combat(self):

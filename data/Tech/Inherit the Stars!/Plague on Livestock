@@ -1,5 +1,5 @@
 {
-    "name": "Plague on Livestock",
+    "ID": "Plague on Livestock",
     "category": "Missile",
     "description": "Almost twice as powerful as Plague of Flies, but less than half as accurate and more massive.  But besides the extra power, its advantage is that capital ship missiles do double damage if the target ship has no remaining shields.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 13,
         "silicon": 9,
         "energy": 1300,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 12,
         "propulsion": 6,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 35,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 30,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

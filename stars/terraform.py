@@ -3,7 +3,7 @@ from .build_queue import BuildQueue
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'hab': [''], # habitability type
+    'hab': '', # habitability type
 }
 
 

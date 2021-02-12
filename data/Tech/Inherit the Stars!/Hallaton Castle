@@ -1,5 +1,5 @@
 {
-    "name": "Hallaton Castle",
+    "ID": "Hallaton Castle",
     "category": "Armor",
     "description": "armor",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 1,
         "silicon": 0,
         "energy": 2500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 9,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 50,
     "armor": 180,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

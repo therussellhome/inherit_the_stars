@@ -1,5 +1,5 @@
 {
-    "name": "Fort deMutzig",
+    "ID": "Fort deMutzig",
     "category": "Armor",
     "description": "Just armor, but really good armor.",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 0,
         "energy": 5000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 16,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 40,
     "armor": 500,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

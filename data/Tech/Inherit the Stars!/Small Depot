@@ -1,5 +1,5 @@
 {
-    "name": "Small Depot",
+    "ID": "Small Depot",
     "category": "Hull",
     "description": "Hull with only 1 general purpose slot but 2 depot slots.",
     "cost": {
@@ -7,21 +7,21 @@
         "lithium": 0,
         "silicon": 3,
         "energy": 2000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 2,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 20,
     "fuel_max": 150000,
     "armor": 25,
     "scanner": {
         "penetrating": 0.0002115,
-        "__uuid__": "Scanner"
+        "__class__": "Scanner"
     },
     "repair": 3,
     "slots_general": 1,
     "slots_depot": 2,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

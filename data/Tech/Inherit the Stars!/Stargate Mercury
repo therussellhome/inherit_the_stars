@@ -1,5 +1,5 @@
 {
-    "name": "Stargate Mercury",
+    "ID": "Stargate Mercury",
     "category": "Orbital",
     "description": "Has a range of 300 minus the ship's mass (including cargo!). Any number of ships can use the gate. Only Patryns can jump with colonists.",
     "race_requirements": "Patryns",
@@ -8,16 +8,16 @@
         "lithium": 13,
         "silicon": 15,
         "energy": 15000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "propulsion": 4,
         "construction": 3,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 80,
     "stargate": 300,
     "slots_orbital": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

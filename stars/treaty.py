@@ -4,24 +4,25 @@ from .reference import Reference
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'other_player': [Reference('Player')],
-    'relation': ['neutral'],
-    'status': ['proposed'],
+    'treaty_key': '@UUID',
+    'other_player': Reference('Player'),
+    'relation': 'neutral',
+    'status': 'proposed',
     # -1 is used to indicate no sell/buy
-    'buy_ti': [-100, -100, 4000],
-    'sell_ti': [-100, -100, 4000],
-    'buy_si': [-100, -100, 4000],
-    'sell_si': [-100, -100, 4000],
-    'buy_li': [-100, -100, 4000],
-    'sell_li': [-100, -100, 4000],
-    'buy_fuel': [-1, -1, 50], #TODO Pam please balance this
-    'sell_fuel': [-1, -1, 50], #TODO Pam please balance this
-    'buy_gate': [-1000, -1000, 50000],
-    'sell_gate': [-1000, -1000, 50000],
-    'buy_hyper_denial': [-4000, -4000, 200000],
-    'sell_hyper_denial': [-4000, -4000, 200000],
-    'buy_intel': [-4000, -4000, 200000],
-    'sell_intel': [-4000, -4000, 200000],
+    'buy_ti': (-100, -100, 4000),
+    'sell_ti': (-100, -100, 4000),
+    'buy_si': (-100, -100, 4000),
+    'sell_si': (-100, -100, 4000),
+    'buy_li': (-100, -100, 4000),
+    'sell_li': (-100, -100, 4000),
+    'buy_fuel': (-1, -1, 50), #TODO Pam please balance this
+    'sell_fuel': (-1, -1, 50), #TODO Pam please balance this
+    'buy_gate': (-1000, -1000, 50000),
+    'sell_gate': (-1000, -1000, 50000),
+    'buy_hyper_denial': (-4000, -4000, 200000),
+    'sell_hyper_denial': (-4000, -4000, 200000),
+    'buy_intel': (-4000, -4000, 200000),
+    'sell_intel': (-4000, -4000, 200000),
 }
 
 
@@ -51,8 +52,6 @@ TREATY_HALF_FIELDS = ['_ti', '_si', '_li', '_fuel', '_gate', '_hyper_denial', '_
 class Treaty(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = self.__uuid__
 
     """ Both players proposed a treaty so copy each one's sell at into a combined treaty """
     def merge(self, other):
@@ -70,7 +69,7 @@ class Treaty(Defaults):
         global TREATY_HALF_FIELDS
         t = Treaty()
         t.other_player = Reference(me)
-        t.name = self.name
+        t.treaty_key = self.treaty_key
         t.relation = self.relation
         t.status = self.status
         if self.status == 'pending':

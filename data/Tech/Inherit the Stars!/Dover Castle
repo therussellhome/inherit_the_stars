@@ -1,5 +1,5 @@
 {
-    "name": "Dover Castle",
+    "ID": "Dover Castle",
     "category": "Armor",
     "description": "armor",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 0,
         "energy": 1300,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 3,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 56,
     "armor": 75,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }
