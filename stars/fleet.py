@@ -1,6 +1,7 @@
 import sys
 import copy
 from . import stars_math
+from . import scan
 from . import game_engine
 from .cargo import Cargo
 from .defaults import Defaults
@@ -478,7 +479,40 @@ class Fleet(Defaults):
                 self.patrol(player)
             elif action == 'piracy'or action == 'pre_piracy':
                 self.piracy(player)
-            
+
+    """ Perform anticloak scanning """
+    def scan_anticloak(self):
+        anticloak = 0
+        for ship in self.ships:
+            anticloak = max(anticloak, ship.scanner.anti_cloak)
+        if anticloak > 0:
+            scan.anticloak(ships[0].player, fleet.location, anticloak)
+
+    """ Perform hyperdenial scanning """
+    def scan_hyperdenial(self):
+        hyperdenial = 0
+        for ship in self.ships:
+            hyperdenial = max(hyperdenial, ship.hyperdenial.range)
+        if hyperdenial > 0:
+            scan.hyperdenial(ships[0].player, fleet.location, hyperdenial)
+           
+    """ Perform penetrating scanning """
+    def scan_penetrating(self):
+        penetrating = 0
+        for ship in self.ships:
+            penetrating = max(penetrating, ship.scanner.penetrating)
+        if penetrating > 0:
+            scan.penetrating(ships[0].player, fleet.location, penetrating)
+
+    """ Perform normal scanning """
+    def scan_normal(self):
+        normal = 0
+        for ship in self.ships:
+            normal = max(normal, ship.scanner.normal)
+        if normal > 0:
+            scan.normal(ships[0].player, fleet.location, normal)
+
+
 Fleet.set_defaults(Fleet, __defaults)
 
 """ In-system movment mine interaction """

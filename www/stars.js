@@ -793,7 +793,7 @@ function combat_chart(chart, data) {
 
 // Create a chart for sensor curve
 function sensor_chart(chart, data) {
-    var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
+    var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'HyperDenial'];
     var sensor_data = [];
     var max = 0;
     for(var i=0; i < data.length; i++) {
