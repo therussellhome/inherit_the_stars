@@ -3,6 +3,7 @@ from colorsys import hls_to_rgb
 from math import cos, sin
 from random import randint, uniform
 from . import game_engine
+from . import scan
 from . import stars_math
 from .fleet import Fleet
 from .cargo import Cargo
@@ -13,7 +14,6 @@ from .location import Location
 from .location import Location
 from .minerals import Minerals, MINERAL_TYPES
 from .reference import Reference
-from .scanner import Scanner
 from .tech import Tech
 from .terraform import Terraform
 
@@ -327,16 +327,32 @@ class Planet(Defaults):
             if len(self.build_queue) == 0 and auto_build:
                 self.build_queue.extend(self.auto_build())
 
-    """ Perform scanning """
-    def scan(self):
+    """ Perform penetrating scanning """
+    def scan_penetrating(self):
         if self.is_colonized():
-            scanner = Scanner(normal = 250, penetrating = 2 * stars_math.TERAMETER_2_LIGHTYEAR) #TODO Pam please update the scanner normal range
-            scanner.scan(self.player, self.location)
+            scan.penetrating(self.player, self.location, 250) #TODO Pam please update the scanner range
 
-    """ Generate fuel if the planet has a space station """
-    def generate_fuel(self):
-        for station in self.space_station:
-            pass #TODO
+    """ Perform normal scanning """
+    def scan_normal(self):
+        if self.is_colonized():
+            scan.normal(self.player, self.location, 100) #TODO Pam please update the scanner range
+
+    """ Return intel report when scanned """
+    def scan_report(self, scan_type=''):
+        report = {
+            'location': self.location,
+            'color': self.get_color(),
+            'gravity': self.gravity,
+            'temperature': self.temperature,
+            'radiation': self.radiation,
+            'Lithium Availability': self.mineral_availability('lithium'),
+            'Silicon Availability': self.mineral_availability('silicon'),
+            'Titanium Availability': self.mineral_availability('titanium'),
+        }
+        if self.is_colonized():
+            report['Player'] = self.player
+            report['Population'] = self.on_surface.people
+        return report
 
     """ Shift population via orbital mattrans """
     def mattrans(self):

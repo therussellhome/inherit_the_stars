@@ -48,6 +48,7 @@ class Ship(ShipDesign):
     """ Calculates how much fuel it will take to move """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
     def move(self, speed, num_denials, distance):
+        self.__cache__['apparent_ke'] = self.calc_apparent_mass() * pow(speed, 4)
         damage = 0
         if len(self.engines) == 0:
             damage = sys.maxsize
@@ -76,9 +77,6 @@ class Ship(ShipDesign):
             self.cargo[attr] = 0
         self.scrap(planet, self.location, 0.95)
     
-    """ Scans stuff """
-    def scan(self, player):
-        scanner.scan(player, self.location)
     
     """ Lays mines """
     def lay_mines(self, player, system):
@@ -160,5 +158,20 @@ class Ship(ShipDesign):
     """ Executes the on_destruction sequence """
     def blow_up(self):
         return#TODO self.scrap(self.location, self.location)
+
+    """ Return the apparent kinetic energy """
+    def calc_apparent_ke(self):
+        return self.__cache__.get('apparent_ke', 0)
+
+    """ Return intel report when scanned """
+    def scan_report(self, scan_type=''):
+        report = {
+            'location': self.location,
+        }
+        if scan_type == 'anticloak':
+            report['Mass'] = obj.calc_mass()
+        if scan_type != 'hyperdenial':
+            report['Apparent Mass'] = self.calc_apparent_mass()
+        return report
 
 Ship.set_defaults(Ship, __defaults)
