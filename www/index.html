@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html style="height: 100%"><head>
 <meta charset="utf-8"/>
-<link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+<link rel='icon' href='favicon.ico' type='image/x-icon'/>
 <!-- icons -->
 <link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
@@ -40,73 +40,80 @@ void main() {
 <title>Inherit the Stars!</title>
 </head><body id="index_html" onload="init()">
 
+<div class="hide" id="loading">loading...</div>
 
 <div class="sidebar" id="sidebar_host"><table style="height: 100%">
-    <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
-    <tr><td><img class="button" id="button_launch" title="Launch / Host Game" src="/launch.gif" onclick="show_screen('launch')"/></td></tr>
-    <tr><td><img class="button" id="button_host" title="Generate" src="/generate.gif" onclick="show_screen('host')"/></td></tr>
-    <tr><td><img class="button" id="button_new_game" title="New Game" src="/new_game.png" onclick="show_screen('new_game')"/></td></tr>
-    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="/race.png" onclick="show_screen('race_editor')"/></td></tr>
-    <tr><td><img class="button" id="button_help" title="Help" src="/help.png" onclick="show_screen('help')"/></td></tr>
+    <tr><td><img class="button" id="button_home" title="Inherit The Stars!" src="S!.png" onclick="show_menu('home')" onmouseover="show_menu('home')"/></td></tr>
+    <tr><td><img class="button" id="button_launch" title="Launch" src="launch.gif" onclick="show_screen('launch')"/></td></tr>
+    <tr><td><img class="button" id="button_host" title="Host / Generate" src="generate.png" onclick="show_screen('host')"/></td></tr>
+    <tr><td><img class="button" id="button_new_game" title="New Game" src="new_game.png" onclick="show_screen('new_game')"/></td></tr>
+    <tr><td><img class="button" id="button_race_editor" title="Race Editor" src="race.png" onclick="show_screen('race_editor')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu" title="Help" src="help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
 </table></div>
 
 
 <div class="submenu hide" id="submenu_home" onmouseleave="show_menu(null)">
-    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
-    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+    <img class="button" id="button_splashscreen" title="Home" src="S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="shutdown.png" onclick="shutdown()"/>
 </div>
     
 
 <div class="sidebar hide" id="sidebar_play"><table style="height: 100%">
-    <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="/S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
-    <tr><td><img class="button" id="button_reports" title="Reports" src="/reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
-    <tr><td><img class="button" id="button_ministers" title="Ministers" src="/ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
-    <tr><td><img class="button" id="button_admirality" title="Admirality" src="/admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
-    <tr><td><img class="button" id="button_game" title="Game" src="/launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
-    <tr><td><img class="button" id="button_help_menu" title="Help" src="/help.png" onclick="show_menu('help_menu')" onmouseover="show_menu('help_menu')"/></td></tr>
+    <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
+    <tr><td><img class="button" id="button_reports" title="Reports" src="reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
+    <tr><td><img class="button" id="button_ministers" title="Ministers" src="ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
+    <tr><td><img class="button" id="button_admirality" title="Admirality" src="admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
+    <tr><td><img class="button" id="button_game" title="Game" src="launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
+    <tr><td><img class="button" id="button_help_menu_play" title="Help" src="help.png" onclick="show_menu('help_menu_play')" onmouseover="show_menu('help_menu_play')"/></td></tr>
 </table></div>
 
 
 <div class="submenu hide" id="submenu_home2" onmouseleave="show_menu(null)">
-    <img class="button" id="button_splashscreen" title="Home" src="/S!.png" onclick="show_home()"/>
-    <img class="button" id="button_shutdown" title="Shutdown" src="/shutdown.png" onclick="shutdown()"/>
+    <img class="button" id="button_splashscreen" title="Home" src="S!.png" onclick="show_home()"/>
+    <img class="button" id="button_shutdown" title="Shutdown" src="shutdown.png" onclick="shutdown()"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
-    <img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/>
-    <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
-    <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
-    <img class="button" id="button_interstellar" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
-    <img class="button" id="button_battles" title="Battles" src="/battles.png" onclick="show_screen('battles')"/>
+    <img class="button" id="button_messages" title="Messages" src="messages.png" onclick="show_screen('messages')"/>
+    <img class="button" id="button_planets" title="Planets" src="planets.png" onclick="show_screen('planets')"/>
+    <img class="button" id="button_fleets" title="Fleets" src="ships.png" onclick="show_screen('fleets')"/>
+    <img class="button" id="button_interstellar" title="Interstellar Objects" src="interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
+    <img class="button" id="button_battles" title="Battles" src="battles.png" onclick="show_screen('battles')"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
-    <img class="button" id="button_energy_minister" title="Energy Minister" src="/energy_minister.png" onclick="show_screen('energy_minister')"/>
-    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="/planetary_minister.png" onclick="show_screen('planetary_minister')"/>
-    <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
-    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
+    <img class="button" id="button_energy_minister" title="Energy Minister" src="energy_minister.png" onclick="show_screen('energy_minister')"/>
+    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="planetary_minister.png" onclick="show_screen('planetary_minister')"/>
+    <img class="button" id="button_research_minister" title="Research Minister" src="research_minister.png" onclick="show_screen('research_minister')"/>
+    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="foreign_minister.png" onclick="show_screen('foreign_minister')"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_admirality" onmouseleave="show_menu(null)">
-    <img class="button" id="button_shipyard" title="Shipyard" src="/shipyard.png" onclick="show_screen('shipyard')"/>
-    <img class="button" id="button_plans" title="Operational Plans" src="/plans.png" onclick="show_screen('plans')"/>
+    <img class="button" id="button_shipyard" title="Shipyard" src="shipyard.png" onclick="show_screen('shipyard')"/>
+    <img class="button" id="button_plans" title="Operational Plans" src="plans.png" onclick="show_screen('plans')"/>
 </div>
 
 
 <div class="submenu hide" id="submenu_game" onmouseleave="show_menu(null)">
-    <img class="button" id="button_score" title="Score" src="/score.png" onclick="show_screen('score')"/>
-    <img class="button" id="button_settings" title="Settings" src="/settings.png" onclick="show_screen('settings')"/>
-    <img class="button" id="button_generate" title="Generate" src="/generate.gif" onclick="play_generate()"/>
+    <img class="button" id="button_score" title="Score" src="score.png" onclick="show_screen('score')"/>
+    <img class="button" id="button_settings" title="Settings" src="settings.png" onclick="show_screen('settings')"/>
+    <img class="button" id="button_generate" title="Generate" src="generate.gif" onclick="show_screen('play_complete')"/>
 </div>
 
 
 <div class="submenu hide" id="submenu_help_menu" onmouseleave="show_menu(null)">
-    <img class="button" id="button_race_viewer" title="Race" src="/race.png" onclick="show_screen('race_viewer')"/>
-    <img class="button" id="button_tech_browser" title="Technology" src="/tech_browser.png" onclick="show_screen('tech_browser')"/>
-    <img class="button" id="button_help_play" title="Help" src="/help.png" onclick="show_screen('help_play')"/>
+    <img class="button" id="button_tech_browser" title="Technology Browser" src="tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_host" title="Help" src="help.png" onclick="show_screen('help')"/>
+</div>
+
+
+<div class="submenu hide" id="submenu_help_menu_play" onmouseleave="show_menu(null)">
+    <img class="button" id="button_race_viewer" title="Race Viewer" src="race.png" onclick="show_screen('race_editor')"/>
+    <img class="button" id="button_tech_browser_play" title="Technology Browser" src="tech_browser.png" onclick="show_screen('tech_browser')"/>
+    <img class="button" id="button_help_play" title="Help" src="help.png" onclick="show_screen('help')"/>
 </div>
 
 
@@ -116,28 +123,35 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch', '?reset')">
+<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch')">
     <table class="topbar hfill"><tr>
+        <td><img title="Launch" src="launch.gif"/></td>
         <td class="hfill" style="font-size: 200%">Launch</td>
+        <td><i class="button far fa-times-circle" title="Close Launch" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <select id="launch_game" class="hfill" size="15" onchange="post('launch', '?go')" style="background: transparent; color: white; font-size: 100%"></select>
+    <table id="launch_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em"></table>
     <input id="player_token" disabled="true" class="onsubmit_launch" style="display: none" onsubmit="launch_player(this)"/>
 </div>
 
 
-<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host', '?reset')" onsubmit="host_auto()">
+<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host')" onsubmit="host_auto()">
     <table class="topbar hfill"><tr>
-        <td class="hfill" style="font-size: 200%">Host</td>
-        <td>Auto Generate: <input id="host_autogen" type="checkbox"/></td>
+        <td><img title="Host / Generate" src="generate.png"/></td>
+        <td class="hfill" style="font-size: 200%">Host / Generate</td>
+        <td><i class="button far fa-times-circle" title="Close Host" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <select id="host_game" class="hfill" size="15" onchange="post('host')" style="background: transparent; color: white; font-size: 100%"></select>
+    <table id="host_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Select Game</caption>
+    </table>
     <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
-    <input id="host_ready" type="checkbox" disabled="true" style="display: none"/>
-    <table class="hfill"><tr>
-        <td>Game: <input id="host_name" disabled="true"/></td>
-        <td rowspan="2" class="hfill" style="text-align: right"><img class="button" title="Generate Now" src="/generate.gif" onclick="host_generate()"/></td>
+    <table class="hfill" style="background: black"><tr>
+        <td rowspan="3" class="hfill" id="host_ID" style="font-size: 200%"></td>
+        <td id="host_turn" style="text-align: right"></td>
+        <td rowspan="3" style="text-align: right"><img class="button" title="Generate Now" src="generate.gif" onclick="host_generate()"/></td>
     </tr><tr>
-        <td>Turn #: <input id="host_turn" disabled="true"/></td>
+        <td style="text-align: right">Auto Generate <input id="host_autogen" type="checkbox"/></td>
+    </tr><tr>
+        <td style="text-align: right" id="host_ready"></td>
     </tr></table>
     <table class="hfill" id="host_status">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Player Status</caption>
@@ -145,21 +159,22 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game', '?reset')">
+<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game')">
     <table class="topbar hfill"><tr>
+        <td><img title="New Game" src="new_game.png"/></td>
         <td class="hfill" style="font-size: 200%">New Game</td>
         <td><i class="button fas fa-plus-circle" title="Create Game" onclick="post('new_game', '?create'); show_screen('launch')"></i></td>
+        <td><i class="button far fa-times-circle" title="Close New Game" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
         <tr>
             <td>Game Name</td>
             <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
         </tr>
+    </table><table class="hfill" id="new_game_players">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">
-            + Galaxy
-            <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="new_game_num_systems"/>
-        </caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
             <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
@@ -170,78 +185,9 @@ void main() {
             <td>Diameter: Z axis</td>
             <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>System Density</td>
-            <td class="hfill"><div class="onload" id="new_game_density" onload="slider(this, 'new_game', 1, 100, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' per cubic light century')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>Player Separation</td>
-            <td class="hfill"><div class="onload" id="new_game_player_distance" onload="slider(this, 'new_game', 25, 2000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td>Number of Systems</td>
+            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems')"/></td>
         </tr><tr class="slider_padding"></tr>
-    </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
-        <tr>
-            <td>Player 1</td>
-            <td class="hfill"><select id="new_game_player01" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 2</td>
-            <td class="hfill"><select id="new_game_player02" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 3</td>
-            <td class="hfill"><select id="new_game_player03" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 4</td>
-            <td class="hfill"><select id="new_game_player04" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 5</td>
-            <td class="hfill"><select id="new_game_player05" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 6</td>
-            <td class="hfill"><select id="new_game_player06" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 7</td>
-            <td class="hfill"><select id="new_game_player07" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 8</td>
-            <td class="hfill"><select id="new_game_player08" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 9</td>
-            <td class="hfill"><select id="new_game_player09" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 10</td>
-            <td class="hfill"><select id="new_game_player10" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 11</td>
-            <td class="hfill"><select id="new_game_player11" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 12</td>
-            <td class="hfill"><select id="new_game_player12" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 13</td>
-            <td class="hfill"><select id="new_game_player13" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 14</td>
-            <td class="hfill"><select id="new_game_player14" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 15</td>
-            <td class="hfill"><select id="new_game_player15" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
-        <tr>
-            <td>Player 16</td>
-            <td class="hfill"><select id="new_game_player16" class="hfill" onchange="post('new_game')"/></td>
-        </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
         <tr>
@@ -302,21 +248,27 @@ void main() {
             <td>Technology Tree</td>
             <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
         </tr>
+        <tr>
+            <td>System Names</td>
+            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"/></td>
+        </tr>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor', '?reset')">
+<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor')">
     <table class="topbar hfill"><tr>
-        <td class="hfill" style="font-size: 200%">Race Editor</td>
-        <td><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
+        <td><img title="Race Editor / Viewer" src="race.png"/></td>
+        <td class="hfill" style="font-size: 200%" id="race_editor_screen_title"></td>
+        <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
-        <tr>
+        <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td>Race Name</td>
-            <td class="hfill" style="padding-right: 6px"><input id="race_editor_name" class="hfill" onchange="post('race_editor')"/></td>
+            <td class="hfill" style="padding-right: 6px"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
         </tr>
@@ -409,7 +361,7 @@ void main() {
             <td class="hfill"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175, 350, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ',000 people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>cost of baryogenesis</td>
-            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 2000, 12000, 500, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 1200, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ / kT')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
@@ -473,11 +425,20 @@ void main() {
     </table>
 </div>
 
-</td></tr></table>
+
+<div class="screen hide onload onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onload="post('tech_browser')" onsubmit="tech_post()">
+    <table class="topbar hfill"><tr>
+        <td><img title="Technology Browser" src="tech_browser.png"/></td>
+        <td class="hfill" style="font-size: 200%">Technology Browser</td> 
+        <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table id="tech_browser"></table>
+</div>
 
 
-<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%">
-    <iframe src="/help.html" style="width: 100%; height: 99%"></iframe>
+<div class="screen hide" id="screen_help" style="width: 100%; height: 100%"><div style="margin-left: 70px; height: 100%; overflow: hidden">
+    <iframe src="help.html" style="border: 0; width: 100%; height: 100%"></iframe>
 </div></div>
 
 
@@ -515,7 +476,7 @@ void main() {
         </tr>
     </table><table class="hfill">
         <tr>
-            <td rowspan="2"><img class="button" src="/ministers.png"/></td>
+            <td rowspan="2"><img class="button" src="ministers.png"/></td>
             <td colspan="2" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
         </tr><tr>
             <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 75%"/></td>
@@ -553,99 +514,174 @@ void main() {
 
 <div class="screen hide onload onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onload="post('research_minister')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
-        <td><img title="Research Minister" src="/research_minister.png"/></td>
+        <td><img title="Research Minister" src="research_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Research Minister</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill" id="research_level" style="font-size: 150%; text-aign: justify; text-align-last: justify; text-justify: inter-character">
     </table>
-    <table class="hfill" id="research_queue">
+    <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
-<!--
-		<tr><td>Default Research Field</td><td class="hfill"><select id="research_default_field" onchange="post('research_minister')" /></td></tr>
--->
+        <tr><td colspan="2"><table id="research_queue"></table></td></tr>
+		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"/></td></tr>
     </table>
-    <table class="hfill" id="research_tech">
+    <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="research_tech_group" onchange="post('research_minister')"></select></td></tr>
+        <tr><td colspan="2"><table id="research_tech"></table></td></tr>
     </table>
 </div>
 
 <div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
     <table class="topbar hfill"><tr>
-        <td><img title="Foreign Minister" src="/foreign_minister.png"/></td>
+        <td><img title="Foreign Minister" src="foreign_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Foreign Minister</td>
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <table class="hfill" id="foreign_treaties">
+    <table class="hfill" id="foreign_treaties" style="text-align: center">
     </table>
-    <table class="hfill"  style="font-size: 85%">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ negotiation</caption>
-        <tr><td colspan="5">
-        <table class="hfill" style="font-size: 118%">
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Negotiation</caption>
         <tr>
-            <td><input disabled="true" id="foreign_p2" style="width: 6em; font-size: 125%"/></td>
-            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team"><i style="font-size: 125%" class="fas fa-handshake"></i></label></td>
-            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')" checked="true"><label for="foreign_relation_is_neutral"><i style="font-size: 125%" class="fas fa-meh"></i></label></td>
-            <td><input type="radio" name="foreign_relation" id="foreign_relation_is_enemy" onchange="post('foreign_minister')"><label for="foreign_relation_is_enemy"><i style="font-size: 125%" class="fas fa-skull-crossbones"></i></label></td>
-            <td style="text-align: right"><i class="button button_s far fa-check-circle" title="save / propose" onclick="post('foreign_minister', '?propose')"></i></td>
-        </tr></table></td></tr>
-        <tr>
-            <td><i class="li" title="Lithium"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_lithium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="li" title="Lithium">1</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_lithium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_lithium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="li" title="Lithium">1</i></td>
+            <td colspan="3"><table class="hfill" style="font-size: 125%"><tr>
+                <td class="hfill" id="foreign_other_player"/></td>
+                <td><input type="radio" name="foreign_relation" id="foreign_relation_is_team" onchange="post('foreign_minister')"><label for="foreign_relation_is_team"> <i style="font-size: 125%" class="fas fa-handshake"></i></label></td>
+                <td><input type="radio" name="foreign_relation" id="foreign_relation_is_neutral" onchange="post('foreign_minister')" checked="true"><label for="foreign_relation_is_neutral"> <i style="font-size: 125%" class="fas fa-meh"></i></label></td>
+                <td><input type="radio" name="foreign_relation" id="foreign_relation_is_enemy" onchange="post('foreign_minister')"><label for="foreign_relation_is_enemy"> <i style="font-size: 125%" class="fas fa-skull-crossbones"></i></label></td>
+            </tr></table></td>
+            <td style="text-align: right"><i class="button far fa-check-circle" title="Save / Propose" onclick="post('foreign_minister', '?save')"></i></td>
+        <!-- titanium -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="ti" title="Titanium">1</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_buy_ti_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="si" title="Silicon"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_silicon" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_silicon" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="si" title="Silicon">1</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_silicon" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_silicon" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="si" title="Silicon">1</i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_sell_ti_display" style="text-align: center; min-width: 5em"></td>
+        <!-- lithium -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="li" title="Lithium">1</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_buy_li_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="ti" title="Titanium"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_titanium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="ti" title="Titanium">1</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_titanium" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_titanium" type="number" min="0" max="120" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="ti" title="Titanium">1</i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_sell_li_display" style="text-align: center; min-width: 5em"></td>
+        <!-- silicon -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="si" title="Silicon">1</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_buy_si_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="fa-free-code-camp" title="fuel"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_fuel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="fa-free-code-camp">10k</i></td>
-            <td>Buy <input id="foreign_p2_is_selling_fuel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_fuel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i class="fa-free-code-camp">10k</i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td id="foreign_sell_si_display" style="text-align: center; min-width: 5em"></td>
+        <!-- fuel -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fa-free-code-camp vertical" title="Fuel">100</i></div></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td id="foreign_buy_fuel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td style="width: 6em"><i class="fab fa-galactic-republic" title="stargate" style="font-size: 160%"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_stargate" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i style="font-size: 127.5%" class="fab fa-galactic-republic" title="gate"></i></td>
-            <td>Buy <input id="foreign_p2_is_selling_stargate" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_stargate" type="number" min="0" max="99999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ <i style="font-size: 127.5%" class="fab fa-galactic-republic" title="gate"></i></td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td id="foreign_sell_fuel_display" style="text-align: center; min-width: 5em"></td>
+        <!-- gates -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fab fa-galactic-republic" title="Stargate Use"> / transit</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td id="foreign_buy_gate_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td style="width: 6em"><i class="fas fa-virus-slash" title="safe passage" style="font-size: 160%"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_passage" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_passage" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
-            <td>Buy <input id="foreign_p2_is_selling_passage" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_passage" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td id="foreign_sell_gate_display" style="text-align: center; min-width: 5em"></td>
+        <!-- hyper denial -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-ban" title="Hyper Denial"> / year</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_buy_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
-            <td><i class="fas fa-user-secret" title="intel sharing" style="font-size: 160%"></i></td>
-            <td>Sell <input id="foreign_p1_is_selling_intel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p1_to_p2_intel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
-            <td>Buy <input id="foreign_p2_is_selling_intel" type="checkbox" onchange="post('foreign_minister')" style="width: 1em"/><i class="fa-bolt" title="Energy"><input id="foreign_cost_p2_to_p1_intel" type="number" min="0" max="999" onchange="post('foreign_minister')" style="width: 4em"/></i>/ year</td>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_sell_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
+        <!-- intel -->
+        </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
+            <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-user-secret" title="Intel Sharing"> / year</i></td>
+            <td>Buy @</td>
+            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_buy_intel_display" style="text-align: center; min-width: 5em"></td>
+        </tr><tr>
+            <td>Sell @</td>
+            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td id="foreign_sell_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr></table></td></tr>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_shipyard" style="width: 600px" onload="post('shipyard')">
+<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post(); ship_display()">
     <table class="topbar hfill"><tr>
-        <td><img title="Shipyard" src="/shipyard.png"/></td>
+        <td><img title="Shipyard" src="shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <table class="hfill" id="shipyard_ship">
+    <table><tr>
+        <td>Existing Designs</td><td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
+        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
+        <td><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
+        <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
+    </tr></table>
+    <table class="hfill" id="shipyard_ship_overview">
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Combat Effectivity</caption>
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
+            <td><canvas id="shipyard_combat_chart" style="width: 550px"></canvas></td>
+        </tr><tr>
+            <td style="font-size: 85%; text-align: center">Range (terameters)</td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanning</caption>
+        <tr>
+            <td style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
+            <td><canvas id="shipyard_sensor_chart" style="width: 550px"></canvas></td>
+        </tr>
+    </table><table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engine</caption>
+        <tr>
+            <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
+            <td><canvas id="shipyard_engine_chart" style="width: 550px"></canvas></td>
+        </tr><tr>
+            <td style="font-size: 85%; text-align: center">Hyper</td>
+        </tr>
     </table>
-    <table class="hfill" id="shipyard_design"> 
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ship Design</caption>
+    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
+    <table class="hfill tech_guts hide" id="shipyard_ship_guts" style="font-size: 85%">
     </table>
-    <table class="hfill" id="shipyard_tech">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech</caption>
+    <table class="hfill"> 
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
+        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
+        <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
+            <td>General Slots</td><td id="shipyard_slots_general"></td>
+            <td>Depot Slots</td><td id="shipyard_slots_depot"></td>
+            <td>Orbital Slots</td><td id="shipyard_slots_orbital"></td>
+        </tr></table></td></tr>
+        <tr><td colspan="2"><table id="shipyard_design"></table></td></tr>
+    </table>
+    <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
+        <tr><td colspan="2"><table id="shipyard_tech"></table></td></tr>
     </table>
 </div>
 
-
-<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
-    <table class="topbar hfill"><tr>
-        <td style="font-size: 200%">Score</td>
-    </tr></table>
-    <table class="hfill">
-        <tr>
-            <td></td>
 
 <div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
 </div>
@@ -712,6 +748,16 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+</div>
+
+
+<div class="screen overlay_message hide onload onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onload="post('play_complete')" onsubmit="play_complete_auto()">
+    <table class="topbar hfill"><tr>
+        <td><img title="Play Complete" src="generate.png"/></td>
+        <td class="hfill" style="font-size: 200%">Waiting for new turn</td> 
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <input id="player_ready" disabled="true" style="display: none"/>
 </div>
 
 

@@ -41,14 +41,6 @@ function toggle(start, css_class, force = null) {
     }
 }
 
-function save_race() {
-    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
-        alert('cannot save, negitive avantage points');
-    } else {
-        post('race_editor', '?save');
-    }
-}
-
 // Show a given screen, hide all others, highlight the clicked button
 function show_screen(show) {
     // Handle button toggle
@@ -60,9 +52,9 @@ function show_screen(show) {
         }
     }
     current_screen = show;
-    // Reset associated data
+    // Get updated data
     if(json_map.hasOwnProperty(show)) {
-        post(show, '?reset');
+        post(show);
     }
     // Hide all screens
     for(screen of document.getElementsByClassName('screen')) {
@@ -126,8 +118,19 @@ function launch_player(token) {
     }
 }
 
+// HTML string encoding
+function html_encode(s) {
+    return s.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/'/g, '&#39;')
+        .replace(/"/g, '&#34;');
+}
+
 // Submit data for actioning
 function post(form = '', action = '') {
+    toggle(document.getElementById('loading'), 'hide', false);
+    document.body.style.cursor = 'progress';
     if(form == '') {
         form = current_screen;
     }
@@ -148,13 +151,17 @@ function post(form = '', action = '') {
                 } else {
                     json_post[key] = parseFloat(value);
                 }
+            } else if(element.nodeName == 'SELECT') {
+                json_post[key] = element.value;
             } else if(element.matches('[type="checkbox"]')) {
                 json_post[key] = element.checked;
             } else if(element.matches('[type="radio"]')) {
                 //console.log(element.checked);
                 json_post[key] = element.checked;
-            } else {
+            } else if(element.nodeName == 'INPUT') {
                 json_post[key] = element.value;
+            } else {
+                json_post[key] = element.innerHTML;
             }
         }
     }
@@ -186,24 +193,28 @@ function parse_json(url, json) {
                         }
                         element.noUiSlider.set(value);
                     } else if(element.nodeName == 'SELECT') {
-                        var options = []
-                        for(var i = 0; i < element.length; i++) {
-                            options.push(element.options[i].text);
-                        }
                         if(json.hasOwnProperty('options_' + key)) {
+                            var options = [];
+                            for(var i = 0; i < element.length; i++) {
+                                options.push(element.options[i].text);
+                            }
+                            var json_options = [];
                             for(opt_text of json['options_' + key]) {
+                                json_options.push(opt_text)
                                 if(!options.includes(opt_text)) {
                                     var new_option = document.createElement("option");
                                     new_option.text = opt_text;
                                     element.add(new_option); 
                                 }
-                                options.splice(options.indexOf(opt_text), 1);
                             }
+                            element.value = json[key];
                             for(var i = 0; i < options.length; i++) {
-                                for(var j = 0; j < element.length; j++) {
-                                    if(element.options[j].text == options[i]) {
-                                        element.remove(j);
-                                        break;
+                                if(!json_options.includes(options[i])) {
+                                    for(var j = 0; j < element.length; j++) {
+                                        if(element.options[j].text == options[i]) {
+                                            element.remove(j);
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -221,8 +232,10 @@ function parse_json(url, json) {
                         element.checked = json[key];
                     } else if(element.matches('[type="radio"]')) {
                         element.checked = json[key];
-                    } else {
+                    } else if(element.nodeName == 'INPUT') {
                         element.value = json[key];
+                    } else {
+                        element.innerHTML = json[key];
                     }
                     if(json.hasOwnProperty('disabled_' + key)) {
                         element.disabled = json['disabled_' + key];
@@ -241,33 +254,76 @@ function parse_json(url, json) {
     } catch(e) {
         console.log(form, e);
     }
+    document.body.style.cursor = 'default';
+    toggle(document.getElementById('loading'), 'hide', true);
 }
 
 // Refresh host screen / auto generate
 function host_auto() {
-    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').checked) {
-        document.getElementById('host_blocking').checked = true;
-        post('host', '?generate');
-    } else {
-        window.setTimeout(post, 10000);
+    if(current_screen == 'host') {
+        if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
+            document.getElementById('host_blocking').checked = true;
+            post('host', '?generate');
+        } else if(document.getElementById('host_name').innerHTML != '') {
+            window.setTimeout(host_post, 10000);
+        }
+    }
+}
+
+// Refresh
+function host_post() {
+    if(current_screen == 'host' && document.body.style.cursor != 'progress') {
+        post('host');
     }
 }
 
 // Confirm if everyone is submitted before generating
 function host_generate() {
     if(!document.getElementById('host_blocking').checked) {
-        var ready = document.getElementById('host_ready').checked;
-        if(ready || confirm('Not all players are turned in.  Generate anyway?')) {
+        var ready = document.getElementById('host_ready').innerHTML;
+        if(ready == 'Ready' || confirm('Not all players are turned in.  Generate anyway?')) {
             document.getElementById('host_blocking').checked = true;
             post('host', '?generate');
         }
     }
 }
 
+// Refresh the player complete screen
+function play_complete_auto() {
+    if(current_screen == 'play_complete') {
+        if(document.getElementById('player_ready').value) {
+            document.getElementById('player_ready').value = false;
+            show_screen(null);
+            //TODO refresh render stars
+        } else {
+            window.setTimeout(play_complete_post, 10000);
+        }
+    }
+}
 
-// Submit player's turn, if auto-generate not turned on and everyone is in ask to generate
-function play_generate() {
-    alert('TODO');
+// Refresh
+function play_complete_post() {
+    if(current_screen == 'play_complete' && document.body.style.cursor != 'progress') {
+        post('play_complete', '?refresh');
+    }
+}
+
+// Save the race?
+function save_race() {
+    if(document.getElementById('race_editor_advantage_points_left').value < 0) {
+        alert('Cannot save, race has negative advantage points');
+    } else {
+        post('race_editor', '?save');
+    }
+}
+
+// Hide the load race if the race editor is in viewer mode
+function race_viewer(element) {
+    if(game_mode == 'play') {
+        toggle(element, 'hide', true);
+    } else {
+        toggle(element, 'hide', false);
+    }
 }
 
 // Confirm shutdown before executing
@@ -278,26 +334,24 @@ function shutdown() {
     }
 }
 
-function edit_treaty(player) {
-    player_name = player + '_name'
-    document.getElementById('foreign_p2') = document.getElementById(player_name)
-}
-
-function declare_war() {
-    if(confirm('this will make them your enemy and will revoke your treaty.  Are you sure that you want to delcare war?')) {
-        post('foreign_minister', '?declare_war');
-    }
-}
-
 // Create a slider
 function slider(element, form, min, max, step, formatter, units) {
+    var tooltips = true;
+    if(units == null) {
+        tooltips = false;
+    }
     noUiSlider.create(element, {
         start: [min],
         connect: true,
         step: step,
-        tooltips: [true],
+        tooltips: [tooltips],
         format: {
             to: function(value) {
+                if(formatter == null) {
+                    return value;
+                } else if(units == null) {
+                    return formatter.format(value);
+                }
                 return formatter.format(value) + units;
             },
             from: function(value) {
@@ -637,6 +691,15 @@ function tech_expand(div, expand_guts) {
     }
 }
 
+// Render the ship charts
+function ship_display() {
+    if(current_screen == 'shipyard') {
+        combat_chart(document.getElementById('shipyard_combat_chart'), json_map['shipyard']['shipyard_combat_chart']);
+        sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart']);
+        engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart']);
+    }
+}
+
 // Create a chart for combat defense/weapon curves
 function combat_chart(chart, data) {
     labels = [];
@@ -704,9 +767,9 @@ function combat_chart(chart, data) {
                         if(tooltipItem.datasetIndex == 0) {
                             label += Math.round(tooltipItem.value);
                         } else if(tooltipItem.datasetIndex == 2) {
-                            label += parseInt(tooltipItem.value) - json_map['tech']['armor'];
+                            label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
                         } else if(tooltipItem.datasetIndex == 3) {
-                            base = json_map['tech']['armor'] + json_map['tech']['shield'];
+                            base = data.datasets[1].data[0] + data.datasets[2].data[0];
                             value = parseInt(tooltipItem.value);
                             label += Math.round(value / base * 100) + '%';
                         } else {

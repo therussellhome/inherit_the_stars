@@ -2,22 +2,18 @@ import sys
 from . import stars_math
 from .defaults import Defaults
 from . import game_engine
-from .location import LocationReference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'anti_cloak': [0.0, 0.0, sys.maxsize],
-    'penetrating': [0.0, 0.0, sys.maxsize],
-    'normal': [0.0, 0.0, sys.maxsize]
+    'anti_cloak': (0.0, 0.0, sys.maxsize),
+    'penetrating': (0.0, 0.0, sys.maxsize),
+    'normal': (0.0, 0.0, sys.maxsize),
 }
 
 
 """ Represent 'scanner' """
 class Scanner(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     """ Calculate the range an apparent mass is visible at """
     def range_visible(self, apparent_mass):
         visible_at = 0
@@ -27,6 +23,7 @@ class Scanner(Defaults):
             visible_at = max(visible_at, apparent_mass * ly_per_kt)
         return visible_at
 
+    """ Addition operator """
     def __add__(self, other):
         s = Scanner()
         s.anti_cloak = stars_math.volume_add(self.anti_cloak, other.anti_cloak)
@@ -34,13 +31,20 @@ class Scanner(Defaults):
         s.normal = stars_math.volume_add(self.normal, other.normal) 
         return s
 
-    def scan_ships(self, player, location):
+    """ Add scan reports to the player from a location """
+    def scan(self, player, location):
         for ship in game_engine.get('Ship'):
             report = self.scan_ship(location, ship)
             if report:
                 player.add_intel(ship, **report)
+        for planet in game_engine.get('Planet'):
+            report = self.scan_planet(location, planet)
+            if report:
+                player.add_intel(planet, **report)
 
+    """ Report about a ship """
     def scan_ship(self, location, ship):
+        return {} #TODO fix for ships inside a system
         report = {}
         mass = ship.calc_mass()
         apparent = ship.calc_apparent_mass()
@@ -54,25 +58,21 @@ class Scanner(Defaults):
             report['apparant_mass'] = apparent
         if len(report) == 0:
             return None
-        report['player'] = str(ship.player.name)
+        report['player'] = ship.player
         report['location'] = ship.location
         return report
 
-    def scan_planets(self, player, location):
-        for planet in game_engine.get('Planet'):
-            report = self.scan_planet(location, planet)
-            if report:
-                player.add_intel(planet, **report)
-
+    """ Report about a planet """
     def scan_planet(self, location, planet):
         distance = planet.location - location
         if distance <= self.penetrating:
             return {
                 'location': planet.location,
+                'color': planet.get_color(),
                 'gravity': planet.gravity, 
                 'temperature': planet.temperature, 
                 'radiation': planet.radiation,
-                'player': str(planet.player.name),
+                'player': planet.player,
                 'population': planet.on_surface.people,
                 'lithium availability': planet.mineral_availability('lithium'),
                 'silicon availability': planet.mineral_availability('silicon'),

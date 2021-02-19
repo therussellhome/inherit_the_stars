@@ -1,0 +1,20 @@
+{
+    "ID": "Auxiliary ₥ Tank",
+    "category": "Mechanical",
+    "description": "Fuel tank that holds half a million units; putting a few on your starbase means you can store extra fuel from year to year for refueling ships",
+    "cost": {
+        "titanium": 10,
+        "lithium": 2,
+        "silicon": 0,
+        "energy": 800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 3,
+        "construction": 7,
+        "__class__": "TechLevel"
+    },
+    "mass": 12,
+    "fuel_max": 500000,
+    "__class__": "Tech"
+}

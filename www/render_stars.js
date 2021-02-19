@@ -48,8 +48,8 @@ function init() {
 // Draw the suns & planets
 function onSubmit() {
     if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('suns')) {
-            if(json_map['render_stars']['suns'].length > 0) {
+        if(json_map['render_stars'].hasOwnProperty('systems')) {
+            if(json_map['render_stars']['systems'].length > 0) {
                 // load materials
                 var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" )
                 var texture_sun = new THREE.TextureLoader().load( "/alphamap-circle.png" )
@@ -65,9 +65,9 @@ function onSubmit() {
                 for(var i = 0; i < suns.length; i++) {
                     var color = new THREE.Color (suns[i].color);
                     sizes[i] = ((suns[i].size + 200) * TERAMETER / 1000);
-                    positions[ i * 3 ] = suns[i].x;
-                    positions[ i * 3 + 1 ] = suns[i].y;
-                    positions[ i * 3 + 2 ] = suns[i].z;
+                    positions[ i * 3 ] = suns[i].location[0];
+                    positions[ i * 3 + 1 ] = suns[i].location[1];
+                    positions[ i * 3 + 2 ] = suns[i].location[2];
                     colors[ i * 3 ] = color.r;
                     colors[ i * 3 + 1 ] = color.g;
                     colors[ i * 3 + 2 ] = color.b;

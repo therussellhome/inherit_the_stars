@@ -1,0 +1,27 @@
+{
+    "ID": "Frigate",
+    "category": "Hull",
+    "description": "Ship hull with room for 4 components including engine.",
+    "cost": {
+        "titanium": 4,
+        "lithium": 2,
+        "silicon": 4,
+        "energy": 1200,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 1,
+        "__class__": "TechLevel"
+    },
+    "mass": 8,
+    "cargo_max": 0,
+    "fuel_max": 50000,
+    "armor": 20,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__class__": "Scanner"
+    },
+    "repair": 4,
+    "slots_general": 4,
+    "__class__": "Tech"
+}

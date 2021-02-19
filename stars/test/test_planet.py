@@ -47,26 +47,26 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_is_colonized2(self):
         p = planet.Planet()
-        # force reference to create the player
-        p.player.name = 'colonized'
+        p.on_surface.people = 1
         self.assertTrue(p.is_colonized())
 
 
     def test_colonize1(self):
         p = planet.Planet()
-        self.assertTrue(p.colonize(player.Player(name='test_colonize'), 'a minister'))
+        self.assertTrue(p.colonize(player.Player(ID='test_colonize')))
+        p.on_surface.people = 1
         self.assertTrue(p.is_colonized())
-        self.assertEqual(p.minister, 'a minister')
-        self.assertFalse(p.colonize(player.Player(name='claim jumper'), 'a minister'))
+        self.assertFalse(p.colonize(player.Player(ID='claim jumper')))
 
     def test_colonize2(self):
         p = planet.Planet()
-        p.colonize(player.Player(name='test_colonize'), 'a minister')
-        self.assertFalse(p.colonize(player.Player(name='claim jumper'), 'a minister'))
+        p.colonize(player.Player(ID='test_colonize'))
+        p.on_surface.people = 1
+        self.assertFalse(p.colonize(player.Player(ID='claim jumper')))
 
     def test_colonize3(self):
         p = planet.Planet()
-        self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri')), 'a minister'))
+        self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri'))))
 
 
     def test_habitability1(self):
@@ -291,31 +291,29 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet()
         p.on_surface.people = 1000
         p.player.race.energy_per_10k_colonists = 100
-        getattr(p, 'Power Plant').quantity = 100
-        getattr(p, 'Power Plant').tech.facility_output = 100
-        self.assertEqual(p.generate_energy(), 200)
+        p.player.tech_level.propulsion = 10
+        p.power_plants = 100
+        self.assertEqual(p.generate_energy(), 1234100)
 
     def test_generate_energy2(self):
         p = planet.Planet()
         p.on_surface.people = 0
         p.player.race.energy_per_10k_colonists = 0
-        getattr(p, 'Power Plant').quantity = 100
-        getattr(p, 'Power Plant').tech.facility_output = 100
+        p.power_plants = 100
         self.assertEqual(p.generate_energy(), 0)
 
     def test_generate_energy3(self):
         p = planet.Planet()
         p.on_surface.people = 1000
         p.player.race.energy_per_10k_colonists = 1000
-        getattr(p, 'Power Plant').quantity = 0
+        p.power_plants = 0
         self.assertEqual(p.generate_energy(), 1000)
 
 
     def test_mine_minerals1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        getattr(p, 'Mineral Extractor').quantity = 100
-        getattr(p, 'Mineral Extractor').tech.mineral_depletion_factor = 1.3
+        p.mines = 100
         p.mine_minerals()
         return #TODO
         play = player.Player(
@@ -338,7 +336,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertEqual(self.planet.remaining_minerals.titanium, 9993, 'FIX ME')
         self.assertEqual(self.planet.remaining_minerals.lithium, 9993, 'FIX ME')
         self.assertEqual(self.planet.remaining_minerals.silicon, 9993, 'FIX ME')
-        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
 
@@ -357,7 +355,7 @@ class PlanetTestCase(unittest.TestCase):
         self.planet.facilities['Power'].tech.factory_capacity = 00
         self.planet.calc_production()
         self.assertEqual(self.planet.factory_capacity, 100, 'FIX ME')
-        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
 
@@ -403,6 +401,6 @@ class PlanetTestCase(unittest.TestCase):
         #getattr(self.planet, 'Mineral Extractor').debug_display()
         #self.assertEqual(self.planet.auto_build(), getattr(self.planet, 'Mineral Extractor'), 'FIX ME')
         ###reset###
-        self.planet = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 

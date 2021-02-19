@@ -4,9 +4,9 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'messages_index': [-1, -1, sys.maxsize],
-    'messages_count': [0, 0, sys.maxsize],
-    'messages_text': [''],
+    'messages_index': (-1, -1, sys.maxsize),
+    'messages_count': (0, 0, sys.maxsize),
+    'messages_text': '',
 }
 
 
@@ -14,7 +14,7 @@ __defaults = {
 class Messages(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player:
+        if not self.player():
             return
         # Bound the msg index
         if self.messages_index == -1:

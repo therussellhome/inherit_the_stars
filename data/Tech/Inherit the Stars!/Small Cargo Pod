@@ -1,0 +1,19 @@
+{
+    "ID": "Small Cargo Pod",
+    "category": "Mechcanical",
+    "description": "adds 10kT to your ship's cargo capacity",
+    "cost": {
+        "titanium": 2,
+        "lithium": 0,
+        "silicon": 1,
+        "energy": 300,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 3,
+    "cargo_max": 10,
+    "__class__": "Tech"
+}

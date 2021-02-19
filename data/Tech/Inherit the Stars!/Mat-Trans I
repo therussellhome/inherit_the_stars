@@ -1,0 +1,21 @@
+{
+    "name": "Mat-Trans I",
+    "category": "Orbital",
+    "description": "Allows your colonists to relocate to a less-crowded (or more habitable) world so they can continue to multiply, but only if you budget energy to operate mat-trans.",
+    "race_requirements": "-Formics",
+    "cost": {
+        "titanium": 2,
+        "lithium": 4,
+        "silicon": 5,
+        "energy": 2400,
+        "__uuid__": "Cost"
+    },
+    "level": {
+        "energy": 3,
+        "biotechnology": 4,
+        "__uuid__": "TechLevel"
+    },
+    "mass": 11,
+    "mat_trans_energy": 60,
+    "__uuid__": "Tech"
+}

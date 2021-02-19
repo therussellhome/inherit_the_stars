@@ -2,12 +2,12 @@ import unittest
 from .. import *
 
 _defaults = {
-    'default_int': [123, 0, 999],
-    'default_float': [0.5, 0.1, 0.9],
-    'default_bool': [True],
-    'default_string': ['string'],
-    'default_object': [['list']],
-    'default_int2': [987, 0, 999],
+    'default_int': (123, 0, 999),
+    'default_float': (0.5, 0.1, 0.9),
+    'default_bool': True,
+    'default_string': 'string',
+    'default_object': ['list'],
+    'default_int2': (987, 0, 999),
 }
 
 class _TestDefaults(defaults.Defaults):
@@ -20,7 +20,8 @@ class _TestDefaultsChild(_TestDefaults):
 
 class DefaultsTestCase(unittest.TestCase):
     def test_set_defaults(self):
-        self.assertEqual(_TestDefaults.defaults, _defaults)
+        self.assertEqual(_TestDefaults.defaults['default_int'], _defaults['default_int'][0])
+        self.assertEqual(_TestDefaults.defaults['default_string'], _defaults['default_string'])
 
     def test_child(self):
         t = _TestDefaultsChild()
@@ -45,6 +46,15 @@ class DefaultsTestCase(unittest.TestCase):
         self.assertEqual(t.default_string, 'abc')
         self.assertEqual(t.default_object[0], 'xyz')
         self.assertEqual(t.other_value, self)
+
+    def test_subscript1(self):
+        t = _TestDefaults()
+        self.assertEqual(t['default_int'], 123)
+
+    def test_subscript2(self):
+        t = _TestDefaults()
+        t['default_int'] = 321
+        self.assertEqual(t['default_int'], 321)
 
     def test_value(self):
         t = _TestDefaults()
@@ -74,19 +84,3 @@ class DefaultsTestCase(unittest.TestCase):
         t.default_float = 1.0
         self.assertEqual(t.default_int, 999)
         self.assertEqual(t.default_float, 0.9)
-
-    def test_update(self):
-        t = _TestDefaults()
-        t.update(default_int = 5);
-        self.assertEqual(t.default_int, 5)
-
-    def test_reset(self):
-        t = _TestDefaults()
-        t.default_int = 9;
-        t.reset_to_default()
-        self.assertEqual(t.default_int, 123)
-    
-    """ requires visual confermation when you run ./unittest.sh """
-    def test_debug_display(self):
-        defalt = defaults.Defaults(name="thtoh")
-        defalt.debug_display()

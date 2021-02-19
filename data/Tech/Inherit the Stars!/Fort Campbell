@@ -1,0 +1,19 @@
+{
+    "ID": "Fort Campbell",
+    "category": "Shield",
+    "description": "shipboard shield",
+    "cost": {
+        "titanium": 4,
+        "lithium": 0,
+        "silicon": 4,
+        "energy": 800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 10,
+        "__class__": "TechLevel"
+    },
+    "mass": 1,
+    "shield": 100,
+    "__class__": "Tech"
+}

@@ -1,0 +1,22 @@
+{
+    "ID": "Small Particle Accelerator",
+    "category": "Orbital",
+    "description": "Particle Accelerators are what you put on a starbase to produce antimatter fuel for your ships.  This one can generate up to 2 million units per year.",
+    "cost": {
+        "titanium": 2,
+        "lithium": 0,
+        "silicon": 4,
+        "energy": 15000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 0,
+        "electronics": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 6,
+    "fuel_generation": 2000000,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
+}

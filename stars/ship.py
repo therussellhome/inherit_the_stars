@@ -10,34 +10,29 @@ from .expirence import Expirence
 from .reference import Reference
 from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
-from .buildable import Buildable
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'location': [Location()],
-    'battle_plan': [BattlePlan()],
-    'initative': [0, 0, sys.maxsize],
-    'armor': [10, 0, sys.maxsize],
-    'armor_damage': [0, 0, sys.maxsize],
-    'shields': [0, 0, sys.maxsize],
-    'shields_damage': [0, 0, sys.maxsize],
-    'max_distance': [0.0, 0.0, sys.maxsize],
-    'damage_armor': [0, 0, sys.maxsize],
-    'fuel': [0, 0, sys.maxsize],
-    'fuel_max': [0, 0, sys.maxsize],
-    'engines': [[]],
-    'cargo': [Cargo()],
-    'expirence': [Expirence()],
-    'cloak_percent': [0.0, 0.0, 100.0],
-    'player': [Reference()]
+    'location': Location(),
+    'battle_plan': BattlePlan(),
+    'initative': (0, 0, sys.maxsize),
+    'armor': (10, 0, sys.maxsize),
+    'armor_damage': (0, 0, sys.maxsize),
+    'shields': (0, 0, sys.maxsize),
+    'shields_damage': (0, 0, sys.maxsize),
+    'max_distance': (0.0, 0.0, sys.maxsize),
+    'damage_armor': (0, 0, sys.maxsize),
+    'fuel': (0, 0, sys.maxsize),
+    'fuel_max': (0, 0, sys.maxsize),
+    'engines': [],
+    'cargo': Cargo(),
+    'expirence': Expirence(),
+    'cloak_percent': (0.0, 0.0, 100.0),
+    'player': Reference(),
 }
 
 
-class Ship(ShipDesign, Buildable):
-    """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
+class Ship(ShipDesign):
     """ Calculates how much fuel it will take to move """
     """ Coded for use of the fleet """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
@@ -73,8 +68,7 @@ class Ship(ShipDesign, Buildable):
         planet.on_surface += self.cargo
     
     def scan(self, player):
-        self.scanner.scan_planets(player, self.location)
-        self.scanner.scan_ships(player, self.location)
+        self.scanner.scan(player, self.location)
     
     def lay_mines(self, player, system):
         system.mines[player.name] += self.mines_laid
@@ -138,19 +132,5 @@ class Ship(ShipDesign, Buildable):
     def blow_up(self):
         self.scrap(self.location, self.location)
         pass
-
-    """ Return the cost to build """
-    def add_to_build_queue(self, race=None, upgrade_to=None):
-        super().add_to_build_queue(race, upgrade_to)
-        if upgrade_to:
-            return upgrade_to.cost - self.scrap_value(race)
-        return self.cost
-
-    """ Store the upgraded specs """
-    def build_complete(self, race=None, upgrade_to=None):
-        super().build_complete(race, upgrade_to)
-        if upgrade_to:
-            #TODO replace current ship specs with upgrade specs
-            pass
 
 Ship.set_defaults(Ship, __defaults)

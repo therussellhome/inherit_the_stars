@@ -1,0 +1,27 @@
+{
+    "ID": "Frog Jump 6",
+    "category": "Engine",
+    "description": "A slightly better engine: can go 36 light years per year with reasonable mass per engine",
+    "cost": {
+        "titanium": 5,
+        "lithium": 0,
+        "silicon": 1,
+        "energy": 600,
+        "__class__": "Cost"
+    },
+    "level": {
+        "propulsion": 2,
+        "__class__": "TechLevel"
+    },
+    "mass": 9,
+    "engines": [
+        {
+            "kt_exponent": 1.5,
+            "speed_divisor": 10,
+            "speed_exponent": 4.0,
+            "antimatter_siphon": 0,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}

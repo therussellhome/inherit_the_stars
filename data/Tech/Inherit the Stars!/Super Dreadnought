@@ -1,0 +1,27 @@
+{
+    "ID": "Super Dreadnought",
+    "category": "Hull",
+    "description": "The biggest ship hull, with 64 general-purpose slots.",
+    "race_requirements": "Aku'Ultan",
+    "cost": {
+        "titanium": 36,
+        "lithium": 15,
+        "silicon": 22,
+        "energy": 9200,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 19,
+        "__class__": "TechLevel"
+    },
+    "mass": 128,
+    "fuel_max": 1200000,
+    "armor": 320,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__class__": "Scanner"
+    },
+    "repair": 64,
+    "slots_general": 64,
+    "__class__": "Tech"
+}

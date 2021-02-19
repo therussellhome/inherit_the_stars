@@ -1,0 +1,23 @@
+{
+    "ID": "Hawk Scanner",
+    "category": "Scanner",
+    "description": "The lowest-tech scanner.  It detects ships at a distance based on their apparent mass (which is affected by cloaking). This scanner can detect a 100kT ship at 50 light years, a 200kT ship at 100ly, and a 50kT ship at 25ly - EXCEPT it cannot see inside solar systems.",
+    "cost": {
+        "titanium": 2,
+        "lithium": 0,
+        "silicon": 2,
+        "energy": 300,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 0,
+        "electronics": 0,
+        "__class__": "TechLevel"
+    },
+    "mass": 4,
+    "scanner": {
+        "normal": 50.0,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

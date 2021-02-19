@@ -34,8 +34,8 @@ class SunTestCase(unittest.TestCase):
 
     def test_colonize1(self):
         s = sun.Sun()
-        self.assertFalse(s.colonize(player.Player(), 'a minister'))
+        self.assertFalse(s.colonize(player.Player()))
 
     def test_colonize2(self):
         s = sun.Sun()
-        self.assertTrue(s.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri')), 'a minister'))
+        self.assertTrue(s.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri'))))
