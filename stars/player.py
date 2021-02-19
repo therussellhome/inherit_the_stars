@@ -11,6 +11,8 @@ from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
+from .message import Message
+
 
 
 """ Default values (default, min, max)  """
@@ -54,6 +56,7 @@ _player_fields = [
     'research_queue',
     'research_field',
     'fleets',
+    'messages',
     'ship_designs',
     'treaties',
     'finance_minister_construction_percent',
@@ -150,8 +153,14 @@ class Player(Defaults):
         self.historical[category] = history
 
     """ Add a message """
-    def add_message(self, source, subject, body, link):
-        self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
+    def add_message(self, **kwargs):
+        self.messages.append(Message(**kwargs, date=self.date))
+
+    """ Cleanup messages """
+    def cleanup_messages(self):
+        for msg in self.messages:
+            if msg.keep == False and msg.read == True:
+                self.messages.remove(msg)
     
     """ Compute score based on intel """
     def calc_score(self):
@@ -175,6 +184,8 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
+        if treaty.status = 'pending':
+            self.add_message(msg_key='foreign_minister.proposed_treaty', parameters=[treaty.other_player])
         for t in self.treaties:
             if t.treaty_key == treaty.treaty_key and t != treaty:
                 t.merge(treaty)
@@ -186,7 +197,9 @@ class Player(Defaults):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)
+                self.add_message(msg_key='foreign_minister.rejected_treaty', parameters=[t.other_player])
             elif t.status == 'signed':
+                self.add_message(msg_key='foreign_minister.accepted_treaty', parameters=[t.other_player])
                 # clear old active treaty (if there was one)
                 for t0 in self.treaties:
                     if t.other_player == t0.other_player and t0.status == 'active':
