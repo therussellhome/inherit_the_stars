@@ -104,7 +104,7 @@ def from_json(raw, name='<Internal>'):
     try:
         return __decode(json.loads(raw))
     except Exception as e:
-        print('Decode error ' + str(e) + ' in ' + name + '\n' + raw)
+        print('Decode error ' + str(e) + ' in ' + name)
 
 
 """ Encode an object into a string """
@@ -239,7 +239,11 @@ def __new(classname, not_found, **kwargs):
         parent = stack.pop()
         for child in parent.__subclasses__():
             if child.__name__ == classname:
-                return child(**kwargs)
+                try:
+                    return child(**kwargs)
+                except Exception as e:
+                    print('Error creating class "' + classname + '"', e)
+                    raise e
             elif child not in subclasses:
                 subclasses.add(child)
                 stack.append(child)

@@ -24,6 +24,7 @@ __all__ = [
     'player', 
     'race',
     'reference', 
+    'scan',
     'scanner',
     'ship',
     'ship_design',
