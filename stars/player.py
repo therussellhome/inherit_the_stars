@@ -84,6 +84,11 @@ class Player(Defaults):
 
     """ Save player to file """
     def save(self):
+        colonized_planets = []
+        for planet in game_engine.get('Planet'):
+            if planet.player.ID == self.ID:
+                colonized_planets.append(planet)
+        self.__colonized_planets = colonized_planets
         game_engine.save('Player', self.filename(), self)
 
     """ Update self from file """
@@ -98,11 +103,6 @@ class Player(Defaults):
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
-    """ calles fleets to do actions """
-    def ship_action(self, action):
-        for fleet in self.fleets:
-            fleet.execute(action, self)
-    
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
     
