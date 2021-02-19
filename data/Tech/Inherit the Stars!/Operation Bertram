@@ -1,19 +1,19 @@
 {
-    "name": "Operation Bertram",
+    "ID": "Operation Bertram",
     "category": "ECM",
     "description": "Projects electronic decoys to draw enemy fire away from your ship in battle.",
     "cost": {
         "titanium": 1,
         "silicon": 6,
         "energy": 2000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 8,
         "electronics": 16,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 2,
     "ecm": 30,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

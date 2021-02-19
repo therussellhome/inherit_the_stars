@@ -1,36 +1,44 @@
 import sys
 from math import cos, pi, sin
 from random import random
-from . import game_engine
 from . import stars_math
+from .defaults import Defaults
 from .reference import Reference
 
 
+""" Default values (default, min, max)  """
+__defaults = {
+    'x': 0.0,
+    'y': 0.0,
+    'z': 0.0,
+    'in_system': False,
+    'reference': Reference(''),
+    'offset': 0.0,
+}
+
+
 """ Class defining a location """
-class Location(game_engine.BaseClass):
+class Location(Defaults):
     """ Initialize the location """
     def __init__(self, **kwargs):
+        if 'random_in' in kwargs:
+            # loop until a point is created inside a radius=1 sphere
+            p = (1.0, 1.0, 1.0)
+            while stars_math.distance(*p, 0, 0, 0) > 1.0:
+                p = (random() * 2 - 1, random() * 2 - 1, random() * 2 - 1)
+            kwargs['x'] = p[0] * kwargs['random_in'][0]
+            kwargs['y'] = p[1] * kwargs['random_in'][1]
+            kwargs['z'] = p[2] * kwargs['random_in'][2]
+            del kwargs['random_in']
         super().__init__(**kwargs)
-        self_dict = object.__getattribute__(self, '__dict__')
-        self_dict['x'] = kwargs.get('x', 0.0)
-        self_dict['y'] = kwargs.get('y', 0.0)
-        self_dict['z'] = kwargs.get('z', 0.0)
         if 'reference' in kwargs:
-            self_dict['reference'] = kwargs['reference']
-            if 'offset' in kwargs:
-                offset = kwargs.get('offset', 0.0)
-                lat = kwargs.get('lat', random() * 180 - 90)
-                lon = kwargs.get('lon', random() * 360 - 180)
-                self_dict['x'] = round(cos(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
-                self_dict['y'] = round(sin(lat * pi / 180) * offset * cos(lon * pi / 180), 5)
-                self_dict['z'] = round(sin(lon * pi / 180) * offset, 5)
-
+            self.reference = Reference(kwargs['reference'])
     
-    def polar_offset(dis, lat, lon):
-        x = round(cos(lat*pi/180)*dis*cos(lon*pi/180), 5)
-        y = round(sin(lat*pi/180)*dis*cos(lon*pi/180), 5)
-        z = round(sin(lon*pi/180)*dis, 5)
-        return Location(x = self.x + x, y = self.y + y, z = self.z + z)
+    #def polar_offset(dis, lat, lon):
+    #    x = round(cos(lat*pi/180)*dis*cos(lon*pi/180), 5)
+    #    y = round(sin(lat*pi/180)*dis*cos(lon*pi/180), 5)
+    #    z = round(sin(lon*pi/180)*dis, 5)
+    #    return Location(x = self.x + x, y = self.y + y, z = self.z + z)
 
     #def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
     #    distance = (self - target) - standoff
@@ -67,59 +75,38 @@ class Location(game_engine.BaseClass):
     def __sub__(self, other):
         return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
     
-    """ Equality check """
-    def __eq__(self, other):
-        if type(self) != type(other):
-            return False
-        return self.x == other.x and self.y == other.y and self.z == other.z and getattr(self, 'reference', None) == getattr(other, 'reference', None)
-
     """ If a reference then get the attribute from the referenced class """
     def __getattribute__(self, name):
         self_dict = object.__getattribute__(self, '__dict__')
-        if 'reference' in self_dict and name == 'x':
-            return self_dict['reference'].location.x + self_dict['x']
-        elif 'reference' in self_dict and name == 'y':
-            return self_dict['reference'].location.y + self_dict['y']
-        elif 'reference' in self_dict and name == 'z':
-            return self_dict['reference'].location.z + self_dict['z']
-        else:
+        if '__cache__' not in self_dict:
             return object.__getattribute__(self, name)
-
-    """ Set the attribute locally """
-    def __setattr__(self, name, value):
-        self_dict = object.__getattribute__(self, '__dict__')
-        self_dict[name] = value
-
-
-""" 
-Location that is actually a reference to something else's location
-Reference must have a location attribute
-"""
-class LocationReference(Location):
-    """ Initialize defaults """
-    def __init__(self, *args, **kwargs):
-        if 'reference' in kwargs:
-            self.reference = kwargs['reference']
-        else:
-            self.reference = Reference(args[0])
-
-    """ Get the attribute from the real class """
-    def __getattribute__(self, name):
-        if name == 'x':
-            return self.reference.location.x
+        if self_dict['__cache__'] == {}:
+            # location is relative but has not been converted to absolute
+            if self_dict['reference']:
+                # location does not have a fixed offset
+                if self_dict['offset'] != 0.0:
+                    lat = random() * 180 - 90
+                    lon = random() * 360 - 180
+                    self_dict['x'] = round(cos(lat * pi / 180) * self_dict['offset'] * cos(lon * pi / 180), 5)
+                    self_dict['y'] = round(sin(lat * pi / 180) * self_dict['offset'] * cos(lon * pi / 180), 5)
+                    self_dict['z'] = round(sin(lon * pi / 180) * self_dict['offset'], 5)
+                self_dict['__cache__'] = (
+                        self_dict['reference'].location.x + self_dict['x'],
+                        self_dict['reference'].location.y + self_dict['y'],
+                        self_dict['reference'].location.z + self_dict['z'])
+            else:
+                self_dict['__cache__'] = (self_dict['x'], self_dict['y'], self_dict['z'])
+        # if relative then get the in_system flag from the referenced location
+        if name == 'in_system' and self_dict['reference']:
+            return self_dict['reference'].locaton.in_system
+        elif name == 'x':
+            return self_dict['__cache__'][0]
         elif name == 'y':
-            return self.reference.location.y
+            return self_dict['__cache__'][1]
         elif name == 'z':
-            return self.reference.location.z
+            return self_dict['__cache__'][2]
         else:
             return object.__getattribute__(self, name)
 
 
-def rand_location(radius_x=1.0, radius_y=1.0, radius_z=1.0):
-    # loop until a point is created inside a r=1 sphere
-    while True:
-        x = random() * 2 - 1
-        y = random() * 2 - 1
-        z = random() * 2 - 1
-        if stars_math.distance(x, y, z, 0, 0, 0) <= 1.0:
-            return Location(x=x * radius_x, y=y * radius_y, z=z * radius_z)
+Location.set_defaults(Location, __defaults)

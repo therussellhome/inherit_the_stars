@@ -1,5 +1,5 @@
 {
-    "name": "Test Component",
+    "ID": "Test Component",
     "category": "Orbital",
     "description": "a component\nstuff",
     "facility_level": 0,
@@ -10,14 +10,14 @@
         "lithium": 100,
         "silicon": 100,
         "energy": 100,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "cost_build_complete": {
         "titanium": 0,
         "lithium": 0,
         "silicon": 0,
         "energy": 0,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 3,
@@ -26,7 +26,7 @@
         "construction": 10,
         "electronics": 5,
         "biotechnology": 0,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 100,
     "cargo_max": 200,
@@ -42,7 +42,7 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
     "bombs": [
@@ -54,14 +54,14 @@
             "dirty_temperature": 0.0,
             "dirty_radiation": 0.0,
             "dirty_gravity": 0.0,
-            "__uuid__": "Bomb"
+            "__class__": "Bomb"
         }
     ],
     "scanner": {
         "anti_cloak": 50.0,
         "penetrating": 100.0,
         "normal": 200.0,
-        "__uuid__": "Scanner"
+        "__class__": "Scanner"
     },
     "cloak": 50,
     "engines": [
@@ -70,7 +70,7 @@
             "speed_divisor": 10.0,
             "speed_exponent": 5.0,
             "antimatter_siphon": 0.0,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
     "shipyard": 0,
@@ -84,5 +84,5 @@
     "slots_general": -1,
     "slots_depot": 0,
     "slots_orbital": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

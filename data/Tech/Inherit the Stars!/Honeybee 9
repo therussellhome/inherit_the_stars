@@ -1,5 +1,5 @@
 {
-    "name": "Honeybee 9",
+    "ID": "Honeybee 9",
     "category": "Engine",
     "description": "Can go 81 light years per year with reasonable mass per engine; a faster but more expensive engine",
     "cost": {
@@ -7,11 +7,11 @@
         "lithium": 20,
         "silicon": 9,
         "energy": 5000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "propulsion": 9,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "engines": [
@@ -20,8 +20,8 @@
             "speed_divisor": 40,
             "speed_exponent": 1.5,
             "antimatter_siphon": 0,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -5,44 +5,44 @@ from random import random
 from .. import game_engine
 from ..defaults import Defaults
 from ..game import Game
-from ..location import rand_location
 from ..player import Player
 from ..race import Race
 from ..reference import Reference
 from ..star_system import StarSystem
 from ..tech import Tech
+from .ui import UI
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'new_game_name': [''],
-    'new_game_players': [[]],
-    'new_game_x': [500, 0, 10000], 
-    'new_game_y': [500, 0, 10000], 
-    'new_game_z': [500, 0, 10000], 
-    'new_game_num_systems': [1000, 50, sys.maxsize],
-    'new_game_public_player_scores': [30, 0, 200], 
-    'new_game_victory_after': [50, 10, 200], 
-    'new_game_victory_conditions': [1, 1, 10], 
-    'new_game_victory_enemies_left': [0, -1, 15], 
-    'new_game_victory_score_number': [1000, -100, 10000], 
-    'new_game_victory_tech_levels': [100, -10, 300], 
-    'new_game_victory_planets_number': [200, -10, 1000], 
-    'new_game_victory_energy_number': [10000, -1000, 100000], 
-    'new_game_victory_minerals_number': [10000, -1000, 100000], 
-    'new_game_victory_production_number': [10000, -1000, 100000], 
-    'new_game_victory_ships_number': [1000, -100, 10000], 
-    'new_game_victory_shipsofthewall_number': [150, -50, 1000], 
-    'new_game_victory_starbases_number': [25, -10, 100], 
-    'new_game_tech_tree': ['Inherit the Stars!'],
-    'options_new_game_tech_tree': [[]],
-    'new_game_system_names': ['Inherit the Stars!'],
-    'options_new_game_system_names': [[]],
+    'new_game_name': '',
+    'new_game_players': [],
+    'new_game_x': (500, 0, 10000), 
+    'new_game_y': (500, 0, 10000), 
+    'new_game_z': (500, 0, 10000), 
+    'new_game_num_systems': (1000, 50, sys.maxsize),
+    'new_game_public_player_scores': (30, 0, 200), 
+    'new_game_victory_after': (50, 10, 200), 
+    'new_game_victory_conditions': (1, 1, 10), 
+    'new_game_victory_enemies_left': (0, -1, 15), 
+    'new_game_victory_score_number': (1000, -100, 10000), 
+    'new_game_victory_tech_levels': (100, -10, 300), 
+    'new_game_victory_planets_number': (200, -10, 1000), 
+    'new_game_victory_energy_number': (10000, -1000, 100000), 
+    'new_game_victory_minerals_number': (10000, -1000, 100000), 
+    'new_game_victory_production_number': (10000, -1000, 100000), 
+    'new_game_victory_ships_number': (1000, -100, 10000), 
+    'new_game_victory_shipsofthewall_number': (150, -50, 1000), 
+    'new_game_victory_starbases_number': (25, -10, 100), 
+    'new_game_tech_tree': 'Inherit the Stars!',
+    'options_new_game_tech_tree': [],
+    'new_game_system_names': 'Inherit the Stars!',
+    'options_new_game_system_names': [],
 }
 
 
 """ Represent Open Game action """
-class NewGame(Defaults):
+class NewGame(UI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         # Always refresh the list of races
@@ -55,10 +55,10 @@ class NewGame(Defaults):
             if getattr(self, key, '') != '':
                 r = game_engine.load('Race', self[key])
                 if not isinstance(r, Race):
-                    self.user_alert = getattr(self, 'user_alert', []).append('File does not contain a race: ' + self[key])
+                    self.user_alerts.append('File does not contain a race: ' + self[key])
                     #TODO these need to pop-up on the gui
                 elif r.calc_points() < 0:
-                    self.user_alert = getattr(self, 'user_alert', []).append('Race has negative advantage points: ' + self[key])
+                    self.user_alerts.append('Race has negative advantage points: ' + self[key])
                 else:
                     player_races.append(r)
                     self.new_game_players.append(self._races(key, races))
@@ -77,8 +77,8 @@ class NewGame(Defaults):
             players = []
             tech_tree = game_engine.load('Tech', self.new_game_tech_tree)
             for r in player_races:
-                players.append(Player(race=r, tech=tech_tree, game_name=self.new_game_name))
-            game = Game(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_num_systems, system_names, name=self.new_game_name, players=players)
+                players.append(Player(race=r, tech=tech_tree, game_ID=self.new_game_name))
+            game = Game(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_num_systems, system_names, ID=self.new_game_name, players=players)
             game.save()
 
     def _races(self, key, races):

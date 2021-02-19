@@ -2,9 +2,9 @@ from .defaults import Defaults
 from sys import maxsize
 
 __defaults = {
-    'comishoning_date': [0.0, 0.0, maxsize],
-    'base_expirence': [0.0, 0.0, maxsize],
-    'battle_expirence': [0.0, 0.0, maxsize],
+    'comishoning_date': (0.0, 0.0, maxsize),
+    'base_expirence': (0.0, 0.0, maxsize),
+    'battle_expirence': (0.0, 0.0, maxsize),
 }
 
 class Expirence(Defaults):

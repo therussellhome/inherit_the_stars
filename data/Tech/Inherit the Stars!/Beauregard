@@ -1,15 +1,15 @@
  {
-    "name": "Beauregard",
+    "ID": "Beauregard",
     "category": "Beam Weapon",
     "description": "Very short range and high power.  More massive than other beam weapons.",
     "cost": {
         "lithium": 22,
         "energy": 900,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 13,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 10,
     "weapons": [
@@ -20,8 +20,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Large Depot",
+    "ID": "Large Depot",
     "category": "Hull",
     "description": "Hull with 4 general purpose slots and 12 depot slots.",
     "race_requirements": "SpacedOut",
@@ -8,21 +8,17 @@
         "lithium": 0,
         "silicon": 6,
         "energy": 7000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 14,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 80,
     "fuel_max": 1000000,
     "armor": 60,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__uuid__": "Scanner"
-    },
     "repair": 16,
     "slots_general": 4,
     "slots_depot": 12,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

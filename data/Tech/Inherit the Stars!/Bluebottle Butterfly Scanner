@@ -1,5 +1,5 @@
 {
-    "name": "Bluebottle Butterfly Scanner",
+    "ID": "Bluebottle Butterfly Scanner",
     "category": "Scanner",
     "description": "This scanner detects cloaking fields.  It can detect any cloaked ships or starbases within its range, but does not detect anything else.",
     "cost": {
@@ -7,17 +7,17 @@
         "lithium": 0,
         "silicon": 21,
         "energy": 2000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 6,
         "electronics": 10,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 10,
     "scanner": {
         "anti_cloak": 75.0,
-        "__uuid__": "Scanner"
+        "__class__": "Scanner"
     },
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

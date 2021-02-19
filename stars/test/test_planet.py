@@ -47,21 +47,22 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_is_colonized2(self):
         p = planet.Planet()
-        # force reference to create the player
-        p.player.name = 'colonized'
+        p.on_surface.people = 1
         self.assertTrue(p.is_colonized())
 
 
     def test_colonize1(self):
         p = planet.Planet()
-        self.assertTrue(p.colonize(player.Player(name='test_colonize')))
+        self.assertTrue(p.colonize(player.Player(ID='test_colonize')))
+        p.on_surface.people = 1
         self.assertTrue(p.is_colonized())
-        self.assertFalse(p.colonize(player.Player(name='claim jumper')))
+        self.assertFalse(p.colonize(player.Player(ID='claim jumper')))
 
     def test_colonize2(self):
         p = planet.Planet()
-        p.colonize(player.Player(name='test_colonize'))
-        self.assertFalse(p.colonize(player.Player(name='claim jumper')))
+        p.colonize(player.Player(ID='test_colonize'))
+        p.on_surface.people = 1
+        self.assertFalse(p.colonize(player.Player(ID='claim jumper')))
 
     def test_colonize3(self):
         p = planet.Planet()
@@ -423,6 +424,23 @@ class PlanetTestCase(unittest.TestCase):
         p.factories = 25
         self.assertEqual(p.operate_factories(), 3)
 
+    def test_calc_max_production_capacity(self):
+        return #TODO
+        play = player.Player(
+            name = 'test_colonize',
+            race = race.Race(
+                scrap_rate = 90,
+                colonists_to_operate_factory = 100,
+                ),
+            )
+        self.planet.colonize(reference.Reference(play), 'New Colony Minister')
+        self.planet.on_surface.people = 40
+        self.planet.facilities['Power'].quantity = 100
+        self.planet.facilities['Power'].tech.factory_capacity = 00
+        self.planet.calc_production()
+        self.assertEqual(self.planet.factory_capacity, 100, 'FIX ME')
+        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
     def test_auto_build(self):
         return #TODO

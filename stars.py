@@ -24,6 +24,7 @@ _handlers = {
     '/planetary_minister': planetary_minister.PlanetaryMinister,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
+    '/play_complete': play_complete.PlayComplete,
     '/race_editor': race_editor.RaceEditor,
     '/race_viewer': race_viewer.RaceViewer,
     '/render_stars': render_stars.RenderStars,

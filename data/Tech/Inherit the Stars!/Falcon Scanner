@@ -1,23 +1,23 @@
 {
-    "name": "Falcon Scanner",
+    "ID": "Falcon Scanner",
     "category": "Scanner",
-    "description": "The second-lowest-tech scanner.  It detects ships at a distance based on their apparent mass (which is affected by cloaking). This scanner can detect a 100kT ship at 75 light years, a 200kT ship at 150ly, and a 33kT ship at 25ly - EXCEPT it cannot see inside solar systems.",
+    "description": "The second-lowest-tech scanner.  It detects ships at a distance based on their kinetic energy (mass times speed squared). It is affected by cloaking. This scanner can detect a 100kT ship traveling hyper 6 at 75 light years, a 100kT ship traveling hyper 10 at 225 light years, and a 10kT ship traveling hyper 6 at 25 light years. It cannot see stopped ships or inside solar systems.",
     "cost": {
         "titanium": 2,
         "lithium": 0,
         "silicon": 2,
         "energy": 900,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 0,
         "electronics": 2,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 2,
     "scanner": {
-        "normal": 75.0,
-        "__uuid__": "Scanner"
+        "normal": 225.0,
+        "__class__": "Scanner"
     },
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

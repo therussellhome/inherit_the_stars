@@ -1,5 +1,5 @@
 {
-    "name": "Chameleon Scanner",
+    "ID": "Chameleon Scanner",
     "category": "Scanner",
     "description": "This scanner is also a cloak.  It also has penetrating range without requiring 2nd Sight.",
     "race_requirements": "Kender",
@@ -8,22 +8,22 @@
         "lithium": 0,
         "silicon": 10,
         "energy": 2500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 3,
         "electronics": 6,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 6,
     "scanner": {
         "penetrating": 100.0,
-        "normal": 150.0,
-        "__uuid__": "Scanner"
+        "normal": 450.0,
+        "__class__": "Scanner"
     },
       "cloak": {
         "percent": 25,
-        "__uuid__": "Cloak"
+        "__class__": "Cloak"
     },
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Fort Ticonderoga",
+    "ID": "Fort Ticonderoga",
     "category": "Shield",
     "description": "shipboard shield",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 2,
         "energy": 500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 3,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "shield": 40,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

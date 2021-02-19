@@ -1,5 +1,5 @@
 {
-    "name": "Bottlenose Dolphin",
+    "ID": "Bottlenose Dolphin",
     "category": "Engine",
     "description": "This engine forages its own fuel while moving and is faster, lighter, and more fuel-efficient than the White Seal.",
     "race_requirements": "Forager",
@@ -8,12 +8,12 @@
         "lithium": 2,
         "silicon": 13,
         "energy": 2000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
     	"energy": 4,
     	"propulsion": 16,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 11,
     "engines": [
@@ -22,8 +22,8 @@
             "speed_divisor": 14,
             "speed_exponent": 3.0,
             "antimatter_siphon": 500,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "American Swallow",
+    "ID": "Texan Swallow",
     "category": "Hull",
     "description": "Large freighter hull; holds 5 times the cargo and fuel of the African Swallow, and has 6 general purpose slots.",
     "cost": {
@@ -7,21 +7,17 @@
         "lithium": 0,
         "silicon": 20,
         "energy": 7500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 7,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 65,
     "cargo_max": 1250,
     "fuel_max": 2000000,
     "armor": 40,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__uuid__": "Scanner"
-    },
     "repair": 5,
     "slots_general": 6,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

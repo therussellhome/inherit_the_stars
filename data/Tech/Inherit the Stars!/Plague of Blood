@@ -1,5 +1,5 @@
 {
-    "name": "Plague of Blood",
+    "ID": "Plague of Blood",
     "category": "Missile",
     "description": "The zero-tech missile, bad accuracy and low power.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 3,
         "silicon": 3,
         "energy": 500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 0,
         "propulsion": 0,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 40,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

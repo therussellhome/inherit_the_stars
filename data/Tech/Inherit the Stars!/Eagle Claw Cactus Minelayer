@@ -1,5 +1,5 @@
 {
-    "name": "Eagle Claw Cactus Minelayer",
+    "ID": "Eagle Claw Cactus Minelayer",
     "category": "Depot",
     "description": "Deploys a minefield for defending a star system.  This minelayer deploys up to 500 billion mines per year.  A Depot component is large equipment which unfolds or deploys outside the ship and can only be used when the ship is stopped.",
     "race_requirements": "-Aku'Ultan",
@@ -8,16 +8,16 @@
         "lithium": 9,
         "silicon": 8,
         "energy": 4550,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 4,
         "biotechnology": 8,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 70,
     "mines_laid": 500000000000,
     "slots_depot": -1,
     "slots_general": 0,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

@@ -7,14 +7,13 @@ import sys
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'name': [''],
-    'minerals': [Minerals()],
-    'location': [Location()],
-    'mass': [10, 0, sys.maxsize],
-    'hyper': [1, 0, 20],
-    'target': [Location()],
-    'player': [Reference('Player')],
-    'decay_factor': [0.01, 0.0, 1.0],
+    'ID': '@UUID',
+    'minerals': Minerals(),
+    'location': Location(),
+    'ke': (0, 0, sys.maxsize),
+    'target': Location(),
+    'player': Reference('Player'),
+    'decay_factor': (0.01, 0.0, 1.0),
 }
 #decay = mass * hyper**2 * decay_factor, mass -= decay"""
 
