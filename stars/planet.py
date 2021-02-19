@@ -239,7 +239,7 @@ class Planet(Defaults):
         self.__cache__['production'] = production
         if item.cost.is_zero():
             item.finish()
-            return true
+            return True
         if not from_queue:
             self.player.build_queue.append(item)
         self.__cache__['production_blocked'] = True
@@ -356,7 +356,7 @@ class Planet(Defaults):
 
     """ Shift population via orbital mattrans """
     def mattrans(self):
-        for station in self.space_station:
+        for station in self.space_stations.ships:
             pass #TODO
 
 

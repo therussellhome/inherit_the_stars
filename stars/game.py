@@ -102,12 +102,12 @@ class Game(Defaults):
                 
     """ Save host and players to file """
     def save(self):
+        game_engine.save('Game', self.ID, self)
         for p in self.players:
             if not p.computer_player:
                 p.ready_to_generate = False
                 p.save()
-        game_engine.save('Game', self.ID, self)
-
+    
     """ Load updates from player files """
     def update_players(self):
         for p in self.players:
