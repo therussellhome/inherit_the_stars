@@ -497,6 +497,12 @@ void main() {
 </div>
 
 <div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+    <table id="planets_filter">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Filters</caption>
+    </table>
+    <table id="planets_report">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Planets</caption>
+    </table>
 </div>
 
 
