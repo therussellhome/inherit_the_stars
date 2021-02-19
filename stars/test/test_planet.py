@@ -37,8 +37,8 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_orbit(self):
         return #TODO orbit not finished
-        self.planet.age = 2097
-        self.assertEqual(self.planet.orbit(), )
+        p.age = 2097
+        self.assertEqual(p.orbit(), )
 
 
     def test_is_colonized1(self):
@@ -282,63 +282,147 @@ class PlanetTestCase(unittest.TestCase):
             self.assertEqual(p.have_babies(), pop)
 
 
-    def test_raise_shields(self):
-        #TODO
-        pass
+    def test_raise_shields1(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000 
+        p.player.race.primary_race_trait = 'Gaerhule'
+        p.player.tech_level.energy = 0
+        p.defenses = 10
+        self.assertEqual(p.raise_shields(), 4800)
 
+    def test_raise_shields2(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000 
+        p.player.race.primary_race_trait = 'Gaerhule'
+        p.player.tech_level.energy = 10
+        p.defenses = 10
+        self.assertEqual(p.raise_shields(), 24000)
+
+    def test_raise_shields3(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000 
+        p.player.race.primary_race_trait = 'Patryns'
+        p.player.tech_level.energy = 0
+        p.defenses = 10
+        self.assertEqual(p.raise_shields(), 2000)
+
+    def test_raise_shields4(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000 
+        p.player.race.primary_race_trait = 'TANSTAAFL'
+        p.player.tech_level.energy = 10
+        p.defenses = 10
+        self.assertEqual(p.raise_shields(), 20000)
+
+    def test_raise_shields5(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000 
+        p.player.race.primary_race_trait = 'Aku\'Ultan'
+        p.player.tech_level.energy = 30
+        p.defenses = 16
+        self.assertEqual(p.raise_shields(), 0)
 
     def test_generate_energy1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
-        p.player.race.energy_per_10k_colonists = 100
+        p.player.race.pop_per_kt = 1000
+        p.player.race.energy_per_10k_colonists = 1
         p.player.tech_level.propulsion = 10
         p.power_plants = 100
-        self.assertEqual(p.generate_energy(), 1234100)
+        self.assertEqual(p.generate_energy(), 151)
 
     def test_generate_energy2(self):
         p = planet.Planet()
-        p.on_surface.people = 0
+        p.on_surface.people = 1000
         p.player.race.energy_per_10k_colonists = 0
+        p.player.tech_level.propulsion = 4
         p.power_plants = 100
-        self.assertEqual(p.generate_energy(), 0)
+        self.assertEqual(p.generate_energy(), 120)
 
     def test_generate_energy3(self):
         p = planet.Planet()
         p.on_surface.people = 1000
+        p.player.race.pop_per_kt = 1000
         p.player.race.energy_per_10k_colonists = 1000
         p.power_plants = 0
         self.assertEqual(p.generate_energy(), 1000)
 
+    def test_mineral_availability1(self, mineral):
+        p = planet.Planet()
+        p.gravity = 50
+        p.remaining_minerals = minerals.Minerals(titanium=10000, lithium=16000, silicon=24000)
+        self.assertEqual(p.mineral_availability.titanium, .725)
+        self.assertEqual(p.mineral_availability.lithium, 1.7)
+        self.assertEqual(p.mineral_availability.silicon, 3.7)
+
+    def test_mineral_availability2(self, mineral):
+        p = planet.Planet()
+        p.gravity = 10
+        p.remaining_minerals = minerals.Minerals(titanium=3200, lithium=32000, silicon=8000)
+        self.assertEqual(p.mineral_availability.titanium, .5)
+        self.assertEqual(p.mineral_availability.lithium, 10) #max possible, remaining minerals is too high for size of world
+        self.assertEqual(p.mineral_availability.silicon, 2.6)
+
+    def test_mineral_availability3(self, mineral):
+        p = planet.Planet()
+        p.gravity = 100
+        p.remaining_minerals = minerals.Minerals(titanium=49000, lithium=3500, silicon=70000)
+        self.assertEqual(p.mineral_availability.titanium, 5)
+        self.assertEqual(p.mineral_availability.lithium, 0.125)
+        self.assertEqual(p.mineral_availability.silicon, 10) #max possible, remaining minerals too high
+
 
     def test_mine_minerals1(self):
         p = planet.Planet()
-        p.on_surface.people = 1000
-        p.mines = 100
-        p.mine_minerals()
-        return #TODO
-        play = player.Player(
-            name = 'test_colonize',
-            race = race.Race(
-                scrap_rate = 90,
-                colonists_to_operate_mine = 100,
-                ),
-            energy = 0,
-            )
-        self.planet.colonize(reference.Reference(play), 'New Colony Minister')
-        self.planet.on_surface = cargo.Cargo(people = 40)
-        self.planet.remaining_minerals = minerals.Minerals(titanium=10000, silicon=10000, lithium=10000)
-        getattr(self.planet, 'Mineral Extractor').quantity = 100
-        getattr(self.planet, 'Mineral Extractor').tech.mineral_depletion_factor = 1.3
-        self.planet._mine_minerals()
-        self.assertEqual(self.planet.on_surface.titanium, 7, 'FIX ME')
-        self.assertEqual(self.planet.on_surface.lithium, 7, 'FIX ME')
-        self.assertEqual(self.planet.on_surface.silicon, 7, 'FIX ME')
-        self.assertEqual(self.planet.remaining_minerals.titanium, 9993, 'FIX ME')
-        self.assertEqual(self.planet.remaining_minerals.lithium, 9993, 'FIX ME')
-        self.assertEqual(self.planet.remaining_minerals.silicon, 9993, 'FIX ME')
-        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
+        p.on_surface.people = 100000
+        #copy of test_mineral_availability1
+        p.gravity = 50
+        p.on_surface.titanium = 0
+        p.on_surface.lithium = 0
+        p.on_surface.silicon = 0
+        p.remaining_minerals = minerals.Minerals(titanium=10000, lithium=16000, silicon=24000)
+        self.assertEqual(p.mineral_availability.titanium, .725)
+        self.assertEqual(p.mineral_availability.lithium, 1.7)
+        self.assertEqual(p.mineral_availability.silicon, 3.7)
+        p.mines = 1000
+        p.player.tech_level.weapons = 0 #factor = 1.3
+        p._mine_minerals()
+        self.assertEqual(p.on_surface.titanium, 7.25)
+        self.assertEqual(p.on_surface.lithium, 17)
+        self.assertEqual(p.on_surface.silicon, 37)
+        self.assertEqual(p.remaining_minerals.titanium, 9990.575)
+        self.assertEqual(p.remaining_minerals.lithium, 15977.9)
+        self.assertEqual(p.remaining_minerals.silicon, 23951.9)
 
+    def test_mine_minerals2(self):
+        p = planet.Planet()
+        p.on_surface.people = 10000
+        #copy of test_mineral_availability2
+        p.gravity = 10
+        p.on_surface.titanium = 0
+        p.on_surface.lithium = 0
+        p.on_surface.silicon = 0
+        p.remaining_minerals = minerals.Minerals(titanium=3200, lithium=32000, silicon=8000)
+        self.assertEqual(p.mineral_availability.titanium, .5)
+        self.assertEqual(p.mineral_availability.lithium, 10) #max possible, remaining minerals is too high for size of world
+        self.assertEqual(p.mineral_availability.silicon, 2.6)
+        p.mines = 100
+        p.player.tech_level.weapons = 14 #factor = 1.075
+        p._mine_minerals()
+        self.assertEqual(p.on_surface.titanium, .5)
+        self.assertEqual(p.on_surface.lithium, 10)
+        self.assertEqual(p.on_surface.silicon, 2.6)
+        self.assertEqual(p.remaining_minerals.titanium, 3199.4625)
+        self.assertEqual(p.remaining_minerals.lithium, 31989.25)
+        self.assertEqual(p.remaining_minerals.silicon, 7997.205)
+
+
+    def test_operate_factories(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000
+        p.player.tech_level.construction = 6
+        p.factories = 25
+        self.assertEqual(p.operate_factories(), 3)
 
     def test_calc_max_production_capacity(self):
         return #TODO
@@ -358,49 +442,48 @@ class PlanetTestCase(unittest.TestCase):
         self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
         self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
-
     def test_auto_build(self):
         return #TODO
-        self.planet.on_surface.people = 1000
-        self.planet.mines = 25
-        self.planet.power_plants = 50
-        self.planet.factories = 2
-        self.planet.defenses = 4
-        self.assertEqual(self.planet.auto_build(), self.planet.scanner_tech)
-        self.planet.mines = 25
-        self.planet.power_plants = 47
-        self.planet.factories = 25
-        self.planet.defenses = 4
-        self.assertEqual(self.planet.auto_build(), self.planet.penetrating_tech)
-        self.planet.mines = 25
-        self.planet.power_plants = 3
-        self.planet.factories = 2
-        self.planet.defenses = 4
-        #self.planet.auto_build().debug_display()
-        #self.planet.facilities['Factory'].debug_display()
-        self.assertEqual(self.planet.auto_build() is self.planet.facilities['Factory'], True, 'This error does not seem logical')#'FIX ME'
-        self.planet.mines = 2
-        self.planet.power_plants = 5
-        self.planet.factories = 2
-        self.planet.defenses = 1
-        #self.planet.auto_build().debug_display()
-        #self.planet.facilities['Defense'].debug_display()
-        #self.assertEqual(self.planet.auto_build(), self.planet.facilities['Defense'], 'FIX ME')
-        self.planet.mines = 5
-        self.planet.power_plants = 3
-        self.planet.factories = 22
-        self.planet.defenses = 4
-        #self.planet.auto_build().debug_display()
-        #self.planet.facilities['Power'].debug_display()
-        #self.assertEqual(self.planet.auto_build(), self.planet.facilities['Power'], 'FIX ME')
-        self.planet.mines = 2
-        self.planet.power_plants = 3
-        self.planet.factories = 26
-        self.planet.defenses = 4
-        #self.planet.auto_build().debug_display()
-        #getattr(self.planet, 'Mineral Extractor').debug_display()
-        #self.assertEqual(self.planet.auto_build(), getattr(self.planet, 'Mineral Extractor'), 'FIX ME')
+        p.on_surface.people = 1000
+        p.mines = 25
+        p.power_plants = 50
+        p.factories = 2
+        p.defenses = 4
+        self.assertEqual(p.auto_build(), p.scanner_tech)
+        p.mines = 25
+        p.power_plants = 47
+        p.factories = 25
+        p.defenses = 4
+        self.assertEqual(p.auto_build(), p.penetrating_tech)
+        p.mines = 25
+        p.power_plants = 3
+        p.factories = 2
+        p.defenses = 4
+        #p.auto_build().debug_display()
+        #p.facilities['Factory'].debug_display()
+        self.assertEqual(p.auto_build() is p.facilities['Factory'], True, 'This error does not seem logical')#'FIX ME'
+        p.mines = 2
+        p.power_plants = 5
+        p.factories = 2
+        p.defenses = 1
+        #p.auto_build().debug_display()
+        #p.facilities['Defense'].debug_display()
+        #self.assertEqual(p.auto_build(), p.facilities['Defense'], 'FIX ME')
+        p.mines = 5
+        p.power_plants = 3
+        p.factories = 22
+        p.defenses = 4
+        #p.auto_build().debug_display()
+        #p.facilities['Power'].debug_display()
+        #self.assertEqual(p.auto_build(), p.facilities['Power'], 'FIX ME')
+        p.mines = 2
+        p.power_plants = 3
+        p.factories = 26
+        p.defenses = 4
+        #p.auto_build().debug_display()
+        #getattr(p, 'Mineral Extractor').debug_display()
+        #self.assertEqual(p.auto_build(), getattr(p, 'Mineral Extractor'), 'FIX ME')
         ###reset###
-        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
+        p = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
+        p.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
 
