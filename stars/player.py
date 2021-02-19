@@ -15,6 +15,7 @@ from .message import Message
 
 
 
+minister = PlanetaryMinister(name='New Colony Minister', new_colony_minister=True)
 """ Default values (default, min, max)  """
 __defaults = {
     'ID': '@UUID', # player ID defaulted to a UUID if not provided from the race ID
@@ -52,6 +53,7 @@ __defaults = {
 """ List of fields that are user modifable """
 _player_fields = [
     'ready_to_generate',
+    'planetary_minister_map',
     'planetary_ministers',
     'research_queue',
     'research_field',
@@ -59,11 +61,11 @@ _player_fields = [
     'messages',
     'ship_designs',
     'treaties',
-    'finance_minister_construction_percent',
-    'finance_minister_mattrans_percent',
-    'finance_minister_mattrans_use_surplus',
-    'finance_minister_research_percent',
-    'finance_minister_research_use_surplus',
+    'finance_construction_percent',
+    'finance_mattrans_percent',
+    'finance_mattrans_use_surplus',
+    'finance_research_percent',
+    'finance_research_use_surplus',
 ]
 
 
@@ -102,7 +104,13 @@ class Player(Defaults):
         if self.validation_key == p.validation_key:
             for field in _player_fields:
                 self[field] = p[field]
-
+    
+    def get_planetary_minister(self, uuid):
+        for minister in self.planetary_ministers:
+            if minister.__uuid__ == uuid:
+                return minister
+        return self.planetary_ministers[0]
+    
     """ Update the date """
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
@@ -216,11 +224,15 @@ class Player(Defaults):
             return None
         return Treaty(other_player=other_player, status='active')
     
+    """ prodict the next years budget """
+    def predict_budget(self):
+        return 10000
+    
     """ Allocate the available energy into budget categories """
     def allocate_budget(self):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:
-            allocation = min(round(total * self['finance_minister_' + category + '_percent'] / 100), self.energy)
+            allocation = min(round(total * self['finance_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
 
     """ Request to spend energy for a category """
@@ -232,11 +244,11 @@ class Player(Defaults):
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':
             budget = self.__cache__['budget_mattrans']
-            if self.finance_minister_mattrans_use_surplus:
+            if self.finance_mattrans_use_surplus:
                 budget += self.__cache__['budget_construction']
         elif category == 'research':
             budget = self.__cache__['budget_research']
-            if self.finance_minister_research_use_surplus:
+            if self.finance_research_use_surplus:
                 budget += self.__cache__['budget_construction']
                 budget += self.__cache__['budget_mattrans']
         # All other categories pull from the unallocated budget and surplus

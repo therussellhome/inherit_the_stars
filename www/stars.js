@@ -5,6 +5,7 @@ let game_mode = 'host';
 let player_tech = false;
 let current_screen = 'home';
 let current_submenu = null;
+let current_sidebar = null;
 
 // Initialize the fields from python
 function init() {
@@ -54,7 +55,7 @@ function show_screen(show) {
     current_screen = show;
     // Get updated data
     if(json_map.hasOwnProperty(show)) {
-        post(show);
+        post(show, '?show_screen');
     }
     // Hide all screens
     for(screen of document.getElementsByClassName('screen')) {
@@ -106,6 +107,28 @@ function show_home() {
     show_screen('home');
 }
 
+//show the planetary sidebar and have it populated
+function show_planetary() {
+    if(current_sidebar != 'planetary') {
+        //toggle(document.getElementById('sidebar_play'), 'hide', true);
+        toggle(document.getElementById('sidebar_planetary'), 'hide', false);
+        post('planetary_minister');
+        show_screen('planetary_ministers');
+        current_sidebar = 'planetary'
+    } else {
+        current_sidebar = null
+        toggle(document.getElementById('sidebar_planetary'), 'hide', true);
+        show_screen(null);
+    }
+}
+
+function show_minister(name) {
+    if(current_screen  != 'planetary_minister') {
+        show_screen('planetary_minister');
+    }
+    post('planetary_minister', '?' + name);
+}
+
 // Switch to play mode
 function launch_player(token) {
     if(token.value != '') {
@@ -140,14 +163,24 @@ function post(form = '', action = '') {
     }
     // Only post what is in both the map and has an element
     json_post = {}
+    //console.log(json_post);
+    console.log('data is: ', json_map);
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {
             if(element.nodeName == 'DIV') {
                 value = element.noUiSlider.get();
                 if(Array.isArray(value)) {
-                    json_post[key] = parseFloat(value[0]);
-                    json_post[key + '_stop'] = parseFloat(value[1]);
+                    if(value.length > 2) {
+                        json_post[key] = [];
+                        console.log(value);
+                        for(v in value) {
+                            json_post[key].push(parseFloat(value[v]));
+                        }
+                    } else {
+                        json_post[key] = parseFloat(value[0]);
+                        json_post[key + '_stop'] = parseFloat(value[1]);
+                    }
                 } else {
                     json_post[key] = parseFloat(value);
                 }
@@ -165,6 +198,7 @@ function post(form = '', action = '') {
             }
         }
     }
+    console.log('posting: ', json_post);
     // Fetch and process the response
     fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_post) }).then(response => 
         response.json().then(json => ({
@@ -180,6 +214,7 @@ function post(form = '', action = '') {
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
     try {
+        console.log('recived: ', json);
         // Store the entire response to the cache
         json_map[form] = json;
         for(key in json) {
@@ -188,7 +223,10 @@ function parse_json(url, json) {
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
                         value = [json[key]];
-                        if(json.hasOwnProperty(key + '_stop')) {
+                        //console.log(value)
+                        if(Array.isArray(value[0])) {
+                            value = json[key];
+                        } if(json.hasOwnProperty(key + '_stop')) {
                             value.push(json[key + '_stop']);
                         }
                         element.noUiSlider.set(value);
@@ -245,6 +283,7 @@ function parse_json(url, json) {
                 console.log(form, key, e);
             }
         }
+        //console.log();
         // Let objects update themselves
         var submit_event = document.createEvent("HTMLEvents");
         submit_event.initEvent("submit", false, false);
@@ -332,6 +371,44 @@ function shutdown() {
         show_screen('shutdown');
         fetch('/shutdown', { method: 'post' });
     }
+}
+
+// Create a slider
+function finance_slider(element, form, min, max, step) {
+    noUiSlider.create(element, {
+        start: [min+31/100*(max-min), min+61/100*(max-min), min+91/100*(max-min)],
+        connect: [true, true, true, true],
+        step: step,
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    var connect = element.querySelectorAll('.noUi-connect');
+    var classes = ['factory-color', 'mat-trans-color', 'research-color', 'mine-color'];
+    for (var i = 0; i < connect.length; i++) {
+        connect[i].classList.add(classes[i]);
+    }
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function planetary_slider(element, form, min, max, step) {
+    noUiSlider.create(element, {
+        start: [min+(max-min)/5, min+37/100*(max-min), min+7/10*(max-min)],
+        connect: [true, true, true, true],
+        step: step,
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    var connect = element.querySelectorAll('.noUi-connect');
+    var classes = ['power-color', 'factory-color', 'mine-color', 'shield-color'];
+    for (var i = 0; i < connect.length; i++) {
+        connect[i].classList.add(classes[i]);
+    }
+    element.noUiSlider.on('change', function() { post(form) });
 }
 
 // Create a slider

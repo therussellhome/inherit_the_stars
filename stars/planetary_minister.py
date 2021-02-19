@@ -7,8 +7,10 @@ __defaults = {
     'name': '@UUID',
     'new_colony_minister': False,
     'allow_baryogenesis': True,
-    'min_terraform_only': True,
+    'max_terraform': False,
     'planets': [],
+    'name': 'newbie',
+    'color': 'purple',
     # percent population operating each falicity type where the key matches the facility types
     'power_plants': (30, 0, 100),
     'factories': (30, 0, 100),
@@ -30,5 +32,5 @@ class PlanetaryMinister(Defaults):
         # give any surplus to power plants
         self.power_plants = 100 - self.defenses - self.factories - self.mines
 
-        
+
 PlanetaryMinister.set_defaults(PlanetaryMinister, __defaults)
