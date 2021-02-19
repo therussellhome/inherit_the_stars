@@ -1,16 +1,18 @@
 import sys
+import time
 from .defaults import Defaults
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'source': [''],
-    'icon': [' '],
-    'date': [0, 0, sys.maxsize],
-    'subject': [''],
-    'body': [''],
-    'link': [''],
-    'unread': [True],
+    'date': '',
+    'timestamp': (0, 0, sys.maxsize),
+    'msg_key': '',
+    'parameters': [],
+    'sender': '',
+    'link': '',
+    'keep': False,
+    'read': False,
 }
 
 
@@ -18,6 +20,8 @@ __defaults = {
 class Message(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if 'timestamp' not in kwargs:
+            self.timestamp = time.time_ns()
 
 
 Message.set_defaults(Message, __defaults)

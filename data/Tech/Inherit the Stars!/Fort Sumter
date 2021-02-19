@@ -1,5 +1,5 @@
 {
-    "name": "Fort Sumter",
+    "ID": "Fort Sumter",
     "category": "Shield",
     "description": "shipboard shield",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 3,
         "energy": 600,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 6,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "shield": 60,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

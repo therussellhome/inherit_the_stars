@@ -1,15 +1,15 @@
  {
-    "name": "MacArthur",
+    "ID": "MacArthur",
     "category": "Beam Weapon",
     "description": "The same range as Hannibal and almost twice the power but not multi-targeting.",
     "cost": {
         "lithium": 13,
         "energy": 1500,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 14,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 2,
     "weapons": [
@@ -20,8 +20,8 @@
             "is_beam": true,
             "is_multishot": false,
             "accuracy": 100,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

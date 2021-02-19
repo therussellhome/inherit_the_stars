@@ -299,11 +299,13 @@ function parse_json(url, json) {
 
 // Refresh host screen / auto generate
 function host_auto() {
-    if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
-        document.getElementById('host_blocking').checked = true;
-        post('host', '?generate');
-    } else if(document.getElementById('host_name').innerHTML != '') {
-        window.setTimeout(host_post, 10000);
+    if(current_screen == 'host') {
+        if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
+            document.getElementById('host_blocking').checked = true;
+            post('host', '?generate');
+        } else if(document.getElementById('host_name').innerHTML != '') {
+            window.setTimeout(host_post, 10000);
+        }
     }
 }
 
@@ -327,12 +329,14 @@ function host_generate() {
 
 // Refresh the player complete screen
 function play_complete_auto() {
-    if(document.getElementById('player_ready').value) {
-        document.getElementById('player_ready').value = false;
-        show_screen(null);
-        //TODO refresh render stars
-    } else {
-        window.setTimeout(play_complete_post, 10000);
+    if(current_screen == 'play_complete') {
+        if(document.getElementById('player_ready').value) {
+            document.getElementById('player_ready').value = false;
+            show_screen(null);
+            //TODO refresh render stars
+        } else {
+            window.setTimeout(play_complete_post, 10000);
+        }
     }
 }
 
@@ -368,7 +372,6 @@ function shutdown() {
         fetch('/shutdown', { method: 'post' });
     }
 }
-
 
 // Create a slider
 function finance_slider(element, form, min, max, step) {
@@ -407,7 +410,6 @@ function planetary_slider(element, form, min, max, step) {
     }
     element.noUiSlider.on('change', function() { post(form) });
 }
-
 
 // Create a slider
 function slider(element, form, min, max, step, formatter, units) {
@@ -868,7 +870,7 @@ function combat_chart(chart, data) {
 
 // Create a chart for sensor curve
 function sensor_chart(chart, data) {
-    var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'Detectability'];
+    var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'HyperDenial'];
     var sensor_data = [];
     var max = 0;
     for(var i=0; i < data.length; i++) {

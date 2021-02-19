@@ -49,26 +49,3 @@ class LocationCase(unittest.TestCase):
         self.assertEqual(l3.x, 5.5)
         self.assertEqual(l3.y, 0)
         self.assertEqual(l3.z, 0)
-
-    def test_reference(self):
-        ref = _TestLocationReference()
-        ref.location = location.Location(x=1, y=2, z=3)
-        game_engine.register(ref)
-        lr = location.LocationReference(reference=ref)
-        self.assertEqual(lr.x, 1)
-        self.assertEqual(lr.y, 2)
-        self.assertEqual(lr.z, 3)
-        lr = location.LocationReference(ref)
-        self.assertEqual(lr.x, 1)
-        self.assertEqual(lr.y, 2)
-        self.assertEqual(lr.z, 3)
-
-    def test_rand(self):
-        l0 = location.Location(x=0, y=0, z=0)
-        count_gt = 0
-        for i in range(0, 100):
-            # test if in inner sphere vs outer shell
-            if l0 - location.rand_location() > .5 ** (1/3):
-                count_gt += 1
-        self.assertGreater(count_gt, 40, msg='NOTE: this will sometimes fail as it is statistical in nature')
-        self.assertLess(count_gt, 60, msg='NOTE: this will sometimes fail as it is statistical in nature')

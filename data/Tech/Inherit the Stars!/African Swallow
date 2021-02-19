@@ -1,5 +1,5 @@
 {
-    "name": "African Swallow",
+    "ID": "African Swallow",
     "category": "Hull",
     "description": "Medium freighter hull; holds 250kT compared to the European Swallow's 50, for less than double the cost, and has 4 general purpose slots.",
     "cost": {
@@ -7,21 +7,17 @@
         "lithium": 0,
         "silicon": 15,
         "energy": 3000,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 3,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 50,
     "cargo_max": 250,
     "fuel_max": 400000,
     "armor": 25,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__uuid__": "Scanner"
-    },
     "repair": 5,
     "slots_general": 4,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

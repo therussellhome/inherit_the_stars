@@ -1,5 +1,5 @@
 {
-    "name": "Serpent Strike",
+    "ID": "Serpent Strike",
     "category": "Missile",
     "description": "A more powerful missile, but the same accuracy as the previous missile.  If you want better accuracy, don't fire from that far away. (the same as Plague of Gnats but cheaper to build)",
     "race_requirements": "Aku'Ultan",
@@ -8,12 +8,12 @@
         "lithium": 6,
         "silicon": 4,
         "energy": 600,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 10,
         "propulsion": 2,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -24,8 +24,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 63,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

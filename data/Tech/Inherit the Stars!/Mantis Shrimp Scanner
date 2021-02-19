@@ -1,5 +1,5 @@
 {
-    "name": "Mantis Shrimp Scanner",
+    "ID": "Mantis Shrimp Scanner",
     "category": "Scanner",
     "description": "This scanner detects cloaking fields.  It can detect any cloaked ships or starbases within its range, but does not detect anything else.",
     "race_requirements": "2ndSight",
@@ -8,17 +8,17 @@
         "lithium": 0,
         "silicon": 30,
         "energy": 3600,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 8,
         "electronics": 17,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 15,
     "scanner": {
         "anti_cloak": 150.0,
-        "__uuid__": "Scanner"
+        "__class__": "Scanner"
     },
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

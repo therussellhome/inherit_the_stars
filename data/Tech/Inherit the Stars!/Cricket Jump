@@ -1,5 +1,5 @@
 {
-    "name": "Cricket Jump",
+    "ID": "Cricket Jump",
     "category": "Engine",
     "description": "A low-tech fuel-efficient engine that generates a relatively small amount of fuel as it moves.  Great for traveling long distances early in the game, or moving very heavy ships without the Forager lesser trait.",
     "race_requirements": "Hypermiler",
@@ -8,11 +8,11 @@
         "lithium": 0,
         "silicon": 0,
         "energy": 1100,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "propulsion": 2,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 6,
     "engines": [
@@ -21,8 +21,8 @@
             "speed_divisor": 12.68,
             "speed_exponent": 5.0,
             "antimatter_siphon": 125,
-            "__uuid__": "Engine"
+            "__class__": "Engine"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

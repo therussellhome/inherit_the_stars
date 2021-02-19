@@ -1,27 +1,26 @@
 import sys
 from .defaults import Defaults
 
+
 """ Default values (default, min, max)  """
 __defaults = {
-    'new_colony_minister': [False],
-    'allow_baryogenesis': [True],
-    'max_terraform': [False],
-    'planets': [[]],
-    'name': ['newbie'],
-    'color': ['purple'],
+    'name': '@UUID',
+    'new_colony_minister': False,
+    'allow_baryogenesis': True,
+    'max_terraform': False,
+    'planets': [],
+    'name': 'newbie',
+    'color': 'purple',
     # percent population operating each falicity type where the key matches the facility types
-    'power_plants': [30, 0, 100],
-    'factories': [30, 0, 100],
-    'mines': [30, 0, 100],
-    'defenses': [10, 0, 100],
+    'power_plants': (30, 0, 100),
+    'factories': (30, 0, 100),
+    'mines': (30, 0, 100),
+    'defenses': (10, 0, 100),
 }
 
 
 """ The planetary minister controls the planetary construction phase of turn generation """
 class PlanetaryMinister(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
     """ makes shure that all effort is alocated and the total is = to 100% """
     def normalize(self):
         factor = self.power_plants + self.factories + self.mines + self.defenses

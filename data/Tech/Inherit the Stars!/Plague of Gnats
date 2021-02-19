@@ -1,5 +1,5 @@
 {
-    "name": "Plague of Gnats",
+    "ID": "Plague of Gnats",
     "category": "Missile",
     "description": "More than twice as powerful as Plague of Frogs, with significantly better accuracy.",
     "cost": {
@@ -7,12 +7,12 @@
         "lithium": 8,
         "silicon": 5,
         "energy": 800,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "weapons": 10,
         "propulsion": 2,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 25,
     "weapons": [
@@ -23,8 +23,8 @@
             "is_beam": false,
             "is_multishot": false,
             "accuracy": 63,
-            "__uuid__": "Weapon"
+            "__class__": "Weapon"
         }
     ],
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

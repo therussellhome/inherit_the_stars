@@ -1,5 +1,5 @@
 {
-    "name": "The Alamo",
+    "ID": "The Alamo",
     "category": "Shield",
     "description": "The zero-tech shipboard shield",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 1,
         "energy": 400,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 0,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 1,
     "shield": 25,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }

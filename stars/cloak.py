@@ -4,15 +4,13 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'percent': [0, 0, 100]
+    'percent': (0, 0, 100),
 }
 
 
 """ Represent 'cloak' """
 class Cloak(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
+    """ Provide an addition operator """
     def __add__(self, other):
         v = 100 - self.percent
         v = 100 - (v - v * other.percent / 100)

@@ -1,5 +1,5 @@
 {
-    "name": "Large Cargo Pod",
+    "ID": "Large Cargo Pod",
     "category": "Mechanical",
     "description": "adds 250kT to your ship's cargo capacity",
     "cost": {
@@ -7,13 +7,13 @@
         "lithium": 0,
         "silicon": 3,
         "energy": 1800,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "construction": 8,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 22,
     "cargo_max": 250,
-    "__uuid__": "Tech"
+    "__class__": "Tech"
 }
