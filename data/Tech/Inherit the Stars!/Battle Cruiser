@@ -1,7 +1,7 @@
 {
     "ID": "Battle Cruiser",
     "category": "Hull",
-    "description": "Ship hull with 24 general-purpose slots.",
+    "description": "Ship hull with 24 general-purpose slots",
     "race_requirements": "Aku'Ultan",
     "cost": {
         "titanium": 17,
@@ -17,10 +17,6 @@
     "mass": 48,
     "fuel_max": 400000,
     "armor": 120,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 24,
     "slots_general": 24,
     "__class__": "Tech"
