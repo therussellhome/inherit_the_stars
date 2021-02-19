@@ -10,6 +10,7 @@ __defaults = {
     'category': 'Ship Design',
     'description': '',
     'components': {}, # map of tech names to count of components
+    'race': Reference('Race'),
 }
 
 
@@ -48,7 +49,7 @@ class ShipDesign(Tech):
         # Start by setting each field in the hull then add from the components
         for (k, v) in self.__dict__.items():
             # Skip certain fields and all strings
-            if k in ['hull', 'components', '__cache__'] or isinstance(v, str):
+            if k in ['hull', 'components', 'race', '__cache__'] or isinstance(v, str):
                 pass
             # Lists
             elif isinstance(v, list):

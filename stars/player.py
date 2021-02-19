@@ -143,7 +143,7 @@ class Player(Defaults):
     """ Store historical values - accumulates across the year """
     def add_historical(self, category, value):
         history = self.historical.get(category, [])
-        for i in range(self.race.start_date + len(history), int(self.date) + 1):
+        for i in range(self.race.start_date + len(history), int(float(self.date)) + 1):
             history.append(0)
         history[-1] += value
         self.historical[category] = history
@@ -265,9 +265,10 @@ class Player(Defaults):
                         field = f
             # Lowest field
             elif self.research_field == '<LOWEST>':
-                lowest = -1
+                lowest = self.tech_level['energy']
+                field = 'energy'
                 for f in TECH_FIELDS:
-                    if self.tech_level[f] > lowest:
+                    if self.tech_level[f] < lowest:
                         lowest = self.tech_level[f]
                         field = f
             # Cost to get to the next level in the selected field

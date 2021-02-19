@@ -37,10 +37,10 @@ class IntelHistory(Intel):
     def add_report(self, **kwargs):
         super().add_report(**kwargs)
         if 'location' in kwargs:
-            self.location_history[kwargs['date']] = self.location
+            self.location_history[self.date] = self.location
 
 
-IntelHistory.set_defaults(IntelHistory, __defaults)
+IntelHistory.set_defaults(IntelHistory, __defaults_history)
 
 
 """ Propogate ship along current path using last 2 locations for speed and direction

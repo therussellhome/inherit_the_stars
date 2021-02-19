@@ -40,21 +40,21 @@ class Reference(game_engine.BaseClass):
     def __getattribute__(self, name):
         if name[:2] == '__':
             return object.__getattribute__(self, name)
-        obj = object.__getattribute__(self, '__get_obj__')()
+        obj = object.__getattribute__(self, '__get_obj__')(name)
         return obj.__getattribute__(name)
 
     """ Set the attribute in the encapsulated class """
     def __setattr__(self, name, value):
-        obj = object.__getattribute__(self, '__get_obj__')()
+        obj = object.__getattribute__(self, '__get_obj__')(name)
         obj.__setattr__(name, value)
 
     """ Get/cache the object """
-    def __get_obj__(self):
+    def __get_obj__(self, name):
         cache = object.__getattribute__(self, '__cache__')
         if cache == None:
             reference = object.__getattribute__(self, '__reference__')
             if reference == '':
-                raise LookupError('Uninitialized reference')
+                raise LookupError('Attempting access of "' + name + '" of uninitialized reference')
             else:
                 if reference.split('/', 1)[1] == '':
                     reference += str(uuid.uuid4())
@@ -62,8 +62,23 @@ class Reference(game_engine.BaseClass):
                 cache = game_engine.get(reference, create_new=True)
                 object.__setattr__(self, '__cache__', cache)
             if cache == None:
-                raise LookupError('Unable to lookup/create "' + reference + '"')
+                raise LookupError('Attempting access of "' + name + '" but unable to lookup/create "' + reference + '"')
         return cache
+
+    """ Validity test """
+    def __bool__(self):
+        if object.__getattribute__(self, '__cache__') == None:
+            reference = object.__getattribute__(self, '__reference__')
+            if reference == '':
+                return False
+            else:
+                if reference.split('/', 1)[1] == '':
+                    return False
+                cache = game_engine.get(reference, create_new=False)
+                object.__setattr__(self, '__cache__', cache)
+            if cache == None:
+                return False
+        return True
 
     """ Equality test """
     def __eq__(self, other):
