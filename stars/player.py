@@ -11,8 +11,11 @@ from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
-from .facility import Facility #for testing
-from .terraform import Terraform # for testing
+# for testing
+from .planet import Planet
+from .facility import Facility
+from .ship_design import ShipDesign
+from .cost import Cost
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -25,13 +28,14 @@ __defaults = {
     'computer_player': False,
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
+    'planets': [], # list of colonized planets
     'planetary_ministers': [PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)], # list of planetary ministers
     'planetary_minister_map': {}, # map of planet references to minister references
     'score': Score(),
     'tech_level': TechLevel(), # current tech levels
     'research_partial': TechLevel(), # energy spent toward next level
     'research_queue': [], # queue of tech items to research
-    'ship_designs': [], # the existing designs
+    'ship_designs': [ShipDesign(cost = Cost(energy = 2000, titanium = 50, lithium = 13, silicon = 24))], # the existing designs
     'research_field': '<LOWEST>', # next field to research (or 'lowest')
     'energy': (0, 0, sys.maxsize),
     'fleets': [],
@@ -78,6 +82,11 @@ class Player(Defaults):
             self.validation_key = str(uuid.uuid4())
         if 'date' not in kwargs:
             self.date = '{:01.2f}'.format(self.race.start_date)
+        for planet in self.planets:
+            try:
+                self.planetary_minister_map[Reference(planet)]
+            except KeyError:
+                self.planetary_minister_map[Reference(planet)] = self.get_minister(Reference(planet))
         game_engine.register(self)
         self.__cache__ = {}
 
@@ -168,12 +177,19 @@ class Player(Defaults):
     
     """ Get the minister for a given planet """
     def get_minister(self, planet):
-        for m in self.planetary_ministers:
-            if planet in m.planets:
-                return m
-        for m in self.planetary_ministers:
-            if m.new_colony_minister:
-                return m
+        try:
+            return self.planetary_minister_map[planet]
+        except TypeError:
+            try:
+                return self.planetary_minister_map[Reference(planet)]
+            except KeyError:
+                for m in self.planetary_ministers:
+                    if m.new_colony_minister:
+                        return m
+        except KeyError:
+            for m in self.planetary_ministers:
+                if m.new_colony_minister:
+                    return m
         return self.planetary_ministers[0]
     
     """ Share treaty updates with other players """

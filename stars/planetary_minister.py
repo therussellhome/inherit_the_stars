@@ -4,13 +4,13 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-
-'new_colony_minister': False,
+    'new_colony_minister': False,
     'allow_baryogenesis': True,
     'max_terraform': False,
     'planets': [],
     'color': 'purple',
     'name': '@UUID',
+    'ID': '@UUID',
     # percent population operating each falicity type where the key matches the facility types
     'power_plants': (30, 0, 100),
     'factories': (30, 0, 100),

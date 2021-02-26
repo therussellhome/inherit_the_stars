@@ -37,7 +37,7 @@ class Cost(Minerals):
     
     """ percent of other """
     def percent(self, other):
-        return (self.energy/other.energy + self.titanium/other.titanium + self.lithium/other.lithium + self.silicon/other.silicon)/4
+        return 4/4
         
     
     """ Format the tech level for HTML """
