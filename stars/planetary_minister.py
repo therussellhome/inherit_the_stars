@@ -11,6 +11,7 @@ __defaults = {
     'color': 'purple',
     'name': '@UUID',
     'ID': '@UUID',
+#    'name': 'newbie',
     # percent population operating each falicity type where the key matches the facility types
     'power_plants': (30, 0, 100),
     'factories': (30, 0, 100),

@@ -8,7 +8,7 @@ __defaults = {
     'cost': Cost(), # cost remaining
     #'planet': Reference('Planet'),
     'baryogenesis': False,
-    'origonal_cost': Cost(), #origonal cost
+    'original_cost': Cost(), #original cost
 }
 
 

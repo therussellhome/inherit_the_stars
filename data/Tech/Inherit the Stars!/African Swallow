@@ -17,10 +17,6 @@
     "cargo_max": 250,
     "fuel_max": 400000,
     "armor": 25,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 5,
     "slots_general": 4,
     "__class__": "Tech"

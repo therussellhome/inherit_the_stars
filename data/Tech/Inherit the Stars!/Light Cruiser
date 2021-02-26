@@ -1,7 +1,7 @@
 {
     "ID": "Light Cruiser",
     "category": "Hull",
-    "description": "Ship hull with 12 general-purpose slots.",
+    "description": "Ship hull with 12 general-purpose slots",
     "cost": {
         "titanium": 9,
         "lithium": 5,
@@ -17,10 +17,6 @@
     "cargo_max": 0,
     "fuel_max": 250000,
     "armor": 60,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 12,
     "slots_general": 12,
     "__class__": "Tech"

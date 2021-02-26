@@ -13,7 +13,7 @@ class Defaults(game_engine.BaseClass):
         for (k, v) in kwargs.items():
             setattr(self, k, v)
         # create a dictionary that is not written to file
-        self.__cache__ = {}
+        object.__setattr__(self, '__cache__', {})
 
     """ Override the subscript operator """
     def __getitem__(self, name):
@@ -82,9 +82,10 @@ Defaults.set_defaults = __set_defaults
 """ Write/overwrite with defaults """
 def apply_defaults(obj, field=None):
     # populate with initial defaults
-    for (k, default) in getattr(obj.__class__, 'defaults', {}).items():
+    obj_dict = object.__getattribute__(obj, '__dict__')
+    for (k, default) in getattr(object.__getattribute__(obj, '__class__'), 'defaults', {}).items():
         if k == field or field == None:
             if  isinstance(default, str) and default == '@UUID':
-                obj[k] = str(uuid.uuid4())
+                obj_dict[k] = str(uuid.uuid4())
             else:
-                obj[k] = copy.copy(default)
+                obj_dict[k] = copy.copy(default)

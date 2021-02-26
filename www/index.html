@@ -460,19 +460,24 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
-    <input id="messages_index" class="hidden" disabled="true"/>
     <table class="topbar hfill"><tr>
+        <td><img title="Messages" src="/messages.png"/></td>
         <td class="hfill" style="font-size: 200%">Messages</td>
         <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
-        <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
+        <tr>
+            <td id="messages_sender"></td>
+            <td id="messages_date"></td>
+        </tr>
+        <tr><td id="messages_text" style="white-space: normal"></td></tr>
+        <tr style="display: none"><td id="messages_index">0</td></tr>
     </table><table class="hfill">
         <tr>
             <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"></i></td>
+            <td>Keep</td><td><input id="messages_keep" type="checkbox" onchange="post('messages', '?keep')"/></td>
+            <td id="messages_number"></td>
             <td class="hfill"></td>
-            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"></i></td>
             <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"></i></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"></i></td>
         </tr>
@@ -486,9 +491,10 @@ void main() {
         </tr><tr>
             <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
         </tr>
+    </table><table id="messages_inbox">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Inbox</caption>
     </table>
 </div>
-
 
 <div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
 </div>

@@ -11,11 +11,13 @@ from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
+from .message import Message
 # for testing
 from .planet import Planet
 from .facility import Facility
 from .ship_design import ShipDesign
 from .cost import Cost
+
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -60,6 +62,7 @@ _player_fields = [
     'research_queue',
     'research_field',
     'fleets',
+    'messages',
     'ship_designs',
     'treaties',
     'build_queue',
@@ -96,7 +99,13 @@ class Player(Defaults):
 
     """ Save player to file """
     def save(self):
+        colonized_planets = []
+        for planet in game_engine.get('Planet'):
+            if planet.is_colonized() and planet.player.ID == self.ID:
+                colonized_planets.append(planet)
+        self.__colonized_planets = colonized_planets
         game_engine.save('Player', self.filename(), self)
+            
 
     """ Update self from file """
     def update_from_file(self):
@@ -116,11 +125,6 @@ class Player(Defaults):
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
-    """ calles fleets to do actions """
-    def ship_action(self, action):
-        for fleet in self.fleets:
-            fleet.execute(action, self)
-    
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
     
@@ -167,8 +171,14 @@ class Player(Defaults):
         self.historical[category] = history
 
     """ Add a message """
-    def add_message(self, source, subject, body, link):
-        self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
+    def add_message(self, **kwargs):
+        self.messages.append(Message(**kwargs, date=self.date))
+
+    """ Cleanup messages """
+    def cleanup_messages(self):
+        for msg in self.messages:
+            if msg.keep == False and msg.read == True:
+                self.messages.remove(msg)
     
     """ Compute score based on intel """
     def calc_score(self):
@@ -199,6 +209,8 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
+        if treaty.status = 'pending':
+            self.add_message(msg_key='foreign_minister.proposed_treaty', parameters=[treaty.other_player])
         for t in self.treaties:
             if t.treaty_key == treaty.treaty_key and t != treaty:
                 t.merge(treaty)
@@ -210,7 +222,9 @@ class Player(Defaults):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)
+                self.add_message(msg_key='foreign_minister.rejected_treaty', parameters=[t.other_player])
             elif t.status == 'signed':
+                self.add_message(msg_key='foreign_minister.accepted_treaty', parameters=[t.other_player])
                 # clear old active treaty (if there was one)
                 for t0 in self.treaties:
                     if t.other_player == t0.other_player and t0.status == 'active':
