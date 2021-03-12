@@ -78,6 +78,12 @@ class Player(Defaults):
             self.validation_key = str(uuid.uuid4())
         if 'date' not in kwargs:
             self.date = '{:01.2f}'.format(self.race.start_date)
+        if 'messages' not in kwargs:
+            self.add_message(msg_key='research_minister.introduction')
+            self.add_message(msg_key='foreign_minister.introduction')
+            self.add_message(msg_key='admiralty.introduction')
+            self.add_message(msg_key='finace_minister.introduction')
+            self.add_message(msg_key='planetary_minister.introduction')
         game_engine.register(self)
         self.__cache__ = {}
 
@@ -183,7 +189,7 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
-        if treaty.status = 'pending':
+        if treaty.status == 'pending':
             self.add_message(msg_key='foreign_minister.proposed_treaty', parameters=[treaty.other_player])
         for t in self.treaties:
             if t.treaty_key == treaty.treaty_key and t != treaty:

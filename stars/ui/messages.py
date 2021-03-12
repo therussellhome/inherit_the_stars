@@ -25,7 +25,7 @@ class Messages(PlayerUI):
         # Loads the file of messages
         dictionary = game_engine.load('Message', 'Inherit the Stars!')
         display = -1
-        for i, msg in reversed(enumerate(self.player().messages)):
+        for i, msg in enumerate(self.player().messages):
             if i > display and not msg.read:
                 display = i
             # Gives the parameters to the message text
@@ -41,9 +41,10 @@ class Messages(PlayerUI):
             m = ''
             if not msg.read:
                 m = ' font-weight:bold;'
-            self.messages_inbox.append('<td>' + msg.date + '</td><td style="color: mediumslateblue; text-decoration: underline;' + m + " onclick="post(\'messages\', \'?id=' + str(i) + '\')">' + text[0:min(55, len(text))] + d + '</td>')
+            self.messages_inbox.append('<td>' + msg.date + '</td><td style="color: mediumslateblue; text-decoration: underline;' + m + ' onclick="post(\'messages\', \'?id=' + str(i) + '\')">' + str(text[0:min(55, len(text))]) + d + '</td>')
             if display == -1:
                 display = len(msg) -1
+        self.messages_inbox = reversed(self.messages_inbox)
 
         # Makes the previous and next arrows work
         if action.startswith('prev') and self.messages_index > 0:

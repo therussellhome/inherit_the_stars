@@ -161,6 +161,7 @@ class Game(Defaults):
         if self.hundreth % 100 == 0:
             self._call(players, 'treaty_negotiations')
             self._call(players, 'treaty_finalization')
+            self._call(players, 'cleanup messages')
         self.hundreth += 1
         #
         # actions in order
