@@ -1,0 +1,21 @@
+{
+    "ID": "Pick Pocket Pod",
+    "category": "Mechanical",
+    "description": "The Pick Pocket Pod allows you to steal minerals from other ships in the same location, Arrr!  Beware matey, that be close enough for them to fire upon ye.",
+    "race_requirements": "Kender",
+    "cost": {
+        "titanium": 6,
+        "lithium": 0,
+        "silicon": 14,
+        "energy": 3500,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 5,
+        "construction": 4,
+        "__class__": "TechLevel"
+    },
+    "mass": 9,
+    "cargo_max": 100,
+    "__class__": "Tech"
+}

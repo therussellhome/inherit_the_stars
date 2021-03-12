@@ -1,0 +1,27 @@
+{
+    "ID": "Q Ship",
+    "category": "Hull",
+    "description": "Hull with built-in cargo and armor, and 8 general purpose slots.  About the size of the African Swallow with a bigger fuel tank but costs almost no silicon but double the titanium.",
+    "cost": {
+        "titanium": 40,
+        "lithium": 2,
+        "silicon": 3,
+        "energy": 5000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 4,
+        "__class__": "TechLevel"
+    },
+    "mass": 50,
+    "cargo_max": 200,
+    "fuel_max": 500000,
+    "armor": 45,
+    "scanner": {
+        "penetrating": 0.0002115,
+        "__class__": "Scanner"
+    },
+    "repair": 10,
+    "slots_general": 8,
+    "__class__": "Tech"
+}

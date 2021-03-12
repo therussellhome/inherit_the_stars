@@ -1,0 +1,23 @@
+{
+    "ID": "Kite Scanner",
+    "category": "Scanner",
+    "description": "No, it's not named after the toy, it's named after a bird.  Look it up!  This scanner detects ships at a distance based on their kinetic energy (mass times speed squared). It is affected by cloaking. It cannot see stopped ships or inside solar systems.",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 1800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 0,
+        "electronics": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 3,
+    "scanner": {
+        "normal": 400.0,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

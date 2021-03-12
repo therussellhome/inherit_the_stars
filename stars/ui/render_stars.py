@@ -3,9 +3,9 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'suns': [[]],
-    'planets': [[]],
-    'ships': [[]],
+    'systems': [],
+    'planets': [],
+    'ships': [],
 }
 
 
@@ -13,28 +13,18 @@ __defaults = {
 class RenderStars(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player:
+        if not self.player():
             return
         # Copy all suns
-        self.suns = []
-        for s in self.player.get_intel('Sun'):
-            self.suns.append({
-                'name': s.get('name'), 
-                'x': s.get('location').x,
-                'y': s.get('location').y,
-                'z': s.get('location').z,
-                'color': s.get('color'),
-                'size': s.get('size'),
-            })
-        for s in self.player.get_intel('Planets'):
-            self.suns.append({
-                'name': s.get('name'), 
-                'x': s.get('location').x,
-                'y': s.get('location').y,
-                'z': s.get('location').z,
-                'color': s.get('color'),
-                'size': s.get('size'),
-            })
-            
+        self.systems = []
+        self.plants = []
+        self.ships = []
+        for (s, i) in self.player().get_intel(by_type='StarSystem').items():
+            self.systems.append(i)
+        for (p, i) in self.player().get_intel(by_type='Planet').items():
+            self.planets.append(i)
+        for (s, i) in self.player().get_intel(by_type='Ship').items():
+            self.ships.append(i)
+
 
 RenderStars.set_defaults(RenderStars, __defaults, sparse_json=False)

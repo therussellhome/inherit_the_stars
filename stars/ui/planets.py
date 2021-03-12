@@ -39,24 +39,33 @@ class Planets(PlayerUI):
         for p in self.player.get_intel('Planet'):
             planets.append(p)
             ps.append(p)
+        # Get suns
         for s in self.player.get_intel('Sun'):
             suns.append(s)
             ps.append(s)
 
+        # Sort the planets and suns
         mine = []
         team = []
         neutral = []
         enemy = []
         uninhabited = []
-        for p in planets:
+        relation = self.player().get_relation(p.player)
+        for p in ps:
             self.planets_report.append('<td>' + p.get('name') + '</td><td>100,000</td>')
             if not p.is_colonized:
                 uninhabited.append(p)
-            elif p.is_colonized and p.player
-
+            if p.is_colonized:
+                if relation == 'me'
+                    mine.append(p)
+                if relation == 'team':
+                    team.append(p)
+                if relation == 'neutral':
+                    neutral.append(p)
+                if relation == 'enemy':
+                    enemy.append(p)
                 
 
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
-# TODO get comparasion field working 
-# TODO sort planets
+# TODO get comparasion field working
 # TODO click on the planet name and it shows everything else

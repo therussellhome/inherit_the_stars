@@ -1,0 +1,21 @@
+{
+    "ID": "Small Repair Bay",
+    "category": "Depot",
+    "description": "a component installed in a ship which deploys a deep-space repair shop which allows you to repair 100 damage points per year (Depot components are large components which unfold or deploy outside the ship when used, and the ship must be stopped to use them.)",
+    "cost": {
+        "titanium": 10,
+        "lithium": 4,
+        "silicon": 6,
+        "energy": 3000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 300,
+    "repair_bay": 100,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
+}

@@ -14,7 +14,7 @@ from stars.ui import *
 """ Map of post handlers """
 _handlers = {
     '/battles': battles.Battles,
-    '/energy_minister': energy_minister.EnergyMinister,
+    '/finance_minister':finance_minister.FinanceMinister,
     '/fleets': fleets.Fleets,
     '/foreign_minister': foreign_minister.ForeignMinister,
     '/host': host.Host,
@@ -24,6 +24,7 @@ _handlers = {
     '/planetary_minister': planetary_minister.PlanetaryMinister,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
+    '/play_complete': play_complete.PlayComplete,
     '/race_editor': race_editor.RaceEditor,
     '/race_viewer': race_viewer.RaceViewer,
     '/render_stars': render_stars.RenderStars,
@@ -60,6 +61,7 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
                 response_str = '{}'
             #print('    resp = ', response_str)
             self.wfile.write(response_str.encode())
+            game_engine.auto_save()
 
 
 with socketserver.TCPServer(("", 0), Httpd) as httpd:

@@ -1,0 +1,30 @@
+{
+    "ID": "Dirty Catfish",
+    "category": "Engine",
+    "description": "WARNING: This engine emits intense gravitonic pulses and hazardous radiation.  One-tenth of your colonists on board a ship with this engine will die each year.  However, this engine forages its own fuel while moving and gives you infinite range at only propulsion level 5, and it is cheap.",
+    "race_requirements": "Forager",
+    "cost": {
+        "titanium": 3,
+        "lithium": 2,
+        "silicon": 9,
+        "energy": 800,
+        "__class__": "Cost"
+    },
+    "level": {
+    	"energy": 1,
+    	"propulsion": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 10,
+    "engines": [
+        {
+            "kt_exponent": 1.25,
+            "speed_divisor": 10,
+            "speed_exponent": 3.0,
+            "antimatter_siphon": 600,
+	    "kills_people": true,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}

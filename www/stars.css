@@ -41,6 +41,16 @@ div.screen {
     transform: translate(-50%, 0%);
     background-color: rgba(0, 0, 44, 0.5);
 }
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    background-color: rgba(0, 0, 44, 1);
+    text-align: center;
+    transition: 0.5s;
+}
 div.overlay_message {
     position: absolute;
     left: 50%;
@@ -69,6 +79,15 @@ div.submenu {
     padding-left: 70px;
     transition: 0.5s;
 }
+div.sidebarr {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    height: 100%;
+    background-color: rgba(0, 0, 44, 0.5);
+    transition: 0.5s;
+}
 div.toc {
     position: fixed;
     top: 0;
@@ -83,6 +102,10 @@ input {
 }
 input.vertical {
     transform: rotate(-90deg);
+}
+select {
+    color: white;
+    background-color: transparent;
 }
 img.button {
     width: 50px;
@@ -129,10 +152,12 @@ i.button:hover {
 }
 table {
     border: 0;
+    border-collapse: collapse;
 }
 table.topbar {
     border: 2px solid silver;
     padding-left: 10px;
+    padding-right: 10px;
 }
 caption {
     margin-top: 20px;
@@ -152,6 +177,11 @@ tr.slider_padding {
 }
 td {
     white-space: nowrap;
+}
+td.rows {
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver;
+    color: silver;
 }
 td.tech_title {
     text-align: center;
@@ -178,6 +208,9 @@ textarea:disabled {
     width: 100%;
     white-space: nowrap;
 }
+.vertical {
+    writing-mode: sideways-lr;
+}
 .hide {
     display: none;
 }
@@ -193,6 +226,14 @@ textarea:disabled {
 #race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
     background: black;
 }
+
+.power-color { background: cyan; }/* power-plants */
+.factory-color { background: limegreen; }/* factories */
+.mine-color { background: lightcoral; }/* mines */
+.shield-color { background: mediumslateblue; }/* defences */
+.reserch-color { background: olive; }
+.mat-trans-color { background: violet; }
+
 
 i {
     font-style: normal;
@@ -258,6 +299,10 @@ i.fa-free-code-camp {
 i.fa-free-code-camp:after {
     content: '₥';
     border-top: 1px solid magenta;
+}
+i.fa-free-code-camp.vertical:after {
+    border-top: 0;
+    border-left: 1px solid magenta;
 }
 
 i.ti:after, i.li:after, i.si:after, i.fa-weight-hanging:after, i.fa-luggage-cart:after {

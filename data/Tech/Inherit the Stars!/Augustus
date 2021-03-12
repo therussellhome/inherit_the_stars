@@ -1,0 +1,28 @@
+ {
+    "ID": "Augustus",
+    "category": "Beam Weapon",
+    "race_requirements": "Aku'Ultan",
+    "description": "The same power as Brutus and Caesar but longer range. Beam weapons have 100% accuracy but power decreases with range.  The same as Agrippa but cheaper to build.",
+    "cost": {
+        "lithium": 11,
+        "energy": 1500,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 10,
+        "__class__": "TechLevel"
+    },
+    "mass": 2,
+    "weapons": [
+        {
+            "power": 39,
+            "range_tm": 0.4,
+            "armor_multiplier": 1,
+            "is_beam": true,
+            "is_multishot": false,
+            "accuracy": 100,
+            "__class__": "Weapon"
+        }
+    ],
+    "__class__": "Tech"
+}

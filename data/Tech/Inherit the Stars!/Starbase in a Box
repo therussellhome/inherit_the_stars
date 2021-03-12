@@ -1,0 +1,17 @@
+{
+    "ID": "Starbase in a Box",
+    "category": "Mechanical",
+    "description": "This turns the ship into a colonizer that can colonize a new planet.  Warning: Colonists not included.  You will need cargo space in which to carry colonists as well.",
+    "race_requirements": "Pa'anuri",
+    "cost": {
+        "titanium": 20,
+        "lithium": 15,
+        "silicon": 15,
+        "energy": 2000,
+        "__class__": "Cost"
+    },
+    "mass": 50,
+    "repair": 2,
+    "is_colonizer": true,
+    "__class__": "Tech"
+}

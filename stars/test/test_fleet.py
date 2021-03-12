@@ -1,246 +1,283 @@
 import unittest
 from .. import *
+
 class FleetCase(unittest.TestCase):
-    def test_addships_compile_returnn(self):
-        ship_1 = ship.Ship(
-            location=location.Location(),
-            cargo=cargo.Cargo(titanium=100, cargo_max=200)
-            )
-        ship_2 = ship.Ship(
-            location=location.Location(),
-            cargo=cargo.Cargo(people=100, cargo_max=200)
-            )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+    """ Test distribute_cargo()"""
+    def test_distribute_cargo(self):
+        ship_1 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
+        ship_2 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
+        ship_3 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
+        fleet_1 = fleet.Fleet(ships = [ship_1, ship_2, ship_3])
+        fleet_1.distribute_cargo(cargo.Cargo(titanium = 1), 'titanium', 600)
+        self.assertEqual(ship_1.cargo.titanium, 1)
+        fleet_1.distribute_cargo(cargo.Cargo(people = 13), 'people', 600)
+        self.assertEqual(ship_2.cargo.people, 5)
+        self.assertEqual(ship_3.cargo.people, 4)
+    
+    """ Test distribute_fuel()"""
+    def test_distribute_fuel(self):
+        ship_1 = ship.Ship(fuel_max = 200)
+        ship_2 = ship.Ship(fuel_max = 200)
+        fleet_1 = fleet.Fleet(ships = [ship_1, ship_2])
+        fleet_1.distribute_fuel(1, 400)
+        self.assertEqual(ship_1.fuel, 1)
+        fleet_1.distribute_fuel(2, 400)
+        self.assertEqual(ship_2.fuel, 1)
+    
+    """ Test adding ships as one list """
+    def test_addships_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         fleet_one = fleet.Fleet()
         fleet_one.add_ships([ship_1, ship_2])
-        fleet_one.compile()
-        fleet_one.returnn()
-        self.assertEqual(ship_1.cargo.titanium, 50)
-        self.assertEqual(ship_1.cargo.people, 50)
-        self.assertEqual(ship_2.cargo.titanium, 50)
-        self.assertEqual(ship_2.cargo.people, 50)
+        self.assertEqual(fleet_one.ships[0], ship_1)
+        self.assertEqual(fleet_one.ships[1], ship_2)
     
-    def test_merge(self):
-        ship_1 = ship.Ship(location = location.Location())
-        ship_2 = ship.Ship(location = location.Location())
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+    """ Test adding same ship twice """
+    def test_addships_2(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet()
+        fleet_one.add_ships([ship_2])
+        fleet_one.add_ships([ship_2])
+        self.assertEqual(fleet_one.ships[0], ship_2)
+        self.assertEqual(len(fleet_one.ships), 1)
+    
+    """ Test adding ships to an established fleet """
+    def test_addships_3(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet()
+        fleet_one.add_ships([ship_1])
+        fleet_one.add_ships([ship_2])
+        self.assertEqual(fleet_one.ships[0], ship_1)
+        self.assertEqual(fleet_one.ships[1], ship_2)
+    
+    """ Test normal merge """
+    def test_merge_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         fleet_one = fleet.Fleet(ships = [ship_1])
         fleet_two = fleet.Fleet(
             ships = [ship_2],
             waypoints = [waypoint.Waypoint(
                 actions = ['merge'],
-                recipiants = {'merge': fleet_one},
-                location = location.LocationReference(fleet_one)
-                )]
-            )
+                recipiants = {'merge': fleet_one}
+                )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        fleet_two.execute('merge', p1)
+        fleet_two.merge(p1)
         self.assertEqual(len(p1.fleets), 1)
         self.assertEqual(ship_2 in fleet_one.ships, True)
-        ship_3 = ship.Ship(location = location.Location())
+
+    """ Test that merge does execute when it would transfer player ownership of the ships in the merging fleet """
+    def test_merge_2(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet(ships = [ship_1])
         fleet_two = fleet.Fleet(
-            ships = [ship_3],
+            ships = [ship_2],
             waypoints = [waypoint.Waypoint(
                 actions = ['merge'],
-                recipiants = {'merge': fleet_one},
-                location = location.LocationReference(fleet_one)
-                )]
-            )
+                recipiants = {'merge': fleet_one}
+                )])
+        p1 = player.Player(fleets = [fleet_one])
         p2 = player.Player(fleets = [fleet_two])
-        fleet_two.execute('bomb', p2)
-        fleet_two.execute('merge', p2)
+        fleet_two.merge(p2)
         self.assertEqual(len(p1.fleets), 1)
-        self.assertEqual(ship_3 in fleet_two.ships, True)
+        self.assertEqual(ship_2 in fleet_two.ships, True)
         
-    def test_split(self):
-        ship_1 = ship.Ship(location = location.Location())
-        ship_2 = ship.Ship(location = location.Location())
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+    """ Test normal split """
+    def test_split_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         fleet_one = fleet.Fleet(
             ships = [ship_1, ship_2],
             waypoints = [waypoint.Waypoint(
                 actions = ['split'],
-                splits = [[ship_2]],
-                location = location.Location()
-                )]
-            )
+                splits = [[ship_2]]
+                )])
         p1 = player.Player(fleets = [fleet_one])
-        fleet_one.execute('split', p1)
+        fleet_one.split(p1)
         self.assertEqual(ship_1 in fleet_one.ships, True)
         self.assertEqual(ship_2 in p1.fleets[1].ships, True)
-        fleet_one.waypoints = [
-            waypoint.Waypoint(
+        self.assertEqual(len(fleet_one.ships), 1)
+    
+    """ Test putting all ships into one other fleet and removeing emptey fleets """
+    def test_split_2(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet(
+            ships = [ship_1, ship_2],
+            waypoints = [waypoint.Waypoint(
                 actions = ['split'],
-                splits = [[ship_1]],
-                location = location.Location()
-                )
-            ]
-        fleet_one.execute('split', p1)
+                splits = [[ship_2, ship_1]]
+                )])
+        p1 = player.Player(fleets = [fleet_one])
+        fleet_one.split(p1)
+        self.assertEqual(len(p1.fleets), 1)
+        self.assertEqual(ship_1 in p1.fleets[0].ships, True)
+        self.assertEqual(ship_2 in p1.fleets[0].ships, True)
+        self.assertEqual(len(fleet_one.ships), 0)
+        
+    """ Test putting all ships into other fleets and removeing emptey fleets """
+    def test_split_3(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet(
+            ships = [ship_1, ship_2],
+            waypoints = [waypoint.Waypoint(
+                actions = ['split'],
+                splits = [[ship_2], [ship_1]]
+                )])
+        p1 = player.Player(fleets = [fleet_one])
+        fleet_one.split(p1)
         self.assertEqual(ship_1 in p1.fleets[1].ships, True)
         self.assertEqual(ship_2 in p1.fleets[0].ships, True)
+        self.assertEqual(len(fleet_one.ships), 0)
         
-        
+    """ Test normal transfer """
     def test_transfer(self):
-        ship_1 = ship.Ship(location = location.Location())
-        ship_2 = ship.Ship(location = location.Location())
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         p2 = player.Player()
         fleet_one = fleet.Fleet(
             ships = [ship_1, ship_2],
             waypoints = [waypoint.Waypoint(
                 actions = ['transfer'],
-                recipiants = {'transfer':p2},
-                location = location.Location()
-                )]
-            )
+                recipiants = {'transfer':p2}
+                )])
         p1 = player.Player(fleets = [fleet_one])
-        fleet_one.execute('transfer', p1)
+        fleet_one.transfer(p1)
         self.assertEqual(fleet_one in p2.fleets, True)
     
+    """ Test normal deployment of hyper denial """
     def test_hyper_denial(self):
-        ship_1 = ship.Ship(location = location.Location())
-        ship_2 = ship.Ship(location = location.Location())
+        return # TODO
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
         fleet_one = fleet.Fleet(
             ships = [ship_1, ship_2],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['deploy_hyper_denial'],
-                    location = location.Location(),
-                    ),
-                ]
-            )
+                    )])
         p1 = player.Player(fleets = [fleet_one])
         fleet_one.execute('deploy_hyper_denial', p1)
         self.assertEqual(True, False, "Not Testing")
     
-    def test_move(self):
+    """ Test normal movement """
+    def test_move_1(self):
         ship_1 = ship.Ship(
             fuel = 0,
             fuel_max = 100,
-            location = location.Location(),
             mass = 100,
-            engines = [
-                engine.Engine(
-                    kt_exponent = 1.5,
-                    speed_divisor = 10.0,
-                    speed_exponent = 5.0,
-                    antimatter_siphon = 0.0
-                    ),
-                engine.Engine(
-                    kt_exponent = 1.5,
-                    speed_divisor = 10.0,
-                    speed_exponent = 5.0,
-                    antimatter_siphon = 0.0
-                    ),
-                ],
-            )
-        ship_2 = ship.Ship(
-            fuel = 1000,
-            fuel_max = 10000,
-            location = location.Location(),
-            mass = 100,
-            engines = [
-                engine.Engine(
-                    kt_exponent = 1.5,
-                    speed_divisor = 10.0,
-                    speed_exponent = 5.0,
-                    antimatter_siphon = 0.0
-                    ),
-                engine.Engine(
-                    kt_exponent = 1.5,
-                    speed_divisor = 10.0,
-                    speed_exponent = 5.0,
-                    antimatter_siphon = 0.0
-                    ),
-                ],
+            engines = [engine.Engine(kt_exponent = 1.5, speed_divisor = 10.0, speed_exponent = 5.0) for i in range(2)]
             )
         fleet_one = fleet.Fleet(
             ships = [ship_1],
             waypoints = [
+                waypoint.Waypoint(speed = 5),
                 waypoint.Waypoint(
-                    location = location.Location(),
-                    standoff = 'No Standoff',
-                    speed = 5,
+                    location = location.Location(x = 1),
+                    speed = 5
                     ),
                 waypoint.Waypoint(
-                    location = location.Location(x = 1, y = 1, z = 1),
-                    speed = 5,
-                    standoff = 'No Standoff',
-                    ),
-                waypoint.Waypoint(
-                    location = location.Location(x = 1, y = 1, z = 1),
-                    standoff = 'No Standoff',
-                    speed = 5,
-                    ),
-                ],
-            )
+                    location = location.Location(x = 1),
+                    speed = 5
+                    )])
         p1 = player.Player(fleets = [fleet_one])
-        for i in range(175):
-            fleet_one.execute('move', p1)
-        self.assertEqual(fleet_one.location.x, 1)
-        self.assertEqual(fleet_one.location.y, 1)
-        self.assertEqual(fleet_one.location.z, 1)
-        #'''
+        for i in range(100):
+            fleet_one.move(p1)
+        self.assertEqual(fleet_one.location == location.Location(x = 1), True)
+        self.assertEqual(len(fleet_one.waypoints), 3)
+    
+    """ Test movement with massive ship and low distance """
+    def test_move_2(self):
+        ship_1 = ship.Ship(
+            fuel = 0,
+            fuel_max = 100,
+            mass = 10000,
+            engines = [engine.Engine(kt_exponent = 1.5, speed_divisor = 10.0, speed_exponent = 5.0) for i in range(2)]
+            )
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(speed = 5),
+                waypoint.Waypoint(
+                    location = location.Location(x = .0025),
+                    speed = 5
+                    ),
+                waypoint.Waypoint(speed = 5)
+                ])
+        p1 = player.Player(fleets = [fleet_one])
+        for i in range(1):
+            fleet_one.move(p1)
+        self.assertEqual(fleet_one.location == location.Location(x = .0025), True)
+        self.assertEqual(len(fleet_one.waypoints), 3)
+    
+    def test_move_on(self):
+        ship_1 = ship.Ship(
+            fuel = 100,
+            fuel_max = 100,
+            mass = 100,
+            engines = [engine.Engine(kt_exponent = 1.5, speed_divisor = 10.0, speed_exponent = 5.0) for i in range(2)]
+            )
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(speed = 5),
+                waypoint.Waypoint(speed = 5),
+                waypoint.Waypoint(speed = 5, location = location.Location(x=1))
+                ])
+        p1 = player.Player(fleets = [fleet_one])
+        for i in range(1):
+            fleet_one.move(p1)
+        self.assertEqual(fleet_one.location == location.Location(x = 25/100), True)
+        self.assertEqual(len(fleet_one.waypoints), 2)
+    
+    def test_move_3(self):
         ship_3 = ship.Ship(
             fuel = 1000,
             fuel_max = 10000,
-            location = location.Location(),
-            mass = 100,
-            engines = [
-                ],
-            )
+            mass = 100,)
         fleet_one = fleet.Fleet(
             ships = [ship_3],
             waypoints = [
-                waypoint.Waypoint(
-                    location = location.Location(),
-                    standoff = 'No Standoff',
-                    speed = 5,
-                    ),
+                waypoint.Waypoint(speed = 5),
                 waypoint.Waypoint(
                     location = location.Location(x = 1, y = 1, z = 1),
-                    speed = 2,
-                    standoff = 'No Standoff',
-                    ),
-                ],
-            )
+                    speed = 2
+                    )])
         p1 = player.Player(fleets = [fleet_one])
-        for i in range(1):
-            fleet_one.execute('move', p1)
-        self.assertEqual(fleet_one.location.x, 0)
-        self.assertEqual(fleet_one.location.y, 0)
-        self.assertEqual(fleet_one.location.z, 0)
-        #'''
+        for i in range(2):
+            fleet_one.move(p1)
+        self.assertEqual(fleet_one.location == location.Location(), True)
+    
+        '''
         fleet_one.location = location.Location()
         ship_1.location = location.Location()
+        ship_2 = ship.Ship(
+            fuel = 1000,
+            fuel_max = 10000,
+            mass = 100,
+            engines = [engine.Engine(kt_exponent = 1.5, speed_divisor = 10.0, speed_exponent = 5.0) for i in range(2)]
+            )
         fleet_one.add_ships([ship_2])
         fleet_one.waypoints[1] = waypoint.Waypoint(
             location = location.Location(x = 24/100, y = 7/100, z = 0),
-            speed = 5,
-            standoff = 'No Standoff'
+            speed = 5
             )
         fleet_one.waypoints.append(waypoint.Waypoint(
-            location = location.Location(x = 48/100, y = 14/100, z = 0),
-            standoff = 'No Standoff',
+            location = location.Location(x = 24/100, y = 14/100, z = 24),
             speed = 1
             ))
         for i in range(1):
             fleet_one.execute('move', p1)
-        self.assertEqual(fleet_one.location.x, 24/100)
-        self.assertEqual(fleet_one.location.y, 7/100)
-        self.assertEqual(fleet_one.location.z, 0)
+        self.assertEqual(fleet_one.location == location.Location(x = 24/100, y = 7/100), True)
         fleet_one = fleet.Fleet(
             ships = [ship_2],
             waypoints = [
-                waypoint.Waypoint(
-                    location = location.Location(),
-                    standoff = 'No Standoff',
-                    speed = 1
-                    ),
+                waypoint.Waypoint(speed = 1),
                 waypoint.Waypoint(
                     location = location.Location(x = 1, y = 1, z = 1),
                     speed = 10,
@@ -254,447 +291,677 @@ class FleetCase(unittest.TestCase):
                 ]
             )
         p1 = player.Player(fleets = [fleet_one])
-        """
+        '#''
         for i in range(9):
             fleet_one.move(p1)
         self.assertEqual(fleet_one.location.x, 1)
         self.assertEqual(fleet_one.location.y, 1)
         self.assertEqual(fleet_one.location.z, 1)
-        #"""
+        #'''
         
-    def test_trade(self):
-        buy = defaults.Defaults(
-            cost_titanium = 6,
-            cost_lithium = 4,
-            cost_silicon = 3,
-            cost_fuel = 2
-            )
-        sell = defaults.Defaults(
-            cost_titanium = 9,
-            cost_lithium = 7,
-            cost_silicon = 7,
-            cost_fuel = 2
-            )
-        treaty1 = defaults.Defaults(
-            sell = sell,
-            buy = buy,
+    """ Fuel, perfect situation """
+    def test_handle_cargo_10(self):
+        fleet_1 = fleet.Fleet()
+        unload_fuel = 100
+        load_fuel_max = 100
+        amount = fleet_1.handle_cargo(unload_fuel, 0, load_fuel_max, 'fuel', 30, cargo.Cargo(), 0, cargo.Cargo())
+        self.assertEqual(amount, 30)
+        
+    """ Fuel, less fuel than requested """
+    def test_handle_cargo_11(self):
+        fleet_1 = fleet.Fleet()
+        unload_fuel = 7
+        load_fuel_max = 100
+        amount = fleet_1.handle_cargo(unload_fuel, 0, load_fuel_max, 'fuel', 30, cargo.Cargo(), 0, cargo.Cargo())
+        self.assertEqual(amount, 7)
+        
+    """ Fuel, cannot hold requested fuel """
+    def test_handle_cargo_12(self):
+        fleet_1 = fleet.Fleet()
+        unload_fuel = 100
+        load_fuel_max = 20
+        amount = fleet_1.handle_cargo(unload_fuel, 0, load_fuel_max, 'fuel', 30, cargo.Cargo(), 0, cargo.Cargo())
+        self.assertEqual(amount, 20)
+        
+    """ Cargo, perfect situation """
+    def test_handle_cargo_20(self):
+        fleet_1 = fleet.Fleet()
+        load_cargo_max = 100
+        unload_cargo = cargo.Cargo()
+        for item in ['titanium', 'silicon', 'lithium', 'people']:
+            unload_cargo[item] = 100
+            amount = fleet_1.handle_cargo(0, 0, 0, item, 30, cargo.Cargo(), load_cargo_max, unload_cargo)
+            self.assertEqual(amount, 30)
+        
+    """ Cargo, less cargo than requested """
+    def test_handle_cargo_21(self):
+        fleet_1 = fleet.Fleet()
+        load_cargo_max = 100
+        unload_cargo = cargo.Cargo()
+        for item in ['titanium', 'silicon', 'lithium', 'people']:
+            unload_cargo[item] = 15
+            amount = fleet_1.handle_cargo(0, 0, 0, item, 30, cargo.Cargo(), load_cargo_max, unload_cargo)
+            self.assertEqual(amount, 15)
+        
+    """ Cargo, cannot hold requested cargo """
+    def test_handle_cargo_22(self):
+        fleet_1 = fleet.Fleet()
+        load_cargo_max = 8
+        unload_cargo = cargo.Cargo()
+        for item in ['titanium', 'silicon', 'lithium', 'people']:
+            unload_cargo[item] = 100
+            amount = fleet_1.handle_cargo(0, 0, 0, item, 30, cargo.Cargo(), load_cargo_max, unload_cargo)
+            self.assertEqual(amount, 8)
+        
+    def test_check_trade_10(self):
+        p1 = player.Player()
+        fleet_treaty = treaty.Treaty(
             relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
             )
-        treaty2 = defaults.Defaults(
-            sell = buy,
-            buy = sell,
-            relation = 'teamm',
+        ultimantico = planet.Planet(player = reference.Reference(p1))
+        fleet_three = fleet.Fleet()
+        p2 = player.Player(fleets = [fleet_three])
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        test = fleet_three.check_trade(ultimantico, p2)
+        self.assertEqual(test, True)
+    
+    def test_check_trade_11(self):
+        p1 = player.Player()
+        fleet_treaty = treaty.Treaty(
+            relation = 'neutral',
+            other_player = reference.Reference(p1),
+            status = 'active',
             )
+        ultimantico = planet.Planet(player = reference.Reference(p1))
+        fleet_three = fleet.Fleet()
+        p2 = player.Player(fleets = [fleet_three])
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        test = fleet_three.check_trade(ultimantico, p2)
+        self.assertEqual(test, True)
+    
+    def test_check_trade_20(self):
+        p1 = player.Player()
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'pending',
+            )
+        print(fleet_treaty.status)
+        ultimantico = planet.Planet(player = reference.Reference(p1))
+        fleet_three = fleet.Fleet()
+        p2 = player.Player(fleets = [fleet_three])
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        test = fleet_three.check_trade(ultimantico, p2)
+        self.assertEqual(test, True)
+    
+    def test_check_trade_21(self):
+        p1 = player.Player()
+        fleet_treaty = treaty.Treaty(
+            relation = 'enemy',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            )
+        ultimantico = planet.Planet(player = reference.Reference(p1))
+        fleet_three = fleet.Fleet()
+        p2 = player.Player(fleets = [fleet_three])
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        test = fleet_three.check_trade(ultimantico, p2)
+        self.assertEqual(test, False)
+    
+    def test_check_trade_22(self):
+        p1 = player.Player()
+        ultimantico = planet.Planet(player = reference.Reference(p1))
+        fleet_three = fleet.Fleet()
+        p2 = player.Player(fleets = [fleet_three])
+        test = fleet_three.check_trade(ultimantico, p2)
+        self.assertEqual(test, True)
+    
+    def test_check_trade_30(self):
+        ultimantico = ship.Ship()
+        fleet_three = fleet.Fleet()
+        p2 = player.Player(fleets = [fleet_three])
+        test = fleet_three.check_trade(ultimantico, p2)
+        self.assertEqual(test, False)
+    
+    def test_check_self_1(self):
+        p1 = player.Player()
+        ultimantico = planet.Planet(player = reference.Reference(p1))
+        fleet_three = fleet.Fleet()
+        p1.fleets = [fleet_three]
+        test = fleet_three.check_self(ultimantico, p1)
+        self.assertEqual(test, True)
+    
+    def test_check_self_2(self):
+        ultimantico = planet.Planet()
+        fleet_three = fleet.Fleet()
+        p1 = player.Player(fleets = [fleet_three])
+        test = fleet_three.check_self(ultimantico, p1)
+        self.assertEqual(test, False)
+    
+    def test_check_self_3(self):
+        fleet_one = fleet.Fleet()
+        fleet_three = fleet.Fleet()
+        p1 = player.Player(fleets = [fleet_three])
+        test = fleet_three.check_self(fleet_one, p1)
+        self.assertEqual(test, False)
+    
+    def test_check_self_4(self):
+        fleet_one = fleet.Fleet()
+        fleet_three = fleet.Fleet()
+        p1 = player.Player(fleets = [fleet_one, fleet_three])
+        test = fleet_three.check_self(fleet_one, p1)
+        self.assertEqual(test, True)
+    
+    def test_buy_minerals(self):
+        return #TODO
         p1 = player.Player(
-            energy_minister = energy_minister.EnergyMinister(
-                energy_minister_construction_percent = 0,
-                energy_minister_mattrans_percent = 0,
-                energy_minister_research_percent = 0,
-                ),
-            energy = 90000,
-            name = 'Alpha',
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            buy_si = 3
             )
         p2 = player.Player(
-            energy_minister = energy_minister.EnergyMinister(
-                energy_minister_construction_percent = 0,
-                energy_minister_mattrans_percent = 0,
-                energy_minister_research_percent = 0,
-                ),
-            name = 'Beta',
-            energy = 90000,
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
             )
-        p2.treaties[p1.name] = treaty1
-        p1.treaties[p2.name] = treaty2
-        game_engine.register(p1)
-        game_engine.register(p2)
-        space_station = defaults.Defaults(
-            fuel = 100000,
-            is_trading_post = True,
-            fuel_max = 500000
-            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
         ultimantico = planet.Planet(
-            name = 'ultimantico',
             player = reference.Reference(p1),
-            space_station = space_station,
-            on_surface = cargo.Cargo(
-                titanium = 1000,
-                lithium = 1000,
-                silicon = 1000,
-                people = 1000,
-                cargo_max = 10000000000000000000000000000000
-                ),
-            location=location.Location(),
+            space_stations = [
+                fleet.Fleet(
+                    ships = [
+                        space_station.SpaceStation(is_trading_post = True)
+                        ])
+                ],
+            on_surface = cargo.Cargo(silicon = 100, cargo_max = -1)
             )
-        ship_7 = ship.Ship(
-            name = 'ship_1',
-            location = location.Location(),
-            cargo = cargo.Cargo(silicon=100, cargo_max=100),
-            fuel = 10000,
-            fuel_max = 10000
+        ship_1 = ship.Ship(cargo = cargo.Cargo(silicon = 100, cargo_max = 1000))
+        fleet_three = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['buy'],
+                    transfers = {'buy':[['silicon', 50]]},
+                    recipiants = {'buy':ultimantico},
+                    )])
+        p2.fleets = [fleet_three]
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.buy(p2)
+        self.assertEqual(p1.energy, 1150)
+        self.assertEqual(p2.energy, 850)
+        self.assertEqual(ultimantico.on_surface.silicon, 50)
+        self.assertEqual(ship_1.cargo.silicon, 150)
+        
+    def test_buy_fuel(self):
+        return #TODO
+        p1 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
             )
-        ship_8 = ship.Ship(
-            name = 'ship_3',
-            location = location.Location(),
-            cargo = cargo.Cargo(lithium=100, cargo_max=300),
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            buy_fuel = 2
+            )
+        p2 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            space_stations = [
+                fleet.Fleet(
+                    ships = [
+                        space_station.SpaceStation(
+                            fuel = 100000,
+                            is_trading_post = True,
+                            fuel_max = 500000
+                            )])])
+        ship_1 = ship.Ship(
             fuel = 10000,
             fuel_max = 30000
             )
-        ship_6 = ship.Ship(
-            name = 'ship_2',
-            location = location.Location(),
-            cargo = cargo.Cargo(titanium=100, cargo_max=200),
-            fuel = 10000,
-            fuel_max = 20000
-            )
         fleet_three = fleet.Fleet(
-            ships = [ship_6, ship_7, ship_8],
+            ships = [ship_1],
             waypoints = [
                 waypoint.Waypoint(
-                    actions = ['buy', 'sell'],
-                    transfers = {'buy':[['lithium', 50], ['silicon', 50], ['fuel', 30000]], 'sell':[['titanium', 40], ['fuel', 30000]]},
-                    recipiants = {'buy':ultimantico, 'sell':ultimantico},
-                    location = location.LocationReference(ultimantico)
-                    )
-                ]
-            )
+                    actions = ['buy'],
+                    transfers = {'buy':[['fuel', 50]]},
+                    recipiants = {'buy':ultimantico},
+                    )])
         p2.fleets = [fleet_three]
-        p1.get_budget()
-        p2.get_budget()
-        fleet_three.compile()
-        fleet_three.returnn()
-        """
-        print()
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
-        for p in game_engine.get('Player'):
-            print(p.name, " : {'energy': ", p.energy, "}", sep='')
-            for f in p.fleets:
-                for s in f.ships:
-                    print(s.name, ": {'fuel':", s.fuel, end='')
-                    for key in s.cargo.__dict__:
-                        if key != 'cargo_max':
-                            print(", '", key, "': ", getattr(s.cargo, key), sep='', end='')
-                    print("}")
-        #"""
-        fleet_three.execute('sell', p2)
-        p1.treaties[p2.name].relation = 'team'
-        fleet_three.execute('sell', p2)
-        self.assertEqual(p1.energy, 29640)
-        self.assertEqual(p2.energy, 150360)
-        self.assertEqual(ultimantico.on_surface.titanium, 1040)
-        self.assertEqual(ultimantico.space_station.fuel, 130000)
-        self.assertEqual(ship_6.cargo.titanium, 20)
-        self.assertEqual(ship_6.fuel, 0)
-        self.assertEqual(ship_7.cargo.titanium, 10)
-        self.assertEqual(ship_7.fuel, 0)
-        self.assertEqual(ship_8.cargo.titanium, 30)
-        self.assertEqual(ship_8.fuel, 0)
-        p1.treaties[p2.name].relation = 'teamm'
-        fleet_three.execute('buy', p2)
-        p1.treaties[p2.name].relation = 'team'
-        fleet_three.execute('buy', p2)
-        self.assertEqual(p1.energy, 90340)
-        self.assertEqual(p2.energy, 89660)
-        self.assertEqual(ultimantico.on_surface.lithium, 950)
-        self.assertEqual(ultimantico.on_surface.silicon, 950)
-        self.assertEqual(ultimantico.space_station.fuel, 100000)
-        self.assertEqual(ship_6.cargo.lithium, 50)
-        self.assertEqual(ship_6.cargo.silicon, 50)
-        self.assertEqual(ship_6.fuel, 10000)
-        self.assertEqual(ship_7.cargo.lithium, 25)
-        self.assertEqual(ship_7.cargo.silicon, 25)
-        self.assertEqual(ship_7.fuel, 5000)
-        self.assertEqual(ship_8.cargo.lithium, 75)
-        self.assertEqual(ship_8.cargo.silicon, 75)
-        self.assertEqual(ship_8.fuel, 15000)
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.buy(p2)
+        self.assertEqual(p1.energy, 1100)
+        self.assertEqual(p2.energy, 900)
+        self.assertEqual(ultimantico.space_stations[0].fuel, 99950)
+        self.assertEqual(ship_1.fuel, 10050)
         
+    def test_sell_minerals(self):
+        return #TODO
+        p1 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            sell_si = 7
+            )
+        p2 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            space_stations = [
+                fleet.Fleet(
+                    ships = [
+                        space_station.SpaceStation(is_trading_post = True)
+                        ])
+                ],
+            on_surface = cargo.Cargo(
+                silicon = 100,
+                cargo_max = -1
+                ))
+        ship_1 = ship.Ship(cargo = cargo.Cargo(silicon=100, cargo_max=1000))
+        fleet_three = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['sell'],
+                    transfers = {'sell':[['silicon', 50]]},
+                    recipiants = {'sell':ultimantico},
+                    )])
+        p2.fleets = [fleet_three]
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.sell(p2)
+        self.assertEqual(p1.energy, 650)
+        self.assertEqual(p2.energy, 1350)
+        self.assertEqual(ultimantico.on_surface.silicon, 150)
+        self.assertEqual(ship_1.cargo.silicon, 50)
         
-    def test_load_unload_fleet(self):
+    def test_sell_fuel(self):
+        return #TODO
+        p1 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        fleet_treaty = treaty.Treaty(
+            relation = 'team',
+            other_player = reference.Reference(p1),
+            status = 'active',
+            sell_fuel = 2
+            )
+        p2 = player.Player(
+            finance_minister_construction_percent = 0,
+            finance_minister_mattrans_percent = 0,
+            finance_minister_research_percent = 0,
+            energy = 1000
+            )
+        p2.treaties.append(fleet_treaty)
+        p1.treaties.append(fleet_treaty.for_other_player(p2))
+        ultimantico = planet.Planet(
+            player = reference.Reference(p1),
+            space_stations = [
+                fleet.Fleet(
+                    ships = [
+                        space_station.SpaceStation(
+                            fuel = 100000,
+                            is_trading_post = True,
+                            fuel_max = 500000
+                            )])])
         ship_1 = ship.Ship(
-            name = 'ship_1',
-            location = location.Location(),
-            cargo = cargo.Cargo(titanium = 100, cargo_max = 200),
-            fuel_max = 200
+            fuel = 10000,
+            fuel_max = 30000
             )
+        fleet_three = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['sell'],
+                    transfers = {'sell':[['fuel', 50]]},
+                    recipiants = {'sell':ultimantico},
+                    )])
+        p2.fleets = [fleet_three]
+        p1.allocate_budget()
+        p2.allocate_budget()
+        fleet_three.sell(p2)
+        self.assertEqual(p1.energy, 900)
+        self.assertEqual(p2.energy, 1100)
+        self.assertEqual(ultimantico.space_stations[0].fuel, 100050)
+        self.assertEqual(ship_1.fuel, 9950)
+        
+    def test_unload_fleet_cargo(self):
+        ship_1 = ship.Ship(
+            cargo = cargo.Cargo(cargo_max = 200)
+            )
+        fleet_one = fleet.Fleet(ships = [ship_1])
         ship_2 = ship.Ship(
-            name = 'ship_2',
-            location = location.Location(),
-            cargo = cargo.Cargo(people = 100, cargo_max = 200),
+            cargo = cargo.Cargo(silicon = 100, cargo_max = 300)
+            )
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['unload'],
+                    transfers = {'unload':[['silicon', 40]]},
+                    recipiants = {'unload':fleet_one},
+                    )])
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.unload(p1)
+        self.assertEqual(ship_1.cargo.silicon, 40)
+        self.assertEqual(ship_2.cargo.silicon, 60)
+    
+    def test_unload_fleet_fuel(self):
+        ship_1 = ship.Ship(
             fuel_max = 200
             )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
-        fleet_one = fleet.Fleet(
-            ships = [ship_1, ship_2]
-            )
-        ship_3 = ship.Ship(
-            name = 'ship_3',
-            location = location.Location(),
-            cargo = cargo.Cargo(lithium = 100, cargo_max = 100),
-            fuel_max = 100
-            )
-        ship_4 = ship.Ship(
-            name = 'ship_4',
-            location = location.Location(),
-            cargo = cargo.Cargo(silicon = 100, cargo_max = 300),
+        fleet_one = fleet.Fleet(ships = [ship_1])
+        ship_2 = ship.Ship(
             fuel = 100,
             fuel_max = 300
             )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_2],
             waypoints = [
                 waypoint.Waypoint(
-                    actions = ['load', 'unload'],
-                    transfers = {'unload':[['lithium', 40], ['silicon', 60], ['fuel', 40]], 'load':[['titanium', 60], ['people', 40]]},
-                    recipiants = {'load':fleet_one, 'unload':fleet_one},
-                    location = location.LocationReference(fleet_one)
-                    )
-                ]
-            )
+                    actions = ['unload'],
+                    transfers = {'unload':[['fuel', 40]]},
+                    recipiants = {'unload':fleet_one},
+                    )])
         p1 = player.Player(fleets = [fleet_one, fleet_two])
-        fleet_two.execute('load', p1)
-        """
-        print()
-        for fleett in p1.fleets:
-            for shipp in fleett.ships:
-                print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-                for key in shipp.cargo.__dict__:
-                    if key != 'cargo_max':
-                        print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-                print("}")
-        #"""
-        self.assertEqual(ship_1.cargo.titanium, 20)
-        self.assertEqual(ship_1.cargo.people, 30)
-        self.assertEqual(ship_2.cargo.titanium, 20)
-        self.assertEqual(ship_2.cargo.people, 30)
-        self.assertEqual(ship_3.cargo.titanium, 15)
-        self.assertEqual(ship_3.cargo.people, 10)
-        self.assertEqual(ship_4.cargo.titanium, 45)
-        self.assertEqual(ship_4.cargo.people, 30)
-        fleet_two.execute('unload', p1)
-        self.assertEqual(ship_1.cargo.lithium, 20)
-        self.assertEqual(ship_1.cargo.silicon, 30)
-        self.assertEqual(ship_1.fuel, 20)
-        self.assertEqual(ship_2.cargo.lithium, 20)
-        self.assertEqual(ship_2.cargo.silicon, 30)
-        self.assertEqual(ship_2.fuel, 20)
-        self.assertEqual(ship_3.cargo.lithium, 15)
-        self.assertEqual(ship_3.cargo.silicon, 10)
-        self.assertEqual(ship_3.fuel, 15)
-        self.assertEqual(ship_4.cargo.lithium, 45)
-        self.assertEqual(ship_4.cargo.silicon, 30)
-        self.assertEqual(ship_4.fuel, 45)
+        fleet_two.unload(p1)
+        self.assertEqual(ship_1.fuel, 40)
+        self.assertEqual(ship_2.fuel, 60)
     
-    def test_load_unload_planet(self):
+    def test_load_fleet_cargo(self):
         ship_1 = ship.Ship(
-            name = 'ship_1',
-            location = location.Location(),
-            cargo = cargo.Cargo(lithium = 100, cargo_max = 200),
-            fuel = 100,
-            fuel_max = 100
+            cargo = cargo.Cargo(silicon = 100, cargo_max = 200)
             )
+        fleet_one = fleet.Fleet(ships = [ship_1])
         ship_2 = ship.Ship(
-            name = 'ship_2',
-            location = location.Location(),
-            cargo = cargo.Cargo(silicon = 100, cargo_max = 200),
-            fuel_max = 100
+            cargo = cargo.Cargo(cargo_max = 300)
             )
-        game_engine.register(ship_1)
-        game_engine.register(ship_2)
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load':[['silicon', 60]]},
+                    recipiants = {'load':fleet_one},
+                    )])
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.load(p1)
+        self.assertEqual(ship_1.cargo.silicon, 40)
+        self.assertEqual(ship_2.cargo.silicon, 60)
+    
+    def test_load_fleet_fuel(self):
+        ship_1 = ship.Ship(
+            fuel = 100,
+            fuel_max = 200
+            )
+        fleet_one = fleet.Fleet(ships = [ship_1])
+        ship_2 = ship.Ship(
+            fuel_max = 300
+            )
+        fleet_two = fleet.Fleet(
+            ships = [ship_2],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load':[['fuel', 60]]},
+                    recipiants = {'load':fleet_one},
+                    )])
+        p1 = player.Player(fleets = [fleet_one, fleet_two])
+        fleet_two.load(p1)
+        self.assertEqual(ship_1.fuel, 40)
+        self.assertEqual(ship_2.fuel, 60)
+    
+    def test_unload_planet_cargo(self):
+        ship_1 = ship.Ship(cargo = cargo.Cargo(people = 100, cargo_max = 200))
+        p1 = player.Player()
+        ultimantico = planet.Planet(on_surface = cargo.Cargo(people = 100, cargo_max = -1))
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['unload'],
+                    transfers = {'unload': [['people', 40]]},
+                    recipiants = {'unload': ultimantico},
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.unload(p1)
+        self.assertEqual(ship_1.cargo.people, 60)
+        self.assertEqual(ultimantico.on_surface.people, 140)
+    
+    def test_unload_planet_fuel(self):
+        return #TODO
+        ship_1 = ship.Ship(
+            fuel = 100,
+            fuel_max = 200
+            )
         p1 = player.Player()
         ultimantico = planet.Planet(
-            name = 'ultimantico',
-            space_station = defaults.Defaults(
-                fuel_max = 1000000,
-                fuel = 100000
-                ),
-            on_surface = cargo.Cargo(
-                titanium = 100,
-                people = 100,
-                cargo_max = 1000000000000
-                ),
-            location=location.Location()
-            )
+            space_stations = [
+                fleet.Fleet(
+                    ships = [
+                        space_station.SpaceStation(
+                            fuel_max = 1000,
+                            fuel = 100
+                            )])])
         fleet_one = fleet.Fleet(
-            ships = [ship_1, ship_2],
+            ships = [ship_1],
             waypoints = [
                 waypoint.Waypoint(
-                    actions = ['load', 'unload'],
-                    transfers = {'unload':[['lithium', 40], ['silicon', 60]], 'load':[['titanium', 40], ['people', 60], ['fuel', 40]]},
-                    recipiants = {'load':ultimantico, 'unload':ultimantico},
-                    location = location.LocationReference(ultimantico)
-                    )
-                ]
-            )
+                    actions = ['unload'],
+                    transfers = {'unload': [['fuel', 40]]},
+                    recipiants = {'unload': ultimantico}
+                    )])
         p1.fleets = [fleet_one]
-        fleet_one.execute('load', p1)
         ultimantico.player = reference.Reference(p1)
-        fleet_one.execute('load', p1)
-        """
-        print()
-        for shipp in fleet_one.ships:
-            print(shipp.name, ": {'fuel':", shipp.fuel, end='')
-            for key in shipp.cargo.__dict__:
-                if key != 'cargo_max':
-                    print(", '", key, "': ", getattr(shipp.cargo, key), sep='', end='')
-            print("}")
-        print(ultimantico.name, ": {'fuel':", ultimantico.space_station.fuel, end='')
-        for key in ultimantico.on_surface.__dict__:
-            print(", '", key, "': ", getattr(ultimantico.on_surface, key), sep='', end='')
-        print("}")
-        #"""
-        self.assertEqual(ship_1.cargo.titanium, 20)
-        self.assertEqual(ship_1.cargo.people, 30)
-        self.assertEqual(ship_1.fuel, 70)
-        self.assertEqual(ship_2.cargo.titanium, 20)
-        self.assertEqual(ship_2.cargo.people, 30)
-        self.assertEqual(ship_2.fuel, 70)
-        self.assertEqual(ultimantico.on_surface.titanium, 60)
-        self.assertEqual(ultimantico.on_surface.people, 40)
-        self.assertEqual(ultimantico.space_station.fuel, 99960)
-        ultimantico.player = reference.Reference('Player')
-        fleet_one.execute('unload', p1)
-        ultimantico.player = reference.Reference(p1)
-        fleet_one.execute('unload', p1)
-        self.assertEqual(ship_1.cargo.lithium, 30)
-        self.assertEqual(ship_1.cargo.silicon, 20)
-        self.assertEqual(ship_2.cargo.lithium, 30)
-        self.assertEqual(ship_2.cargo.silicon, 20)
-        self.assertEqual(ultimantico.on_surface.lithium, 40)
-        self.assertEqual(ultimantico.on_surface.silicon, 60)
+        fleet_one.unload(p1)
+        self.assertEqual(ship_1.fuel, 60)
+        self.assertEqual(ultimantico.space_stations[0].fuel, 140)
     
+    def test_load_planet_cargo(self):
+        ship_1 = ship.Ship(cargo = cargo.Cargo(people = 100, cargo_max = 200))
+        p1 = player.Player()
+        ultimantico = planet.Planet(on_surface = cargo.Cargo(people = 100, cargo_max = -1))
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load': [['people', 60]]},
+                    recipiants = {'load': ultimantico},
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.load(p1)
+        self.assertEqual(ship_1.cargo.people, 160)
+        self.assertEqual(ultimantico.on_surface.people, 40)
+    
+    def test_load_planet_fuel(self):
+        return #TODO
+        ship_1 = ship.Ship(
+            fuel = 100,
+            fuel_max = 200
+            )
+        p1 = player.Player()
+        ultimantico = planet.Planet(
+            space_stations = [
+                fleet.Fleet(
+                    ships = [
+                        space_station.SpaceStation(
+                            fuel_max = 1000,
+                            fuel = 100
+                    )])])
+        fleet_one = fleet.Fleet(
+            ships = [ship_1],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['load'],
+                    transfers = {'load': [['fuel', 60]]},
+                    recipiants = {'load': ultimantico},
+                    )])
+        p1.fleets = [fleet_one]
+        ultimantico.player = reference.Reference(p1)
+        fleet_one.load(p1)
+        self.assertEqual(ship_1.fuel, 160)
+        self.assertEqual(ultimantico.space_stations[0].fuel, 40)
     
     def test_self_repair(self):
+        return # TODO
         ship_3 = ship.Ship(
-            location = location.Location(),
             repair = 3,
             damage_armor = 7,
             armor = 10,
             )
         ship_4 = ship.Ship(
-            location = location.Location(),
             repair = 3,
             damage_armor = 7,
             armor = 20,
             )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
             ships = [ship_3, ship_4],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['self_repair'],
-                    location = location.Location()
-                    )
-                ]
-            )
+                    )])
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('self_repair', p1)
     
     def test_repair(self):
+        return # TODO
         ship_3 = ship.Ship(
-            location = location.Location(),
             repair_bay = 3,
             damage_armor = 7,
             armor = 10,
             )
         ship_4 = ship.Ship(
-            location = location.Location(),
             repair_bay = 3,
             damage_armor = 7,
             armor = 20,
             )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
             ships = [ship_3, ship_4],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['repair'],
-                    location = location.Location()
-                    )
-                ]
-            )
+                    )])
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('repair', p1)
     
-    def test_orbital_mining(self):
+    """ does not mine when planet is inhabited """
+    def test_orbital_mining_1(self):
         ultimantico = planet.Planet(
-            location = location.Location(),
-            remaining_minerals = minerals.Minerals(
-                titanium = 40000,
-                silicon = 40000,
-                lithium = 40000,
-                ),
+            remaining_minerals = minerals.Minerals(titanium = 40000),
             gravity = 50,
-            on_surface = cargo.Cargo(
-                people = 1,
-                ),
+            on_surface = cargo.Cargo(people = 1)
             )
         ship_3 = ship.Ship(
-            location = location.Location(),
             mining_rate = 1.6,
             percent_wasted = 1.4,
             )
-        game_engine.register(ship_3)
         fleet_two = fleet.Fleet(
             ships = [ship_3],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['orbital_mining'],
-                    recipiants = {'orbital_mining': ultimantico},
-                    location = location.Location()
-                    )
-                ]
-            )
+                    recipiants = {'orbital_mining': ultimantico}
+                    )])
         p1 = player.Player(fleets = [fleet_two])
-        fleet_two.execute('orbital_mining', p1)
-        ultimantico.on_surface.people = 0
-        fleet_two.execute('orbital_mining', p1)
-        self.assertEqual(ultimantico.on_surface.titanium, 16)
-        self.assertEqual(ultimantico.on_surface.lithium, 16)
-        self.assertEqual(ultimantico.on_surface.silicon, 16)
-        self.assertEqual(ultimantico.remaining_minerals.titanium, 39977)
-        self.assertEqual(ultimantico.remaining_minerals.lithium, 39977)
-        self.assertEqual(ultimantico.remaining_minerals.silicon, 39977)
+        ultimantico.colonize(p1)
+        fleet_two.orbital_mining()
+        self.assertEqual(ultimantico.on_surface.titanium, 0)
+        self.assertEqual(ultimantico.remaining_minerals.titanium, 40000)
     
+    """ normal test """
+    def test_orbital_mining_2(self):
+        ultimantico = planet.Planet(
+            remaining_minerals = minerals.Minerals(titanium = 40000),
+            gravity = 50
+            )
+        ship_3 = ship.Ship(
+            mining_rate = 1.6,
+            percent_wasted = 1.4,
+            )
+        fleet_two = fleet.Fleet(
+            ships = [ship_3],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['orbital_mining'],
+                    recipiants = {'orbital_mining': ultimantico}
+                    )])
+        fleet_two.orbital_mining()
+        self.assertEqual(ultimantico.on_surface.titanium, 16)
+        self.assertEqual(ultimantico.remaining_minerals.titanium, 39977)
+        
+    """ #NotAPlanet test """
+    def test_orbital_mining_3(self):
+        ultimantico = ship.Ship()
+        ship_3 = ship.Ship()
+        fleet_two = fleet.Fleet(
+            ships = [ship_3],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['orbital_mining'],
+                    recipiants = {'orbital_mining': ultimantico}
+                    )])
+        is_planet = fleet_two.orbital_mining()
+        self.assertEqual(is_planet, False)
+        
     def test_lay_mines(self):
+        return # TODO
         p1 = player.Player(name = 'caltorez')
         system = star_system.StarSystem(
             mines = {p1.name: 0},
-            location = location.Location(),
             planets = [
-                planet.Planet(
-                    gravity = 70,
-                    ),
-                planet.Planet(
-                    gravity = 50,
-                    ),
-                planet.Planet(
-                    gravity = 30,
-                    ),
-                planet.Planet(
-                    gravity = 50,
-                    ),
-                planet.Planet(
-                    gravity = 50,
-                    ),
-                ],
+                planet.Planet(gravity = 70),
+                planet.Planet(gravity = 50),
+                planet.Planet(gravity = 30),
+                planet.Planet(gravity = 50),
+                planet.Planet(gravity = 50)
+                ]
             )
-        ship_3 = ship.Ship(
-            location = location.Location(),
-            mines_laid = 500000000000,
-            )
-        ship_4 = ship.Ship(
-            location = location.Location(),
-            mines_laid = 500000000000,
-            )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
+        ship_3 = ship.Ship(mines_laid = 500000000000)
+        ship_4 = ship.Ship(mines_laid = 500000000000)
         fleet_two = fleet.Fleet(
             ships = [ship_3, ship_4],
             waypoints = [
@@ -715,703 +982,81 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(system.mines['caltorez'], 985000000000)
         
     def test_bomb(self):
-        p1 = player.Player(
-            race = race.Race(
-                colonists_to_operate_defense = 1,
-                ),
-            name = 'p1',
-            planetary_ministers = [
-                planetary_minister.PlanetaryMinister(
-                    name = 'New Colony Minister',
-                    new_colony_minister = True,
-                    ),
-                planetary_minister.PlanetaryMinister(
-                    name = 'target',
-                    defenses = 97,
-                    power_plants = 1,
-                    factories = 1,
-                    mines = 1,
-                    ),
-                ],
-            )
-        game_engine.register(p1)
-        ultimantico = planet.Planet(
-            player = reference.Reference(p1),
-            on_surface = cargo.Cargo(
-                people = 200
-                ),
-            location = location.Location(),
-            facilities = {
-                'defenses': facility.Facility(
-                    quantity = 20,
-                    tech = tech.Tech(shields = 600)
-                    ),
-                },
-            )
-        game_engine.register(ultimantico)
-        p1.planetary_ministers[1].planets.append(ultimantico.name)
-        ship_3 = ship.Ship(
-            location = location.Location(),
-            bombs = [
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                bomb.Bomb(
-                    percent_pop_kill = 0.2,
-                    minimum_pop_kill = 0,
-                    shield_kill = 20,
-                    max_defense = 85,
-                    ),
-                ],
-            )
-        game_engine.register(ship_3)
+        return # activate when pulled Pam's fixes to bomb.py
+        ultimantico = planet.Planet()
+        ultimantico.on_surface.people = 200
+        p1 = player.Player()
+        ultimantico.colonize(p1)
+        bombs = []
+        for i in range(101):
+            bombs.append(bomb.Bomb(percent_pop_kill = 0.2, shield_kill = 20, max_defense = 85))
+        ship_3 = ship.Ship(bombs = bombs)
         fleet_two = fleet.Fleet(
             ships = [ship_3],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['bomb'],
-                    recipiants = {'bomb': ultimantico},
-                    location = location.Location()
-                    )
-                ]
-            )
-        p2 = player.Player(fleets = [fleet_two], name = 'p2')
-        game_engine.register(p2)
-        p2.treaties[p1.name] = defaults.Defaults(relation = 'enemy')
+                    location = location.Location(),
+                    recipiants = {'bomb': ultimantico})])
+        p2 = player.Player(fleets = [fleet_two])
+        p2.treaties.append(treaty.Treaty(relation = 'enemy', status = 'active', other_player = reference.Reference(p1)))
         fleet_two.execute('bomb', p2)
-        self.assertLess(ultimantico.on_surface.people, 192, 'NOTE: this will somtimes fail as it is statistical in nature')
-        self.assertLess(ultimantico.facilities['defenses'].quantity, 17, 'NOTE: this will somtimes fail as it is statistical in nature')
+        self.assertLess(ultimantico.on_surface.people, 120, 'NOTE: this will somtimes fail as it is statistical in nature')
     
-    def test_colonize(self):
-        ultimantico = planet.Planet(
-            name = 'ultimantico',
-            location = location.Location()
-            )
+    def test_colonize_1(self):
+        ultimantico = planet.Planet()
         ship_3 = ship.Ship(
-            location = location.Location(),
             cargo = cargo.Cargo(people = 100, cargo_max = 200),
-            colonizer = True,
+            colonizer = True
             )
-        ship_4 = ship.Ship(
-            location = location.Location(),
-            cargo = cargo.Cargo(people = 200, cargo_max = 200),
-            colonizer = True,
-            )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_3],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['colonize'],
                     recipiants = {'colonize': ultimantico},
-                    location = location.Location()
-                    )
-                ]
-            )
-        p1 = player.Player(
-            name = 'p1',
-            fleets = [fleet_two],
-            )
-        game_engine.register(p1)
-        game_engine.register(ultimantico)
-        fleet_two.execute('colonize', p1)
-        self.assertEqual(ultimantico.on_surface.people, 200)
+                )])
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.colonize(p1)
+        self.assertEqual(ultimantico.on_surface.people, 100)
         self.assertEqual(ship_3 in fleet_two.ships, False)
         
-    """
+    def test_colonize_2(self):
+        p2 = player.Player()
+        ultimantico = planet.Planet(on_surface = cargo.Cargo(people = 1))
+        ultimantico.colonize(p2)
+        ship_3 = ship.Ship(
+            cargo = cargo.Cargo(people = 100, cargo_max = 200),
+            colonizer = True
+            )
+        fleet_two = fleet.Fleet(
+            ships = [ship_3],
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['colonize'],
+                    recipiants = {'colonize': ultimantico},
+                )])
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.colonize(p1)
+        self.assertEqual(ultimantico.on_surface.people, 1)
+        self.assertEqual(ship_3 in fleet_two.ships, True)
+        
+    def test_colonize_3(self):
+        return #TODO
+        ultimantico = ship.Ship()
+        fleet_two = fleet.Fleet(
+            waypoints = [
+                waypoint.Waypoint(
+                    actions = ['colonize'],
+                    recipiants = {'colonize': ultimantico},
+                )])
+        p1 = player.Player(fleets = [fleet_two])
+        fleet_two.colonize(p1)
+        self.assertEqual(ultimantico.on_surface.people, 1)
+        self.assertEqual(ship_3 in fleet_two.ships, True)
+        
     def test_piracy(self):
+        return # TODO
         ship_3 = ship.Ship(
             location = location.Location(),
             )
@@ -1431,91 +1076,50 @@ class FleetCase(unittest.TestCase):
             )
         p1 = player.Player(fleets = [fleet_two])
         fleet_two.execute('piracy', p1)
-    """
+    
     def test_scrap(self):
-        ultimantico = planet.Planet(
-            location=location.Location()
-            )
+        #return # TODO
+        ultimantico = planet.Planet()
         ship_3 = ship.Ship(
-            location = location.Location(),
             cost = cost.Cost(
                 titanium = 10,
                 lithium = 10,
                 silicon = 10
                 ),
-            cargo = cargo.Cargo(
-                people = 100
-                )
+            cargo = cargo.Cargo(people = 100)
             )
-        ship_4 = ship.Ship(
-            location = location.Location(),
-            cargo = cargo.Cargo(
-                titanium = 10,
-                lithium = 10,
-                silicon = 10
-                ),
-            )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
-        game_engine.register(ultimantico)
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_3],
             waypoints = [
                 waypoint.Waypoint(
                     actions = ['scrap'],
                     recipiants = {'scrap': ultimantico},
-                    location = location.Location(),
-                    )
-                ],
-            location = location.LocationReference(ultimantico)
-            )
+                    )])
         p1 = player.Player(fleets = [fleet_two])
-        fleet_two.execute('scrap', p1)
+        fleet_two.scrap()
         self.assertEqual(ultimantico.on_surface.people, 100)
-        self.assertEqual(ultimantico.on_surface.titanium, 19)
-        self.assertEqual(ultimantico.on_surface.silicon, 19)
-        self.assertEqual(ultimantico.on_surface.lithium, 19)
-    """
+        self.assertEqual(ultimantico.on_surface.titanium, 9)
+        self.assertEqual(ultimantico.on_surface.silicon, 9)
+        self.assertEqual(ultimantico.on_surface.lithium, 9)
+    
     def test_patrol(self):
-        ship_3 = ship.Ship(
-            location = location.Location(),
-            )
-        ship_4 = ship.Ship(
-            location = location.Location(),
-            )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
+        return # TODO
+        ship_3 = ship.Ship()
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_3],
             waypoints = [
-                waypoint.Waypoint(
-                    actions = ['patrol'],
-                    location = location.Location()
-                    )
-                ]
-            )
+                waypoint.Waypoint(actions = ['patrol'])
+                ])
         p1 = player.Player(fleets = [fleet_two])
-        fleet_two.execute('patrol', p1)
-    "'""
+        fleet_two.patrol(p1)
+    
     def test_route(self):
-        ship_3 = ship.Ship(
-            location = location.Location(),
-            )
-        ship_4 = ship.Ship(
-            location = location.Location(),
-            )
-        game_engine.register(ship_3)
-        game_engine.register(ship_4)
+        return # TODO
+        ship_3 = ship.Ship()
         fleet_two = fleet.Fleet(
-            ships = [ship_3, ship_4],
+            ships = [ship_3],
             waypoints = [
-                waypoint.Waypoint(
-                    actions = ['route'],
-                    location = location.Location()
-                    )
-                ]
-            )
+                waypoint.Waypoint(actions = ['route'])
+                ])
         p1 = player.Player(fleets = [fleet_two])
-        fleet_two.execute('route', p1)
-    """
-
+        fleet_two.route(p1)

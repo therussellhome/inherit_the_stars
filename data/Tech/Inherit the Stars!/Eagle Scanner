@@ -1,0 +1,23 @@
+{
+    "ID": "Eagle Scanner",
+    "category": "Scanner",
+    "description": "This scanner detects ships at a distance based on their kinetic energy. It is affected by cloaking. It cannot see stopped ships or inside solar systems.",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 20,
+        "energy": 9000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 7,
+        "electronics": 24,
+        "__class__": "TechLevel"
+    },
+    "mass": 4,
+    "scanner": {
+        "normal": 1600.0,
+        "__class__": "Scanner"
+    },
+    "__class__": "Tech"
+}

@@ -1,0 +1,27 @@
+{
+    "ID": "Dragonfly 10",
+    "category": "Engine",
+    "description": "Can go 100 light years per year with reasonable mass per engine; less expensive and much lighter as well",
+    "cost": {
+        "titanium": 3,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 1000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "propulsion": 23,
+        "__class__": "TechLevel"
+    },
+    "mass": 5,
+    "engines": [
+        {
+            "kt_exponent": 1,
+            "speed_divisor": 20,
+            "speed_exponent": 1,
+            "antimatter_siphon": 0,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}

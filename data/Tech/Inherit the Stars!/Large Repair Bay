@@ -1,0 +1,22 @@
+{
+    "ID": "Large Repair Bay",
+    "category": "Depot",
+    "description": "a component installed in a ship which deploys a deep-space repair shop which allows you to repair 400 damage points per year",
+    "race_requirements": "SpacedOut",
+    "cost": {
+        "titanium": 25,
+        "lithium": 8,
+        "silicon": 12,
+        "energy": 6000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 11,
+        "__class__": "TechLevel"
+    },
+    "mass": 600,
+    "repair_bay": 400,
+    "slots_depot": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
+}

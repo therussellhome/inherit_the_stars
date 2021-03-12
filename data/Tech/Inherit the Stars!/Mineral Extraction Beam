@@ -1,0 +1,22 @@
+{
+    "ID": "Mineral Extraction Beam",
+    "category": "Depot",
+    "description": "Mines minerals from an uninhabited planet.",
+    "cost": {
+        "titanium": 10,
+        "lithium": 36,
+        "silicon": 10,
+        "energy": 10000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 2,
+        "__class__": "TechLevel"
+    },
+    "mass": 200,
+    "mining_rate": 1.6,
+    "mineral_depletion_rate": 1.4,
+    "slots_depot": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
+}

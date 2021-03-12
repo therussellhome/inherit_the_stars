@@ -1,0 +1,29 @@
+{
+    "ID": "White Seal",
+    "category": "Engine",
+    "description": "This engine forages its own fuel while moving and is faster and more fuel-efficient than the Walrus and the Dirty Catfish.",
+    "race_requirements": "Forager",
+    "cost": {
+        "titanium": 6,
+        "lithium": 4,
+        "silicon": 16,
+        "energy": 2400,
+        "__class__": "Cost"
+    },
+    "level": {
+    	"energy": 4,
+    	"propulsion": 12,
+        "__class__": "TechLevel"
+    },
+    "mass": 18,
+    "engines": [
+        {
+            "kt_exponent": 1.25,
+            "speed_divisor": 12,
+            "speed_exponent": 3.0,
+            "antimatter_siphon": 600,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}

@@ -1,0 +1,23 @@
+{
+    "ID": "Cuttlefish Cloak",
+    "category": "Cloak",
+    "description": "Cloaks are components you put on hulls to make them harder to detect.",
+    "cost": {
+        "titanium": 1,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 4,
+        "electronics": 3,
+        "__class__": "TechLevel"
+    },
+    "mass": 4,
+    "cloak": {
+        "percent": 25,
+        "__class__": "Cloak"
+    },
+    "__class__": "Tech"
+}

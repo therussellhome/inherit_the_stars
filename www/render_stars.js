@@ -10,27 +10,31 @@ const TERAMETER = 0.0001057;
 // -- these are hidden unless the system is selected
 // intersteller objects are added directly to the scene
 
-var scene, renderer, camera, selected, camera_lookat, camera_flyto, fixed_camera, systems;
+var scene, renderer, camera, intersect, intersected, system_intersect, camera_lookat, camera_flyto, fixed_camera, in_system, systems, suns, system_name;
 
 init();
 
 function init() {
+    var geometry = new THREE.BufferGeometry();
+    var positions = new Float32Array( 0, 0, 0 );
+	geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+	systems = new THREE.Points( geometry );
+    intersected = systems;
+    intersect = 0
     var div = document.getElementById('play_mode');
     // create the scene and renderer
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000000, 0.001);
     renderer = new THREE.WebGLRenderer();
     div.appendChild( renderer.domElement );
-    // create systems group
-    systems = new THREE.Group();
-    scene.add(systems);
     // look at center of galaxy
-    selected = systems;
+    intersect = 0;
     fixed_camera = false;
     camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, TERAMETER / 1000, 2000);
     camera_lookat = new THREE.Vector3();
     camera_flyto = new THREE.Vector3(0, 0, 500);
     scene.add(camera);
+    onSubmit();
     onWindowResize();
     // attach event listeners
     window.addEventListener('resize', onWindowResize);
@@ -41,83 +45,56 @@ function init() {
     div.addEventListener('wheel', onWheel);
 }
 
-// Find a system object by name
-function findSystem(name) {
-    name = "System/" + name;
-    for(var i = 0; i < systems.children.length; i++) {
-        if(systems.children[i].name == name) {
-            return systems.children[i];
-        }
-    }
-    var system = new THREE.Group();
-    system.name = name;
-    systems.add(system);
-    return system;
-}
-
-// Add a point to the correct system or to the scene if intersteller
-function addPoint(point, system_name) {
-    if(system_name == "") {
-        scene.add(point);
-    } else {
-        findSystem(system_name).add(point);
-    }
-}
-
 // Draw the suns & planets
 function onSubmit() {
     if(json_map.hasOwnProperty('render_stars')) {
-        if(json_map['render_stars'].hasOwnProperty('suns')) {
-            if(json_map['render_stars']['suns'].length > 0) {
+        if(json_map['render_stars'].hasOwnProperty('systems')) {
+            if(json_map['render_stars']['systems'].length > 0) {
                 // load materials
                 var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" )
-                var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" )
-                var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" )
-                var suns = json_map['render_stars']['suns'];
+                var texture_sun = new THREE.TextureLoader().load( "/alphamap-circle.png" )
+                //var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" )
+                suns = json_map['render_stars']['suns'];
                 var planets = json_map['render_stars']['planets'];
                 // reusable geometry
                 var geometry = new THREE.BufferGeometry();
-                geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
                 // Add suns
+                var positions = new Float32Array( suns.length *3 );
+				var colors = new Float32Array( suns.length *3 );
+                var sizes = new Float32Array( suns.length );
                 for(var i = 0; i < suns.length; i++) {
-                    var material = new THREE.PointsMaterial( { 
-                        color: new THREE.Color(suns[i].color),
-                        map: texture_sun,
-                        alphaMap: alpha_map,
-                        size: (suns[i].size + 200) * TERAMETER / 1000,
-                        sizeAttenuation: true,
-                        transparent: true,
-                        alphaTest: 0.5
-                    } );
-                    var system_name = suns[i].name.replaceAll(/\'.*/g, ""); // Eventually this should come from the python side
-                    var point = new THREE.Points(geometry, material);
-                    point.position.set(suns[i].x, suns[i].y, suns[i].z);
-                    point.name = "Sun/" + suns[i].name;
-                    addPoint(point, system_name);
+                    var color = new THREE.Color (suns[i].color);
+                    sizes[i] = ((suns[i].size + 200) * TERAMETER / 1000);
+                    positions[ i * 3 ] = suns[i].location[0];
+                    positions[ i * 3 + 1 ] = suns[i].location[1];
+                    positions[ i * 3 + 2 ] = suns[i].location[2];
+                    colors[ i * 3 ] = color.r;
+                    colors[ i * 3 + 1 ] = color.g;
+                    colors[ i * 3 + 2 ] = color.b;
                 }
-                // Make dummy planets
-                var planet_colors = ["#990000", "#009900", "#000099", "#999999"];
-                for(var i = 0; i < suns.length; i++) {
-                    for(var j = 0; j < planet_colors.length; j++) {
-                        var material = new THREE.PointsMaterial( { 
-                            color: new THREE.Color(planet_colors[j]),
-                            map: texture_planet,
-                            alphaMap: alpha_map,
-                            size: (Math.random() * 100 + 200) * TERAMETER / 10000,
-                            sizeAttenuation: true,
-                            transparent: true,
-                            alphaTest: 0.5
-                        } );
-                        var system_name = suns[i].name.replaceAll(/\'.*/g, ""); // Eventually this should come from the python side
-                        var point = new THREE.Points(geometry, material);
-                        point.position.set(suns[i].x + TERAMETER * Math.random() * 2 - TERAMETER, suns[i].y + TERAMETER * Math.random() * 2 - TERAMETER, suns[i].z);
-                        point.name = "Planet/" + system_name + " " + j;
-                        point.visible = false;
-                        addPoint(point, system_name);
-                    }
-                }
+                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+				geometry.setAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+				geometry.setAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
+                var material = new THREE.ShaderMaterial( {
+					uniforms: {
+                        color: { value: new THREE.Color( 0xffffff ) },
+                        transparent: { value: true },
+                        pointTexture: { value: texture_sun }
+                        
+					},
+					vertexShader: document.getElementById( 'vertexshader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+                    alphaTest: 0.9
+                } );
+                systems = new THREE.Points( geometry, material );
+                systems.name = 'systems'
+                scene.add(systems);
+                /**/
                 // Zoom to home world
-                select_object(systems.children[0].children[0], true); // Replace with with the home system's sun
+                system_name = "The "+suns[0].name.replaceAll(/\'.*/g, "")+" system";
+                system_intersect = 0
+                select_object(systems, 0, true, true); // Replace with with the home system's sun
+                console.log(scene);
                 // Render
                 window.setTimeout(render, 1000);
             }
@@ -128,62 +105,65 @@ function onSubmit() {
 // Zoom
 function onWheel(event) {
     event.preventDefault();
-    var offset = camera_flyto.clone().sub(selected.position);
-    var distance = camera_flyto.distanceTo(selected.position);
+    var pos =  new THREE.Vector3( systems.geometry.attributes.position.array[intersect*3], systems.geometry.attributes.position.array[intersect*3+1], systems.geometry.attributes.position.array[intersect*3+2] )
+    var offset = camera_flyto.clone().sub(pos);
+    var distance = camera_flyto.distanceTo(pos);
     // zoom out
     if(event.deltaY > 0) {
         offset.setLength(distance + Math.min(distance * 0.5, 50));
     // zoom in
     } else {
-        offset.setLength(Math.max(distance / 1.5, TERAMETER / 10));
+        offset.setLength(Math.max(distance / 1.2, TERAMETER / 10));
     }
-    camera_flyto = selected.position.clone().add(offset);
+    camera_flyto = pos.clone().add(offset);
     window.requestAnimationFrame(render);
 }
 
 // Key controls
 function onKeyPress(event) {
-    console.log(event.keyCode);//, camera.up, camera.position, camera);
+    var apos = new THREE.Vector3( systems.geometry.attributes.position.array[intersect*3], systems.geometry.attributes.position.array[intersect*3+1], systems.geometry.attributes.position.array[intersect*3+2] )
+    var pos = apos.clone().sub(camera.position)
+    console.log(event.keyCode, camera.up, camera.position, apos, pos);//, camera);
     var rotateDirection;
     // up
     if(event.keyCode == 38) {
-        rotateDirection = new THREE.Vector3(0, -1, 0)
-        rotateCamera(rotateDirection)
+        rotateDirection = new THREE.Vector3(0, -1, 0);
+        rotateCamera(rotateDirection, apos);
     }
     // down
     else if(event.keyCode == 40) {
         rotateDirection = new THREE.Vector3(0, 1, 0);
-        rotateCamera(rotateDirection);
+        rotateCamera(rotateDirection, apos);
     }
     // left
     else if(event.keyCode == 37) {
         rotateDirection = new THREE.Vector3(1, 0, 0);
-        rotateCamera(rotateDirection);
+        rotateCamera(rotateDirection, apos);
     }
     // right
     else if(event.keyCode == 39) {
         rotateDirection = new THREE.Vector3(-1, 0, 0);
-        rotateCamera(rotateDirection);
+        rotateCamera(rotateDirection, apos);
     }
     // reset
     else if(event.key == "r") {
-        select_object(selected, true);
+        select_object(true, true, true, false);
     }
     window.requestAnimationFrame(render);
 }
 
 // Rotate on comand
-function rotateCamera(moveDirection) {
+function rotateCamera(moveDirection, selected_pos) {
 	var axis = new THREE.Vector3(),
 		quaternion = new THREE.Quaternion(),
 		eyeDirection = new THREE.Vector3(),
 		objectUpDirection = new THREE.Vector3(),
 		objectSidewaysDirection = new THREE.Vector3(),
-		_eye = new THREE.Vector3().subVectors( camera.position, selected.position ),
+		_eye = new THREE.Vector3().subVectors( camera.position, selected_pos ),
 		angle;
 	angle = moveDirection.length();
 	if ( angle ) {
-		_eye.copy( camera.position ).sub( selected.position );
+		_eye.copy( camera.position ).sub( selected_pos );
 		eyeDirection.copy( _eye ).normalize();
 		objectUpDirection.copy( camera.up ).normalize();
 		objectSidewaysDirection.crossVectors( objectUpDirection, eyeDirection ).normalize();
@@ -191,14 +171,14 @@ function rotateCamera(moveDirection) {
 		objectSidewaysDirection.setLength( moveDirection.x );
 		moveDirection.copy( objectUpDirection.add( objectSidewaysDirection ) );
 		axis.crossVectors( moveDirection, _eye ).normalize();
-        angle *= 15 * Math.PI/180;
-		quaternion.setFromAxisAngle( axis, angle );
+        angle *= 15.0 * Math.PI/180.0;
+        quaternion.setFromAxisAngle( axis, angle );
         _eye.applyQuaternion( quaternion );
         camera.up.applyQuaternion( quaternion );
         moveDirection.copy( _eye ).normalize();
-        camera_flyto.set(( _eye.x * moveDirection.length() ) + selected.position.x, ( _eye.y * moveDirection.length() ) + selected.position.y, ( _eye.z * moveDirection.length() ) + selected.position.z);
-        //camera.lookAt( selected.position )
-	}
+        camera_flyto.set((_eye.x * moveDirection.length()) + selected_pos.x, (_eye.y * moveDirection.length()) + selected_pos.y, (_eye.z * moveDirection.length()) + selected_pos.z);
+        camera.lookAt(camera_lookat);
+    }
 }
 
 // Click
@@ -212,63 +192,105 @@ function onClick(event) {
     raycaster.params.Points.threshold = TERAMETER / 10;
     raycaster.near = 0;
     raycaster.far = 10;
-    var intersects = raycaster.intersectObjects(scene.children, true);
+    var intersects = raycaster.intersectObject( in_system );
+    console.log('number of intersects:', intersects.length);
     if(intersects.length > 0) {
-        var d1 = intersects[0].object.position.distanceTo(intersects[0].point);
-        var best = 0;
-        for(var i=1; i<intersects.length; i++) {
-            var d2 = intersects[i].object.position.distanceTo(intersects[i].point);
-            if(d2 < d1) {
-                d1 = d2;
-                best = i;
-            }
-        }
-        select_object(intersects[best].object, false);
+        console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
+        select_object(intersects[0].object, intersects[0].index, true, false);
     } else {
-        raycaster.params.Points.threshold = 10;
-        raycaster.near = 10;
-        raycaster.far = 10000;
-        intersects = raycaster.intersectObjects(systems.children, true);
-        console.log(intersects.length);
+        raycaster.params.Points.threshold = TERAMETER / 10;
+        raycaster.near = 0;
+        raycaster.far = 10;
+        var intersects = raycaster.intersectObject( systems );
+        console.log('number of intersects:', intersects.length);
         if(intersects.length > 0) {
-            select_object(intersects[0].object.parent.children[0], event.shiftKey);
+            console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
+            system_intersect = intersects[0].index;
+            select_object(intersects[0].object, intersects[0].index, event.shiftKey, false);
+        } else {
+            raycaster.params.Points.threshold = 10;
+            raycaster.near = 10;
+            raycaster.far = 10000;
+            var intersects = raycaster.intersectObject( scene, true );
+            console.log('number of intersects:', intersects.length);
+            if(intersects.length > 0) {
+                console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
+                if(intersects[0].object.name === 'systems') {
+                    system_intersect = intersects[0].index;
+                }
+                select_object(intersects[0].object, intersects[0].index, event.shiftKey);
+            }
         }
     }
     window.requestAnimationFrame(render);
 }
 
 // Refocus on the clicked object
-function select_object(obj, flyto) {
-    console.log(obj.name, obj.parent.name);
-    system_visibility(selected, false);
-    selected = obj;
-    system_visibility(selected, true);
-    if(flyto) {
+function select_object(obj, index=true, flyto=true, is_in_system=true) {
+    if(index !== true){
+        intersected = obj;
+        //console.log(intersected);
+        intersect = index;
+    }
+    get_system(is_in_system);
+    if(flyto && intersected) {
+        var pos = intersected.geometry.attributes.position.array
         var z_offset = TERAMETER;
-        if(camera.position.z < selected.position.z) {
+        if(camera.position.z < pos[intersect*3+2]) {
             z_offset = - TERAMETER;
         }
-        camera_flyto.set(selected.position.x, selected.position.y, selected.position.z + z_offset);
+        camera_flyto.set(pos[intersect*3], pos[intersect*3+1], pos[intersect*3+2] + z_offset);
+        camera.up = new THREE.Vector3(0, 1, 0)
     }
 }
 
-// Set visibility of stuff in a system
-function system_visibility(system, visibility) {
-    if(system.parent.name.startsWith("System/")) {
-        system = system.parent;
+// Gets all the objects in a system or at a point
+function get_system(is_in_system) {
+    if( is_in_system !== true && system_name === "The "+suns[system_intersect].name.replaceAll(/\'.*/g, "")+" system" ) {
+        return
     }
-    if(system.name.startsWith("System/")) {
-        for(var i = 0; i < system.children.length; i++) {
-            if(!system.children[i].name.startsWith("Sun/")) {
-                system.children[i].visible = visibility;
-            }
-        }
-    }
+    console.log('system_intersect: ', system_intersect)
+    system_name = "The "+suns[system_intersect].name.replaceAll(/\'.*/g, "")+" system";
+    console.log(system_name)
+    var geometry = new THREE.BufferGeometry();
+    var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" )
+    /**/// Make dummy planets
+    var planet_colors = ["#990000", "#009900", "#000099", "#999999"];
+    var positions = new Float32Array( planet_colors.length *3 );
+	var colors = new Float32Array( planet_colors.length *3 );
+    var sizes = new Float32Array( planet_colors.length );
+    for(var i = 0; i < planet_colors.length; i++) {
+        var color = new THREE.Color( planet_colors[i] );
+        sizes[i] = (Math.random() * 100 + 200) * TERAMETER / 10000;
+        positions[ i * 3 ] = suns[intersect].x + TERAMETER * Math.random() * 2 - TERAMETER;
+        positions[ i * 3 + 1 ] = suns[intersect].y + TERAMETER * Math.random() * 2 - TERAMETER;
+        positions[ i * 3 + 2 ] = suns[intersect].z;
+        colors[ i * 3 ] = color.r;
+        colors[ i * 3 + 1 ] = color.g;
+        colors[ i * 3 + 2 ] = color.b;
+    }/**/
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+	geometry.setAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+	geometry.setAttribute( 'size', new THREE.BufferAttribute( sizes, 1 ) );
+    var material = new THREE.ShaderMaterial( {
+		uniforms: {
+            color: { value: new THREE.Color( 0xffffff ) },
+            transparent: { value: true },
+            pointTexture: { value: texture_planet }
+        },
+		vertexShader: document.getElementById( 'vertexshader' ).textContent,
+		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+        alphaTest: 0.9
+    } );
+    scene.remove(in_system)
+    in_system = new THREE.Points( geometry, material );
+    in_system.name = 'in_system'
+    scene.add(in_system);
 }
 
 // Zoom to the clicked object
 function onDoubleClick(event) {
-    select_object(selected, true);
+    select_object(true);
     window.requestAnimationFrame(render);
 }
 
@@ -281,15 +303,15 @@ function onWindowResize() {
     window.requestAnimationFrame(render);
 }
 
-// Update the camera and render the scene
 function render() {
     var timer = false;
-    if(!camera_lookat.equals(selected.position)) {
-        var camera_distance = camera.position.distanceTo(selected.position);
+    var pos =  new THREE.Vector3( intersected.geometry.attributes.position.array[intersect*3], intersected.geometry.attributes.position.array[intersect*3+1], intersected.geometry.attributes.position.array[intersect*3+2] )
+    if(!camera_lookat.equals(pos)) {
+        var camera_distance = camera.position.distanceTo(pos);
         // distance adjusted lookat
         camera_lookat.sub(camera.position).setLength(camera_distance).add(camera.position);
-        var lookat_distance = camera_lookat.distanceTo(selected.position);
-        move_toward(camera_lookat, selected.position, Math.max(TERAMETER / 100, lookat_distance / 10));
+        var lookat_distance = camera_lookat.distanceTo(pos);
+        move_toward(camera_lookat, pos, Math.max(TERAMETER / 100, lookat_distance / 10));
         timer = true;
     }
     if(!camera.position.equals(camera_flyto)) {

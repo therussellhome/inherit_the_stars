@@ -1,0 +1,22 @@
+{
+    "ID": "Battleship",
+    "category": "Hull",
+    "description": "Ship hull with 32 general-purpose slots",
+    "cost": {
+        "titanium": 20,
+        "lithium": 9,
+        "silicon": 15,
+        "energy": 5600,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 13,
+        "__class__": "TechLevel"
+    },
+    "mass": 64,
+    "fuel_max": 600000,
+    "armor": 160,
+    "repair": 32,
+    "slots_general": 32,
+    "__class__": "Tech"
+}
