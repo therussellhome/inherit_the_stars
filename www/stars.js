@@ -107,6 +107,14 @@ function show_home() {
     show_screen('home');
 }
 
+// Show the tech browser open to a specific item
+function show_tech(name) {
+    if(current_screen  != 'tech_browser') {
+        show_screen('tech_browser')
+    }
+    post('tech_browser', '?' + name);
+}
+
 //show the planetary sidebar and have it populated
 function show_planetary() {
     if(current_sidebar != 'planetary') {
@@ -124,7 +132,7 @@ function show_planetary() {
 
 function show_minister(name) {
     if(current_screen  != 'planetary_minister') {
-        show_screen('planetary_minister');
+        show_planetary()
     }
     post('planetary_minister', '?' + name);
 }

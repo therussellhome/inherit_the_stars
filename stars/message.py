@@ -1,27 +1,21 @@
-import sys
-import time
 from .defaults import Defaults
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
 __defaults = {
     'date': '',
-    'timestamp': (0, 0, sys.maxsize),
-    'msg_key': '',
+    'sender': Reference(),
+    'message': '',
     'parameters': [],
-    'sender': '',
-    'link': '',
-    'keep': False,
+    'action': '',
+    'star': False,
     'read': False,
 }
 
 
 """ Message from game, minister, or other player """
 class Message(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if 'timestamp' not in kwargs:
-            self.timestamp = time.time_ns()
-
+    pass
 
 Message.set_defaults(Message, __defaults)

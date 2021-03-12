@@ -35,7 +35,7 @@ __defaults = {
     'homeworld': False,
     'location': Location(),
     'star_system': Reference('StarSystem'),
-    'space_stations': Fleet(),
+    'station_fleet': Fleet(),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
@@ -213,7 +213,7 @@ class Planet(Defaults):
         availability = self.mineral_availability()
         for mineral in MINERAL_TYPES:
             self.on_surface[mineral] += operate * availability[mineral] / 100
-            self.remaining_minerals[mineral] -= operate * availability * factor / 100
+            self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
 
     """ Availability of the mineral type """
     def mineral_availability(self):
@@ -362,7 +362,7 @@ class Planet(Defaults):
 
     """ Shift population via orbital mattrans """
     def mattrans(self):
-        for station in self.space_stations.ships:
+        for station in self.station_fleet.ships:
             pass #TODO
 
 
