@@ -209,7 +209,6 @@ class Player(Defaults):
         for category in ['construction', 'mattrans', 'research']:
             allocation = min(round(total * self['finance_minister_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
-        print(self.ID, str(id(self)), self.__cache__)
 
     """ Request to spend energy for a category """
     def spend(self, sub_category, request=sys.maxsize, spend=True):
