@@ -23,21 +23,50 @@ class BuildShip(BuildQueue):
     
     """ outputs thet next cost and marks the previous componet as done """
     def finish(self):
+        n = self.calc_next()
+        if n == 'refit':
+            return self.calc_refit_cost()
         if not self.started:
             self.start()
-            return self.calc_next().cost
-        self.ship.add_coponent(self.calc_next())
-        self.cost -= self.calc_next().cost
+            return n.cost
+        self.ship.add_coponent(n)
+        self.cost -= n.cost
         if self.cost.is_zero():
             self.ship.in_queue = False
             return self.cost
         return self.calc_next().cost
     
-    """ calulates the next item to work on """
+    """ calculates the cost of a refit """
+    def calc_refit_cost(self):
+        return #TODO curent_mini_level - new_mini_level per coponent in poduction capacity and ten times that in energy
     
+    """ calculates the next item to work on """
+    def calc_next(self):
+        n = None
+        for tech in self.ship_design.components:
+            if tech not in self.ship.components:
+                n = tech
+                break
+            elif self.ship_design.components[tech] - self.ship.components[tech] > 0:
+                n = tech
+                break
+        if n:
+            for item in self.ship.player.tech:
+                if item.name == n:
+                    return item
+        return 'refit'
     
     """ starts an upgrade (maybe a build too) """
-    
+    def start(self):
+        self.ship.in_queue = True
+        self.started = True
+        for tech in self.ship.components:
+            if tech in self.ship_design.components:
+                extra = self.ship.components[tech] - self.ship_design.components[tech]
+                if extra > 0:
+                    #TODO scrap 'em
+            else:
+                #TODO scrap 'em
     
     """ Mark the item as completed """
     def finish_a(self):
