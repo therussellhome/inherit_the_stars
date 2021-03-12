@@ -30,16 +30,31 @@ class Planets(PlayerUI):
         b = ''
         for f in fields:
             self.options_planets_field.append(f)
-        self.planets_report.append('<td class="hfill">Field<select id="planets_field" style="width: 100%" onchange="post(\'planets\')"/>' + b + '</td>')
+        self.planets_report.append('<td class="hfill">Field<select id="planets_field" style="width: 100%" onchange="post(\'planets\')"/></td>')
         
         # Get planets
+        suns = []
         planets = []
+        ps = []
         for p in self.player.get_intel('Planet'):
             planets.append(p)
-        for s in self.player.get_intel('Sun')
-            planet.append(s)
+            ps.append(p)
+        for s in self.player.get_intel('Sun'):
+            suns.append(s)
+            ps.append(s)
+
+        mine = []
+        team = []
+        neutral = []
+        enemy = []
+        uninhabited = []
         for p in planets:
-            self.planets_report.append('<td>' + p.get('name') + '</td><td>100,000</td>') 
+            self.planets_report.append('<td>' + p.get('name') + '</td><td>100,000</td>')
+            if not p.is_colonized:
+                uninhabited.append(p)
+            elif p.is_colonized and p.player
+
+                
 
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
 # TODO get comparasion field working 

@@ -67,7 +67,7 @@ class Player(Defaults):
             for field in _player_fields:
                 setattr(self, field, getattr(p, field))
 
-    """ calles fleets to do actions """
+    """ calls fleets to do actions """
     def ship_action(self, action):
         for fleet in self.fleets:
             fleet.execute(action, self)
