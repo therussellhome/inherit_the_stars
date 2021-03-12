@@ -14,7 +14,7 @@ class Terraform(BuildQueue):
         base = 2500
         if self.planet.player.race.lrt_Bioengineer:
             base = 1800
-        self.cost.energy = base * (1 + self.planet[hab + '_terraform']) ** 1.25
+        self.cost.energy = base * (1 + self.planet[self.hab + '_terraform']) ** 1.25
 
     """ Mark the item as completed """
     def finish(self):

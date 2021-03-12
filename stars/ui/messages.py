@@ -8,9 +8,10 @@ __defaults = {
     'messages_sender': '',
     'messages_date': '',
     'messages_text': '',
-    'messages_index': (0, 0, sys.maxsize),
+    'messages_index': (-1, -1, sys.maxsize),
     'messages_number': '',
-    'messages_keep': False,
+    'messages_action': '',
+    'messages_star': '',
     'messages_inbox': [],
 }
 
@@ -22,61 +23,83 @@ class Messages(PlayerUI):
         if not self.player():
             return
 
-        # Loads the file of messages
-        dictionary = game_engine.load('Message', 'Inherit the Stars!')
-        display = -1
-        print(dictionary)
-        for i, msg in enumerate(self.player().messages):
-            if i > display and not msg.read:
-                display = i
-            # Gives the parameters to the message text
-            text = msg.msg_key
-            if msg.msg_key in dictionary:
-                text = dictionary[msg.msg_key]
-            text = text.format(*msg.parameters)
-            print(i,msg.msg_key,text)
-            # Sets up the inbox
-            # Adds the '...' if needed
-            d = ''
-            if len(text) > 58:
-                d = '...'
-            # TODO sender icon
-            m = ''
-            if not msg.read:
-                m = ' font-weight:bold;'
-            self.messages_inbox.append('<td>' + msg.date + '</td><td style="color: mediumslateblue; text-decoration: underline;' + m + ' onclick="post(\'messages\', \'?id=' + str(i) + '\')">' + str(text[0:min(55, len(text))]) + d + '</td>')
-            if display == -1:
-                display = len(str(msg)) -1
-        self.messages_inbox = reversed(self.messages_inbox)
+        # Use cached messages
+        if 'messages' not in self.player().__cache__:
+            # Load message conversion files
+            msg_text = game_engine.load('Message', 'Inherit the Stars!')
+            if self.player().race.message_file != '':
+                msg_text.update(game_engine.load('Message', self.player().race.message_file))
+            msgs = []
+            for i, m in enumerate(self.player().messages):
+                msg = {'index': i, 'date': m.date, 'action': '', 'read': m.read}
+                if m.sender ^ 'Player':
+                    msg['link'] = 'show_screen(\'foreign_minister\')'
+                    msg['text'] = m.message
+                    #TODO
+                else:
+                    msg['icon'] = m.sender.get_icon()
+                    msg['sender'] = m.sender.get_name()
+                    msg['text'] = msg_text.get(m.sender.get_msg_key(m.message), m.message).format(*m.parameters)
+                    msg['link'] = m.sender.get_link()
+                    if m.action != '':
+                        msg['action'] = '<i class="button fas fa-external-link-alt" title="Take Action" onclick="' + m.action + '"></i>'
+                msg['short'] = msg['text']
+                if len(msg['short']) > 58:
+                    msg['short'] = msg['short'][:55] + '...'
+                msgs.append(msg)
+            self.player().__cache__['messages'] = msgs
+        else:
+            msgs = self.player().__cache__['messages']
+
+        # Update star
+        if action.startswith('star'):
+            if self.player().messages[self.messages_index].star:
+                self.player().messages[self.messages_index].star = False
+            else:
+                self.player().messages[self.messages_index].star = True
 
         # Makes the previous and next arrows work
-        if action.startswith('prev') and self.messages_index > 0:
-            self.messages_index -= 1 
-        if action.startswith('next') and self.messages_index < len(self.player().messages) - 1:
-            self.messages_index += 1
+        if action.startswith('prev'):
+            self.messages_index += 1 
+        elif action.startswith('next'):
+            self.messages_index -= 1
         # Makes it open the clicked message 
-        if action.startswith('id='):
+        elif action.startswith('id='):
             self.messages_index = int(action[3:])
-        print(self.messages_index)
+        elif self.messages_index == -1:
+            for m in reversed(msgs):
+                if not m['read']:
+                    self.messages_index = m['index']
+                    break
+            else:
+                self.messages_index = len(msgs) - 1
+        self.messages_index = min(max(self.messages_index, 0), len(msgs) - 1)
+        # Update read
+        self.player().messages[self.messages_index].read = True
+        msgs[self.messages_index]['read'] = True
         
-        # Makes the keep checkbox work
-        message = self.player().messages[self.messages_index]
-        for msg in self.player().messages:
-            if msg == message:
-                msg.read = True
-        if action.startswith('keep'):
-            if not message.keep:
-                message.keep = True
-            elif message.keep:
-                message.keep = False
+        # Sets up the inbox
+        newest_unread = len(msgs) - 1
+        for m in reversed(msgs):
+            unbold = ''
+            if self.player().messages[m['index']].read:
+                unbold = 'font-weight: normal;'
+            current = ''
+            if self.messages_index == m['index']:
+                current = 'background: darkblue;'
+            self.messages_inbox.append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" onclick="post(\'messages\', \'?id=' + str(m['index']) + '\')">' + m['short'] + '</td><td style="' + current + unbold + '">' + m['date'] + '</td>')
 
         # Sets the message text, number, sender, date and whether to keep it
-        if message.msg_key in dictionary:
-            self.messages_text = dictionary[message.msg_key]
-        self.messages_number = str(self.messages_index + 1) + ' of ' + str(len(self.player().messages))
-        self.messages_sender = message.sender
-        self.messages_date = message.date
-        self.messages_keep = message.keep
-        
+        m = msgs[self.messages_index]
+        self.messages_text = m['text']
+        self.messages_number = str(len(msgs) - self.messages_index) + ' of ' + str(len(msgs))
+        self.messages_sender = '<div onclick="' + m['link'] + '">' + m['icon'] + ' ' + m['sender'] + '</div>'
+        self.messages_date = m['date']
+        self.messages_action = m['action']
+        if self.player().messages[self.messages_index].star:
+            self.messages_star = '<i class="fas fa-star"></i>'
+        else:
+            self.messages_star = '<i class="far fa-star"></i>'
+
 
 Messages.set_defaults(Messages, __defaults, sparse_json=False)

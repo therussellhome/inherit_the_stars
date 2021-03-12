@@ -3,10 +3,10 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'planets_filters': [[]],
-    'planets_filter': ['My Planets']
-    'planets_report': [[]],
-    'planets_field': ['Habitability']
+    'planets_filters': [],
+    'planets_filter': 'My Planets',
+    'planets_report': [],
+    'planets_field': 'Habitability',
 }
 
 
@@ -41,7 +41,7 @@ class Planets(PlayerUI):
         planets = []
         for p in self.player.get_intel('Planet'):
             planets.append(p)
-        for s in self.player.get_intel('Sun')
+        for s in self.player.get_intel('Sun'):
             planet.append(s)
         for p in planets:
             # TODO Sort planets
