@@ -30,6 +30,8 @@ __defaults = {
     'cargo': Cargo(),
     'expirence': Expirence(),
     'player': Reference('Player'),
+    'fuel_max': (0, 0, sys.maxsize),
+    'fuel': (0, 0, sys.maxsize),
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
