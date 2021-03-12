@@ -103,7 +103,7 @@ class Planet(Defaults):
         self.x = r * cos(angle)
         #"""
 
-    """ Check if the planet is colonized """
+    """ Check whether the planet is colonized """
     def is_colonized(self):
         return self.on_surface.people > 0
 
@@ -131,7 +131,7 @@ class Planet(Defaults):
     x=g-1/2 for g>1/2 | x=0 for g<1/2
     y=t-1/2 for t>1/2 | y=0 for t<1/2
     z=r-1/2 for r>1/2 | z=0 for r<1/2
-    negative planet value is calculated using the same equasion
+    negative planet value is calculated using the same equation
     with g, t, and r = 0 if < 1 | g, t, r = value - 1
     and 100 subtracted from the result
     """
@@ -424,12 +424,22 @@ class Planet(Defaults):
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         if self.is_colonized():
-            scan.penetrating(self.player, self.location, 250) #TODO Pam please update the scanner range
+            if self.player.race.lrt_2ndSight:
+                p = round((50 + 10 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            else:
+                p = min(100, round((10 + 4 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000)))
+            return p
+            scan.penetrating(self.player, self.location, p) #TODO Pam coded this I hope it works :-D
 
     """ Perform normal scanning """
     def scan_normal(self):
         if self.is_colonized():
-            scan.normal(self.player, self.location, 100) #TODO Pam please update the scanner range
+            if self.player.race.lrt_2ndSight:
+                r = round((100 + 20 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            else:
+                r = round((100 + 40 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            return r
+            scan.normal(self.player, self.location, r) #TODO Pam coded this I hope it works :-D
 
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):
