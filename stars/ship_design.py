@@ -10,6 +10,7 @@ __defaults = {
     'category': 'Ship Design',
     'description': '',
     'components': {}, # map of tech names to count of components
+    'race': Reference('Race'),
 }
 
 
@@ -48,7 +49,7 @@ class ShipDesign(Tech):
         # Start by setting each field in the hull then add from the components
         for (k, v) in self.__dict__.items():
             # Skip certain fields and all strings
-            if k in ['hull', 'components', '__cache__'] or isinstance(v, str):
+            if k in ['hull', 'components', 'race', '__cache__'] or isinstance(v, str):
                 pass
             # Lists
             elif isinstance(v, list):
@@ -63,7 +64,15 @@ class ShipDesign(Tech):
                 for tech in self.components:
                     for i in range(0, self.components[tech]):
                         self[k] += tech[k]
-
+    
+    """ Recompute self from components """
+    def max_armor(self):
+        # Start by setting each field in the hull then add from the components
+        armor = self.hull[armor]
+        for tech in self.components:
+            for i in range(0, self.components[tech]):
+                armor += tech[armor]
+    
     """ Check if design is valid """
     def is_valid(self, level=None, race=None):
         if self.slots_general < 0 or self.slots_depot < 0 or self.slots_orbital < 0:

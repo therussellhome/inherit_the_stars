@@ -104,12 +104,17 @@ def from_json(raw, name='<Internal>'):
     try:
         return __decode(json.loads(raw))
     except Exception as e:
-        print('Decode error ' + str(e) + ' in ' + name + '\n' + raw)
+        print('Decode error ' + str(e) + ' in ' + name)
 
 
 """ Encode an object into a string """
 def to_json(obj):
-    return json.dumps(__encode(obj), indent='    ', ensure_ascii=False)
+    try:
+        return json.dumps(__encode(obj), indent='    ', ensure_ascii=False)
+    except Exception as e:
+        print(e)
+        print(type(obj), obj.ID, obj, obj.__dict__)
+        #to_json(obj)
 
 
 """ List files in the game dir """
@@ -168,40 +173,50 @@ def save(save_type, name, obj):
 
 """ Custom encoder to handle classes """
 def __encode(o):
-    # Instances of Reference
-    if isinstance(o, _reference_class):
-        return '«' + o.__reference__ + '»'
-    # Handle children of BaseClass and Defaults
-    elif isinstance(o, BaseClass):
-        encoded = {}
-        defaults = getattr(o.__class__, 'defaults', {})
-        sparse = getattr(o.__class__, 'sparse_json', {})
-        for (k, v) in o.__dict__.items():
-            if not sparse.get(k, True):
-                encoded[k] = v
-            elif k in defaults:
-                if v != defaults[k]:
+    try:
+        # Instances of Reference
+        if isinstance(o, _reference_class):
+            return '«' + o.__reference__ + '»'
+        # Handle children of BaseClass and Defaults
+        elif isinstance(o, BaseClass):
+            encoded = {}
+            defaults = getattr(o.__class__, 'defaults', {})
+            sparse = getattr(o.__class__, 'sparse_json', {})
+            for (k, v) in o.__dict__.items():
+                if not sparse.get(k, True):
                     encoded[k] = v
-            elif k != '__cache__':
-                encoded[k] = v
-        # Add class
-        encoded['__class__'] = o.__class__.__name__
-        return __encode(encoded)
-    # Encode each key and value
-    elif isinstance(o, dict):
-        encoded = {}
-        for (k, v) in o.items():
-            encoded[__encode(k)] = __encode(v)
-        return encoded
-    # Encode each value
-    elif isinstance(o, list) or isinstance(o, tuple):
-        encoded = []
-        for v in o:
-            encoded.append(__encode(v))
-        return encoded
-    # Finally down to a primitive
-    else:
-        return o
+                elif k in defaults:
+                    if v != defaults[k]:
+                        encoded[k] = v
+                elif k != '__cache__':
+                    encoded[k] = v
+            # Add class
+            encoded['__class__'] = o.__class__.__name__
+            return __encode(encoded)
+        # Encode each key and value
+        elif isinstance(o, dict):
+            encoded = {}
+            for (k, v) in o.items():
+                encoded[__encode(k)] = __encode(v)
+            return encoded
+        # Encode each value
+        elif isinstance(o, list) or isinstance(o, tuple):
+            encoded = []
+            for v in o:
+                encoded.append(__encode(v))
+            return encoded
+        # Finally down to a primitive
+        else:
+            return o
+    except Exception as e:
+        print(e)
+        try:
+            print(type(o), o.__dict__)
+        except:
+            print(type(o), o)
+        print(1001010101101001)
+        __encode(o)
+    #    raise AttributeError
 
 
 """ Custom decoder to handle classes """
@@ -239,7 +254,11 @@ def __new(classname, not_found, **kwargs):
         parent = stack.pop()
         for child in parent.__subclasses__():
             if child.__name__ == classname:
-                return child(**kwargs)
+                try:
+                    return child(**kwargs)
+                except Exception as e:
+                    print('Error creating class "' + classname + '"', e)
+                    raise e
             elif child not in subclasses:
                 subclasses.add(child)
                 stack.append(child)

@@ -66,6 +66,7 @@ class ResearchMinister(PlayerUI):
                         + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
                     research_tech.append((cost, row))
         research_tech.sort(key = lambda x: x[0])
+        # Adds the html to the table
         for t in research_tech:
             self.research_tech.append(t[1])
 

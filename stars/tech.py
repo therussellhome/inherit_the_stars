@@ -146,14 +146,12 @@ class Tech(Defaults):
     
     """ Build the sensor chart """
     def html_sensor(self, always=False):
-        if self.scanner.normal > 0 or self.scanner.penetrating > 0 or self.scanner.anti_cloak > 0 or always:
-            detect_scanner = Scanner(normal=250.0) #TODO - base this off tech level of the ship
-            apparent_mass = (self.mass + self.cargo_max) * (1 - self.cloak.percent / 100)
+        if self.scanner.normal > 0 or self.scanner.penetrating > 0 or self.scanner.anti_cloak > 0 or self.scanner.hyperdenial.range > 0 or always:
             return [
                 self.scanner.normal,
                 self.scanner.penetrating,
                 self.scanner.anti_cloak,
-                detect_scanner.range_visible(apparent_mass)
+                self.hyperdenial.range
             ]
         return None
 
