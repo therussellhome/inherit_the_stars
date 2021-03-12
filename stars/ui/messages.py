@@ -21,17 +21,20 @@ class Messages(PlayerUI):
         super().__init__(**kwargs)
         if not self.player():
             return
-        
+
         # Loads the file of messages
         dictionary = game_engine.load('Message', 'Inherit the Stars!')
         display = -1
+        print(dictionary)
         for i, msg in enumerate(self.player().messages):
             if i > display and not msg.read:
                 display = i
             # Gives the parameters to the message text
+            text = msg.msg_key
             if msg.msg_key in dictionary:
                 text = dictionary[msg.msg_key]
             text = text.format(*msg.parameters)
+            print(i,msg.msg_key,text)
             # Sets up the inbox
             # Adds the '...' if needed
             d = ''
@@ -43,7 +46,7 @@ class Messages(PlayerUI):
                 m = ' font-weight:bold;'
             self.messages_inbox.append('<td>' + msg.date + '</td><td style="color: mediumslateblue; text-decoration: underline;' + m + ' onclick="post(\'messages\', \'?id=' + str(i) + '\')">' + str(text[0:min(55, len(text))]) + d + '</td>')
             if display == -1:
-                display = len(msg) -1
+                display = len(str(msg)) -1
         self.messages_inbox = reversed(self.messages_inbox)
 
         # Makes the previous and next arrows work
@@ -54,6 +57,7 @@ class Messages(PlayerUI):
         # Makes it open the clicked message 
         if action.startswith('id='):
             self.messages_index = int(action[3:])
+        print(self.messages_index)
         
         # Makes the keep checkbox work
         message = self.player().messages[self.messages_index]

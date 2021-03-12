@@ -82,7 +82,7 @@ class Player(Defaults):
             self.add_message(msg_key='research_minister.introduction')
             self.add_message(msg_key='foreign_minister.introduction')
             self.add_message(msg_key='admiralty.introduction')
-            self.add_message(msg_key='finace_minister.introduction')
+            self.add_message(msg_key='finance_minister.introduction')
             self.add_message(msg_key='planetary_minister.introduction')
         game_engine.register(self)
         self.__cache__ = {}
