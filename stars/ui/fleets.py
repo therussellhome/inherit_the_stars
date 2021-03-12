@@ -4,6 +4,7 @@ from .playerui import PlayerUI
 """ Default values (default, min, max)  """
 __defaults = {
     'fleet_list': [],
+    'other_ships': [],
     'fleet_index': 0,
     'ships': [],
     'waypoints': [],
@@ -27,13 +28,33 @@ class Fleets(PlayerUI):
                 + '<th><i class="li" title="Lithium">in </i></th>'
                 + '<th><i class="si" title="Silicon">in </i></th>')
         for fleet in self.player().fleets:
-            self.fleets_list.append('<tr>'
+            self.fleet_list.append('<tr>'
                 + '<td>' + fleet.location.x + '</td>'
                 + '<td>' + fleet.location.y + '</td>'
                 + '<td>' + fleet.location.z + '</td>'
                 + '<td>' + fleet.get_fuel()[0] + '</td>'
                 + '<td>' + fleet.get_cargo()[0].people + '</td>'
                 + '<td>' + fleet.get_cargo()[0].titanium + '</td>'
+                + '<td>' + fleet.get_cargo()[0].lithium + '</td>'
+                + '<td>' + fleet.get_cargo()[0].silicon + '</td>' + '</tr>')
+        self.other_ships.append('<th></th><th></th>'
+                + '<th><i title="Name of the ship">Name</i></th>'
+                + '<th><i title="X Cordinate">X</i></th>'
+                + '<th><i title="Y Cordinate">Y</i></th>'
+                + '<th><i title="Z Cordinate">Z</i></th>'
+                + '<th><i class="fa-free-code-camp" title="Fuel">Fuel</i></th>'
+                + '<th><i title="KT of People in fleet"></i>People</th>'
+                + '<th><i class="ti" title="Titanium">in </i></th>'
+                + '<th><i class="li" title="Lithium">in </i></th>'
+                + '<th><i class="si" title="Silicon">in </i></th>')
+        for fleet in self.player().fleets:
+            self.other_ships.append('<tr>'
+                + '<td>' + ship.location.x + '</td>'
+                + '<td>' + ship.location.y + '</td>'
+                + '<td>' + ship.location.z + '</td>'
+                + '<td>' + ship.get_fuel()[0] + '</td>'
+                + '<td>' + ship.get_cargo()[0].people + '</td>'
+                + '<td>' + ship.get_cargo()[0].titanium + '</td>'
                 + '<td>' + fleet.get_cargo()[0].lithium + '</td>'
                 + '<td>' + fleet.get_cargo()[0].silicon + '</td>' + '</tr>')
         self.ships.append('<th></th><th></th>'
@@ -65,16 +86,9 @@ class Fleets(PlayerUI):
                 + '<th><i class="ti" title="Titanium">in </i></th>'
                 + '<th><i class="li" title="Lithium">in </i></th>'
                 + '<th><i class="si" title="Silicon">in </i></th>')
-        for fleet in self.player().fleets:
-            self.fleets_list.append('<tr>'
-                + '<td>' + fleet.location.x + '</td>'
-                + '<td>' + fleet.location.y + '</td>'
-                + '<td>' + fleet.location.z + '</td>'
-                + '<td>' + fleet.get_fuel()[0] + '</td>'
-                + '<td>' + fleet.get_cargo()[0].people + '</td>'
-                + '<td>' + fleet.get_cargo()[0].titanium + '</td>'
-                + '<td>' + fleet.get_cargo()[0].lithium + '</td>'
-                + '<td>' + fleet.get_cargo()[0].silicon + '</td>' + '</tr>')
+        #for fleet in self.player().fleets:
+        self.waypoints.append('<tr>'
+            + '<td><img class="button fas fa-external-link-alt" id="button_waypoints" title="Edit Waypoint" onclick="show_screen(\'waypoints\')"/></td>' + '</tr>')
         
 
 
