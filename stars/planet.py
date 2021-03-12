@@ -71,7 +71,7 @@ class Planet(Defaults):
             self.age = randint(0, 3000)
         game_engine.register(self)
 
-    """ Get the planets color """
+    """ Get the planet's color """
     # return it in a hexdecimal string so the webpage can use it
     def get_color(self):
         t = (min(100, max(0, self.temperature)) / 100) * .75
@@ -193,18 +193,23 @@ class Planet(Defaults):
 
     """ Incoming! """
     def raise_shields(self):
-        return self._operate('defenses') * self.playertech_level.energy * 1234 # TODO Pam please come up with equasion
+        if player.race.primary_race_trait == 'Aku\'Ultan':
+            return 0
+        elif player.race.primary_race_trait == 'Gaerhule':
+            return self._operate('defenses') * max(480, 240 * self.playertech_level.energy)
+        else:
+            return self._operate('defenses') * max(200, 200 * self.playertech_level.energy)
 
     """ power plants make energy """
     def generate_energy(self):
-        facility_yj =  self._operate('power_plants') * self.player.tech_level.propulsion * 1234 # TODO Pam please come up with equasion
+        facility_yj =  self._operate('power_plants') * (100 + self.player.tech_level.propulsion * 5) 
         pop_yj = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
         self.player.energy += facility_yj + pop_yj
         return facility_yj + pop_yj
 
     """ mines mine the minerals """
     def mine_minerals(self):
-        factor = 1 / (self.player.tech_level.weapons + 1) # TODO Pam please come up with equasion
+        factor = 1 + 0.3 * (0.5 ** (self.player.tech_level.weapons / 7)) 
         operate = self._operate('mines')
         for mineral in MINERAL_TYPES:
             availability = self.mineral_availability(mineral)
@@ -215,7 +220,7 @@ class Planet(Defaults):
     def mineral_availability(self, mineral):
         return (((self.remaining_minerals[mineral] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
 
-    """ calculates max production capasity """
+    """ calculates max production capacity """
     def operate_factories(self):
         # 1 unit of production free
         self.__cache__['production'] = 1 + self._operate('factories') * self.player.tech_level.construction * 1234 # TODO Pam please come up with equasion
