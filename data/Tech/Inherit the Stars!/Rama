@@ -16,12 +16,8 @@
     },
     "mass": 600,
     "armor": 600,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 150,
     "slots_general": 144,
-    "slots_orbital": 7,
+    "slots_orbital": 6,
     "__class__": "Tech"
 }

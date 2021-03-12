@@ -17,10 +17,6 @@
     "mass": 80,
     "fuel_max": 1000000,
     "armor": 60,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 16,
     "slots_general": 4,
     "slots_depot": 12,

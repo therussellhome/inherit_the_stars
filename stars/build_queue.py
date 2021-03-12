@@ -8,6 +8,7 @@ __defaults = {
     'cost': Cost(), # cost remaining
     'planet': Reference('Planet'),
     'baryogenesis': False,
+    'original_cost': Cost(), #original cost
 }
 
 
@@ -16,7 +17,7 @@ class BuildQueue(Defaults):
     """ Child classes should override this to set the cost """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+    
     """ Child classes need to override this """
     def finish(self):
         pass

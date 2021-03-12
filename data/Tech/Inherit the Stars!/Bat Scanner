@@ -1,7 +1,7 @@
 {
     "ID": "Bat Scanner",
     "category": "Scanner",
-    "description": "This scanner has a penetrating range, which means it can detect starbases and ships inside solar systems and it can tell you habitability of planets in its penetrating range.  It also detects ships based on their apparent mass, but its ability to do so decreases quickly as the apparent mass decreases.",
+    "description": "This scanner has a penetrating range, which means it can detect starbases and ships inside all solar systems inside its penetrating range, as well as tell you habitability of planets.  It also detects ships farther than that, if their kinetic energy (mass times speed squared) is great enough.",
     "race_requirements": "2ndSight",
     "cost": {
         "titanium": 1,
@@ -18,7 +18,7 @@
     "mass": 2,
     "scanner": {
         "penetrating": 50.0,
-        "normal": 75.0,
+        "normal": 225.0,
         "__class__": "Scanner"
     },
     "__class__": "Tech"

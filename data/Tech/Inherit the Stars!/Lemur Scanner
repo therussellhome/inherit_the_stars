@@ -1,7 +1,7 @@
 {
     "ID": "Lemur Scanner",
     "category": "Scanner",
-    "description": "This scanner has a penetrating range, which means it can detect starbases and ships inside solar systems and it can tell you habitability of planets in its penetrating range.  It also detects ships based on their apparent mass, but its ability to do so decreases quickly as the apparent mass decreases.",
+    "description": "This scanner has a penetrating range, which means it can detect starbases and ships inside solar systems and it can tell you habitability of planets in its penetrating range.  It also detects ships based on their kinetic energy.",
     "race_requirements": "2ndSight",
     "cost": {
         "titanium": 2,
@@ -18,7 +18,7 @@
     "mass": 4,
     "scanner": {
         "penetrating": 125.0,
-        "normal": 200.0,
+        "normal": 600.0,
         "__class__": "Scanner"
     },
     "__class__": "Tech"
