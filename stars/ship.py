@@ -112,12 +112,13 @@ class Ship(ShipDesign):
     """ Mines the planet if the planet is not colonized """
     def orbital_mining(self, planet):
         if not planet.is_colonized():
-            planet.on_surface.titanium += round(self.mining_rate * planet.mineral_availability('titanium'))
-            planet.on_surface.silicon += round(self.mining_rate * planet.mineral_availability('silicon'))
-            planet.on_surface.lithium += round(self.mining_rate * planet.mineral_availability('lithium'))
-            planet.remaining_minerals.titanium -= round(self.mining_rate * planet.mineral_availability('titanium') * self.percent_wasted)
-            planet.remaining_minerals.silicon -= round(self.mining_rate * planet.mineral_availability('silicon') * self.percent_wasted)
-            planet.remaining_minerals.lithium -= round(self.mining_rate * planet.mineral_availability('lithium') * self.percent_wasted)
+            avail = planet.mineral_availability()
+            planet.on_surface.titanium += round(self.mining_rate * avail.titanium)
+            planet.on_surface.silicon += round(self.mining_rate * avail.silicon)
+            planet.on_surface.lithium += round(self.mining_rate * avail.lithium)
+            planet.remaining_minerals.titanium -= round(self.mining_rate * avail.titanium * self.percent_wasted)
+            planet.remaining_minerals.silicon -= round(self.mining_rate * avail.silicon * self.percent_wasted)
+            planet.remaining_minerals.lithium -= round(self.mining_rate * avail.lithium * self.percent_wasted)
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):

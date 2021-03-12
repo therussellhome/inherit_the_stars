@@ -192,7 +192,7 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
-        if treaty.status = 'pending':
+        if treaty.status == 'pending':
             self.add_message(msg_key='foreign_minister.proposed_treaty', parameters=[treaty.other_player])
         for t in self.treaties:
             if t.treaty_key == treaty.treaty_key and t != treaty:
