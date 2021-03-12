@@ -492,7 +492,32 @@ void main() {
 </div>
 
 
+<div class="screen hide onload" id="screen_waypoints" style="width: 600px" onload="post('waypoint')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Fleets" src="ships.png"/></td>
+        <td class="hfill" style="font-size: 200%">Fleets</td> 
+        <td><i class="button far fa-times-circle" title="Return to Fleet Viewer" onclick="show_screen(null)"></i></td>
+    </tr></table>
+</div>
+
 <div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Fleets" src="ships.png"/></td>
+        <td class="hfill" style="font-size: 200%">Fleets</td> 
+        <td><i class="button far fa-times-circle" title="Close Fleet Viewer" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill" id="fleet_list" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Fleets</caption>
+    </table>
+    <table class="hfill" id="ships" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ships</caption>
+    </table>
+    <table class="hfill" id="waypoints" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Waypoints</caption>
+    </table>
+    <table class="hfill" id="other_ships" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Other Player's Ships</caption>
+    </table>
 </div>
 
 
