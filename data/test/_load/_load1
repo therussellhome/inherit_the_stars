@@ -1,0 +1,10 @@
+{
+    "ID": "load1",
+    "register": true,
+    "abc": 123,
+    "xyz": {
+        "a": 42
+    },
+    "saved": false,
+    "__class__": "_TestGameEngine"
+}

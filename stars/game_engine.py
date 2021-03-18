@@ -149,9 +149,7 @@ def load(save_type, name):
     else:
         with open(file_name, 'r') as f:
             objs.append(from_json(f.read(), str(file_name)))
-    if len(objs) == 0:
-        return None
-    elif len(objs) == 1:
+    if len(objs) == 1:
         return objs[0]
     else:
         return objs

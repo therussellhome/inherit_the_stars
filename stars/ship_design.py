@@ -68,10 +68,10 @@ class ShipDesign(Tech):
     """ Recompute self from components """
     def max_armor(self):
         # Start by setting each field in the hull then add from the components
-        armor = self.hull[armor]
+        armor = self.hull['armor']
         for tech in self.components:
-            for i in range(0, self.components[tech]):
-                armor += tech[armor]
+            armor += tech['armor']
+        return armor
     
     """ Check if design is valid """
     def is_valid(self, level=None, race=None):
