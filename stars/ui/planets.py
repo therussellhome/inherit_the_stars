@@ -27,7 +27,8 @@ class Planets(PlayerUI):
         self.planets_filters.append('<td class="hfill">Filter<select id="planets_filter" style="width: 100%" onchange="post(\'planets\')"></select>')
 
         # Fields for comparasion
-        fields = ['Habitability', 'Capacity', 'Population', 'Max Population', 'Energy Generation', 'Production Capacity', 'Scanner Range', 'Shield Coverage', 'Mineral Output', 'Mineral Availability']
+        fields = ['Habitability', 'Capacity', 'Population', 'Max Population', 'Energy Generation', 'Production Capacity', 'Scanner Range', 'Shield Coverage', \
+        'Mineral Output', 'Mineral Availability']
         for f in fields:
             self.options_planets_field.append(f)
         self.planets_report.append('<td class="hfill">Field<select id="planets_field" style="width: 100%" onchange="post(\'planets\')"/></td>')
@@ -64,7 +65,9 @@ class Planets(PlayerUI):
                     neutral.append(p)
                 if relation == 'enemy':
                     enemy.append(p)
-
+        
+        # Checks to see whether it has to calculate it 
+        # It's using cache so it doesn't have to calculate the report over and over again
         if 'planet_report' not in self.player().__cache__:
             planets = []
             for (r, p) in self.player().get_intel(by_type='Planet').items():
@@ -82,15 +85,26 @@ class Planets(PlayerUI):
                     planet['Uninhabited Planets'] = True
                 planet['date'] = p.date
                 planet['Habitability'] = p.habitability
+                # Calculates all the things that the player only knows if it is their planet
                 if r:
                     planet['Energy Generation'] = '<i class="YJ">' + str(r.generate_energy() * 100) + '</i>'
+                    planet['Production Capacity'] = str(r.operate_factories() * 100)
+                    planet['Scanner Range'] = str(r.scanning_penetrating()) + '/' + str(r.scanning_normal())
+                    planet['Shield Coverage'] = str(r.raise_shields())
+                    planet['Mineral Output'] = str(r.mine_minerals() * 100)
                 else:
-                    planet['Energy'] = '?'
+                    planet['Energy Generation'] = '?'
+                    planet['Production Capacity'] = '?'
+                    planet['Scanner Range'] = '?'
+                    planet['Shield Coverage'] = '?'
+                    planet['Mineral Output'] = '?'
+                # Sets other fields
                 planet['Population'] = p.population()
                 planet['Capacity'] = p.capacity()
                 planet['Max Population'] = p.max_pop 
-                planet['Energy Generation'] = 
+                planet['Mineral Availability'] = p.mineral_availability
                 planets.append(planet)
+            # Puts the report in the cache
             self.player().__cache__['planet_report'] = planets
             else:
                 planets = self.player().__cache__['planet_report']
