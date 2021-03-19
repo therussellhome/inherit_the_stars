@@ -10,6 +10,7 @@
     "admiralty.completed_orders": "Sir, {} has completed your orders.",
     "admiralty.won_airdrop": "Sir, we have won the battle at {}.",
     "admiralty.lost_airdrop": "Sir, we lost the battle at {}.",
+    "admiralty.invalid_shipdesign": "Sir, please talk to your research minister as we were unable to build a {} because we do not have sufficient technology.",
     "finance.introduction": "Your Imperial Majesty, what do you want the starbase to build? We also need to talk about money distribution.",
     "finance.built_ship": "Your Imperial Majesty, the starbase built {} at {}.",
     "finance.not_used_budget": "Your Imperial Majesty, you have not used all of your construction budget.",

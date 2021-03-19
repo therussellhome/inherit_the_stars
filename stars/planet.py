@@ -322,25 +322,32 @@ class Planet(Defaults):
     """ Build an item """
     def build(self, item, from_queue=True):
         production = self.__cache__['production']
-        item.cost.energy -= self.player.spend(item.__class__.__name__, item.cost.energy)
-        for m in MINERAL_TYPES:
-            use_p = min(production, item.cost[m], self.on_surface[m])
-            production -= use_p
-            self.on_surface[m] -= use_p
-            item.cost[m] -= use_p
-            if item.cost[m] > 0 and item.baryogenesis:
-                spend_e = self.player.spend('baryogenesis', min(production / 2, item.cost[m]) * self.player.race.cost_of_baryogenesis)
-                baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
-                production -= baryogenesis_minerals * 2
-                item.cost[m] -= baryogenesis_minerals
+        spend = Cost()
+        in_progress = item.build()
+        while not in_progress.is_zero():
+            spend = Cost()
+            spend.energy -= self.player.spend(item.__class__.__name__, in_progress.energy)
+            for m in MINERAL_TYPES:
+                use_p = min(production, in_progress[m], self.on_surface[m])
+                production -= use_p
+                self.on_surface[m] -= use_p
+                spend[m] -= use_p
+                if spend[m] < in_progress[m] and item.baryogenesis:
+                    spend_e = self.player.spend('baryogenesis', min(production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
+                    baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
+                    production -= baryogenesis_minerals * 2
+                    spend[m] -= baryogenesis_minerals
+            # Apply build effort
+            in_progress = item.build(spend)
+            # Blocked
+            if spend.is_zero():
+                if not from_queue:
+                    self.player.build_queue.append(item)
+                self.__cache__['production'] = production
+                self.__cache__['production_blocked'] = True
+                return False
         self.__cache__['production'] = production
-        if item.cost.is_zero():
-            item.finish()
-            return True
-        if not from_queue:
-            self.player.build_queue.append(item)
-        self.__cache__['production_blocked'] = True
-        return False
+        return True
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):

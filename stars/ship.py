@@ -176,4 +176,10 @@ class Ship(ShipDesign):
             report['Apparent Mass'] = self.calc_apparent_mass()
         return report
 
+    """ Recompute self from components """
+    def compute_stats(self, tech_level):
+        if tech_level > self.level:
+            self.level = tech_level
+        super().compute_stats(self.level)
+
 Ship.set_defaults(Ship, __defaults)

@@ -20,6 +20,14 @@ _facility_costs = {
     'defenses': Cost(titanium=3, lithium=0, silicon=3, energy=400), 
 }
 
+""" Facility names """
+_facility_names = {
+    'power_plants': 'Power Plant',
+    'factories': 'Factory',
+    'mines': 'Mineral Extractor',
+    'defenses': 'Planetary Shield',
+}
+
 """ Temporary class to indicate facility in process """
 class Facility(BuildQueue):
     """ Store the cost to build the facility """
@@ -28,9 +36,17 @@ class Facility(BuildQueue):
         super().__init__(**kwargs)
         self.cost = _facility_costs[self.facility_type]
 
-    """ Mark the item as completed """
-    def finish(self):
-        self.planet[self.facility_type] += 1
+    """ Check if we are completed """
+    def build(self, spend=Cost()):
+        super().build(spend)
+        if self.cost.is_zero():
+            self.planet[self.facility_type] += 1
+        return self.cost
+
+    """ Build queue display """
+    def to_html(self):
+        global _facility_names
+        return _facility_names[self.facility_type]
 
 
 Facility.set_defaults(Facility, __defaults)
