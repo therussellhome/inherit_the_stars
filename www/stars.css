@@ -242,6 +242,10 @@ i {
     font-weight: 900;
 }
 
+i.fas.fa-star {
+    color: yellow;
+}
+
 /* Expand section */
 div.fa-angle-double-up, div.fa-angle-double-down {
     width: 100%;

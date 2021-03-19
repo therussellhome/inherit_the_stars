@@ -36,7 +36,7 @@ __defaults = {
     'homeworld': False,
     'location': Location(),
     'star_system': Reference('StarSystem'),
-    'space_stations': Fleet(),
+    'station_fleet': Fleet(),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
@@ -185,7 +185,7 @@ class Planet(Defaults):
 
     """ how many facilities can be operated """
     def _operate(self, facility_type, ideal=False):
-        allocation = getattr(self.player.get_minister(self), facility_type)
+        allocation = self.player.get_minister(self)[facility_type]
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
         operate = self.player.race[facility_type + '_per_10k_colonists'] * workers / 10000
         if ideal:
@@ -196,7 +196,7 @@ class Planet(Defaults):
     def raise_shields(self):
         if self.player.race.primary_race_trait == 'Gaerhule':
             return self._operate('defenses') * max(480, 240 * self.player.tech_level.energy)
-        elif self.player.race.primary_race_trait != 'Aku\'Ultan'
+        elif self.player.race.primary_race_trait != 'Aku\'Ultan':
             return self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
         return 0
 
@@ -211,14 +211,17 @@ class Planet(Defaults):
     def mine_minerals(self):
         factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
         operate = self._operate('mines')
+        availability = self.mineral_availability()
         for mineral in MINERAL_TYPES:
-            availability = self.mineral_availability(mineral)
-            self.on_surface[mineral] += operate * availability / 100
-            self.remaining_minerals[mineral] -= operate * availability * factor / 100
+            self.on_surface[mineral] += operate * availability[mineral] / 100
+            self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
 
     """ Availability of the mineral type """
-    def mineral_availability(self, mineral):
-        return (((self.remaining_minerals[mineral] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+    def mineral_availability(self):
+        avail = Minerals()
+        for m in MINERAL_TYPES:
+            avail[m] = (((self.remaining_minerals[m] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+        return avail
 
     """ calculates max production capacity per 100th """
     def operate_factories(self):
@@ -439,9 +442,9 @@ class Planet(Defaults):
             'gravity': self.gravity,
             'temperature': self.temperature,
             'radiation': self.radiation,
-            'Lithium Availability': self.mineral_availability('lithium'),
-            'Silicon Availability': self.mineral_availability('silicon'),
-            'Titanium Availability': self.mineral_availability('titanium'),
+            'Lithium Availability': self.mineral_availability().lithium,
+            'Silicon Availability': self.mineral_availability().silicon,
+            'Titanium Availability': self.mineral_availability().titanium,
         }
         if self.is_colonized():
             report['Player'] = self.player
@@ -450,7 +453,7 @@ class Planet(Defaults):
 
     """ Shift population via orbital mattrans """
     def mattrans(self):
-        for station in self.space_stations.ships:
+        for station in self.station_fleet.ships:
             pass #TODO
 
 

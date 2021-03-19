@@ -70,6 +70,8 @@ class DefaultsTestCase(unittest.TestCase):
         self.assertEqual(t.default_string, 'xyz')
         self.assertEqual(t.default_object[0], '123')
         self.assertEqual(t.other_value, self)
+        t.default_object = self
+        self.assertEqual(t.default_object[0], '123')
 
     def test_min(self):
         t = _TestDefaults()
@@ -84,3 +86,23 @@ class DefaultsTestCase(unittest.TestCase):
         t.default_float = 1.0
         self.assertEqual(t.default_int, 999)
         self.assertEqual(t.default_float, 0.9)
+
+    def test_eq1(self):
+        t1 = _TestDefaults()
+        t2 = _TestDefaults()
+        self.assertEqual(t1, t2)
+
+    def test_eq2(self):
+        t1 = _TestDefaults()
+        t2 = _TestDefaults(default_int=999)
+        self.assertNotEqual(t1, t2)
+
+    def test_eq3(self):
+        t1 = _TestDefaults()
+        t2 = [1, 2, 3]
+        self.assertNotEqual(t1, t2)
+
+    def test_eq4(self):
+        t1 = _TestDefaults()
+        t2 = _TestDefaults(a_val=123)
+        self.assertNotEqual(t1, t2)

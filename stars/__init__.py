@@ -19,6 +19,7 @@ __all__ = [
     'location', 
     'message',
     'minerals',
+    'minister',
     'planet', 
     'planetary_minister',
     'player', 

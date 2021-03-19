@@ -127,3 +127,25 @@ class ReferenceTestCase(unittest.TestCase):
         r1 = reference.Reference('_TestReference/eq')
         r2 = reference.Reference('_TestReference/ne')
         self.assertFalse(r1 == r2)
+
+    def test_valid1(self):
+        r1 = reference.Reference('_TestReference/bool')
+        self.assertFalse(r1)
+
+    def test_valid2(self):
+        r1 = reference.Reference('_TestReference/bool')
+        r1['abc'] = 6
+        self.assertTrue(r1)
+
+    def test_valid3(self):
+        r1 = reference.Reference()
+        self.assertFalse(r1)
+
+    def test_xor1(self):
+        r1 = reference.Reference('_TestReference/xor')
+        self.assertTrue(r1 ^ '_TestReference')
+
+    def test_map1(self):
+        r1 = reference.Reference('_TestReference/map')
+        m = {r1: 'abc'}
+        self.assertEqual(m[r1], 'abc')
