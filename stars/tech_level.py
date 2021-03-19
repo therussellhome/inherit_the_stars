@@ -5,21 +5,21 @@ from .defaults import Defaults
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'energy': [0, 0, sys.maxsize],
-    'weapons': [0, 0, sys.maxsize],
-    'propulsion': [0, 0, sys.maxsize],
-    'construction': [0, 0, sys.maxsize],
-    'electronics': [0, 0, sys.maxsize],
-    'biotechnology': [0, 0, sys.maxsize]
+    'energy': (0, 0, sys.maxsize),
+    'weapons': (0, 0, sys.maxsize),
+    'propulsion': (0, 0, sys.maxsize),
+    'construction': (0, 0, sys.maxsize),
+    'electronics': (0, 0, sys.maxsize),
+    'biotechnology': (0, 0, sys.maxsize),
 }
 
+
+""" List of tech fields """
 TECH_FIELDS = ['energy', 'weapons', 'propulsion', 'construction', 'electronics', 'biotechnology']
+
 
 """ Represent 'tech level' """
 class TechLevel(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     """ Determine if the item is available for a player's tech level """
     def is_available(self, level):
         for field in TECH_FIELDS:
@@ -54,6 +54,13 @@ class TechLevel(Defaults):
             cost += max(0, level.cost_for_next_level(field, race, increase) - partial[field])
         return cost
 
+    """ Sum of levels """
+    def total_levels(self):
+        levels = 0
+        for field in TECH_FIELDS:
+            levels += self[field]
+        return levels
+
     """ Format the tech level for HTML """
     def to_html(self, show_zero=False):
         html = ''
@@ -70,5 +77,6 @@ class TechLevel(Defaults):
         if self.biotechnology > 0 or show_zero:
             html += '<i class="fa-seedling" title="Biotechnology"> ' + str(self.biotechnology) + '</i>'
         return html
+
 
 TechLevel.set_defaults(TechLevel, __defaults)

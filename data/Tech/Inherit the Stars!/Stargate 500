@@ -1,0 +1,23 @@
+{
+    "ID": "Stargate 500",
+    "category": "Orbital",
+    "description": "Allows a ship to jump to another gate in a single year, with a range of 500 minus the ship's mass (including cargo!). Any number of ships can use the gate. Only Patryns can jump with colonists.",
+    "race_requirements": "-Formics",
+    "cost": {
+        "titanium": 50,
+        "lithium": 20,
+        "silicon": 20,
+        "energy": 25000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "propulsion": 7,
+        "construction": 5,
+        "__class__": "TechLevel"
+    },
+    "mass": 80,
+    "stargate": 500,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
+}

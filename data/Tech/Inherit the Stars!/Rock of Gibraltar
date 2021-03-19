@@ -1,0 +1,19 @@
+{
+    "ID": "Rock of Gibraltar",
+    "category": "Armor",
+    "description": "armor",
+    "cost": {
+        "titanium": 8,
+        "lithium": 0,
+        "silicon": 0,
+        "energy": 1800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 6,
+        "__class__": "TechLevel"
+    },
+    "mass": 54,
+    "armor": 120,
+    "__class__": "Tech"
+}

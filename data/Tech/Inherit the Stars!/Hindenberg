@@ -1,0 +1,29 @@
+{
+    "ID": "Hindenberg",
+    "category": "Bomb",
+    "description": "Bombs an enemy planet from orbit. Smart bombs are better at penetrating planetary defenses but kill only a percentage of inhabitants.",
+    "race_requirements": "-Gaerhule",
+    "cost": {
+        "titanium": 1,
+        "lithium": 33,
+        "silicon": 3,
+        "energy": 3200,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 22,
+        "biotechnology": 15,
+        "__class__": "TechLevel"
+    },
+    "mass": 220,
+    "bombs": [
+        {
+            "percent_pop_kill": 5,
+            "minimum_pop_kill": 0,
+            "shield_kill": 0,
+            "max_defense": 85,
+            "__class__": "Bomb"
+        }
+    ],
+    "__class__": "Tech"
+}

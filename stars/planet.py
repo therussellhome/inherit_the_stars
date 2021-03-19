@@ -3,7 +3,9 @@ from colorsys import hls_to_rgb
 from math import cos, sin
 from random import randint, uniform
 from . import game_engine
+from . import scan
 from . import stars_math
+from .fleet import Fleet
 from .cargo import Cargo
 from .cost import Cost
 from .defaults import Defaults
@@ -18,35 +20,35 @@ from .terraform import Terraform
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'location': [Location()],
-    'distance': [50, 0, 100],
-    'temperature': [50, -50, 150],
-    'radiation': [50, -50, 150],
-    'gravity': [50, -50, 150],
-    'temperature_terraform': [0, 0, 100],
-    'radiation_terraform': [0, 0, 100],
-    'gravity_terraform': [0, 0, 100],
-    'remaining_minerals': [Minerals()],
-    'on_surface': [Cargo()],
-    'player': [Reference('Player')],
-    'location': [Location()],
-    'star_system': [Reference('StarSystem')],
+    'ID': '@UUID',
+    'location': Location(),
+    'distance': (50, 0, 100),
+    'temperature': (50, -50, 150),
+    'radiation': (50, -50, 150),
+    'gravity': (50, -50, 150),
+    'temperature_terraform': (0, 0, 100),
+    'radiation_terraform': (0, 0, 100),
+    'gravity_terraform': (0, 0, 100),
+    'remaining_minerals': Minerals(),
+    'on_surface': Cargo(),
+    'player': Reference('Player'),
+    'homeworld': False,
+    'location': Location(),
+    'star_system': Reference('StarSystem'),
+    'space_stations': Fleet(),
     # facilities where the key matches from the facility class
-    'power_plants': [0, 0, sys.maxsize],
-    'factories': [0, 0, sys.maxsize],
-    'mines': [0, 0, sys.maxsize],
-    'defenses': [0, 0, sys.maxsize],
+    'power_plants': (0, 0, sys.maxsize),
+    'factories': (0, 0, sys.maxsize),
+    'mines': (0, 0, sys.maxsize),
+    'defenses': (0, 0, sys.maxsize),
 }
 
 
 """ Planets are colonizable by only one player, have minerals, etc """
 class Planet(Defaults):
-
     """ Initialize defaults """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'name' not in kwargs:
-            self.name = 'Planet_' + str(id(self))
         if 'temperature' not in kwargs:
             self.temperature = randint(0, 100)
             if 'star_system' in kwargs:
@@ -68,7 +70,6 @@ class Planet(Defaults):
             self.orbit_speed = uniform(0.01, 1.0)
         if 'age' not in kwargs:
             self.age = randint(0, 3000)
-        self.__cache__ = {}
         game_engine.register(self)
 
     """ Get the planets color """
@@ -79,7 +80,7 @@ class Planet(Defaults):
         color = hls_to_rgb(t, .5, r)
         color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X')
         return color_string
-
+    
     """ Code the planet orbiting its star """
     # t = years it takes planet to orbit, min 1 year, max 30 years
     # m = the sun's gravity clicks
@@ -103,7 +104,7 @@ class Planet(Defaults):
 
     """ Check if the planet is colonized """
     def is_colonized(self):
-        return self.player.is_valid
+        return self.on_surface.people > 0
 
     """ Colonize the planet """
     # player is a Player object (reference created internally)
@@ -184,7 +185,7 @@ class Planet(Defaults):
     """ how many facilities can be operated """
     # avoid creating facilities
     def _operate(self, facility_type, ideal=False):
-        allocation = getattr(self.player.get_minister(self.name), facility_type)
+        allocation = getattr(self.player.get_minister(self), facility_type)
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
         operate = self.player.race[facility_type + '_per_10k_colonists'] * workers / 10000
         if ideal:
@@ -238,16 +239,17 @@ class Planet(Defaults):
         self.__cache__['production'] = production
         if item.cost.is_zero():
             item.finish()
-            return true
+            return True
         if not from_queue:
             self.player.build_queue.append(item)
+        self.__cache__['production_blocked'] = True
         return False
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):
-        minister = self.player.get_minister(self.name)
+        minister = self.player.get_minister(self)
         keep_going = True
-        while keep_going and len(self.__cache__['build_queue']) == 0:
+        while keep_going and not self.__cache__.get('production_blocked', False):
             # Terraforming
             worst_hab = None
             worst_hab_from_center = 0.0
@@ -257,16 +259,16 @@ class Planet(Defaults):
             if not self.player.race.lrt_Bioengineer:
                 max_offset = int(max_offset / 2)
             for hab in ['temperature', 'radiation', 'gravity']:
-                hab_from_center = self._calc_range_from_center(self[hab], race['hab_' + hab], race['hab_' + hab + '_stop'], self[hab + '_terraform'])
+                hab_from_center = self._calc_range_from_center(self[hab], self.player.race['hab_' + hab], self.player.race['hab_' + hab + '_stop'], self[hab + '_terraform'])
                 if hab_from_center > worst_hab_from_center and self[hab + '_terraform'] < max_offset:
                     worst_hab = hab
                     worst_hab_from_center = hab_from_center
             if worst_hab:
-                keep_goind = self.build(Terraform(hab=worst_hab, planet=self))
+                keep_going = self.build(Terraform(hab=worst_hab, planet=self))
             else:
                 # Build facility
                 worst_facility = None
-                wosst_facility_percent = 1.0
+                worst_facility_percent = 1.0
                 for facility in FACILITY_TYPES:
                     operate = self._operate(facility)
                     ideal = self._operate(facility, True)
@@ -280,7 +282,7 @@ class Planet(Defaults):
 
     """ Do baryogenesis """
     def baryogenesis(self):
-        if self.player.get_minister(self.name).allow_baryogenesis:
+        if self.player.get_minister(self).allow_baryogenesis:
             spend_e = self.player.spend('baryogenesis', self.__cache__['production'] * self.player.race.cost_of_baryogenesis)
             minerals = spend_e / self.player.race.cost_of_baryogenesis
             lowest = ''
@@ -291,59 +293,10 @@ class Planet(Defaults):
                     lowest_kt = self.on_surface[m]
             self.on_surface[lowest] += minerals
             self.__cache__['production'] -= minerals
-        
-
-        """
-        if not self.player.is_valid:
-            return
-        #facility = self.auto_upgrade()
-        #if facility != None:
-        #    return facility
-        minister = self.player.get_minister(self.name)
-    #TODO    scanner_tech = self.player.max_tech('planetary_scanner')
-    #TODO    penetrating_tech = self.player.max_tech('planetary_penetrating')
-        num_facilities = (self.factories + self.power_plants + self.mines + self.defenses)
-        if minister.build_penetrating_after_num_facilities <= num_facilities: # and self.penetrating_tech != penetrating_tech:
-            self.penetrating_tech = 'penetrating_tech'
-            return self.penetrating_tech
-        elif minister.build_scanner_after_num_facilities <= num_facilities: # and self.scanner_tech != scanner_tech:
-            self.scanner_tech = 'scanner_tech'
-            return self.scanner_tech
-        else:
-            factory_percent = ((self.player.race.colonists_to_operate_factory * getattr(self, 'Factory').quantity) / self.on_surface.people) - (minister.factories / 100)
-            power_plant_percent = ((self.player.race.colonists_to_operate_power_plant * getattr(self, 'Power Plant').quantity) / self.on_surface.people) - (minister.power_plants / 100)
-            mine_percent = ((self.player.race.colonists_to_operate_mine * getattr(self, 'Mineral Extractor').quantity) / self.on_surface.people) - (minister.mines / 100)
-            defense_percent = ((self.player.race.colonists_to_operate_defense * getattr(self, 'Planetary Shields').quantity) / self.on_surface.people) - (minister.defenses / 100)
-            check = [[factory_percent, 'Factory'], [power_plant_percent, 'Power'], [mine_percent, 'Mine'], [defense_percent, 'Defense']]
-            #print(check)
-            least = 1
-            lest = 0
-            for i in range(len(check)):
-                if check[i][0] <= least:
-                    least = check[i][0]
-                    lest = i
-            self.facilities[check[lest][1]].build_prep()
-            return self.facilities[check[lest][1]]#Reference()#?
-        """
-
-    """ checks for upgrades """
-    """
-    def auto_upgrade(self):
-        if not self.player.is_valid:
-            return None
-        for facility in self.facilities:
-            upgrade = facility.upgrade_available(self.player)
-            if upgrade:
-                facility.cost_incomeplete = facility.upgrade_cost(self.player, upgrade)
-                return facility
-        return None
-    #"""
 
     """ build stuff in build queue """
     def do_construction(self, auto_build=False, allow_baryogenesis=False):
-        if not self.player.is_valid:
-            return
-        minister = self.player.get_minister(self.name)
+        minister = self.player.get_minister(self)
         zero_cost = Cost()
         while len(self.build_queue) > 0:
             item = self.build_queue[0]
@@ -374,11 +327,37 @@ class Planet(Defaults):
             if len(self.build_queue) == 0 and auto_build:
                 self.build_queue.extend(self.auto_build())
 
-    """ Perform scanning """
-    def scan(self):
-        if self.player.is_valid:
-            getattr(self, 'Planetary Scanner').scan_planets(self.player, self.location)
-            getattr(self, 'Planetary Scanner').scan_planets(self.player, self.location)
+    """ Perform penetrating scanning """
+    def scan_penetrating(self):
+        if self.is_colonized():
+            scan.penetrating(self.player, self.location, 250) #TODO Pam please update the scanner range
+
+    """ Perform normal scanning """
+    def scan_normal(self):
+        if self.is_colonized():
+            scan.normal(self.player, self.location, 100) #TODO Pam please update the scanner range
+
+    """ Return intel report when scanned """
+    def scan_report(self, scan_type=''):
+        report = {
+            'location': self.location,
+            'color': self.get_color(),
+            'gravity': self.gravity,
+            'temperature': self.temperature,
+            'radiation': self.radiation,
+            'Lithium Availability': self.mineral_availability('lithium'),
+            'Silicon Availability': self.mineral_availability('silicon'),
+            'Titanium Availability': self.mineral_availability('titanium'),
+        }
+        if self.is_colonized():
+            report['Player'] = self.player
+            report['Population'] = self.on_surface.people
+        return report
+
+    """ Shift population via orbital mattrans """
+    def mattrans(self):
+        for station in self.space_stations.ships:
+            pass #TODO
 
 
 Planet.set_defaults(Planet, __defaults)

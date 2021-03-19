@@ -10,6 +10,7 @@ __all__ = [
     'planetaryministers',
     'planets',
     'plans',
+    'play_complete',
     'race_editor',
     'race_viewer',
     'render_stars',

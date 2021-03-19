@@ -4,7 +4,7 @@ from .cost import Cost
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'facility_type': [''],
+    'facility_type': '',
 }
 
 
@@ -20,8 +20,10 @@ _facility_costs = {
     'defenses': Cost(titanium=0, lithium=0, silicon=0, energy=0), # TODO Pam please come up with a cost
 }
 
+
 """ Temporary class to indicate facility in process """
 class Facility(BuildQueue):
+    """ Store the cost to build the facility """
     def __init__(self, **kwargs):
         global _facility_costs
         super().__init__(**kwargs)
@@ -30,5 +32,6 @@ class Facility(BuildQueue):
     """ Mark the item as completed """
     def finish(self):
         self.planet[self.facility_type] += 1
+
 
 Facility.set_defaults(Facility, __defaults)

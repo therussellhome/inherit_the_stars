@@ -1,0 +1,23 @@
+{
+    "ID": "Ship Yard 1000",
+    "category": "Orbital",
+    "description": "Ship yards are the components which allow your starbases to build ships.  This one enables you to build ships with a mass of up to 1000kT per ship.  Ship yard capacity has no effect on the number of ships you can build per year.  It does affect the amount of repair work your starbase can do (on itself or ships) in a year.",
+    "race_requirements": "McMansion",
+    "cost": {
+        "titanium": 20,
+        "lithium": 20,
+        "silicon": 30,
+        "energy": 10000,
+        "__class__": "Cost"
+    },
+    "level": {
+        "construction": 7,
+        "__class__": "TechLevel"
+    },
+    "mass": 600,
+    "shipyard": 1000,
+    "repair": 3000,
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
+}

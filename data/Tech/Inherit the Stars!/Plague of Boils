@@ -1,0 +1,30 @@
+{
+    "ID": "Plague of Boils",
+    "category": "Missile",
+    "description": "Almost twice as powerful as Plague on Livestock.  Capital ship missiles do double damage if the target ship has no remaining shields.",
+    "cost": {
+        "titanium": 48,
+        "lithium": 16,
+        "silicon": 11,
+        "energy": 1600,
+        "__class__": "Cost"
+    },
+    "level": {
+        "weapons": 16,
+        "propulsion": 8,
+        "__class__": "TechLevel"
+    },
+    "mass": 35,
+    "weapons": [
+        {
+            "power": 150,
+            "range_tm": 0.6,
+            "armor_multiplier": 2,
+            "is_beam": false,
+            "is_multishot": false,
+            "accuracy": 30,
+            "__class__": "Weapon"
+        }
+    ],
+    "__class__": "Tech"
+}

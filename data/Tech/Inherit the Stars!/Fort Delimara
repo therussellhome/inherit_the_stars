@@ -1,0 +1,22 @@
+{
+    "ID": "Fort Delimara",
+    "category": "Armor",
+    "description": "armor which includes shield",
+    "race_requirements": "Gaerhule",
+    "cost": {
+        "titanium": 10,
+        "lithium": 0,
+        "silicon": 2,
+        "energy": 2800,
+        "__class__": "Cost"
+    },
+    "level": {
+        "energy": 4,
+        "construction": 10,
+        "__class__": "TechLevel"
+    },
+    "mass": 28,
+    "shield": 50,
+    "armor": 175,
+    "__class__": "Tech"
+}

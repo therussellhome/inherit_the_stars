@@ -1,0 +1,27 @@
+{
+    "ID": "Bullfrog 7",
+    "category": "Engine",
+    "description": "A faster (or more fuel-efficient at lower speeds) but expensive engine: can go 49 light years per year with reasonable mass per engine.",
+    "cost": {
+        "titanium": 11,
+        "lithium": 0,
+        "silicon": 3,
+        "energy": 1200,
+        "__class__": "Cost"
+    },
+    "level": {
+        "propulsion": 4,
+        "__class__": "TechLevel"
+    },
+    "mass": 13,
+    "engines": [
+        {
+            "kt_exponent": 1.5,
+            "speed_divisor": 10,
+            "speed_exponent": 5.0,
+            "antimatter_siphon": 0,
+            "__class__": "Engine"
+        }
+    ],
+    "__class__": "Tech"
+}
