@@ -3,6 +3,7 @@ from .playerui import PlayerUI
 
 """ Default values (default, min, max)  """
 __defaults = {
+<<<<<<< HEAD
     'planets_filters': [[]],
     'planets_filter': ['My Planets']
     'options_planets_filter': [[]],
@@ -10,6 +11,12 @@ __defaults = {
     'planets_report': [[]],
     'options_planets_field': [[]],
     'planets_field': ['Habitability']
+=======
+    'planets_filters': [],
+    'planets_filter': 'My Planets',
+    'planets_report': [],
+    'planets_field': 'Habitability',
+>>>>>>> 73144c9d60dfb3d00495bc2d59ad7c961c30cf1a
 }
 
 
@@ -39,6 +46,7 @@ class Planets(PlayerUI):
         ps = []
         for p in self.player.get_intel('Planet'):
             planets.append(p)
+
             ps.append(p)
         # Get suns
         for s in self.player.get_intel('Sun'):

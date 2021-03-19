@@ -27,7 +27,7 @@ root = pathlib.Path(__file__).parent
 def add_lines(self, line_data):
     global coverage_filter
     for f in line_data:
-        if f.split('/')[-1][:-3] == coverage_filter or not coverage_filter:
+        if f.replace('\\', '/').split('/')[-1][:-3] == coverage_filter or not coverage_filter:
             self.add_lines_real({f: line_data[f]})
 
 """ Override the test case run method to capture the file under test """
