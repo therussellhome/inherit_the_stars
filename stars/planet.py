@@ -102,7 +102,7 @@ class Planet(Defaults):
         self.x = r * cos(angle)
         #"""
 
-    """ Check if the planet is colonized """
+    """ Check whether the planet is colonized """
     def is_colonized(self):
         return self.on_surface.people > 0
 
@@ -130,7 +130,7 @@ class Planet(Defaults):
     x=g-1/2 for g>1/2 | x=0 for g<1/2
     y=t-1/2 for t>1/2 | y=0 for t<1/2
     z=r-1/2 for r>1/2 | z=0 for r<1/2
-    negative planet value is calculated using the same equasion
+    negative planet value is calculated using the same equation
     with g, t, and r = 0 if < 1 | g, t, r = value - 1
     and 100 subtracted from the result
     """
@@ -199,9 +199,9 @@ class Planet(Defaults):
             return self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
         return 0
 
-    """ power plants make energy 1/100th """
+    """ power plants make energy per 1/100th """
     def generate_energy(self):
-        facility_yj =  self._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion)
+        facility_yj =  round(self._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
         pop_yj = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
         self.player.energy += facility_yj + pop_yj
         return facility_yj + pop_yj
@@ -222,13 +222,13 @@ class Planet(Defaults):
             avail[m] = (((self.remaining_minerals[m] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
         return avail
 
-    """ calculates max production capacity per 100th """
+    """ calculates max production capacity per 100th """ #TODO if doing production in fractions breaks it, then make all production cost 100x as much capacity and get rid of the divide by 100 below and in line 277
     def operate_factories(self):
         # 1 unit of production free
-        self.__cache__['production'] = 1 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
+        self.__cache__['production'] = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
         return self.__cache__['production']
     
-    """ get the time needed to get all the materials for a production queue item. """
+    """ Get the time needed to get all the materials for a production queue item. """
     def time_til_done(self, queue, i):
         ti = 0
         li = 0
@@ -433,12 +433,22 @@ class Planet(Defaults):
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         if self.is_colonized():
-            scan.penetrating(self.player, self.location, 250) #TODO Pam please update the scanner range
+            if self.player.race.lrt_2ndSight:
+                p = round((50 + 10 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            else:
+                p = min(100, round((10 + 4 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000)))
+            return p
+            scan.penetrating(self.player, self.location, p) #TODO Pam coded this I hope it works :-D
 
     """ Perform normal scanning """
     def scan_normal(self):
         if self.is_colonized():
-            scan.normal(self.player, self.location, 100) #TODO Pam please update the scanner range
+            if self.player.race.lrt_2ndSight:
+                r = round((100 + 20 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            else:
+                r = round((100 + 40 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            return r
+            scan.normal(self.player, self.location, r) #TODO Pam coded this I hope it works :-D
 
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):
