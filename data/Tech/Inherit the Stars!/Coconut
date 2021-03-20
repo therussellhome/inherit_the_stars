@@ -18,10 +18,6 @@
     "cargo_max": 15,
     "fuel_max": 75000,
     "armor": 5,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "engines": [
         {
             "kt_exponent": 1.25,

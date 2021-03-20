@@ -6,17 +6,22 @@ class FacilityTestCase(unittest.TestCase):
         f = facility.Facility(facility_type='power_plants')
         self.assertEqual(f.cost.energy, 250)
 
-    def test_cost2(self):
-        with self.assertRaises(LookupError):
-            f = facility.Facility()
-
-    def test_finish1(self):
+    def test_build1(self):
         f = facility.Facility(facility_type='power_plants')
-        f.finish()
+        f.build()
+        self.assertEqual(f.planet.power_plants, 0)
+
+    def test_build2(self):
+        f = facility.Facility(facility_type='power_plants')
+        f.build(f.cost)
         self.assertEqual(f.planet.power_plants, 1)
 
-    def test_finish2(self):
+    def test_build3(self):
         f = facility.Facility(facility_type='power_plants')
         f.planet.power_plants = 4
-        f.finish()
+        f.build(f.cost)
         self.assertEqual(f.planet.power_plants, 5)
+
+    def test_html1(self):
+        f = facility.Facility(facility_type='power_plants')
+        self.assertEqual(f.to_html(), 'Power Plant')

@@ -21,8 +21,8 @@ class Cargo(Minerals):
     def __add__(self, other):
         m = super().__add__(other)
         c = Cargo(**m.__dict__)
-        c.people = self.people + other.people
-        c.cargo_max = self.cargo_max + other.cargo_max
+        c.people = self.people + getattr(other, 'people', 0)
+        c.cargo_max = self.cargo_max + getattr(other, 'cargo_max', 0)
         return c
 
     def _sum(self):

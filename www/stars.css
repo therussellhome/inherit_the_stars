@@ -79,6 +79,15 @@ div.submenu {
     padding-left: 70px;
     transition: 0.5s;
 }
+div.sidebarr {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    height: 100%;
+    background-color: rgba(0, 0, 44, 0.5);
+    transition: 0.5s;
+}
 div.toc {
     position: fixed;
     top: 0;
@@ -218,11 +227,23 @@ textarea:disabled {
     background: black;
 }
 
+.power-color { background: cyan; }/* power-plants */
+.factory-color { background: limegreen; }/* factories */
+.mine-color { background: lightcoral; }/* mines */
+.shield-color { background: mediumslateblue; }/* defences */
+.reserch-color { background: olive; }
+.mat-trans-color { background: violet; }
+
+
 i {
     font-style: normal;
     padding-right: 0.5em; 
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
+}
+
+i.fas.fa-star {
+    color: yellow;
 }
 
 /* Expand section */
