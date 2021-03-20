@@ -494,10 +494,13 @@ void main() {
 
 <div class="screen hide onload" id="screen_waypoints" style="width: 600px" onload="post('waypoint')">
     <table class="topbar hfill"><tr>
-        <td><img title="Fleets" src="ships.png"/></td>
-        <td class="hfill" style="font-size: 200%">Fleets</td> 
-        <td><i class="button far fa-times-circle" title="Return to Fleet Viewer" onclick="show_screen(null)"></i></td>
+    <td><img title="Waypoints" src="ships.png"/></td>
+    <td class="hfill" style="font-size: 200%">Waypoints</td>
+    <td><i class="button far fa-times-circle" title="Close Waypoint Screen" onclick="show_screen(null)"></i></td>
     </tr></table>
+    <table class="hfill" id="" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Test</caption>
+    </table>
 </div>
 
 <div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">

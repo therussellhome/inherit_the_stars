@@ -30,6 +30,8 @@ __defaults = {
     'cargo': Cargo(),
     'expirence': Expirence(),
     'player': Reference('Player'),
+    'fuel_max': (0, 0, sys.maxsize),
+    'fuel': (0, 0, sys.maxsize),
     'in_queue': False,
 }
 
