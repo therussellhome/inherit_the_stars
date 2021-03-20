@@ -16,6 +16,7 @@ from .minerals import Minerals, MINERAL_TYPES
 from .reference import Reference
 from .tech import Tech
 from .terraform import Terraform
+from math import ceil
 
 
 """ Default values (default, min, max)  """
@@ -35,7 +36,6 @@ __defaults = {
     'homeworld': False,
     'location': Location(),
     'star_system': Reference('StarSystem'),
-    'space_stations': Fleet(),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
@@ -72,7 +72,7 @@ class Planet(Defaults):
             self.age = randint(0, 3000)
         game_engine.register(self)
 
-    """ Get the planets color """
+    """ Get the planet's color """
     # return it in a hexdecimal string so the webpage can use it
     def get_color(self):
         t = (min(100, max(0, self.temperature)) / 100) * .75
@@ -102,7 +102,7 @@ class Planet(Defaults):
         self.x = r * cos(angle)
         #"""
 
-    """ Check if the planet is colonized """
+    """ Check whether the planet is colonized """
     def is_colonized(self):
         return self.on_surface.people > 0
 
@@ -130,7 +130,7 @@ class Planet(Defaults):
     x=g-1/2 for g>1/2 | x=0 for g<1/2
     y=t-1/2 for t>1/2 | y=0 for t<1/2
     z=r-1/2 for r>1/2 | z=0 for r<1/2
-    negative planet value is calculated using the same equasion
+    negative planet value is calculated using the same equation
     with g, t, and r = 0 if < 1 | g, t, r = value - 1
     and 100 subtracted from the result
     """
@@ -149,7 +149,7 @@ class Planet(Defaults):
         z = max(0.0, r - 0.5)
         return round(100 * (((1.0 - g)**2 + (1.0 - t)**2 + (1.0 - r)**2)**0.5) * (1.0 - x) * (1.0 - y) * (1.0 - z) / (3.0**0.5) + negative_offset)
 
-    """ Calculate the distance from the center of the habital range to the planet's attribute
+    """ Calculate the distance from the center of the habitable range to the planet's attribute
     if inside habitable range return (0..1)
     if outside habitable range return (1..2) bounding at 2
     """
@@ -183,9 +183,8 @@ class Planet(Defaults):
         return self.on_surface.people
 
     """ how many facilities can be operated """
-    # avoid creating facilities
     def _operate(self, facility_type, ideal=False):
-        allocation = getattr(self.player.get_minister(self), facility_type)
+        allocation = self.player.get_minister(self)[facility_type]
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
         operate = self.player.race[facility_type + '_per_10k_colonists'] * workers / 10000
         if ideal:
@@ -194,56 +193,160 @@ class Planet(Defaults):
 
     """ Incoming! """
     def raise_shields(self):
-        return self._operate('defenses') * self.playertech_level.energy * 1234 # TODO Pam please come up with equasion
+        if self.player.race.primary_race_trait == 'Gaerhule':
+            return self._operate('defenses') * max(480, 240 * self.player.tech_level.energy)
+        elif self.player.race.primary_race_trait != 'Aku\'Ultan':
+            return self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
+        return 0
 
-    """ power plants make energy """
+    """ power plants make energy per 1/100th """
     def generate_energy(self):
-        facility_yj =  self._operate('power_plants') * self.player.tech_level.propulsion * 1234 # TODO Pam please come up with equasion
+        facility_yj =  round(self._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
         pop_yj = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
         self.player.energy += facility_yj + pop_yj
         return facility_yj + pop_yj
 
-    """ mines mine the minerals """
+    """ mines mine the minerals per 100th """
     def mine_minerals(self):
-        factor = 1 / (self.player.tech_level.weapons + 1) # TODO Pam please come up with equasion
+        factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
         operate = self._operate('mines')
+        availability = self.mineral_availability()
         for mineral in MINERAL_TYPES:
-            availability = self.mineral_availability(mineral)
-            self.on_surface[mineral] += round(operate * availability)
-            self.remaining_minerals[mineral] -= round(operate * availability * factor)
+            self.on_surface[mineral] += operate * availability[mineral] / 100
+            self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
 
     """ Availability of the mineral type """
-    def mineral_availability(self, mineral):
-        return (((self.remaining_minerals[mineral] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+    def mineral_availability(self):
+        avail = Minerals()
+        for m in MINERAL_TYPES:
+            avail[m] = (((self.remaining_minerals[m] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+        return avail
 
-    """ calculates max production capasity """
+    """ calculates max production capacity per 100th """ #TODO if doing production in fractions breaks it, then make all production cost 100x as much capacity and get rid of the divide by 100 below and in line 277
     def operate_factories(self):
         # 1 unit of production free
-        self.__cache__['production'] = 1 + self._operate('factories') * self.player.tech_level.construction * 1234 # TODO Pam please come up with equasion
+        self.__cache__['production'] = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
         return self.__cache__['production']
-
+    
+    """ Get the time needed to get all the materials for a production queue item. """
+    def time_til_done(self, queue, i):
+        ti = 0
+        li = 0
+        si = 0
+        yj = 0
+        pro = 0
+        # get what is needed
+        for j in range(len(queue)):
+            item = queue[j]
+            yj += item.cost.energy
+            if item.planet == self:
+                ti += item.cost.titanium
+                li += item.cost.lithium
+                si += item.cost.silicon
+            if j == i:
+                break
+        pro = ti + li + si
+        # calculate the time needed to get what is needed
+        try:
+            t_ti = ceil(max((ti - self.on_surface.titanium) / (self.mineral_availability('titanium') * self._operate('mines')), 1))/100
+        except ZeroDivisionError:
+            if ti - self.on_surface.titanium >= 0:
+                t_ti = 0.01
+            else:
+                t_ti = 'never'
+        try:
+            t_li = ceil(max((li - self.on_surface.lithium) / (self.mineral_availability('lithium') * self._operate('mines')), 1))/100
+        except ZeroDivisionError:
+            if li - self.on_surface.lithium >= 0:
+                t_li = 0.01
+            else:
+                t_li = 'never'
+        try:
+            t_si = ceil(max((si - self.on_surface.silicon) / (self.mineral_availability('silicon') * self._operate('mines')), 1))/100
+        except ZeroDivisionError:
+            if si - self.on_surface.silicon >= 0:
+                t_si = 0.01
+            else:
+                t_si = 'never'
+        try:
+            t_yj = ceil(max((yj - (self.player.energy * self.player.finance_construction_percent / 100)) / (self.player.predict_budget() * self.player.finance_construction_percent / 100), 1))/100
+        except ZeroDivisionError:
+            if yj - (self.player.energy * self.player.finance_construction_percent / 100) >= 0:
+                t_yj = 0.01
+            else:
+                t_yj = 'never'
+        try:
+            t_pro = ceil(max(pro / (1 + self._operate('factories') * (5 + self.player.tech_level.construction / 2)), 1))/100
+        except ZeroDivisionError:
+            t_pro = 'never'
+        return (t_ti, t_li, t_si, t_yj, t_pro, pro)
+    
+    def time_til_html(self, cost_in_html, queue, i):
+        html1 = ''
+        html2 = ''
+        time = self.time_til_done(queue, i)
+        cost = cost_in_html.split('</i>')
+        for c in cost:
+            if 'Titanium' in c:
+                html1 += '<td>' + c + '</i></td>'
+                if time[0] == 'never':
+                    html2 += '<td>never</td>'
+                else:
+                    html2 += '<td>' + str(time[0]) + ' years</td>'
+            elif 'Lithium' in c:
+                html1 += '<td>' + c + '</i></td>'
+                if time[1] == 'never':
+                    html2 += '<td>never</td>'
+                else:
+                    html2 += '<td>' + str(time[1]) + ' years</td>'
+            elif 'Silicon' in c:
+                html1 += '<td>' + c + '</i></td>'
+                if time[2] == 'never':
+                    html2 += '<td>never</td>'
+                else:
+                    html2 += '<td>' + str(time[2]) + ' years</td>'
+            elif 'Energy' in c:
+                html1 += '<td>' + c + '</i></td>'
+                if time[3] == 'never':
+                    html2 += '<td>never</td>'
+                else:
+                    html2 += '<td>' + str(time[3]) + ' years</td>'
+        html1 += '<td>' + str(queue[i].cost.titanium + queue[i].cost.lithium + queue[i].cost.silicon) + '</i></td>'
+        if time[4] == 'never':
+            html2 += '<td>never</td>'
+        else:
+            html2 += '<td>' + str(time[4]) + ' years</td>'
+        return (html1, html2)
+    
     """ Build an item """
     def build(self, item, from_queue=True):
         production = self.__cache__['production']
-        item.cost.energy -= self.player.spend(item.__class__.__name__, item.cost.energy)
-        for m in MINERAL_TYPES:
-            use_p = min(production, item.cost[m], self.on_surface[m])
-            production -= use_p
-            self.on_surface[m] -= use_p
-            item.cost[m] -= use_p
-            if item.cost[m] > 0 and item.baryogenesis:
-                spend_e = self.player.spend('baryogenesis', min(production / 2, item.cost[m]) * self.player.race.cost_of_baryogenesis)
-                baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
-                production -= baryogenesis_minerals * 2
-                item.cost[m] -= baryogenesis_minerals
+        spend = Cost()
+        in_progress = item.build()
+        while not in_progress.is_zero():
+            spend = Cost()
+            spend.energy -= self.player.spend(item.__class__.__name__, in_progress.energy)
+            for m in MINERAL_TYPES:
+                use_p = min(production, in_progress[m], self.on_surface[m])
+                production -= use_p
+                self.on_surface[m] -= use_p
+                spend[m] -= use_p
+                if spend[m] < in_progress[m] and item.baryogenesis:
+                    spend_e = self.player.spend('baryogenesis', min(production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
+                    baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
+                    production -= baryogenesis_minerals * 2
+                    spend[m] -= baryogenesis_minerals
+            # Apply build effort
+            in_progress = item.build(spend)
+            # Blocked
+            if spend.is_zero():
+                if not from_queue:
+                    self.player.build_queue.append(item)
+                self.__cache__['production'] = production
+                self.__cache__['production_blocked'] = True
+                return False
         self.__cache__['production'] = production
-        if item.cost.is_zero():
-            item.finish()
-            return True
-        if not from_queue:
-            self.player.build_queue.append(item)
-        self.__cache__['production_blocked'] = True
-        return False
+        return True
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):
@@ -330,12 +433,22 @@ class Planet(Defaults):
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         if self.is_colonized():
-            scan.penetrating(self.player, self.location, 250) #TODO Pam please update the scanner range
+            if self.player.race.lrt_2ndSight:
+                p = round((50 + 10 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            else:
+                p = min(100, round((10 + 4 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000)))
+            return p
+            scan.penetrating(self.player, self.location, p) #TODO Pam coded this I hope it works :-D
 
     """ Perform normal scanning """
     def scan_normal(self):
         if self.is_colonized():
-            scan.normal(self.player, self.location, 100) #TODO Pam please update the scanner range
+            if self.player.race.lrt_2ndSight:
+                r = round((100 + 20 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            else:
+                r = round((100 + 40 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
+            return r
+            scan.normal(self.player, self.location, r) #TODO Pam coded this I hope it works :-D
 
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):
@@ -345,9 +458,9 @@ class Planet(Defaults):
             'gravity': self.gravity,
             'temperature': self.temperature,
             'radiation': self.radiation,
-            'Lithium Availability': self.mineral_availability('lithium'),
-            'Silicon Availability': self.mineral_availability('silicon'),
-            'Titanium Availability': self.mineral_availability('titanium'),
+            'Lithium Availability': self.mineral_availability().lithium,
+            'Silicon Availability': self.mineral_availability().silicon,
+            'Titanium Availability': self.mineral_availability().titanium,
         }
         if self.is_colonized():
             report['Player'] = self.player
@@ -356,8 +469,7 @@ class Planet(Defaults):
 
     """ Shift population via orbital mattrans """
     def mattrans(self):
-        for station in self.space_stations.ships:
-            pass #TODO
+        pass #TODO get stations in orbit, check for mattrans
 
 
 Planet.set_defaults(Planet, __defaults)

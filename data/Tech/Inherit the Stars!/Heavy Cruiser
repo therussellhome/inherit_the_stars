@@ -1,7 +1,7 @@
 {
     "ID": "Heavy Cruiser",
     "category": "Hull",
-    "description": "Ship hull with 16 general-purpose slots.",
+    "description": "Ship hull with 16 general-purpose slots",
     "cost": {
         "titanium": 12,
         "lithium": 6,
@@ -17,10 +17,6 @@
     "cargo_max": 0,
     "fuel_max": 320000,
     "armor": 80,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 16,
     "slots_general": 16,
     "__class__": "Tech"

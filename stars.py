@@ -14,14 +14,14 @@ from stars.ui import *
 """ Map of post handlers """
 _handlers = {
     '/battles': battles.Battles,
-    '/energy_minister': energy_minister.EnergyMinister,
+    '/finance_minister':finance_minister.FinanceMinister,
     '/fleets': fleets.Fleets,
     '/foreign_minister': foreign_minister.ForeignMinister,
     '/host': host.Host,
     '/launch': launch.Launch,
     '/messages': messages.Messages,
     '/new_game': new_game.NewGame,
-    '/planetary_minister': planetary_minister.PlanetaryMinister,
+    '/planetary_minister': planetaryministers.PlanetaryMinisters,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
     '/play_complete': play_complete.PlayComplete,

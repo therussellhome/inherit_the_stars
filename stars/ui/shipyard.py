@@ -76,7 +76,7 @@ class Shipyard(PlayerUI):
 
         # Hull selection
         for t in self.player().tech: 
-            if t.is_available(self.player().tech_level, self.player().race) and t.category in ['Hull', 'Starbase']:
+            if t.is_available(self.player().tech_level, self.player().race) and t.category.endswith('Hull'):
                 self.options_shipyard_hull.append(t.ID)
         if self.shipyard_hull != '':
             design.set_hull('Tech/' + self.shipyard_hull)
@@ -89,6 +89,8 @@ class Shipyard(PlayerUI):
         if action.startswith('del='):
             tech = Reference('Tech/' + action[4:])
             design.remove_component(tech)
+        # Recompute stats
+        design.compute_stats(self.player().tech_level)
 
         # Check validity of design
         # valid designs are stored in the player's ship_designs

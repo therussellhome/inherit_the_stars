@@ -1,7 +1,7 @@
 {
     "ID": "Merkon",
-    "category": "Starbase",
-    "description": "The starting starbase hull, with 96 general purpose slots and 5 orbital slots, which can be used for shipyards, particle accelerators (to make antimatter fuel for ships), or other orbital components.",
+    "category": "Starbase Hull",
+    "description": "The starting starbase hull, with 96 general purpose slots and 4 orbital slots, which can be used for shipyards, particle accelerators (to make antimatter fuel for ships), or other orbital components.",
      "cost": {
         "titanium": 80,
         "lithium": 10,
@@ -15,12 +15,9 @@
     },
     "mass": 400,
     "armor": 400,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 100,
+    "is_starbase": true,
     "slots_general": 96,
-    "slots_orbital": 5,
+    "slots_orbital": 4,
     "__class__": "Tech"
 }

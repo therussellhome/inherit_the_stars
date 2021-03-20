@@ -32,6 +32,7 @@ __defaults = {
     'player': Reference('Player'),
     'fuel_max': (0, 0, sys.maxsize),
     'fuel': (0, 0, sys.maxsize),
+    'in_queue': False,
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
@@ -114,12 +115,13 @@ class Ship(ShipDesign):
     """ Mines the planet if the planet is not colonized """
     def orbital_mining(self, planet):
         if not planet.is_colonized():
-            planet.on_surface.titanium += round(self.mining_rate * planet.mineral_availability('titanium'))
-            planet.on_surface.silicon += round(self.mining_rate * planet.mineral_availability('silicon'))
-            planet.on_surface.lithium += round(self.mining_rate * planet.mineral_availability('lithium'))
-            planet.remaining_minerals.titanium -= round(self.mining_rate * planet.mineral_availability('titanium') * self.percent_wasted)
-            planet.remaining_minerals.silicon -= round(self.mining_rate * planet.mineral_availability('silicon') * self.percent_wasted)
-            planet.remaining_minerals.lithium -= round(self.mining_rate * planet.mineral_availability('lithium') * self.percent_wasted)
+            avail = planet.mineral_availability()
+            planet.on_surface.titanium += round(self.mining_rate * avail.titanium)
+            planet.on_surface.silicon += round(self.mining_rate * avail.silicon)
+            planet.on_surface.lithium += round(self.mining_rate * avail.lithium)
+            planet.remaining_minerals.titanium -= round(self.mining_rate * avail.titanium * self.percent_wasted)
+            planet.remaining_minerals.silicon -= round(self.mining_rate * avail.silicon * self.percent_wasted)
+            planet.remaining_minerals.lithium -= round(self.mining_rate * avail.lithium * self.percent_wasted)
     
     """ Repairs the ship if it needs it """
     def repair_self(self, amount):
@@ -175,5 +177,18 @@ class Ship(ShipDesign):
         if scan_type != 'hyperdenial':
             report['Apparent Mass'] = self.calc_apparent_mass()
         return report
+
+    """ Find owning fleet """
+    def find_fleet(self):
+        for f in self.player.fleets:
+            if self in f.ships:
+                return f
+        return Fleet()
+
+    """ Recompute self from components """
+    def compute_stats(self, tech_level):
+        if tech_level > self.level:
+            self.level = tech_level
+        super().compute_stats(self.level)
 
 Ship.set_defaults(Ship, __defaults)

@@ -62,7 +62,7 @@ void main() {
     <tr><td><img class="button" id="button_home2" title="Inherit The Stars!" src="S!.png" onclick="show_menu('home')" onmouseover="show_menu('home2')"/></td></tr>
     <tr><td><img class="button" id="button_reports" title="Reports" src="reports.png" onclick="show_menu('reports')" onmouseover="show_menu('reports')"/></td></tr>
     <tr><td><img class="button" id="button_ministers" title="Ministers" src="ministers.png" onclick="show_menu('ministers')" onmouseover="show_menu('ministers')"/></td></tr>
-    <tr><td><img class="button" id="button_admirality" title="Admirality" src="admirality.png" onclick="show_menu('admirality')" onmouseover="show_menu('admirality')"/></td></tr>
+    <tr><td><img class="button" id="button_admiralty" title="admiralty" src="admiralty.png" onclick="show_menu('admiralty')" onmouseover="show_menu('admiralty')"/></td></tr>
     <tr><td><img class="button" id="button_game" title="Game" src="launch.gif" onclick="show_menu('game')" onmouseover="show_menu('game')"/></td></tr>
     <tr><td><img class="button" id="button_help_menu_play" title="Help" src="help.png" onclick="show_menu('help_menu_play')" onmouseover="show_menu('help_menu_play')"/></td></tr>
 </table></div>
@@ -75,23 +75,23 @@ void main() {
     
 
 <div class="submenu hide" id="submenu_reports" onmouseleave="show_menu(null)">
-    <img class="button" id="button_messages" title="Messages" src="messages.png" onclick="show_screen('messages')"/>
-    <img class="button" id="button_planets" title="Planets" src="planets.png" onclick="show_screen('planets')"/>
-    <img class="button" id="button_fleets" title="Fleets" src="ships.png" onclick="show_screen('fleets')"/>
-    <img class="button" id="button_interstellar" title="Interstellar Objects" src="interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
-    <img class="button" id="button_battles" title="Battles" src="battles.png" onclick="show_screen('battles')"/>
+    <img class="button" id="button_messages" title="Messages" src="/messages.png" onclick="show_screen('messages')"/>
+    <img class="button" id="button_planets" title="Planets" src="/planets.png" onclick="show_screen('planets')"/>
+    <img class="button" id="button_fleets" title="Fleets" src="/ships.png" onclick="show_screen('fleets')"/>
+    <img class="button" id="button_interstellar_objects" title="Interstellar Objects" src="/interstellar_objects.png" onclick="show_screen('interstellar_objects')"/>
+    <img class="button" id="button_battles" title="Battles" src="/battles.png" onclick="show_screen('battles')"/>
 </div>
     
 
 <div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
-    <img class="button" id="button_energy_minister" title="Energy Minister" src="energy_minister.png" onclick="show_screen('energy_minister')"/>
-    <img class="button" id="button_planetary_minister" title="Planetary Minister" src="planetary_minister.png" onclick="show_screen('planetary_minister')"/>
-    <img class="button" id="button_research_minister" title="Research Minister" src="research_minister.png" onclick="show_screen('research_minister')"/>
-    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="foreign_minister.png" onclick="show_screen('foreign_minister')"/>
+    <img class="button" id="button_finance_minister" title="Finance Minister" src="/finance_minister.png" onclick="show_screen('finance_minister')"/>
+    <img class="button" id="button_planetary_ministers" title="Planetary Minister" src="/planetary_minister.png" onclick="show_planetary()"/>
+    <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
+    <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
 </div>
     
 
-<div class="submenu hide" id="submenu_admirality" onmouseleave="show_menu(null)">
+<div class="submenu hide" id="submenu_admiralty" onmouseleave="show_menu(null)">
     <img class="button" id="button_shipyard" title="Shipyard" src="shipyard.png" onclick="show_screen('shipyard')"/>
     <img class="button" id="button_plans" title="Operational Plans" src="plans.png" onclick="show_screen('plans')"/>
 </div>
@@ -116,6 +116,8 @@ void main() {
     <img class="button" id="button_help_play" title="Help" src="help.png" onclick="show_screen('help')"/>
 </div>
 
+<div class="sidebarr hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
+</table></div>
 
 <div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
     <div style="font-size: 600%">INHERIT THE</div>
@@ -458,37 +460,40 @@ void main() {
 
 
 <div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
-    <input id="messages_index" class="hidden" disabled="true"/>
     <table class="topbar hfill"><tr>
+        <td><img title="Messages" src="/messages.png"/></td>
         <td class="hfill" style="font-size: 200%">Messages</td>
         <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')"><select id="messages_filter"/></caption>
-        <tr><td><select id="message_list" class="hfill" size="10"/></td></tr>
-    </table><table class="hfill">
-        <tr>
+        <tr style="border-bottom: 1px solid silver">
+            <td id="messages_sender" class="hfill"></td>
+            <td id="messages_date"></td>
+            <td id="messages_star" style="padding-left: 1em" onclick="post('messages', '?star')"/></td>
+            <td id="messages_action" style="padding-right: 1em"></td>
             <td><i class="button fas fa-arrow-circle-left" title="Previous Message" onclick="post('messages', '?prev')"></i></td>
-            <td class="hfill"></td>
-            <td><i class="button far fa-trash-alt" title="Delete Message" onclick="post('messages', '?trash')"></i></td>
-            <td><i class="button fas fa-external-link-alt" title="Take Action" onclick="message_goto()"></i></td>
+            <td id="messages_number"></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Message" onclick="post('messages', '?next')"></i></td>
         </tr>
-    </table><table class="hfill">
-        <tr>
-            <td rowspan="2"><img class="button" src="ministers.png"/></td>
-            <td colspan="2" class="hfill"><input id="messages_subject" disabled="true" style="color: white; font-weight: bold; font-size: 150%"/></td>
-        </tr><tr>
-            <td class="hfill"><input id="messages_from" disabled="true" style="color: white; font-weight: bold; font-size: 75%"/></td>
-            <td><input id="messages_date" disabled="true" style="font-size: 75%"/></td>
-        </tr><tr>
-            <td colspan="3" class="hfill" style="height: 100%"><textarea style="width: 100%; height: 100%; color: white" id="messages_text" disabled="true"></textarea></td>
-        </tr>
+        <tr><td colspan="7" id="messages_text" style="white-space: normal"></td></tr>
+        <tr style="display: none"><td id="messages_index">0</td></tr>
+    </table><table id="messages_inbox" class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Inbox</caption>
     </table>
 </div>
 
-
 <div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Planets" src="planets.png"/><td>
+        <td class="hfill" style="font-size: 200%">Planets</td>
+        <td><i class="button far fa-times-circle" title="Close Planets" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill">
+        <tr><td>Filter</td><td class="hfill"><select id="planets_filter" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
+        <tr><td>Field</td><td class="hfill"><select id="planets_field" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
+    </table>
+    <table id="planets_report">
+    </table>
 </div>
 
 
@@ -541,11 +546,90 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_energy_minister" style="width: 600px" onload="post('energy_minister')">
+<div class="screen hide onload" id="screen_finance_minister" style="width: 600px" onload="post('finance_minister')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Finance Minister" src="/finance_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Finance Minister</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table><table class="hfill">
+        <tr>
+            <td>construction</td><td>mattrans</td><td>research</td><td title="trade and savings">other</td>
+        </tr><tr>
+            <td id="finance_construction"></td>
+            <td id="finance_mattrans"></td>
+            <td id="finance_research"></td>
+            <td id="finance_other"></td>
+        </tr><tr>
+            <td colspan="4" class="hfill"><div class="onload" id="finance_slider" onload="finance_slider(this, 'finance_minister', 0, 100, 0.2)"></div></td>
+        </tr><tr>
+            <td colspan="4"><input type="checkbox" id="finance_mattrans_use_surplus" onchange="post('finance_minister')"/> allow mattrans to use surplus</td>
+        </tr><tr>
+            <td colspan="4"><input type="checkbox" id="finance_research_use_surplus" onchange="post('finance_minister')"/> allow research to use surplus</td>
+        </tr>
+    </table><table class="hfill" id="finance_queue" style="font-size: 75%">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Build Queue</caption>
+    </table><table class="hfill" id="finance_buildable" style="font-size: 75%">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Buildable</caption>
+    </table>
+</div>
+
+
+<div class="screen hide onload" id="screen_planetary_ministers" style="width: 600px" onload="post('planetary_minister')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Planetary Ministers" src="/ministers.png"/></td>
+        <td class="hfill" style="font-size: 200%">Planetary Ministers</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill"><tr><td>
+        <select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"/>
+    </td></tr></table>
+    <table id="planetary_planets" class="hfill">
+    </table>    
+</div>
+
+
+<div class="screen hide onload" id="screen_planetary_ministers" style="width: 600px" onload="post('planetary_minister')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Planetary Ministers" src="/ministers.png"/></td>
+        <td class="hfill" style="font-size: 200%">Planetary Ministers</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill"><tr><td>
+        new colony minister<select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"/>
+    </td></tr></table>
+    <table id="planetary_planets" class="hfill">
+    </table>    
 </div>
 
 
 <div class="screen hide onload" id="screen_planetary_minister" style="width: 600px" onload="post('planetary_minister')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Planetary Minister" src="/planetary_minister.png"/></td>
+        <td class="hfill" style="font-size: 200%">Planetary Minister</td> 
+        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td colspan="4">name<input id="planetary_name" onchange="post('planetary_minister')"/></td>
+        </tr><tr class="collapse">
+            <td colspan="4"><input id="planetary_ID" disabled="true"></td>
+        </tr><tr>
+            <td>power plants</td><td>factories</td><td>mineral extractors</td><td>planetary shields</td>
+        </tr><tr>
+            <td><input disabled="true" id="planetary_power" style="width: 4em"/></td>
+            <td><input disabled="true" id="planetary_factory" style="width: 4em"></td>
+            <td><input disabled="true" id="planetary_mine" style="width: 4em"/></td>
+            <td><input disabled="true" id="planetary_shield" style="width: 4em"/></td>
+        </tr><tr>
+            <td colspan="4" class="hfill"><div class="onload" id="planetary_facility_types" onload="planetary_slider(this, 'planetary_minister', 0, 100, 1)"/></td>
+        </tr><tr>
+            <td colspan="4"><input id="planetary_max_terraform" type="checkbox" onchange="post('planetary_minister')" style="width: 1em"/> terraform more than minimum</td>
+        </tr><tr>
+            <td colspan="4"><input id="planetary_allow_baryogenesis" type="checkbox" onchange="post('planetary_minister')" style="width: 1em"/> allow baryogenesis</td>
+        </tr><tr>
+            <td colspan="4">color<input id="planetary_color" onchange="post('planetary_minister')"/></td>
+        </tr>
+    </table>    
 </div>
 
 

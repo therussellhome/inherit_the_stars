@@ -1,7 +1,7 @@
 {
     "ID": "Destroyer",
     "category": "Hull",
-    "description": "Ship hull with 8 general-purpose slots.",
+    "description": "Ship hull with 8 general-purpose slots",
     "cost": {
         "titanium": 6,
         "lithium": 3,
@@ -17,10 +17,6 @@
     "cargo_max": 0,
     "fuel_max": 120000,
     "armor": 40,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 8,
     "slots_general": 8,
     "__class__": "Tech"

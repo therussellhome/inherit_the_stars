@@ -1,7 +1,7 @@
 {
     "ID": "Scout",
     "category": "Hull",
-    "description": "Ship hull with room for 2 components including engine.",
+    "description": "Ship hull with room for 2 components including engine",
     "cost": {
         "titanium": 2,
         "lithium": 0,
@@ -17,10 +17,6 @@
     "cargo_max": 0,
     "fuel_max": 25000,
     "armor": 10,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 2,
     "slots_general": 2,
     "__class__": "Tech"

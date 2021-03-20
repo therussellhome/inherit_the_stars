@@ -29,12 +29,12 @@ class Defaults(game_engine.BaseClass):
             default = getattr(self.__class__, 'defaults', {}).get(name, None)
             if default is not None:
                 try:
-                    if isinstance(default, int):
+                    if isinstance(default, bool):
+                        value = bool(value)
+                    elif isinstance(default, int):
                         value = int(value)
                     elif isinstance(default, float):
                         value = float(value)
-                    elif isinstance(default, bool):
-                        value = bool(value)
                     elif isinstance(value, type(default)):
                         pass
                     else:

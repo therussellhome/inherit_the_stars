@@ -62,7 +62,9 @@ class Tech(Defaults):
 
     """ Get tech group """
     def tech_group(self):
-        if self.category in ['Beam Weapon', 'Bomb', 'Missile']:
+        if self.category.endswith('Hull') or self.category in ['Mechanical']:
+            return 'Hulls & Mechanicals'
+        elif self.category in ['Beam Weapon', 'Bomb', 'Missile']:
             return 'Weapons'
         elif self.category in ['Shield', 'Armor']:
             return 'Defense'
@@ -70,8 +72,6 @@ class Tech(Defaults):
             return 'Electronics'
         elif self.category in ['Engine']:
             return 'Engines'
-        elif self.category in ['Starbase', 'Hull', 'Mechanical']:
-            return 'Hulls & Mechanicals'
         elif self.category in ['Depot', 'Orbital']:
             return 'Heavy Equipment'
         else:
@@ -91,12 +91,23 @@ class Tech(Defaults):
                     return False
         return True
 
+    """ Get the minituarized value """
+    def miniaturize(self, tech_level, field=None):
+        if field == 'cost':
+            return self.cost # TODO
+        else:
+            return self.mass # TODO
+
+    """ Get the cost to reminituarize """
+    def reminiatuarize(self, current_level, new_level):
+        if new_level > current_level:
+            return self.cost * 0.1 #TODO
+        return Cost()
+
     """ Calculate the scrap value """
-    def scrap_value(self, race):
-        if self.under_construction:
-            return Cost()
-        c = copy.copy(self.cost)
-        complete.energy = 0
+    def scrap_value(self, race, tech_level):
+        c = self.minituarization(tech_level, 'cost')
+        c.energy = 0
         return c * (race.scrap_rate() / 100)
 
     """ Build the overview table """
