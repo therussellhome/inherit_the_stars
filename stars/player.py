@@ -4,6 +4,7 @@ from math import ceil
 from . import game_engine
 from .defaults import Defaults
 from .intel import Intel, IntelHistory
+from .minister import Minister
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
@@ -31,7 +32,7 @@ __defaults = {
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
     'planets': [], # list of colonized planets
-    'planetary_ministers': [PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)], # list of planetary ministers
+    'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
     'score': Score(),
     'tech_level': TechLevel(), # current tech levels
@@ -43,11 +44,11 @@ __defaults = {
     'fleets': [],
     'tech': [], # tech tree
     'treaties': [],
-    'build_queue': [Facility()], # array of BuildQueue items
-    'finance_construction_percent': (90.0, 0.0, 100.0),
-    'finance_mattrans_percent': (0.0, 0.0, 100.0),
+    'build_queue': [], # array of BuildQueue items
+    'finance_construction_percent': (90, 0, 100),
+    'finance_mattrans_percent': (0, 0, 100),
     'finance_mattrans_use_surplus': False,
-    'finance_research_percent': (10.0, 0.0, 100.0),
+    'finance_research_percent': (10, 0, 100),
     'finance_research_use_surplus': False,
     'finance_baryogenesis_default': True,
     'historical': {}, # map of category to value by year (not hundreth)
@@ -58,11 +59,11 @@ __defaults = {
 _player_fields = [
     'ready_to_generate',
     'planetary_minister_map',
-    'planetary_ministers',
     'research_queue',
     'research_field',
     'fleets',
     'messages',
+    'ministers',
     'ship_designs',
     'treaties',
     'build_queue',
@@ -85,11 +86,21 @@ class Player(Defaults):
             self.validation_key = str(uuid.uuid4())
         if 'date' not in kwargs:
             self.date = '{:01.2f}'.format(self.race.start_date)
-        for planet in self.planets:
-            try:
-                self.planetary_minister_map[Reference(planet)]
-            except KeyError:
-                self.planetary_minister_map[Reference(planet)] = self.get_minister(Reference(planet))
+        if 'ministers' not in kwargs:
+            self.ministers.append(Minister(ID='Admiralty'))
+            self.add_message(sender=Reference('Minister/Admiralty'), message='introduction')
+            self.ministers.append(Minister(ID='Foreign'))
+            self.add_message(sender=Reference('Minister/Foreign'), message='introduction')
+            self.ministers.append(Minister(ID='Finance'))
+            self.add_message(sender=Reference('Minister/Finance'), message='introduction')
+            self.ministers.append(Minister(ID='Research'))
+            self.add_message(sender=Reference('Minister/Research'), message='introduction')
+            self.ministers.append(PlanetaryMinister(name='Home'))
+            self.add_message(sender=Reference(self.ministers[-1]), message='introduction1')
+            for planet in self.planets:
+                self.planetary_minister_map[Reference(planet)] = Reference(self.ministers[-1])
+            self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
+            self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
         self.__cache__ = {}
 
@@ -162,6 +173,10 @@ class Player(Defaults):
                     intel[k] = v
             return intel
     
+    """ Get the local name for something """
+    def get_name(self, obj):
+        return self.get_intel(reference=Reference(obj)).name
+
     """ Store historical values - accumulates across the year """
     def add_historical(self, category, value):
         history = self.historical.get(category, [])
@@ -177,7 +192,7 @@ class Player(Defaults):
     """ Cleanup messages """
     def cleanup_messages(self):
         for msg in self.messages:
-            if msg.keep == False and msg.read == True:
+            if msg.star == False and msg.read == True:
                 self.messages.remove(msg)
     
     """ Compute score based on intel """
@@ -187,20 +202,7 @@ class Player(Defaults):
     
     """ Get the minister for a given planet """
     def get_minister(self, planet):
-        try:
-            return self.planetary_minister_map[planet]
-        except TypeError:
-            try:
-                return self.planetary_minister_map[Reference(planet)]
-            except KeyError:
-                for m in self.planetary_ministers:
-                    if m.new_colony_minister:
-                        return m
-        except KeyError:
-            for m in self.planetary_ministers:
-                if m.new_colony_minister:
-                    return m
-        return self.planetary_ministers[0]
+        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
     
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
@@ -209,8 +211,8 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
-        if treaty.status = 'pending':
-            self.add_message(msg_key='foreign_minister.proposed_treaty', parameters=[treaty.other_player])
+        if treaty.status == 'pending':
+            self.add_message(sender=Reference('Minister/Foreign'), message='proposed_treaty', parameters=[self.get_name(treaty.other_player)])
         for t in self.treaties:
             if t.treaty_key == treaty.treaty_key and t != treaty:
                 t.merge(treaty)
@@ -222,9 +224,9 @@ class Player(Defaults):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)
-                self.add_message(msg_key='foreign_minister.rejected_treaty', parameters=[t.other_player])
+                self.add_message(sender=Reference('Minister/Foreign'), message='foreign_minister.rejected_treaty', parameters=[self.get_name(t.other_player)])
             elif t.status == 'signed':
-                self.add_message(msg_key='foreign_minister.accepted_treaty', parameters=[t.other_player])
+                self.add_message(sender=Reference('Minister/Foreign'), message='foreign_minister.accepted_treaty', parameters=[self.get_name(t.other_player)])
                 # clear old active treaty (if there was one)
                 for t0 in self.treaties:
                     if t.other_player == t0.other_player and t0.status == 'active':
@@ -338,6 +340,10 @@ class Player(Defaults):
                     self.tech_level[f] += 1
                     self.research_partial[f] -= cost_next
                     cost_next = self.tech_level.cost_for_next_level(f, self.race)
+                    # Find new available tech
+                    for t in self.tech:
+                        if t.level[f] == self.tech_level[f] and t.level.is_available(self.tech_level):
+                            self.add_message(sender=Reference('Minister/Research'), message='new_tech', parameters=[t.ID], action='show_tech(\'' + t.ID + '\')')
             # Scrub the research queue
             for t in self.research_queue:
                 if t.level.is_available(self.tech_level):

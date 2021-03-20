@@ -1,6 +1,6 @@
 {
     "ID": "Rama",
-    "category": "Starbase",
+    "category": "Starbase Hull",
     "description": "Large starbase hull with 144 general purpose slots and 6 orbital slots, which can be used for a shipyard, particle accelerator (to make antimatter fuel for ships), or other orbital component.",
     "race_requirements": "McMansion",
      "cost": {
@@ -17,6 +17,7 @@
     "mass": 600,
     "armor": 600,
     "repair": 150,
+    "is_starbase": true,
     "slots_general": 144,
     "slots_orbital": 6,
     "__class__": "Tech"

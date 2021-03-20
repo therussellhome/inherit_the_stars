@@ -1,4 +1,5 @@
 from .build_queue import BuildQueue
+from .cost import Cost
 
 
 """ Default values (default, min, max)  """
@@ -14,11 +15,18 @@ class Terraform(BuildQueue):
         base = 2500
         if self.planet.player.race.lrt_Bioengineer:
             base = 1800
-        self.cost.energy = base * (1 + self.planet[hab + '_terraform']) ** 1.25
+        self.cost.energy = base * (1 + self.planet[self.hab + '_terraform']) ** 1.25
 
-    """ Mark the item as completed """
-    def finish(self):
-        self.planet[self.hab + '_terraform'] += 1
+    """ Check if we are completed """
+    def build(self, spend=Cost()):
+        super().build(spend)
+        if self.cost.is_zero():
+            self.planet[self.hab + '_terraform'] += 1
+        return self.cost
+
+    """ Build queue display """
+    def to_html(self):
+        return self.hab.capitalize() + ' Terraforming'
 
 
 Terraform.set_defaults(Terraform, __defaults)

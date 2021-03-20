@@ -10,8 +10,16 @@ class _TestGameEngine(game_engine.BaseClass):
         self.register = kwargs.get('register', True)
         self.abc = kwargs.get('abc', 123)
         self.xyz = {'a': 42}
+        self.saved = False
+        self.ref = reference.Reference('_TetGameEngine')
         if self.register:
             game_engine.register(self)
+    def save(self):
+        self.saved = True
+
+class _TestGameEngineErr(game_engine.BaseClass):
+    def __init__(self):
+        a = b
 
 class GameEngineTestCase(unittest.TestCase):
     def onSetup():
@@ -124,6 +132,27 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].ID, t2.ID)
     
+    def test_unregister3(self):
+        game_engine.unregister()
+        t1 = _TestGameEngine(ID='test_unreg3')
+        ts = game_engine.get('_TestGameEngine')
+        self.assertEqual(len(ts), 1)
+        game_engine.set_auto_save(t1)
+        # Unregister t1
+        game_engine.unregister(t1)
+        ts = game_engine.get('_TestGameEngine')
+        self.assertEqual(len(ts), 0)
+        game_engine.auto_save()
+        self.assertEqual(t1.saved, False)
+
+    def test_autosave1(self):
+        game_engine.unregister()
+        t1 = _TestGameEngine(ID='test_save1')
+        game_engine.set_auto_save(t1)
+        self.assertEqual(t1.saved, False)
+        game_engine.auto_save()
+        self.assertEqual(t1.saved, True)
+
     def test_json1(self):
         t1 = _TestGameEngine(ID='test_json')
         json = game_engine.to_json(t1)
@@ -132,6 +161,7 @@ class GameEngineTestCase(unittest.TestCase):
     
     def test_json2(self):
         self.assertEqual(game_engine.from_json('this is bad json and is supposed to print'), None)
+        self.assertEqual(game_engine.to_json({self: ''}), None)
 
     def test_json3(self):
         t1 = _TestGameEngine(ID='test_json')
@@ -153,6 +183,7 @@ class GameEngineTestCase(unittest.TestCase):
     def test_save_load1(self):
         game_engine.unregister()
         t1 = _TestGameEngine(ID='save_load')
+        t1.l = [1,2,3]
         game_engine.save('test', 'save_load', t1)
         game_engine.unregister()
         t2 = game_engine.load('test', 'save_load')
@@ -164,8 +195,8 @@ class GameEngineTestCase(unittest.TestCase):
     def test_save_load2(self):
         game_engine.unregister()
         t1 = _TestGameEngine(ID='sparse', abc=555)
-        _TestGameEngine.defaults = {'abc': [555, 0, 999]}
-        _TestGameEngine.sparse_json = {'abc': True}
+        t1.__class__.defaults = {'abc': 555, 'saved': True}
+        t1.__class__.sparse_json = {'abc': True, 'saved': True, 'xyz': False}
         game_engine.save('test', 'sparse', t1)
         game_engine.unregister()
         t2 = game_engine.load('test', 'sparse')
@@ -173,7 +204,7 @@ class GameEngineTestCase(unittest.TestCase):
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
         self.assertEqual(ts[0].ID, 'sparse')
-        self.assertEqual(ts[0].abc, 555)
+        self.assertEqual(ts[0].abc, 123)
 
     def test_list(self):
         game_engine.unregister()
@@ -182,5 +213,27 @@ class GameEngineTestCase(unittest.TestCase):
         game_engine.unregister()
         # Testing list has to be done after save
         l = game_engine.load_list('test')
-        self.assertGreater(len(l), 0)
-        self.assertEqual(l[0], '_list')
+        self.assertGreater(len(l), 1)
+
+    def test_load1(self):
+        game_engine.unregister()
+        # Testing list has to be done after save
+        t = game_engine.load('test', '_list0')
+        self.assertEqual(t.ID, 'list0')
+
+    def test_load2(self):
+        game_engine.unregister()
+        # Testing list has to be done after save
+        t = game_engine.load('test', '_load')
+        self.assertEqual(len(t), 2)
+
+    def test_load3(self):
+        game_engine.unregister()
+        # Testing list has to be done after save
+        t = game_engine.load('test', '_empty')
+        self.assertEqual(len(t), 0)
+
+    def test_new1(self):
+        with self.assertRaises(Exception):
+            game_engine.get('_TestGameEngineErr/1', True)
+

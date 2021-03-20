@@ -1,6 +1,6 @@
 from .playerui import PlayerUI
 from ..reference import Reference
-from ..treaty import Treaty, TREATY_BUY_SELL_FIELDS
+from ..waypoint import Waypoint as Waypoint_2
 
 
 """ Default values (default, min, max)  """
@@ -19,7 +19,7 @@ for key in TREATY_BUY_SELL_FIELDS:
 
 
 """ Foregin misister shows current relationships / treaties and pending treaties """
-class ForeignMinister(PlayerUI):
+class Waypoint(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         if not self.player():
@@ -97,7 +97,7 @@ class ForeignMinister(PlayerUI):
             self['foreign_' + f + '_display'] = self._display_energy(self['foreign_' + f])
 
     """ Build rows for a current/proposed treaty """
-    def _display_treaty(self, treaty):
+    def _display_waypoint(self, waypoint):
         buttons = '<td rowspan="2"></td>' \
             + '<td rowspan="2"><i class="button far fa-trash-alt" title="Cancel" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>'
         if treaty.status == 'pending':

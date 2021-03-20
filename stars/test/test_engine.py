@@ -2,6 +2,14 @@ import unittest
 from .. import *
 
 class EngineTestCase(unittest.TestCase):
+    def test_tach100_1(self):
+        e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
+        self.assertEqual(e.speed_at_tach_100(100, 5), 5)
+
+    def test_tach100_2(self):
+        e = engine.Engine(kt_exponent=4.0, speed_divisor=11.0, speed_exponent=4.0)
+        self.assertEqual(e.speed_at_tach_100(1000, 5), 1)
+
     def test_tachometer(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
         self.assertEqual(e.tachometer(1, 100, 0), 0)

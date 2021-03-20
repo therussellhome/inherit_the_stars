@@ -36,7 +36,6 @@ __defaults = {
     'homeworld': False,
     'location': Location(),
     'star_system': Reference('StarSystem'),
-    'space_stations': Fleet(),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
@@ -185,7 +184,7 @@ class Planet(Defaults):
 
     """ how many facilities can be operated """
     def _operate(self, facility_type, ideal=False):
-        allocation = getattr(self.player.get_minister(self), facility_type)
+        allocation = self.player.get_minister(self)[facility_type]
         workers = allocation / 100 * self.on_surface.people * self.player.race.pop_per_kt()
         operate = self.player.race[facility_type + '_per_10k_colonists'] * workers / 10000
         if ideal:
@@ -211,14 +210,17 @@ class Planet(Defaults):
     def mine_minerals(self):
         factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
         operate = self._operate('mines')
+        availability = self.mineral_availability()
         for mineral in MINERAL_TYPES:
-            availability = self.mineral_availability(mineral)
-            self.on_surface[mineral] += operate * availability / 100
-            self.remaining_minerals[mineral] -= operate * availability * factor / 100
+            self.on_surface[mineral] += operate * availability[mineral] / 100
+            self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
 
     """ Availability of the mineral type """
-    def mineral_availability(self, mineral):
-        return (((self.remaining_minerals[mineral] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+    def mineral_availability(self):
+        avail = Minerals()
+        for m in MINERAL_TYPES:
+            avail[m] = (((self.remaining_minerals[m] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
+        return avail
 
     """ calculates max production capacity per 100th """ #TODO if doing production in fractions breaks it, then make all production cost 100x as much capacity and get rid of the divide by 100 below and in line 277
     def operate_factories(self):
@@ -319,25 +321,32 @@ class Planet(Defaults):
     """ Build an item """
     def build(self, item, from_queue=True):
         production = self.__cache__['production']
-        item.cost.energy -= self.player.spend(item.__class__.__name__, item.cost.energy)
-        for m in MINERAL_TYPES:
-            use_p = min(production, item.cost[m], self.on_surface[m])
-            production -= use_p
-            self.on_surface[m] -= use_p
-            item.cost[m] -= use_p
-            if item.cost[m] > 0 and item.baryogenesis:
-                spend_e = self.player.spend('baryogenesis', min(production / 2, item.cost[m]) * self.player.race.cost_of_baryogenesis)
-                baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
-                production -= baryogenesis_minerals * 2
-                item.cost[m] -= baryogenesis_minerals
+        spend = Cost()
+        in_progress = item.build()
+        while not in_progress.is_zero():
+            spend = Cost()
+            spend.energy -= self.player.spend(item.__class__.__name__, in_progress.energy)
+            for m in MINERAL_TYPES:
+                use_p = min(production, in_progress[m], self.on_surface[m])
+                production -= use_p
+                self.on_surface[m] -= use_p
+                spend[m] -= use_p
+                if spend[m] < in_progress[m] and item.baryogenesis:
+                    spend_e = self.player.spend('baryogenesis', min(production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
+                    baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
+                    production -= baryogenesis_minerals * 2
+                    spend[m] -= baryogenesis_minerals
+            # Apply build effort
+            in_progress = item.build(spend)
+            # Blocked
+            if spend.is_zero():
+                if not from_queue:
+                    self.player.build_queue.append(item)
+                self.__cache__['production'] = production
+                self.__cache__['production_blocked'] = True
+                return False
         self.__cache__['production'] = production
-        if item.cost.is_zero():
-            item.finish()
-            return True
-        if not from_queue:
-            self.player.build_queue.append(item)
-        self.__cache__['production_blocked'] = True
-        return False
+        return True
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):
@@ -449,9 +458,9 @@ class Planet(Defaults):
             'gravity': self.gravity,
             'temperature': self.temperature,
             'radiation': self.radiation,
-            'Lithium Availability': self.mineral_availability('lithium'),
-            'Silicon Availability': self.mineral_availability('silicon'),
-            'Titanium Availability': self.mineral_availability('titanium'),
+            'Lithium Availability': self.mineral_availability().lithium,
+            'Silicon Availability': self.mineral_availability().silicon,
+            'Titanium Availability': self.mineral_availability().titanium,
         }
         if self.is_colonized():
             report['Player'] = self.player
@@ -460,8 +469,7 @@ class Planet(Defaults):
 
     """ Shift population via orbital mattrans """
     def mattrans(self):
-        for station in self.space_stations.ships:
-            pass #TODO
+        pass #TODO get stations in orbit, check for mattrans
 
 
 Planet.set_defaults(Planet, __defaults)

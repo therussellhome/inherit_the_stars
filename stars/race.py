@@ -58,6 +58,7 @@ __defaults = {
     'starting_lithium': (200, 200, 700), 
     'starting_silicon': (200, 200, 700), 
     'starting_titanium': (200, 200, 700), 
+    'message_file': '',
 }
 
 
