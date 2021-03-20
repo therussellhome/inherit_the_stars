@@ -1,7 +1,7 @@
 {
     "ID": "Death Star",
-    "category": "Starbase",
-    "description": "Largest starbase hull, with 192 general purpose slots and 9 orbital slots.",
+    "category": "Starbase Hull",
+    "description": "Largest starbase hull, with 192 general purpose slots and 8 orbital slots.",
     "race_requirements": "Pa'anuri",
      "cost": {
         "titanium": 160,
@@ -17,6 +17,7 @@
     "mass": 800,
     "armor": 800,
     "repair": 200,
+    "is_starbase": true,
     "slots_general": 192,
     "slots_orbital": 8,
     "__class__": "Tech"

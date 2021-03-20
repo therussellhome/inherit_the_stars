@@ -4,10 +4,10 @@ from .minister import Minister
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'name': 'Newly Appointed Minister',
     'new_colony_minister': False,
     'allow_baryogenesis': True,
     'min_terraform_only': False,
-    'planets': [],
     # percent population operating each falicity type where the key matches the facility types
     'power_plants': (30, 0, 100),
     'factories': (30, 0, 100),

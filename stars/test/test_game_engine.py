@@ -161,6 +161,7 @@ class GameEngineTestCase(unittest.TestCase):
     
     def test_json2(self):
         self.assertEqual(game_engine.from_json('this is bad json and is supposed to print'), None)
+        self.assertEqual(game_engine.to_json({self: ''}), None)
 
     def test_json3(self):
         t1 = _TestGameEngine(ID='test_json')

@@ -172,7 +172,7 @@ function post(form = '', action = '') {
     // Only post what is in both the map and has an element
     json_post = {}
     //console.log(json_post);
-    console.log('data is: ', json_map);
+    //console.log(json_map);
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {

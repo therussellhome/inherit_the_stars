@@ -5,6 +5,7 @@ class ShipDesignTestCase(unittest.TestCase):
     def test_hull(self):
         s = ship_design.ShipDesign()
         s.set_hull(tech.Tech(ID='hull', armor=321))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.armor, 321)
 
     def test_armor_strength(self):
@@ -12,6 +13,7 @@ class ShipDesignTestCase(unittest.TestCase):
         self.assertEqual(s.armor, 0)
         s.add_component(tech.Tech(ID='a123', armor=123))
         s.add_component(tech.Tech(ID='a123', armor=123))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.armor, 246)
 
     def test_shield_strength(self):
@@ -19,6 +21,7 @@ class ShipDesignTestCase(unittest.TestCase):
         self.assertEqual(s.shield, 0)
         s.add_component(tech.Tech(ID='s123', shield=123))
         s.add_component(tech.Tech(ID='s321', shield=321))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.shield, 444)
 
     def test_cloak(self):
@@ -26,6 +29,7 @@ class ShipDesignTestCase(unittest.TestCase):
         self.assertEqual(s.cargo_max, 0)
         s.add_component(tech.Tech(ID='c50', cloak=cloak.Cloak(percent=50)))
         s.add_component(tech.Tech(ID='c50', cloak=cloak.Cloak(percent=50)))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.cloak.percent, 75)
 
     def test_cargo_max(self):
@@ -33,6 +37,7 @@ class ShipDesignTestCase(unittest.TestCase):
         self.assertEqual(s.cargo_max, 0)
         s.add_component(tech.Tech(ID='cargo123', cargo_max=123))
         s.add_component(tech.Tech(ID='cargo321', cargo_max=321))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.cargo_max, 444)
 
     def test_fuel_max(self):
@@ -40,14 +45,17 @@ class ShipDesignTestCase(unittest.TestCase):
         self.assertEqual(s.fuel_max, 0)
         s.add_component(tech.Tech(ID='f123', fuel_max=123))
         s.add_component(tech.Tech(ID='f321', fuel_max=321))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.fuel_max, 444)
 
     def test_remove1(self):
         s = ship_design.ShipDesign()
         s.add_component(tech.Tech(ID='a123', armor=123))
         s.add_component(tech.Tech(ID='a321', armor=321))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.armor, 444)
         s.remove_component(tech.Tech(ID='a321', armor=321))
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.armor, 123)
 
     def test_remove2(self):
@@ -58,11 +66,13 @@ class ShipDesignTestCase(unittest.TestCase):
         s.remove_component(t)
         s.remove_component(t)
         s.remove_component(t)
+        s.compute_stats(tech_level.TechLevel())
         self.assertEqual(s.armor, 0)
 
     def test_valid1(self):
         s = ship_design.ShipDesign()
         s.set_hull(tech.Tech(ID='hull1', slots_general=1))
+        s.compute_stats(tech_level.TechLevel())
         self.assertTrue(s.is_valid())
 
     def test_valid2(self):
@@ -70,6 +80,7 @@ class ShipDesignTestCase(unittest.TestCase):
         s.set_hull(tech.Tech(ID='hull1', slots_general=1))
         s.add_component(tech.Tech(ID='a123', armor=123))
         s.add_component(tech.Tech(ID='a123', armor=123))
+        s.compute_stats(tech_level.TechLevel())
         self.assertFalse(s.is_valid())
 
     def test_valid3(self):
@@ -77,6 +88,7 @@ class ShipDesignTestCase(unittest.TestCase):
         l = tech_level.TechLevel()
         s.set_hull(tech.Tech(ID='hull2', slots_general=1))
         s.hull.level.energy = 10
+        s.compute_stats(tech_level.TechLevel())
         self.assertFalse(s.is_valid(level=l))
 
     def test_valid4(self):
@@ -86,18 +98,23 @@ class ShipDesignTestCase(unittest.TestCase):
         t.level.biotechnology = 9
         s.set_hull(tech.Tech(ID='hull1', slots_general=1))
         s.add_component(t)
+        s.compute_stats(tech_level.TechLevel())
         self.assertFalse(s.is_valid(level=l))
 
     def test_clone(self):
         s1 = ship_design.ShipDesign()
         s1.add_component(tech.Tech(ID='a123', armor=123))
         s1.add_component(tech.Tech(ID='a321', armor=321))
+        s1.compute_stats(tech_level.TechLevel())
         s2 = s1.clone_design()
+        s2.compute_stats(tech_level.TechLevel())
         self.assertEqual(s2.armor, 444)
         self.assertNotEqual(s1.ID, s2.ID)
 
     def test_max_armor1(self):
-        s1 = ship_design.ShipDesign()
-        s1.add_component(tech.Tech(ID='a123', armor=123))
-        s1.add_component(tech.Tech(ID='a321', armor=321))
-        self.assertEqual(s1.max_armor(), 444)
+        s = ship_design.ShipDesign()
+        s.add_component(tech.Tech(ID='a123', armor=123))
+        s.add_component(tech.Tech(ID='a321', armor=321))
+        s.compute_stats(tech_level.TechLevel())
+        s.armor = 1
+        self.assertEqual(s.max_armor(), 444)

@@ -30,6 +30,9 @@ __defaults = {
     'cargo': Cargo(),
     'expirence': Expirence(),
     'player': Reference('Player'),
+    'fuel_max': (0, 0, sys.maxsize),
+    'fuel': (0, 0, sys.maxsize),
+    'in_queue': False,
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
@@ -174,5 +177,18 @@ class Ship(ShipDesign):
         if scan_type != 'hyperdenial':
             report['Apparent Mass'] = self.calc_apparent_mass()
         return report
+
+    """ Find owning fleet """
+    def find_fleet(self):
+        for f in self.player.fleets:
+            if self in f.ships:
+                return f
+        return Fleet()
+
+    """ Recompute self from components """
+    def compute_stats(self, tech_level):
+        if tech_level > self.level:
+            self.level = tech_level
+        super().compute_stats(self.level)
 
 Ship.set_defaults(Ship, __defaults)

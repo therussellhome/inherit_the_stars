@@ -1,7 +1,7 @@
 {
     "ID": "Monolith",
-    "category": "Starbase",
-    "description": "Starbase hull with 48 general purpose slots and 3 orbital slots, which can be used for a shipyard, particle accelerator (to make antimatter fuel for ships), or other orbital component.",
+    "category": "Starbase Hull",
+    "description": "Starbase hull with 48 general purpose slots and 2 orbital slots, which can be used for a shipyard, particle accelerator (to make antimatter fuel for ships), or other orbital component.",
     "race_requirements": "McMansion",
      "cost": {
         "titanium": 16,
@@ -17,6 +17,7 @@
     "mass": 200,
     "armor": 200,
     "repair": 50,
+    "is_starbase": true,
     "slots_general": 48,
     "slots_orbital": 2,
     "__class__": "Tech"
