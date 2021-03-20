@@ -33,6 +33,13 @@ class Fleet(Defaults):
             else:
                 if (self.location - ship.location) <= (stars_math.TERAMETER_2_LIGHTYEAR * 2) and ship not in self.ships:
                     self.ships.append(ship)
+
+    """ Remove ship from fleet """
+    def remove_ship(self, ship):
+        if ship in self.ships:
+            self.ships.remove(ship)
+        if len(self.ships) == 0:
+            pass #TODO remove from player's fleets
     
     #""" checks if can upgrade and then stops moving if comanded to """
     #def check_upgrade(self, player):

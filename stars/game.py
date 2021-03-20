@@ -154,10 +154,6 @@ class Game(Defaults):
         for player in players:
             for fleet in player.fleets:
                 fleets.append(fleet)
-        # add space stations to fleets
-        for planet in planets:
-            if len(planet.station_fleet.ships) > 0:
-                fleets.append(planets.station_fleet)
         fleets.sort(key=lambda x: x.initiative, reverse=False)
         #
         # actions only done at the beginning of a year
@@ -250,7 +246,6 @@ class Game(Defaults):
         self._call(self.get_planets(), 'scan_normal')
         self._call(fleets, 'scan_normal')
         self._call(fleets, 'scan_hyperdenial')
-
 
     """ Execute combat after determining where combat will occur """
     def _combat(self):

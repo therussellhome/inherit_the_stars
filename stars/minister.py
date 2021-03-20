@@ -5,7 +5,6 @@ from .defaults import Defaults
 """ Default values (default, min, max)  """
 __defaults = {
     'ID': '@UUID',
-    'retired': False,
     'name': '',
     'color': 'black',
 }
