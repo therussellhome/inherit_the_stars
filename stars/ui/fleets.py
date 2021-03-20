@@ -7,7 +7,7 @@ __defaults = {
     'other_ships': [],
     'fleet_index': (0, 0, sys.maxsize),
     'ships': [],
-    'waypoints': [],
+    'fleet_waypoints': [],
 }
 
 
@@ -79,15 +79,15 @@ class Fleets(PlayerUI):
                     + '<td>' + str(ship.cargo.titanium) + '</td>'
                     + '<td>' + str(ship.cargo.lithium) + '</td>'
                     + '<td>' + str(ship.cargo.silicon) + '</td>' + '</tr>')
-        self.waypoints.append('<th><i title="Fleet orders">Actions</i></th>'
+        self.fleet_waypoints.append('<th><i title="Fleet orders">Actions</i></th>'
                 + '<th></th>' + '<th></th>' + '<th></th>' + '<th></th>' + '<th></th>'
                 + '<th><i title="X Cordinate">X</i></th>'
                 + '<th><i title="Y Cordinate">Y</i></th>'
                 + '<th><i title="Z Cordinate">Z</i></th>')
         #for i in self.player().fleets:
         if len(self.player().fleets) > 0:
-            for i in range(len(self.player().fleets[self.fleet_index].waypoints)):
-                waypoint = self.player().fleets[self.fleet_index].waypoints[i]
+            for I in range(len(self.player().fleets[self.fleet_index].waypoints)):
+                waypoint = self.player().fleets[self.fleet_index].waypoints[I]
                 shown = ''
                 for i in range(5):
                     if i >= len(waypoint.actions):
@@ -97,8 +97,8 @@ class Fleets(PlayerUI):
                 shown += str('<td>' + str(waypoint.location.x) + '</td>'
                             + '<td>' + str(waypoint.location.y) + '</td>'
                             + '<td>' + str(waypoint.location.z) + '</td>')
-                self.waypoints.append('<tr>'
-                    + '<td><i class="button fas fa-edit" title="Select waypoint" onclick="show_screen(\'waypoint\'), post(\'waypoint\', \'?screen=fleets\'), post(\'waypoint\', \'?fleet_index=' + str(self.fleet_index) + '\')"></td>'
+                self.fleet_waypoints.append('<tr>'
+                    + '<td><i class="button fas fa-edit" title="Select waypoint" onclick="show_screen(\'waypoints\'), post(\'waypoints\', \'?waypoint=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets\')"></td>'
                     + shown + '</tr>')
         
 

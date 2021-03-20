@@ -33,6 +33,7 @@ _handlers = {
     '/settings': settings.Settings,
     '/shipyard': shipyard.Shipyard,
     '/tech': tech.Tech,
+    '/waypoints': waypoints.Waypoints,
 }
 
 
