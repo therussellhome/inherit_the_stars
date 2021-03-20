@@ -41,8 +41,8 @@ class BuildShip(BuildQueue):
             return Cost()
         # Trying to build beyond your tech level - cancel build
         if not self.ship_design.hull.is_available(self.planet.player.tech_level, self.planet.player.race):
-            self.ship.fleet.player.add_message(sender=Reference('Minister/Admiralty'), message='invalid_shipdesign', parameters=[self.ship_design.ID])
-            self.ship.fleet.remove_ship(ship)
+            self.ship.player.add_message(sender=Reference('Minister/Admiralty'), message='invalid_shipdesign', parameters=[self.ship_design.ID])
+            self.ship.find_fleet().remove_ship(ship)
             return Cost()
         # Scrap extra parts, upgrade the rest
         if not self.component:
@@ -87,7 +87,7 @@ class BuildShip(BuildQueue):
     """ Called when being removed from the build queue """
     def cancel(self):
         if not ship.hull:
-            self.ship.fleet.remove_ship(ship)
+            self.ship.find_fleet().remove_ship(ship)
 
     """ Remove component """
     def remove_component(self, tech, cnt):

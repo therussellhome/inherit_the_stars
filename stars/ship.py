@@ -176,6 +176,13 @@ class Ship(ShipDesign):
             report['Apparent Mass'] = self.calc_apparent_mass()
         return report
 
+    """ Find owning fleet """
+    def find_fleet(self):
+        for f in self.player.fleets:
+            if self in f.ships:
+                return f
+        return Fleet()
+
     """ Recompute self from components """
     def compute_stats(self, tech_level):
         if tech_level > self.level:

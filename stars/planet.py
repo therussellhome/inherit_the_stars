@@ -36,7 +36,6 @@ __defaults = {
     'homeworld': False,
     'location': Location(),
     'star_system': Reference('StarSystem'),
-    'station_fleet': Fleet(),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
@@ -460,8 +459,7 @@ class Planet(Defaults):
 
     """ Shift population via orbital mattrans """
     def mattrans(self):
-        for station in self.station_fleet.ships:
-            pass #TODO
+        pass #TODO get stations in orbit, check for mattrans
 
 
 Planet.set_defaults(Planet, __defaults)
