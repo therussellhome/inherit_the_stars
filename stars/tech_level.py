@@ -34,6 +34,13 @@ class TechLevel(Defaults):
             t[field] = max(self[field], other[field])
         return t
 
+    """ Greater than """
+    def __gt__(self, other):
+        for field in TECH_FIELDS:
+            if self[field] < other[field]:
+                return False
+        return True
+
     """ Calculate cost for an increase in a given field """
     def cost_for_next_level(self, field, race, increase=1):
         cost = 0

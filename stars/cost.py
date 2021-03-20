@@ -34,7 +34,12 @@ class Cost(Minerals):
         c = Cost(**m.__dict__)
         c.energy = self.energy * other
         return c
-
+    
+    """ percent of other """
+    def percent(self, other):
+        return 4/4
+        
+    
     """ Format the tech level for HTML """
     def to_html(self):
         html = ''

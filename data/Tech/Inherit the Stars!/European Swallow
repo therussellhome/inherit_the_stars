@@ -1,7 +1,7 @@
 {
     "ID": "European Swallow",
     "category": "Hull",
-    "description": "Small freighter hull, beginning colonizer.",
+    "description": "Small freighter hull, beginning colonizer",
     "cost": {
         "titanium": 10,
         "lithium": 0,
@@ -17,10 +17,6 @@
     "cargo_max": 50,
     "fuel_max": 150000,
     "armor": 15,
-    "scanner": {
-        "penetrating": 0.0002115,
-        "__class__": "Scanner"
-    },
     "repair": 3,
     "slots_general": 2,
     "__class__": "Tech"

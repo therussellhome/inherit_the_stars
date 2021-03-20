@@ -20,14 +20,14 @@ __defaults = {
     'upgrade_if_commanded': False,
     'depart': 'immediately',# 'after x years', 'repair to x', 'remain indef',
     'recipiants': {},
-    # 'load':"your; Planet(), Fleet() or empty_space, salvage",
-    # 'unload':"your; Planet(), Fleet() or salvege",
+    # 'unload':"your; Planet(), Fleet() or empty_space, salvage",
+    # 'load':"your; Planet(), Fleet() or salvege",
     # 'sell':"other; Planet()",
     # 'buy':"other; Planet()",
     # 'merge':Reference(Fleet())
     # 'transfer':Reference(Fleet().player)
     #?'piracy':"other; Fleet()"?
-    'transfers': {}, # 'action':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
+    'transfers': {}, # 'action':[[item, amount], [item, amount], [item, amount], [item, amount], [fuel, amount]],
 }
 
 

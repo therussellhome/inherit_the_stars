@@ -15,11 +15,10 @@ __defaults = {
 class Engine(Defaults):
     """ What is the fastest speed the engine can go without exceeding the tacometer """
     def speed_at_tach_100(self, mass, denials):
-        mass = max(0, int(mass))
-        denials = max(0, int(denials))
-        if denials > 0:
-            mass *= speed * (1 - 0.5 ** denials) * 2
-        return (100 / mass**self.kt_exponent) ** (1 / self.speed_exponent) * self.speed_divisor + 1
+        for speed in range(10, 1, -1):
+            if self.tachometer(speed, mass, denials) <= 100:
+                return speed
+        return 1
     
     """ What is the tachometer for the given mass the engine is driving """
     def tachometer(self, speed, mass, denials):

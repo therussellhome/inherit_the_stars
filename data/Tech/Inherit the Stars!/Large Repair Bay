@@ -15,7 +15,7 @@
         "__class__": "TechLevel"
     },
     "mass": 600,
-    "repair": 400,
+    "repair_bay": 400,
     "slots_depot": -1,
     "slots_general": 0,
     "__class__": "Tech"

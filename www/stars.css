@@ -232,12 +232,15 @@ textarea:disabled {
 .mine-color { background: silver; }/* mines */
 .shield-color { background: mediumslateblue; }/* defences */
 
-
 i {
     font-style: normal;
     padding-right: 0.5em; 
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
+}
+
+i.fas.fa-star {
+    color: yellow;
 }
 
 /* Expand section */

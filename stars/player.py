@@ -4,6 +4,7 @@ from math import ceil
 from . import game_engine
 from .defaults import Defaults
 from .intel import Intel, IntelHistory
+from .minister import Minister
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
@@ -11,6 +12,15 @@ from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
+from .ship import Ship
+from .cargo import Cargo
+from .waypoint import Waypoint
+from .message import Message
+# for testing
+from .planet import Planet
+from .facility import Facility
+from .ship_design import ShipDesign
+from .cost import Cost
 
 
 """ Default values (default, min, max)  """
@@ -24,25 +34,26 @@ __defaults = {
     'computer_player': False,
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
-    'planetary_ministers': [PlanetaryMinister(name='Planetary Minister', new_colony_minister=True)], # list of planetary ministers
+    'planets': [], # list of colonized planets
+    'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
     'score': Score(),
     'tech_level': TechLevel(), # current tech levels
     'research_partial': TechLevel(), # energy spent toward next level
     'research_queue': [], # queue of tech items to research
-    'ship_designs': [], # the existing designs
+    'ship_designs': [ShipDesign(cost = Cost(energy = 2000, titanium = 50, lithium = 13, silicon = 24))], # the existing designs
     'research_field': '<LOWEST>', # next field to research (or 'lowest')
     'energy': (0, 0, sys.maxsize),
     'fleets': [],
     'tech': [], # tech tree
     'treaties': [],
     'build_queue': [], # array of BuildQueue items
-    'finance_minister_construction_percent': (90, 0, 100),
-    'finance_minister_mattrans_percent': (0, 0, 100),
-    'finance_minister_mattrans_use_surplus': False,
-    'finance_minister_research_percent': (10, 0, 100),
-    'finance_minister_research_use_surplus': False,
-    'finance_minister_baryogenesis_default': True,
+    'finance_construction_percent': (90, 0, 100),
+    'finance_mattrans_percent': (0, 0, 100),
+    'finance_mattrans_use_surplus': False,
+    'finance_research_percent': (10, 0, 100),
+    'finance_research_use_surplus': False,
+    'finance_baryogenesis_default': True,
     'historical': {}, # map of category to value by year (not hundreth)
 }
 
@@ -51,21 +62,23 @@ __defaults = {
 _player_fields = [
     'ready_to_generate',
     'planetary_minister_map',
-    'planetary_ministers',
     'research_queue',
     'research_field',
     'fleets',
+    'messages',
+    'ministers',
     'ship_designs',
     'treaties',
-    'finance_minister_construction_percent',
-    'finance_minister_mattrans_percent',
-    'finance_minister_mattrans_use_surplus',
-    'finance_minister_research_percent',
-    'finance_minister_research_use_surplus',
+    'build_queue',
+    'finance_construction_percent',
+    'finance_mattrans_percent',
+    'finance_mattrans_use_surplus',
+    'finance_research_percent',
+    'finance_research_use_surplus',
 ]
 
 
-""" A player in a game """
+""" A player in a gaproductionme """
 class Player(Defaults):
     """ Initialize """
     def __init__(self, **kwargs):
@@ -76,11 +89,69 @@ class Player(Defaults):
             self.validation_key = str(uuid.uuid4())
         if 'date' not in kwargs:
             self.date = '{:01.2f}'.format(self.race.start_date)
-        for planet in self._Player__colonized_planets:
-            if Reference(planet) not in self.planetary_minister_map:
-                self.planetary_minister_map[Reference(planet)] = Reference(self.get_minister(''))
+        if 'ministers' not in kwargs:
+            self.ministers.append(Minister(ID='Admiralty'))
+            self.add_message(sender=Reference('Minister/Admiralty'), message='introduction')
+            self.ministers.append(Minister(ID='Foreign'))
+            self.add_message(sender=Reference('Minister/Foreign'), message='introduction')
+            self.ministers.append(Minister(ID='Finance'))
+            self.add_message(sender=Reference('Minister/Finance'), message='introduction')
+            self.ministers.append(Minister(ID='Research'))
+            self.add_message(sender=Reference('Minister/Research'), message='introduction')
+            self.ministers.append(PlanetaryMinister(name='Home'))
+            self.add_message(sender=Reference(self.ministers[-1]), message='introduction1')
+            for planet in self.planets:
+                self.planetary_minister_map[Reference(planet)] = Reference(self.ministers[-1])
+            self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
+            self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
         self.__cache__ = {}
+        #'''Test line
+        if len(self.fleets) < 3:
+            fleet_3 = Fleet(
+                name = 'Fleet 3', 
+                ships = [
+                    Ship(
+                        ID = 'Test Ship3', 
+                        fuel = 400, 
+                        fuel_max = 400, 
+                        cargo = Cargo(
+                            people = 200,
+                            silicon = 200,
+                            lithium = 200,
+                            titanium = 200, 
+                            cargo_max = 1000
+                        ))])
+            self.add_fleet(fleet_3)
+            self.create_fleet(
+                name = 'Fleet 1', 
+                ships = [
+                    Ship(
+                        ID = 'Test Ship1', 
+                        fuel = 100, 
+                        fuel_max = 400, 
+                        cargo = Cargo(
+                            people = 100, 
+                            titanium = 900, 
+                            cargo_max = 1000
+                        )), 
+                    Ship(
+                        ID = 'Test Ship2', 
+                        fuel = 100, 
+                        fuel_max = 400, 
+                        cargo = Cargo(
+                            people = 100, 
+                            titanium = 100, 
+                            cargo_max = 1000
+                        ))],
+                waypoints = [
+                    Waypoint(),
+                    Waypoint(
+                        actions = ['load', 'split', 'merge'],
+                        #transfers = {'load': [['silicon', 200], ['lithium', 200], ['people', 200], ['titanium', 200], ['fuel': 400]]},
+                        splits = [[Reference('Ship/Test Ship2')], [Reference('Ship/Test Ship2')]],
+                        #recipiants = {'merge': Reference(self.fleets[0]), 'load': Reference(fleet_3)}
+                    )])#'''
 
     """ Player filename """
     def filename(self):
@@ -153,17 +224,27 @@ class Player(Defaults):
                     intel[k] = v
             return intel
     
+    """ Get the local name for something """
+    def get_name(self, obj):
+        return self.get_intel(reference=Reference(obj)).name
+
     """ Store historical values - accumulates across the year """
     def add_historical(self, category, value):
         history = self.historical.get(category, [])
-        for i in range(self.race.start_date + len(history), int(float(self.date)) + 1):
+        for i in range(self.race.start_date + len(history), int(self.date) + 1):
             history.append(0)
         history[-1] += value
         self.historical[category] = history
 
     """ Add a message """
-    def add_message(self, source, subject, body, link):
-        self.messages.append(Message(source=source, subject=subject, date=self.date, body=body, link=link))
+    def add_message(self, **kwargs):
+        self.messages.append(Message(**kwargs, date=self.date))
+
+    """ Cleanup messages """
+    def cleanup_messages(self):
+        for msg in self.messages:
+            if msg.star == False and msg.read == True:
+                self.messages.remove(msg)
     
     """ Compute score based on intel """
     def calc_score(self):
@@ -172,14 +253,7 @@ class Player(Defaults):
     
     """ Get the minister for a given planet """
     def get_minister(self, planet):
-        try:
-            return self.planetary_minister_map[planet]
-        except:
-            pass
-        for m in self.planetary_ministers:
-            if m.new_colony_minister:
-                return m
-        return self.planetary_ministers[0]
+        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
     
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
@@ -188,6 +262,8 @@ class Player(Defaults):
 
     """ Merge in any incoming treaty updates """
     def negotiate_treaty(self, treaty):
+        if treaty.status == 'pending':
+            self.add_message(sender=Reference('Minister/Foreign'), message='proposed_treaty', parameters=[self.get_name(treaty.other_player)])
         for t in self.treaties:
             if t.treaty_key == treaty.treaty_key and t != treaty:
                 t.merge(treaty)
@@ -199,7 +275,9 @@ class Player(Defaults):
         for t in self.treaties:
             if t.status == 'rejected':
                 self.treaties.remove(t)
+                self.add_message(sender=Reference('Minister/Foreign'), message='foreign_minister.rejected_treaty', parameters=[self.get_name(t.other_player)])
             elif t.status == 'signed':
+                self.add_message(sender=Reference('Minister/Foreign'), message='foreign_minister.accepted_treaty', parameters=[self.get_name(t.other_player)])
                 # clear old active treaty (if there was one)
                 for t0 in self.treaties:
                     if t.other_player == t0.other_player and t0.status == 'active':
@@ -216,11 +294,15 @@ class Player(Defaults):
             return None
         return Treaty(other_player=other_player, status='active')
     
+    """ prodict the next years budget """
+    def predict_budget(self):
+        return 10000
+    
     """ Allocate the available energy into budget categories """
     def allocate_budget(self):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:
-            allocation = min(round(total * self['finance_minister_' + category + '_percent'] / 100), self.energy)
+            allocation = min(round(total * self['finance_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
 
     """ Request to spend energy for a category """
@@ -232,11 +314,11 @@ class Player(Defaults):
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':
             budget = self.__cache__['budget_mattrans']
-            if self.finance_minister_mattrans_use_surplus:
+            if self.finance_mattrans_use_surplus:
                 budget += self.__cache__['budget_construction']
         elif category == 'research':
             budget = self.__cache__['budget_research']
-            if self.finance_minister_research_use_surplus:
+            if self.finance_research_use_surplus:
                 budget += self.__cache__['budget_construction']
                 budget += self.__cache__['budget_mattrans']
         # All other categories pull from the unallocated budget and surplus
@@ -279,10 +361,9 @@ class Player(Defaults):
                         field = f
             # Lowest field
             elif self.research_field == '<LOWEST>':
-                lowest = self.tech_level['energy']
-                field = 'energy'
+                lowest = -1
                 for f in TECH_FIELDS:
-                    if self.tech_level[f] < lowest:
+                    if self.tech_level[f] > lowest:
                         lowest = self.tech_level[f]
                         field = f
             # Cost to get to the next level in the selected field
@@ -310,6 +391,10 @@ class Player(Defaults):
                     self.tech_level[f] += 1
                     self.research_partial[f] -= cost_next
                     cost_next = self.tech_level.cost_for_next_level(f, self.race)
+                    # Find new available tech
+                    for t in self.tech:
+                        if t.level[f] == self.tech_level[f] and t.level.is_available(self.tech_level):
+                            self.add_message(sender=Reference('Minister/Research'), message='new_tech', parameters=[t.ID], action='show_tech(\'' + t.ID + '\')')
             # Scrub the research queue
             for t in self.research_queue:
                 if t.level.is_available(self.tech_level):
