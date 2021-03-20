@@ -293,8 +293,14 @@ class Player(Defaults):
         if draft:
             return None
         return Treaty(other_player=other_player, status='active')
+
+    """ Get the relationship """
+    def get_relation(self, player):
+        if player == self:
+            return 'me'
+        return self.get_treaty(player).relation
     
-    """ prodict the next years budget """
+    """ predict the next years budget """
     def predict_budget(self):
         return 10000
     

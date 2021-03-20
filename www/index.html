@@ -483,11 +483,16 @@ void main() {
 </div>
 
 <div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
-    <table id="planets_filter">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Filters</caption>
+    <table class="topbar hfill"><tr>
+        <td><img title="Planets" src="planets.png"/><td>
+        <td class="hfill" style="font-size: 200%">Planets</td>
+        <td><i class="button far fa-times-circle" title="Close Planets" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill">
+        <tr><td>Filter</td><td class="hfill"><select id="planets_filter" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
+        <tr><td>Field</td><td class="hfill"><select id="planets_field" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
     </table>
     <table id="planets_report">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Planets</caption>
     </table>
 </div>
 
