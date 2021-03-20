@@ -175,9 +175,11 @@ class Player(Defaults):
             for field in _player_fields:
                 self[field] = p[field]
     
-    def get_planetary_minister(self, uuid):
+    def get_planetary_minister(self, Id, name=False):
         for minister in self.planetary_ministers:
-            if minister.__uuid__ == uuid:
+            if minister.name == Id and name:
+                return minister
+            elif minister.ID == Id and not name:
                 return minister
         return self.planetary_ministers[0]
     
