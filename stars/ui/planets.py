@@ -19,7 +19,7 @@ class Planets(PlayerUI):
             return
 
         # Planets filter
-        filters = ['My Planets', 'Team planets', 'Neutral Planets', 'Enemy Planets', 'Uninhabited Planets', 'All Planets', 'All Suns', 'All Planets & Suns']
+        filters = ['My Planets', 'Team planets', 'Neutral Planets', 'Enemy Planets', 'Uninhabited Planets', 'All Planets', 'All Suns']
         for f in filters:
             self.options_planets_filter.append(f)
 
@@ -32,26 +32,13 @@ class Planets(PlayerUI):
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
         if 'planet_report' not in self.player().__cache__:
-            planets = []
+            planets = [] 
             for (r, p) in self.player().get_intel(by_type='Planet').items():
-                # Gets and sorts planets
-                planet = {'name': p.name}
-                if not hasattr(p, 'player'):
-                    planet['Uninhabited Planets'] = True
-                else:
-                    relation = self.player().get_relation(hasattr(p, player))
-                    if relation == 'me':
-                        planet['My Planets'] = True
-                    elif relation == 'team':
-                        planet['Team Planets'] = True
-                    elif relation == 'neutral':
-                        planet['Neutral Planets'] = True
-                    elif relation == 'enemy':
-                        planet['Enemy Planets'] = True
+                planet = {'name': p.name, 'details': ''}
                 planet['date'] = p.date
                 if r: 
                     planet['Habitability'] = r.habitability
-                    planet['Population'] = r.population()
+                    planet['Population'] = r.population
                     planet['Capacity'] = r.capacity
                     planet['Max Population'] = r.max_pop 
                     planet['Energy Generation'] = '<i class="YJ">' + str(r.generate_energy() * 100) + '</i>'
@@ -71,6 +58,16 @@ class Planets(PlayerUI):
                     planet['Capacity'] = getattr(p, 'capacity', '?')
                     planet['Max Population'] = getattr(p, 'max_pop', '?')
                     planet['Mineral Availability'] = getattr(p, 'mineral_availability', '?')
+                planet['details'] += '<tr><td>Habitability</td><td>' + planet['Habitability'] + '</td></tr>'
+                planet['details'] += '<tr><td>Population</td><td>' + planet['Population'] + '</td></tr>'
+                planet['details'] += '<tr><td>Capacity</td><td>' + planet['Capacity'] + '</td></tr>'
+                planet['details'] += '<tr><td>Max Population</td><td>' + planet['Max Population'] + '</td></tr>'
+                planet['details'] += '<tr><td>Energy Generation</td><td>' + planet['Energy Generation'] + '</td></tr>'
+                planet['details'] += '<tr><td>Production Capacity</td><td>' + planet['Production Capacity'] + '</td></tr>'
+                planet['details'] += '<tr><td>Scanner Range</td><td>' + planet['Scanner Range'] + '</td></tr>'
+                planet['details'] += '<tr><td>Shield Coverage</td><td>' + planet['Shield Coverage'] + '</td></tr>'
+                planet['details'] += '<tr><td>Mineral Output</td><td>' + planet['Mineral Output'] + '</td></tr>'
+                planet['details'] += '<tr><td>Mineral Availability</td><td>' + planet['Mineral Availability'] + '</td></tr>'
                 planets.append(planet)
             # Puts the report in the cache
             self.player().__cache__['planet_report'] = planets
@@ -79,10 +76,43 @@ class Planets(PlayerUI):
             
         for p in planets:
             if p.get(self.planets_filter, False):
-                self.planets_report.append('<td>' + p['name'] + '</td><td>' + p[self.planets_field] + '</td><td>' + p['date'] + '</td>')
+                self.planets_report.append('<td>' + p['name'] + '</td><td>' + p[self.planets_field] + '</td><td>' + p['date'] + \
+                '</td><td><div class="fa-angle-double-up" onclick="toggle(this.parentElement, \'collapse\')"></div>')
+                self.planets_report.append('<td colspan="4"><table class="hfill">' + p['details'] + '</table></td>')
         print(planets)
         print(self.planets_report)
 
+    def sort_planets(self, planet):
+        for (r, p) in self.player().get_intel(by_type='Planet').items():
+            # Gets and sorts planets
+            planet['All Planets'] = True
+            if not hasattr(p, 'player'):
+                planet['Uninhabited Planets'] = True
+            else:
+                relation = self.player().get_relation(hasattr(p, player))
+                if relation == 'me':
+                    planet['My Planets'] = True
+                elif relation == 'team':
+                    planet['Team Planets'] = True
+                elif relation == 'neutral':
+                    planet['Neutral Planets'] = True
+                elif relation == 'enemy':
+                    planet['Enemy Planets'] = True
+        for (r, p) in self.player().get_intel(by_type='Sun').items():
+            # Gets and sorts planets
+            planet = {'name': p.name, 'details': ''}
+            planet['All Suns'] = True
+            if not hasattr(p, 'player'):
+                planet['Uninhabited Planets'] = True
+            else:
+                relation = self.player().get_relation(hasattr(p, player))
+                if relation == 'me':
+                    planet['My Planets'] = True
+                elif relation == 'team':
+                    planet['Team Planets'] = True
+                elif relation == 'neutral':
+                    planet['Neutral Planets'] = True
+                elif relation == 'enemy':
+                    planet['Enemy Planets'] = True
+
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
-# TODO get comparasion field working
-# TODO click on the planet name and it shows everything else

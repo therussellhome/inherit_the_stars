@@ -130,7 +130,7 @@ class Planet(Defaults):
     x=g-1/2 for g>1/2 | x=0 for g<1/2
     y=t-1/2 for t>1/2 | y=0 for t<1/2
     z=r-1/2 for r>1/2 | z=0 for r<1/2
-    negative planet value is calculated using the same equasion
+    negative planet value is calculated using the same equation
     with g, t, and r = 0 if < 1 | g, t, r = value - 1
     and 100 subtracted from the result
     """
