@@ -497,14 +497,23 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_waypoints" style="width: 600px" onload="post('waypoint')">
+<div class="screen hide onload" id="screen_waypoints" style="width: 600px" onload="post('waypoints')">
     <table class="topbar hfill"><tr>
-    <td><img title="Waypoints" src="ships.png"/></td>
-    <td class="hfill" style="font-size: 200%">Waypoints</td>
-    <td><i class="button far fa-times-circle" title="Close Waypoint Screen" onclick="show_screen(null)"></i></td>
+        <td><img title="Waypoints" src="ships.png"/></td>
+        <td class="hfill" style="font-size: 200%">Waypoints</td>
+        <td class="hfill" id="topbar"></td>
     </tr></table>
-    <table class="hfill" id="" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Test</caption>
+    <table class="hfill" id="waypoint_data" style="text-align: center">
+        <th><i title="X">X</i></th>
+        <th><i title="Y">Y</i></th>
+        <th><i title="Z">Z</i></th>
+    </table>
+    <table class="hfill" id="edit_waypoint" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Waypoint</caption>
+        <tr>
+            <td class="hfill" rowspan="2"><select id="waypoints_load_cargo1" class="hfill" onchange="post(\'waypoints\')"/>
+            <input id="waypoints_load_cargo1" type="number" min="0" max="1000000000000" onchange="post(\'waypoints\')"/></td>
+        </tr>
     </table>
 </div>
 
@@ -520,7 +529,7 @@ void main() {
     <table class="hfill" id="ships" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Ships</caption>
     </table>
-    <table class="hfill" id="waypoints" style="text-align: center">
+    <table class="hfill" id="fleet_waypoints" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Waypoints</caption>
     </table>
     <table class="hfill" id="other_ships" style="text-align: center">
