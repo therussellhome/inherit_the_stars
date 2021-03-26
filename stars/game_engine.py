@@ -104,12 +104,15 @@ def from_json(raw, name='<Internal>'):
     try:
         return __decode(json.loads(raw))
     except Exception as e:
-        print('Decode error ' + str(e) + ' in ' + name)
+        print('Decode error in', name, e)
 
 
 """ Encode an object into a string """
 def to_json(obj):
-    return json.dumps(__encode(obj), indent='    ', ensure_ascii=False)
+    try:
+        return json.dumps(__encode(obj), indent='    ', ensure_ascii=False)
+    except Exception as e:
+        print('Encode error in', type(obj), getattr(obj, 'ID', 'NO ID'), e)
 
 
 """ List files in the game dir """
@@ -198,6 +201,7 @@ def __encode(o):
             encoded.append(__encode(v))
         return encoded
     # Finally down to a primitive
+    # or an unencodable object that will error in the json.dumps
     else:
         return o
 

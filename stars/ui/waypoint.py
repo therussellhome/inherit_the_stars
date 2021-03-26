@@ -5,18 +5,10 @@ from ..waypoint import Waypoint as Waypoint_2
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'foreign_treaties': [],
-    'foreign_other_player': '',
-    'foreign_relation_is_team': False,
-    'foreign_relation_is_neutral': True,
-    'foreign_relation_is_enemy': False,
+    'last_screen': '',
+    'fleet_index': '',
+    'topbar': '',
 }
-
-# Add all keys from the treaty object for the negotiation table
-for key in TREATY_BUY_SELL_FIELDS:
-    __defaults['foreign_' + key] = Treaty.defaults[key]
-    __defaults['foreign_' + key + '_display'] = 'Never'
-
 
 """ Foregin misister shows current relationships / treaties and pending treaties """
 class Waypoint(PlayerUI):
@@ -24,80 +16,16 @@ class Waypoint(PlayerUI):
         super().__init__(**kwargs)
         if not self.player():
             return
-        # Reject a treaty
-        if action.startswith('reject='):
-            reject = action.split('=', 2)[1]
-            for t in self.player().treaties:
-                if t.name == reject:
-                    t.status = 'rejected'
-        # Propose a treaty
-        elif action.startswith('propose='):
-            other_player = Reference('Player/' + action.split('=', 2)[1])
-            treaty = self.player().get_treaty(other_player, True)
-            if not treaty:
-                treaty = self.player().get_treaty(other_player, False)
-            self.foreign_other_player = other_player.name
-            self.foreign_relation_is_team = False
-            self.foreign_relation_is_neutral = False
-            self.foreign_relation_is_enemy = False
-            if treaty.relation == 'team':
-                self.foreign_relation_is_team = True
-            elif treaty.relation == 'neutral':
-                self.foreign_relation_is_neutral = True
-            else:
-                self.foreign_relation_is_enemy = True
-            for f in TREATY_BUY_SELL_FIELDS:
-                self['foreign_' + f] = treaty[f]
-        # Save the proposal
-        elif action == 'save' and self.foreign_other_player != '':
-            other_player = Reference('Player/' + self.foreign_other_player)
-            treaty = self.player().get_treaty(other_player, True)
-            if treaty:
-                treaty.status = 'rejected'
-            treaty = Treaty(other_player=other_player)
-            if self.foreign_relation_is_team:
-                treaty.relation = 'team'
-            elif self.foreign_relation_is_enemy:
-                treaty.relation = 'enemy'
-                treaty.status = 'active'
-            for f in TREATY_BUY_SELL_FIELDS:
-                treaty[f] = self['foreign_' + f]
-            self.player().treaties.append(treaty)
-        # Treaties header
-        self.foreign_treaties.append('<th></th><th></th>'
-            + '<th><i class="ti" title="Titanium">1</i></th>'
-            + '<th><i class="li" title="Lithium">1</i></th>'
-            + '<th><i class="si" title="Silicon">1</i></th>'
-            + '<th><i class="fa-free-code-camp" title="Fuel">100</i></th>'
-            + '<th><i style="font-size: 150%" class="fab fa-galactic-republic" title="Stargate"></i></th>'
-            + '<th><i style="font-size: 150%" class="fas fa-ban" title="Hyper Denial Passage"></i></th>'
-            + '<th><i style="font-size: 150%" class="fas fa-user-secret" title="Intel Sharing"></i></th>')
-        # Display existing treaties
-        for other_player in self.player().get_intel(by_type='Player'):
-            treaty = self.player().get_treaty(other_player, False)
-            self.foreign_treaties.append('<td colspan="10" style="font-size: 150%; text-align: left; border: 1px solid silver; border-right: 0">'
-                + '<i class="' + other_player.race.icon + '"></i>' + other_player.name + '</td>'
-                + '<td style="border: 1px solid silver; border-left: 0"><i class="button fas fa-user-edit" title="Propose Treaty" onclick="post(\'foreign_minister\', \'?propose=' + treaty.other_player.name + '\')"></i></td>')
-            self._display_treaty(treaty)
-            treaty = self.player().get_treaty(other_player, True)
-            if treaty:
-                self._display_treaty(treaty)
-        # Override negotiation for team
-        if self.foreign_relation_is_team:
-            for f in ['gate', 'hyper_denial', 'intel']:
-                self['foreign_buy_' + f] = 0
-                self['foreign_sell_' + f] = 0
-        # No selling to enemies
-        elif self.foreign_relation_is_enemy:
-            for f in ['ti', 'li', 'si', 'fuel', 'gate', 'hyper_denial', 'intel']:
-                self['foreign_buy_' + f] = -10000
-                self['foreign_sell_' + f] = -10000
-        # Update the negotiation display
-        for f in TREATY_BUY_SELL_FIELDS:
-            self['foreign_' + f + '_display'] = self._display_energy(self['foreign_' + f])
-
-    """ Build rows for a current/proposed treaty """
-    def _display_waypoint(self, waypoint):
+        # get last screen
+        if action.startswith('screen='):
+            self.last_screen = action.split('=')[1]
+        # get fleet value
+        if action.startswith('fleet_index='):
+            self.fleet_index = action.split('=')[1]
+        self.topbar = ['<i class="button far fa-times-circle" title="Return to ' + str(self.last_screen) + ' screen" onclick="show_screen(\'' + str(self.last_screen) + '\')']
+        if last_screen == 'fleets':
+            self.topbar[0] += ', post(\'' + str(self.last_screen) + '\', \'?select_' + str(self.fleet_index) + ')'
+        self.topbar[0] += '"></i>'
         buttons = '<td rowspan="2"></td>' \
             + '<td rowspan="2"><i class="button far fa-trash-alt" title="Cancel" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>'
         if treaty.status == 'pending':
@@ -121,24 +49,5 @@ class Waypoint(PlayerUI):
             + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_gate) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_hyper_denial) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.sell_intel) + '</td>')
-
-    """ Icon for the relationship """
-    def _display_relationship(self, relationship):
-        if relationship == 'enemy':
-            return '<i class="fas fa-skull-crossbones"></i>'
-        elif relationship == 'team':
-            return'<i class="fas fa-handshake"></i>'
-        return '<i class="fas fa-meh"></i>'
-
-    """ Format a number as energy or - if none """
-    def _display_energy(self, energy):
-        if energy < 0:
-            return '-'
-        elif energy >= 1000:
-            energy = round(energy / 1000, 2)
-            if energy % 1 == 0:
-                energy = int(energy)
-            energy = str(energy) + 'k'
-        return '<i class="fa-bolt" title="Energy">' + str(energy) + '</i>'
 
 ForeignMinister.set_defaults(ForeignMinister, __defaults, sparse_json=False)
