@@ -1,5 +1,5 @@
 from .playerui import PlayerUI
-from ..buildship import BuildShip
+from ..build_ship import BuildShip
 from ..reference import Reference
 
 
