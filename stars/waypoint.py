@@ -5,7 +5,39 @@ from . import game_engine
 from .defaults import Defaults
 from .location import Location
 from .reference import Reference
-
+cargo_options = {'', 'titanium', 'lithium', 'silicon', 'people'}
+fields = {
+    'load_si': [copy.copy(cargo_options), 1],
+    'load_ti': [copy.copy(cargo_options), 1],
+    'load_li': [copy.copy(cargo_options), 1],
+    'load_people': [copy.copy(cargo_options), 1],
+    'load_si': [copy.copy(cargo_options), 1],
+    'load_ti': [copy.copy(cargo_options), 1],
+    'load_li': [copy.copy(cargo_options), 1],
+    'load_people': [copy.copy(cargo_options), 1],
+    'load_si': [copy.copy(cargo_options), 1],
+    'load_ti': [copy.copy(cargo_options), 1],
+    'load_li': [copy.copy(cargo_options), 1],
+    'load_people': [copy.copy(cargo_options), 1],
+    'load_fuel': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+    'load_cargo1': [copy.copy(cargo_options), 1],
+}
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -16,7 +48,7 @@ __defaults = {
     'description': '',
     'standoff': 'No Standoff',
     'mode': 'auto',
-    # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'=(intercept if target is a ship)
+    #Standoff: 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'=(intercept if target is a ship)
     'upgrade_if_commanded': False,
     'depart': 'immediately',# 'after x years', 'repair to x', 'remain indef',
     'recipiants': {},
@@ -30,7 +62,7 @@ __defaults = {
     'transfers': {}, # 'action':[[item, amount], [item, amount], [item, amount], [item, amount], [fuel, amount]],
 }
 
-
+CARGO_OPTIONS = {'titanium', 'lithium', 'silicon', 'people'}
 """ Class defining waypoints - edited by the player through fleet """
 class Waypoint(Defaults):
     """ calculates the standoff distance for the fleet """

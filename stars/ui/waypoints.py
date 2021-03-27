@@ -1,8 +1,8 @@
 from .playerui import PlayerUI
 from ..reference import Reference
-from ..waypoint import Waypoint as Waypoint_2
+from ..waypoint import Waypoint, cargo_options
 import sys
-
+import copy
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -14,12 +14,19 @@ __defaults = {
     'topbar': [],
 }
 
+
 """ Foregin misister shows current relationships / treaties and pending treaties """
 class Waypoints(PlayerUI):
     def __init__(self, actions, **kwargs):
         super().__init__(**kwargs)
         if not self.player():
             return
+        self.waypoints_load_cargo1_type = cargo_options
+        #race = self.player().race
+        #for key in Race.defaults:
+        #    self['waypoints_' + key] = race[key]
+        #for action in fleet.fleet_actions:
+        #    for item in t
         for action in actions.split(';'):
             # get fleet value
             if action.startswith('fleet_index='):
@@ -33,9 +40,6 @@ class Waypoints(PlayerUI):
                 if self.last_screen == 'fleets':
                     self.topbar[-1] += ', post(\'' + str(self.last_screen) + '\', \'?select_' + str(self.waypoint_fleet_index) + '\')'
                 self.topbar[-1] += '">Back</i>'
-        self.waypoint_data.append('<th><i title="X">X</i></th>'
-            + '<th><i title="Y">Y</i></th>'
-            + '<th><i title="Z">Z</i></th>')
         self.edit_waypoint.append('<th><i title="action">action</i></th>'
             + '<th><i title="what gets the action applied to it">recipiant</i></th>'
             + '<th><i title="amount of li, si, ti, or people to be transfered in this action">cargo1</i></th>'

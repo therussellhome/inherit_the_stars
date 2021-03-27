@@ -507,15 +507,50 @@ void main() {
         <th><i title="X">X</i></th>
         <th><i title="Y">Y</i></th>
         <th><i title="Z">Z</i></th>
-    </table>
-    <table class="hfill" id="edit_waypoint" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Waypoint</caption>
         <tr>
-            <td class="hfill" rowspan="2"><select id="waypoints_load_cargo1" class="hfill" onchange="post(\'waypoints\')"/>
-            <input id="waypoints_load_cargo1" type="number" min="0" max="1000000000000" onchange="post(\'waypoints\')"/></td>
+            <td>Depart</td>
+            <td class="hfill"><select id="waypoints_depart" class="hfill" onchange="post('waypoints')"/></td>
+            <td><input id="waypoints_depart" type="number" min="0" max="1000000000000" onchange="post('waypoints')"/></td>
+        </tr><tr>
+            <td>Speed</td>
+            <td class="hfill"><select id="waypoints_load_fuel" class="hfill" onchange="post('waypoints')"/></td>
+            <td><input id="waypoints_load_fuel" type="number" min="0" max="1000000000000" onchange="post('waypoints')"/></td>
+        </tr><tr>
+            <td>Discription</td>
+            <td class="hfill"><select id="waypoints_load_fuel" class="hfill" onchange="post('waypoints')"/></td>
+            <td><input id="waypoints_load_fuel" type="number" min="0" max="1000000000000" onchange="post('waypoints')"/></td>
+        </tr><tr>
+            <td>Upgrade_if_commanded</td>
+            <td class="hfill"><select id="waypoints_load_fuel" class="hfill" onchange="post('waypoints')"/></td>
+            <td><input id="waypoints_load_fuel" type="number" min="0" max="1000000000000" onchange="post('waypoints')"/></td>
+        </tr><tr>
+            <td>Standoff</td>
+            <td class="hfill"><select id="waypoints_load_fuel" class="hfill" onchange="post('waypoints')"/></td>
+            <td><input id="waypoints_load_fuel" type="number" min="0" max="1000000000000" onchange="post('waypoints')"/></td>
+        </tr><tr>
+            <td>Mode</td>
+            <td class="hfill"><select id="waypoints_load_fuel" class="hfill" onchange="post('waypoints')"/></td>
+            <td><input id="waypoints_load_fuel" type="number" min="0" max="1000000000000" onchange="post('waypoints')"/></td>
+        </tr>
+    </table>
+    <table class="hfill" id="waypoints_load" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Load</caption>
+        <tr>
+            <td>Load Silicon</td>
+            <td class="hfill"><div class="onload" id="waypoints_load_si" onload="slider(this, 'waypoints', -1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' KT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting power plants</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting power plants</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting power plants</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
         </tr>
     </table>
 </div>
+
 
 <div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
     <table class="topbar hfill"><tr>
