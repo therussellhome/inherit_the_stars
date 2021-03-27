@@ -17,7 +17,6 @@
     "mass": 800,
     "armor": 800,
     "repair": 200,
-    "is_starbase": true,
     "slots_general": 192,
     "slots_orbital": 8,
     "__class__": "Tech"

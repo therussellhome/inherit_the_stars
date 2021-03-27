@@ -10,7 +10,7 @@ __user_dir = Path.home() / 'Inherit!'
 
 
 """ Autosave object """
-__auto_save = None
+__root = None
 
 
 """ Registry of all registered classes and objects """
@@ -35,15 +35,15 @@ def register(obj):
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj=None):
-    global __auto_save
+    global __root
     global __registry
     if obj:
         __registry.remove(obj)
-        if __auto_save == obj:
-            __auto_save = None
+        if __root == obj:
+            __root = None
     else:
         __registry = []
-        __auto_save = None
+        __root = None
 
 
 """ Base class for use in creating classes by name """
@@ -88,15 +88,21 @@ def get(reference, create_new=False):
 
 """ Auto save """
 def auto_save():
-    global __auto_save
-    if __auto_save:
-        __auto_save.save()
+    global __root
+    if __root:
+        __root.save()
 
 
-""" Set auto save object """
-def set_auto_save(obj):
-    global __auto_save
-    __auto_save = obj
+""" Get the root object """
+def get_root_obj():
+    global __root
+    return __root
+
+
+""" Set root object """
+def set_root_obj(obj):
+    global __root
+    __root = obj
 
 
 """ Decode a string into an object """

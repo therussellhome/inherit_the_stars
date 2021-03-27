@@ -37,7 +37,6 @@ __defaults = {
     'fuel_generation': (0, 0, sys.maxsize),
     'hyperdenial': HyperDenial(),
     'is_colonizer': False,
-    'is_starbase': False,
     'is_trading_post': False,
     'facility_output': (0.0, 0.0, sys.maxsize),
     'mining_rate': (0.0, 0.0, sys.maxsize),

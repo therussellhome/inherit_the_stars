@@ -64,7 +64,7 @@ class Game(Defaults):
             y = max(y, 2)
             z = max(z, 2)
             while len(self.systems) < num_systems:
-                l = Location(random_in=(x / 2, y / 2, z / 2))
+                l = Location(new_random=(x / 2, y / 2, z / 2), is_system=True)
                 for s in self.systems:
                     if s.location - l < min_distance:
                         break
@@ -161,6 +161,12 @@ class Game(Defaults):
             self._call(players, 'treaty_negotiations')
             self._call(players, 'treaty_finalization')
             self._call(players, 'cleanup_messages')
+            self._scan(fleets) # scanning is needed to support fleet patroling
+            hyperdenial.reset(True)
+            self._call(self.blackholes, 'create_hyperdenials')
+            self._call(fleets, 'update_cache')
+        else:
+            hyperdenial.reset()
         self.hundreth += 1
         #
         # actions in order
@@ -173,6 +179,8 @@ class Game(Defaults):
         self._call(players, 'build_from_queue')
         self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)
+        self._call(fleets, 'move_calc')
+        self._call(fleets, 'hyperdenial')
         self._call(self.wormholes, 'move')
         self._call(self.asteroids, 'move')
         self._call(self.mystery_traders, 'move')
@@ -181,21 +189,21 @@ class Game(Defaults):
         self._combat()
         self._call(fleets, 'move_in_system')
         self._call(fleets, 'generate_fuel')
-        self._call(fleets, 'merge')
         self._call(fleets, 'self_repair')
         self._call(fleets, 'repair')
-        self._call(fleets, 'orbital_mining')
+        self._call(fleets, 'orbital_extraction')
         self._call(fleets, 'lay_mines')
         self._call(fleets, 'bomb')
         self._call(fleets, 'colonize')
         self._call(fleets, 'piracy')
-        self._call(fleets, 'sell')
         self._call(fleets, 'unload')
+        self._call(fleets, 'trade')
         self._call(fleets, 'scrap')
-        self._call(fleets, 'buy')
         self._call(fleets, 'load')
+        # redistribute cached values then process fleet changes
+        self._call(fleets, 'redistribute')
         self._call(fleets, 'transfer')
-        self._call(fleets, 'patrol')
+        self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
         #
@@ -227,18 +235,18 @@ class Game(Defaults):
     def _scan(self, fleets):
         scan.reset(self.players)
         for p in self.__cache__.get('planets', []):
-            scan.add(p, p.location, 1, 1, False, True)
+            scan.add(p, p.location, 1, 1, False, False, True)
         for a in self.asteroids:
-            scan.add(a, a.location, a.calc_apparent_mass(), a.ke, False, a.location.in_system)
+            scan.add(a, a.location, a.calc_apparent_mass(), a.ke, False, False, a.location.in_system)
         for f in fleets:
             for s in f.ships:
-                scan.add(s, s.location, s.calc_apparent_mass(), s.calc_apparent_ke(), s.has_cloak(), a.location.in_system)
+                scan.add(s, s.location, s.calc_apparent_mass(), s.calc_apparent_ke(), True, s.has_cloak(), a.location.in_system)
         for w in self.wormholes:
-            scan.add(w, w.location, 1, 10000000, False, False)
+            scan.add(w, w.location, 1, 10000000, False, False, False)
         for n in self.nebulae:
-            scan.add(n, n.location, 0, True, False)
+            scan.add(n, n.location, 0, False, True, False)
         for m in self.mystery_traders:
-            scan.add(m, m.location, m.calc_apparent_mass(), m.calc_apparent_ke(), False, False)
+            scan.add(m, m.location, m.calc_apparent_mass(), m.calc_apparent_ke(), False, False, False)
         self._call(fleets, 'scan_anticloak')
         self._call(self.get_planets(), 'scan_penetrating')
         self._call(self.asteroids, 'scan_penetrating')
