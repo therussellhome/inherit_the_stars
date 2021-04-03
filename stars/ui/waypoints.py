@@ -1,16 +1,16 @@
 from .playerui import PlayerUI
 from ..reference import Reference
-from ..waypoint import Waypoint, cargo_options
+from ..waypoint import Waypoint, depart_options, standoff_options, seperate_display, cargo_options, veriable_maxes
 import sys
 import copy
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'last_screen': 'fleets',
-    'waypoint_fleet_index': '',
-    'waypoint_index': '',
-    'waypoint_data': [],
-    'edit_waypoint': [],
+    'waypoint_last_screen': 'fleets',
+    'waypoint_fleet_index': (-1, -1, sys.maxsize),
+    'waypoint_index': (-1, -1, sys.maxsize),
+    'options_waypoints_depart': depart_options,
+    'options_waypoints_standoff': standoff_options,
     'topbar': [],
 }
 
@@ -21,63 +21,69 @@ class Waypoints(PlayerUI):
         super().__init__(**kwargs)
         if not self.player():
             return
-        self.waypoints_load_cargo1_type = cargo_options
-        #race = self.player().race
-        #for key in Race.defaults:
-        #    self['waypoints_' + key] = race[key]
-        #for action in fleet.fleet_actions:
-        #    for item in t
+        for item in seperate_display:
+            self['waypoints_' + item + '_display'] = self.display(item)
+        for item in veriable_maxes:
+            self['waypoints_' + item + '_max'] = self.find_max(item)
         for action in actions.split(';'):
             # get fleet value
             if action.startswith('fleet_index='):
                 self.waypoint_fleet_index = str(action.split('=')[1])
             if action.startswith('waypoint='):
                 self.waypoint_index = str(action.split('=')[1])
+            if action == 'start' and self.waypoint_fleet_index != -1 and self.waypoint_index != -1:
+                waypoint = self.player().fleets[self.waypoint_fleet_index].waypoints[self.waypoint_index]
+                for key in Waypoint.defaults:
+                    self['waypoints_' + key] = waypoint[key]
             # get last screen
             if action.startswith('screen='):
-                self.last_screen = str(action.split('=')[1])
-                self.topbar.append('<i class="button far fa-times-circle" title="Return to ' + str(self.last_screen) + ' screen" onclick="show_screen(\'' + str(self.last_screen) + '\')')
-                if self.last_screen == 'fleets':
-                    self.topbar[-1] += ', post(\'' + str(self.last_screen) + '\', \'?select_' + str(self.waypoint_fleet_index) + '\')'
+                self.waypoint_last_screen = str(action.split('=')[1])
+            if self.waypoint_last_screen != '' and len(self.topbar) == 0:
+                self.topbar.append('<i class="button far fa-times-circle" title="Return to ' + str(self.waypoint_last_screen) + ' screen" onclick="show_screen(\'' + str(self.waypoint_last_screen) + '\')')
+                if self.waypoint_last_screen == 'fleets':
+                    self.topbar[-1] += ', post(\'' + str(self.waypoint_last_screen) + '\', \'?select_' + str(self.waypoint_fleet_index) + '\')'
                 self.topbar[-1] += '">Back</i>'
-        self.edit_waypoint.append('<th><i title="action">action</i></th>'
-            + '<th><i title="what gets the action applied to it">recipiant</i></th>'
-            + '<th><i title="amount of li, si, ti, or people to be transfered in this action">cargo1</i></th>'
-            + '<th><i title="amount of li, si, ti, or people to be transfered in this action">cargo2</i></th>'
-            + '<th><i title="amount of li, si, ti, or people to be transfered in this action">cargo3</i></th>'
-            + '<th><i title="amount of li, si, ti, or people to be transfered in this action">cargo4</i></th>'
-            + '<th><i title="amount of fuel to be transfered in this action">fuel</i></th>')
-        if self.waypoint_fleet_index != '' and self.waypoint_index != '':
-            waypoint = self.player().fleets[int(self.waypoint_fleet_index)].waypoints[int(self.waypoint_index)]
-            self.waypoint_data.append('<tr>'
-                + '<td>' + str(waypoint.location.x) +  '</td>'
-                + '<td>' + str(waypoint.location.y) +  '</td>'
-                + '<td>' + str(waypoint.location.z) +  '</td>' + '</tr>')
-            for action in waypoint.actions:
-                self.edit_waypoint.append('<tr>' + '<td>' + str(action) + '</td>'
-                    + '<td class="hfill"><select id="waypoints_' + str(action) + '_cargo1" class="hfill" onchange="post(\'waypoints\')"/>'
-                    + '<input id="waypoints_' + str(action) + '_cargo1" type="number" min="0" max="' + str(sys.maxsize) + '" onchange="post(\'waypoints\')"/></td>'
-                    + '<td class="hfill"><select id="waypoints_' + str(action) + '_cargo2" class="hfill" onchange="post(\'waypoints\')"/>'
-                    + '<input id="waypoints_' + str(action) + '_cargo2" type="number" min="0" max="' + str(sys.maxsize) + '" onchange="post(\'waypoints\')"/></td>'
-                    + '<td class="hfill"><select id="waypoints_' + str(action) + '_cargo3" class="hfill" onchange="post(\'waypoints\')"/>'
-                    + '<input id="waypoints_' + str(action) + '_cargo3" type="number" min="0" max="' + str(sys.maxsize) + '" onchange="post(\'waypoints\')"/></td>'
-                    + '<td class="hfill"><select id="waypoints_' + str(action) + '_cargo4" class="hfill" onchange="post(\'waypoints\')"/>'
-                    + '<input id="waypoints_' + str(action) + '_cargo4" type="number" min="0" max="' + str(sys.maxsize) + '" onchange="post(\'waypoints\')"/></td>'
-                    + '<td class="hfill"><select id="waypoints_' + str(action) + '_fuel" class="hfill" onchange="post(\'waypoints\')"/>'
-                    + '<input id="waypoints_' + str(action) + '_fuel" type="number" min="0" max="' + str(sys.maxsize) + '" onchange="post(\'waypoints\')"/></td>'
-                    + '</tr>')
-                if action in ['load', 'unload', 'sell', 'buy'] and action in waypoint.transfers:
-                    for i in range(5):
-                        if i >= len(waypoint.transfers[action]):
-                            self.edit_waypoint[-1] += '<td>' + str(action) +  '</td>'
-                        item = waypoint.transfers[action]
-                        if item[0] == 'fuel':
-                            fuel = item[1]
-                    '''+ '<td>' + str(action) +  '</td>'
-                    + '<td>' + str(action) +  '</td>'
-                    + '<td>' + str(action) +  '</td>'
-                    + '<td>' + str(action) +  '</td>'
-                    + '<td>' + str(action) +  '</td>' + '</tr>')#'''
-        print('last screen:', self.last_screen, 'waypoint fleet index:', self.waypoint_fleet_index, 'waypoint index:', self.waypoint_index)
+            self.waypoint_fleet_index != -1
+        if self.waypoint_fleet_index != -1 and self.waypoint_index != -1:
+            waypoint = self.player().fleets[self.waypoint_fleet_index].waypoints[self.waypoint_index]
+            for key in Waypoint.defaults:
+                waypoint[key] = self['waypoints_' + key]
+            print(waypoint.__dict__, '\n')
+
+    def display(self, item):
+        if item == 'speed':
+            if self['waypoints_' + item] == -2:
+                return 'auto'
+            elif self['waypoints_' + item] == -1:
+                return 'use stargate'
+            elif self['waypoints_' + item] == 0:
+                return 'stopped'
+            else:
+                return str(self['waypoints_' + item])
+        else:
+            if 'hab' in item:
+                return str(self['waypoints_' + item]) + '%'
+            elif 'min' in item:
+                return str(self['waypoints_' + item] / 100)
+            elif self['waypoints_' + item] == -1:
+                if 'unload' in item:
+                    return 'unload all'
+                elif 'load' in item:
+                    return 'load all available'
+                elif 'buy' in item:
+                    return 'buy all allowed'
+            else:
+                return str(self['waypoints_' + item])
+
+    def find_max(self, item):
+        if self.waypoint_fleet_index != -1:
+            if 'fuel' in item:
+                return self.player().fleets[self.waypoint_fleet_index].get_fuel()[1]
+            else:
+                return self.player().fleets[self.waypoint_fleet_index].get_cargo()[1]
+                
+
+for key in Waypoint.defaults:
+    __defaults['waypoints_' + key] = Waypoint.defaults[key]
 
 Waypoints.set_defaults(Waypoints, __defaults, sparse_json=False)

@@ -230,6 +230,11 @@ function parse_json(url, json) {
                 element = document.getElementById(key);
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
+                        if(json.hasOwnProperty(key + '_max')) {
+                            options = element.noUiSlider.options;
+                            options['range']['max'] =  json[key + '_max'];
+                            element.noUiSlider.updateOptions(options);
+                        }
                         value = [json[key]];
                         //console.log(value)
                         if(Array.isArray(value[0])) {

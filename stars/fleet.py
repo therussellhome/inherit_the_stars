@@ -6,7 +6,6 @@ from . import game_engine
 from .cargo import Cargo
 from .defaults import Defaults
 from .location import Location
-from .waypoint import Waypoint
 from .location import Location
 from .reference import Reference
 

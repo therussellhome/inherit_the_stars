@@ -147,10 +147,13 @@ class Player(Defaults):
                 waypoints = [
                     Waypoint(),
                     Waypoint(
-                        actions = ['load', 'split', 'merge'],
-                        transfers = {'load': [['silicon', 200], ['lithium', 200], ['people', 200], ['titanium', 200], ['fuel', 400]]},
-                        splits = [[Reference('Ship/Test Ship2')], [Reference('Ship/Test Ship2')]],
-                        recipiants = {'merge': Reference(self.fleets[0]), 'load': Reference(fleet_3)}
+                        description = 'We are going to crash!!',
+                        location = Reference(self.fleets[0]),
+                        load_si = 200,
+                        load_li = 200,
+                        load_people = 200,
+                        load_ti = 200,
+                        merge = True
                     )])#'''
 
     """ Player filename """
