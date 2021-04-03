@@ -36,7 +36,7 @@ class RaceEditor(PlayerUI):
             for key in Race.defaults:
                 race[key] = self['race_editor_' + key]
         """ calculate and aply the cost of habitablility """
-        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
+        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 2)) \
             + '% of planets should be habitable for you'
         """validate that race has non-negative advantage points left"""
         self.race_editor_advantage_points_left = int(race.calc_points())
@@ -44,7 +44,6 @@ class RaceEditor(PlayerUI):
             self.user_alerts.append(self.race_editor_ID + ' has negative advantage points')
         elif action == 'save':
             game_engine.save('Race', race.ID, race)
-
 
 for key in Race.defaults:
     __defaults['race_editor_' + key] = Race.defaults[key]
