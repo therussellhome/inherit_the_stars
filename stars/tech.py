@@ -39,7 +39,6 @@ __defaults = {
     'is_colonizer': False,
     'is_starbase': False,
     'is_trading_post': False,
-    'facility_output': (0.0, 0.0, sys.maxsize),
     'mining_rate': (0.0, 0.0, sys.maxsize),
     'mineral_depletion_factor': (0.0, 0.0, 100),
     'mat_trans_energy': (0, 0, sys.maxsize),
@@ -194,8 +193,8 @@ class Tech(Defaults):
         html = []
         # Weapon group
         for bomb in self.bombs:
-            self._html_filter(html, bomb.percent_pop_kill + bomb.minimum_pop_kill, 'Bomb', 'Population killed', '{0} + {1}% / y'.format(bomb.minimum_pop_kill, bomb.percent_pop_kill))
-            self._html_filter(html, bomb.shield_kill, 'Bomb', 'Shield generators destroyed', '{0} / y')
+            self._html_filter(html, bomb.percent_pop_kill + bomb.minimum_pop_kill, 'Bomb', 'Population killed', '{0} + {1}%/y'.format(bomb.minimum_pop_kill, bomb.percent_pop_kill))
+            self._html_filter(html, bomb.shield_kill, 'Bomb', 'Shield generators destroyed', '{0}/y')
             self._html_filter(html, True, 'Bomb', 'Minimum shield penetration', '{0}%'.format(max(0, 100 - bomb.max_defense)))
         for weapon in self.weapons:
             category = 'Missile'
@@ -210,16 +209,30 @@ class Tech(Defaults):
         self._html_filter(html, self.shield, 'Shield', 'Strength', '{0}GJ/m<sup>2</sup>')
         self._html_filter(html, self.armor, 'Armor', 'Strength', '{0}GJ/m<sup>2</sup>')
         # Electronics group
-        #TODO
+        self._html_filter(html, self.ecm, 'ECM', 'Effectiveness', '{0}%')
+        self._html_filter(html, self.cloak.percent, 'Cloak', 'Percent of KE', '{0}%')
+        #Does built-in Kender cloaking or another cloaking category need to be included here?
+        self._html_filter(html, self.scanner.normal, 'Scanner', 'Normal', '{0} KE/100ly')
+        self._html_filter(html, self.scanner.penetrating, 'Scanner', 'Penetrating Range', '{0}ly')
+        self._html_filter(html, self.scanner.anti-cloak, 'Scanner', 'Anti-cloak', '{0}ly')
         # Engine group
-        #TODO
+        for engine in self.engines:
+            self._html_filter(html, engine.kt_exponent, category, 'kT exponent', '{0}')
+            self._html_filter(html, engine.speed_divisor, category, 'Speed divisor', '{0}')
+            self._html_filter(html, engine.speed_exponent, category, 'Speed exponent', '{0}')
+            self._html_filter(html, engine.antimatter_siphon, category, 'Forages', '<i class="fa-free-code-camp">{0}/ly</i>')
         # Hulls & Mechanicals group
+        self._html_filter(html, self.repair, 'Repair', 'Damage points', '{0}/y')
         self._html_filter(html, self.is_colonizer, 'Special', 'Colonizer')
         self._html_filter(html, self.is_trading_post, 'Special', 'Trading post')
-        #TODO
         # Heavy Equipment group
-        self._html_filter(html, self.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0} / y</i>')
-        #TODO
+        self._html_filter(html, self.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0}/y</i>')
+        self._html_filter(html, self.shipyard, 'Heavy Equipment', 'Shipyard capacity', '{0} kT/y')
+        self._html_filter(html, self.mines_laid, 'Heavy Equipment', 'Mines laid', '{0}/y')
+        self._html_filter(html, self.hyperdenial, 'Heavy Equipment', 'Hyper denial', '{0}ly')
+        self._html_filter(html, self.mining_rate, 'Heavy Equipment', 'Mining rate', '{0}/y')
+        self._html_filter(html, self.mineral_depletion_factor, 'Heavy Equipment', 'Mineral depletion', '{0}/kT mined')
+        self._html_filter(html, self.mat_trans_energy, 'Heavy Equipment', 'Mat-trans energy', '{0}/kT')
         # Slots
         if type(self) == Tech:
             self._html_filter(html, self.slots_general, 'Slots', 'General')
