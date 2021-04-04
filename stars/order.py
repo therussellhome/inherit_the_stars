@@ -32,7 +32,29 @@ __defaults = {
 
 
 """ Class defining waypoints - edited by the player through fleet """
-class Waypoint(Defaults):
+class Order(Defaults):
+    def move_calc(self, fleet_location):
+        """ 
+        # Intentionally stopped
+        if self.order.speed == 0:
+            return
+        # Calculate destination (patrol, standoff, etc)
+        move = self.order.calc_fly_to(self.location)
+        # Already there
+        if self.location == move:
+            return
+        self.__cache__['move_in_system'] = move
+        # Move is in system only
+        if self.location.reference_root == move.reference_root:
+            return
+        # Move is to an in_system point, go to outer system first
+        if move.in_system:
+            self.__cache__['move'] = self.location.move(move, sys.maxsize, standoff=stars_math.TERAMETER_2_LIGHTYEAR)
+        else:
+            self.__cache__['move'] = move
+        """
+        return (self.location, self.location) #TODO
+
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet):
         self.fly_to = copy.copy(self.location)
@@ -122,4 +144,4 @@ class Waypoint(Defaults):
         cords = self.predict_movment(top_speed, ship.location, pre_location)
         self.fly_to = self.chose_intercept(cords)
 
-Waypoint.set_defaults(Waypoint, __defaults)
+Order.set_defaults(Order, __defaults)

@@ -61,6 +61,7 @@ class StarSystem(Defaults):
 
     """ returns the outer system coorenets """
     def get_outer_system(self, location):
+        #TODO is anyone actually using this?
         x = (location.x-self.location.x)
         y = (location.y-self.location.y)
         z = (location.z-self.location.z)

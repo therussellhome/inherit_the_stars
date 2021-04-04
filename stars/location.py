@@ -14,16 +14,20 @@ __defaults = {
     'is_system': False,
     'reference': Reference(''),
     'offset': 0.0,
-    'orbit_lon': 0.0,
-    'orbit_speed': 0.0,
+    'orbit_lon': 0.0, #degrees
+    'orbit_speed': 0.0, # degrees
 }
 
 
 """ Class defining a location """
 class Location(Defaults):
     """ Initialize the location """
-    def __init__(self, **kwargs):
-        if 'new_random' in kwargs:
+    def __init__(self, *args, **kwargs):
+        if len(args) == 3:
+            kwargs['x'] = args[0]
+            kwargs['y'] = args[1]
+            kwargs['z'] = args[2]
+        elif 'new_random' in kwargs:
             # loop until a point is created inside a radius=1 sphere
             p = (1.0, 1.0, 1.0)
             while stars_math.distance(*p, 0, 0, 0) > 1.0:
@@ -41,7 +45,7 @@ class Location(Defaults):
         super().__init__(**kwargs)
     
     """ Orbit """
-    def orbit():
+    def orbit(self):
         if self.orbit_speed > 0:
             self.orbit_lon += self.orbit_speed
             if self.orbit_lon > 180:
@@ -78,7 +82,7 @@ class Location(Defaults):
         self_xyz = self.xyz
         target_xyz = target.xyz
         return Location(
-            x = self_xyz[0] - (self_xzy[0] - target_xyz[0]) * f,
+            x = self_xyz[0] - (self_xyz[0] - target_xyz[0]) * f,
             y = self_xyz[1] - (self_xyz[1] - target_xyz[1]) * f,
             z = self_xyz[2] - (self_xyz[2] - target_xyz[2]) * f)
 
@@ -89,31 +93,31 @@ class Location(Defaults):
     """ If a reference then get the attribute from the referenced class """
     def __getattribute__(self, name):
         self_dict = object.__getattribute__(self, '__dict__')
-        cache = self_dict.get('__cache__', None)
         # No cache so passthrough
-        if not cache:
+        if '__cache__' not in self_dict:
             return object.__getattribute__(self, name)
+        cache = self_dict['__cache__']
         # Check if reference has changed
-        elif self_dict['reference']:
+        if self_dict['reference']:
             # convert/reconert to absolute
             ref_xyz = self_dict['reference'].location.xyz
             if 'ref_xyz' not in cache or cache['ref_xyz'] != ref_xyz:
                 cache['ref_xyz'] = ref_xyz
-                cache['ref_root'] = reference.location.reference_root
+                cache['ref_root'] = self_dict['reference'].location.reference_root
                 # location does not have a fixed xyz offset
                 if self_dict['offset'] == 0.0:
                     cache['xyz'] = (ref_xyz[0] + self_dict['x'], ref_xyz[1] + self_dict['y'], ref_xyz[2] + self_dict['z'])
                 else:
-                    if self_dict['orbit_speed'] > 0:
+                    if self_dict['orbit_speed'] > 0.0:
                         lat = 0
                         lon = self_dict['orbit_lon']
                     else:
                         lat = random() * 180 - 90
                         lon = random() * 360 - 180
                     cache['xyz'] = (
-                        ref_xyz[0] + round(cos(lat * pi / 180) * self_dict['offset'] * cos(lon * pi / 180), 5),
-                        ref_xyz[1] + round(sin(lat * pi / 180) * self_dict['offset'] * cos(lon * pi / 180), 5),
-                        ref_xyz[2] + round(sin(lon * pi / 180) * self_dict['offset'], 5))
+                        ref_xyz[0] + self_dict['offset'] * round(cos(lat * pi / 180) * cos(lon * pi / 180), 10),
+                        ref_xyz[1] + self_dict['offset'] * round(cos(lat * pi / 180) * sin(lon * pi / 180), 10),
+                        ref_xyz[2] + self_dict['offset'] * round(sin(lat * pi / 180), 10))
         # Created cached version
         elif 'xyz' not in cache:
             cache['ref_root'] = self

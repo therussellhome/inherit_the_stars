@@ -20,7 +20,7 @@ class Defaults(game_engine.BaseClass):
         try:
             return getattr(self, name)
         except:
-            return object.__getattr__(self, '__cache__')[name]
+            return getattr(self, '__cache__')[name]
 
     """ Override the subscript operator """
     def __setitem__(self, name, value):

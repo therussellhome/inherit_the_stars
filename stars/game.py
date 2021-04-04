@@ -6,6 +6,7 @@ from . import stars_math
 from .defaults import Defaults
 from .fleet import Fleet
 from .location import Location
+import .multi_fleet
 from .star_system import StarSystem
 from .reference import Reference
 
@@ -20,7 +21,7 @@ __defaults = {
     'blackholes': [], # all blackholes
     'nebulae': [], # all nebulae
     'asteroids': [], # all comets/mineral packets/salvage
-    'mystery_traders': [], # myster trader ships
+    'mystery_traders': [], # mystery trader ships
     'public_player_scores': (30, 0, 200), # years till public player scores
     'victory_after': (50, 10, 200), # minimum years till game can be won
     'victory_conditions': (1, 1, 10), # minimum number of conditions to win
@@ -155,6 +156,7 @@ class Game(Defaults):
             for fleet in player.fleets:
                 fleets.append(fleet)
         fleets.sort(key=lambda x: x.initiative, reverse=False)
+        multi_fleet.reset()
         #
         # actions only done at the beginning of a year
         if self.hundreth % 100 == 0:
@@ -186,9 +188,8 @@ class Game(Defaults):
         self._call(self.mystery_traders, 'move')
         self._call(fleets, 'move')
         self._scan(fleets)
-        self._combat()
+        self._call(multi_fleet.get(), 'round1_fight')
         self._call(fleets, 'move_in_system')
-        self._call(fleets, 'generate_fuel')
         self._call(fleets, 'self_repair')
         self._call(fleets, 'repair')
         self._call(fleets, 'orbital_extraction')
@@ -197,11 +198,12 @@ class Game(Defaults):
         self._call(fleets, 'colonize')
         self._call(fleets, 'piracy')
         self._call(fleets, 'unload')
-        self._call(fleets, 'trade')
+        self._call(fleets, 'buy')
         self._call(fleets, 'scrap')
         self._call(fleets, 'load')
         # redistribute cached values then process fleet changes
         self._call(fleets, 'redistribute')
+        self._call(multi_fleet.get(), 'share_fuel')
         self._call(fleets, 'transfer')
         self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)

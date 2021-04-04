@@ -24,10 +24,18 @@ __defaults = {
 
 """ All methods of ship are called through fleet, except maybe scan """
 class Ship(ShipDesign):
+    """ Initialize the cache """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.__cache__['mass'] = 0
+        self.__cache__['mass_per_engine'] = 0
+        game_engine.register(self)
+
     """ Precompute a number of values """
-    def update_calc(self):
+    def update_cache(self):
         self.__cache__['mass'] = self.calc_mass()
-        self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
+        if len(self.engines) > 0:
+            self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
 
     """ This is a space station if it has orbital slots """
     def is_space_station(self):
@@ -90,14 +98,14 @@ class Ship(ShipDesign):
     
     """ Creates a salvage at a location """
     def create_salvage(self, location, cargo):
-        return#TODO
+        return #TODO
     
     """ Scraps the ship """
     def scrap(self, planet, location, scrap_factor = 0.9):
         t = round(self.cost.titanium * scrap_factor)
         l = round(self.cost.lithium * scrap_factor)
         s = round(self.cost.silicon * scrap_factor)
-        cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
+        cargoo = Cargo(titanium = t, lithium = l, silicon = s)
         if planet not in game_engine.get('Planet'):
             self.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:

@@ -13,22 +13,28 @@ from .location import Location
 from .reference import Reference
 
 
-""" Reset fleet here tracking """
-def reset_here():
-    pass #TODO
+""" Offset of ships from fleet center """
+SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
 
-""" Add fleets here """
-def _add_here(fleet):
+
+""" Reset fleet here tracking """
+def reset_fleets_here():
     pass #TODO
 
 """ Fleets also here """
-def also_here(location):
-    return []
+def fleets_here(location=None):
+    if location:
+        return []
+
+""" Add fleets here """
+def _add_fleet_here(fleet):
+    pass #TODO
 
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'order': Order, # current actions
+    'ID': '@UUID',
+    'order': Order(), # current actions
     'orders': [], # future actions
     'orders_repeat': False,
     'ships': [],
@@ -42,30 +48,43 @@ class Fleet(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.__cache__['move'] = None
-        self.__cache__['move_in_system']
+        self.__cache__['move_in_system'] = None
         self.__cache__['moved'] = False
         self.__cache__['hyperdenial'] = False
         self.__cache__['fuel'] = 0
         self.__cache__['fuel_max'] = 0
+        self.__cache__['fuel_generation'] = 0
         self.__cache__['cargo'] = Cargo()
         self.__cache__['cargo_max'] = 0
+        game_engine.register(self)
 
-    """ Adds ships to the fleet and  """
-    def add_ships(self, ships):
+    """ Adds ships to the fleet and correct location """
+    def __add__(self, ships):
+        if isinstance(ships, Fleet):
+            ships = ships.ships
+        elif not isinstance(ships, list):
+            ships = [ships]
         for ship in ships:
-            if len(self.ships) == 0:
-                self.location = copy.copy(ship.location)
-                self.ships.append(ship)
-            else:
-                if (self.location - ship.location) <= (stars_math.TERAMETER_2_LIGHTYEAR * 2) and ship not in self.ships:
+            if ship not in self.ships:
+                if ship.location.xyz == self.location.xyz or ship.location.reference_root == self.location.reference_root:
+                    ship.location = Location(reference=self, offset=SHIP_OFFSET)
                     self.ships.append(ship)
+                else:
+                    print('Cannot add ship to fleet - not at the same location', self.location, ship.location, file=sys.stderr)
+        return self
 
     """ Remove ship from fleet """
-    def remove_ship(self, ship):
-        if ship in self.ships:
-            self.ships.remove(ship)
+    def __sub__(self, ships):
+        if isinstance(ships, Fleet):
+            ships = ships.ships
+        elif not isinstance(ships, list):
+            ships = [ships]
+        for ship in ships:
+            if ship in self.ships:
+                self.ships.remove(ship)
         if len(self.ships) == 0:
             pass #TODO remove from player's fleets
+        return self
 
     """ Update cached values of the fleet """
     def update_cache(self):
@@ -73,8 +92,11 @@ class Fleet(Defaults):
             ship.update_cache()
             self.__cache__['fuel'] += ship.fuel
             self.__cache__['fuel_max'] += ship.fuel_max
+            self.__cache__['fuel_generation'] += ship.fuel_generation
             self.__cache__['cargo'] += ship.cargo
             self.__cache__['cargo_max'] += ship.cargo_max
+            if ship.hyperdenial.radius > 0:
+                self.__cache__['hyperdenial'] = True
 
     """ Check if the fleet can/ordered to move """
     def move_calc(self):
@@ -87,44 +109,33 @@ class Fleet(Defaults):
                 return
             elif len(ship.engines) == 0:
                 return
-        # Intentionally stopped
-        if self.order.speed == 0:
-            return
-        # Calculate destination (patrol, standoff, etc)
-        move = self.order.calc_fly_to(self.location, in_system=False)
-        # Already there
-        if self.location == move:
-            return
-        # Move is in system only
-        if self.location.reference_root == move.reference_root:
-            self.__cache__['move_in_system'] = move
-            return
-        self.__cache__['move'] = move
+        (self.__cache__['move'], self.__cache__['move_in_system']) = self.order.move_calc(self.location)
 
     """ Deploy hyperdenial """
     def hyperdenial(self):
         # Not scheduled to move
         if self.__cache__['hyperdenial'] and self.__cache__['move'] == None:
             for ship in self.ships:
-                ship.hyperdenial.activate()
+                ship.hyperdenial.activate(ship.player)
 
     """ Does all the moving calculations and then moves the ships """
     def move(self):
         # Calculate destination (patrol, standoff, etc)
         move = self.__cache__['move']
-        if move != None:
+        if move == None:
             self.__cache__['moved'] = False
-            _add_here(fleet)
+            _add_fleet_here(fleet)
             return
         # Determine speed
         speed = self.order.speed
         fuel = self.__cache__['fuel']
         # Manual stargate or auto stargate
         if speed == -2 or self._stargate_check():
+            self.__cache__['moved'] = False
             # stargate use allows fleet actions this hundredth
             self.__cache__['move_in_system'] = move
             #TODO stargates
-            _add_here(fleet)
+            _add_fleet_here(fleet)
             return
         # Auto speed
         elif speed == -1:
@@ -150,7 +161,7 @@ class Fleet(Defaults):
         # Move the fleet
         self.location = self.location.move(move, distance)
         self.__cache__['moved'] = True
-        _add_here(fleet)
+        _add_fleet_here(fleet)
         # Use fuel
         fuel -= self._fuel_calc(speed, distance, denials)
         # Apply any over-drive damage and siphon antimatter
@@ -186,7 +197,7 @@ class Fleet(Defaults):
         for ship in self.ships:
             mass_per_engine = ship['mass_per_engine']
             for engine in ship.engines:
-                if engine.tachometer(speed, mass_per_engine, denials) > 0:
+                if engine.tachometer(speed, mass_per_engine, denials) > 100:
                     return True
         return False
     
@@ -197,43 +208,26 @@ class Fleet(Defaults):
         for ship in self.ships:
             ship.fuel = int(fuel * ship.fuel_max / self.__cache__['fuel_max'])
             fuel_left -= ship.fuel
-        self.ships[0] += fuel_left
+        for ship in self.ships:
+            while fuel_left > 0 and ship.fuel < ship.fuel_max:
+                ship.fuel += 1
+                fuel_left -= 1
     
     """ Evenly distributes the cargo back to the ships """
-    def distribute_cargo(self, cargo, cargo_type, fleet_cargo_max):
-        if fleet_cargo_max == 0:
-            return
+    def _cargo_distribution(self, cargo):
+        self.__cache__['cargo'] = cargo
         cargo_left = cargo
-        for ship in self.ships:
-            ship.cargo[cargo_type] = int(cargo[cargo_type] * ship.cargo.cargo_max / fleet_cargo_max)
-            cargo_left[cargo_type] -= ship.cargo[cargo_type]
-        for i in range(int(cargo_left[cargo_type])):
-            ship = min(self.ships, key=lambda x:x.cargo.percent_full())
-            ship.cargo[cargo_type] += 1
+        for ctype in ["titanium", "silicon", "lithium", "people"]:
+            for ship in self.ships:
+                ship.cargo[ctype] = int(cargo[ctype] * ship.cargo_max / self.__cache__['cargo_max'])
+                cargo_left[ctype] -= ship.cargo[ctype]
+            for ship in self.ships:
+                while cargo_left[ctype] > 0 and ship.cargo.sum() < ship.cargo_max:
+                    ship.cargo[ctype] += 1
+                    cargo_left[ctype] -= 1
     
-    """ Gathers all of the cargo from the ships to the fleet """
-    def get_cargo(self):
-        fleet_cargo_max = 0
-        fleet_cargo = Cargo()
-        for ship in self.ships:
-            fleet_cargo += ship.cargo
-            fleet_cargo_max = copy.copy(ship.cargo.cargo_max)
-        return fleet_cargo, fleet_cargo_max
+           
 
-    """ Gathers all of the fuel from the ships to the fleet """
-    def get_fuel(self):
-        fleet_fuel_max = 0
-        fleet_fuel = 0
-        for ship in self.ships:
-            fleet_fuel_max += ship.fuel_max
-            fleet_fuel += ship.fuel
-        return fleet_fuel, fleet_fuel_max
-    
-    """ Tells all of its ships to deploy their hyper denial """
-    def deploy_hyper_denial(self, player):
-        for ship in self.ships:
-            ship.deploy_hyper_denial(player)
-            
     """ Merges the fleet with the target fleet """
     def merge(self, player):
         o_fleet = self.waypoints[0].recipiants['merge']
