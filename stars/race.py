@@ -5,7 +5,7 @@ from .defaults import Defaults
 """ Default values [default, min, max]  """
 __defaults = {
     'ID': '@UUID',
-    'icon': 'fas fa-pastafarianism',
+    'icon': '<i class="fas fa-pastafarianism">',
     'start_date': (3000, 0, sys.maxsize),
     'primary_race_trait': 'Melconians',
     'lrt_Trader': False,
@@ -68,15 +68,15 @@ PRIMARY_RACE_TRAITS = ['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyfo
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 4357, 
-    'Kender': 4364, 
-    'Formics': 4290, 
-    'Gaerhule': 4310, 
-    'Halleyforms': 4278, 
-    'Pa\'anuri': 4360, 
-    'Melconians': 4686, 
-    'TANSTAAFL': 4409, 
-    'Patryns': 4294,
+    'Aku\'Ultani': 4857, 
+    'Kender': 4964, 
+    'Formics': 4800, 
+    'Gaerhule': 4910, 
+    'Halleyforms': 4778, 
+    'Pa\'anuri': 4860, 
+    'Melconians': 5186, 
+    'TANSTAAFL': 4909, 
+    'Patryns': 4794,
     'Trader': -126,
     'Bioengineer': -122,
     '2ndSight': -99,
@@ -120,9 +120,9 @@ habitability_cost = {
     'grav_dis_slope': .1,
     'temp_dis_slope': .3,
     'rad_dis_slope': .1,
-    'grav_immunity_cost': 400, 
-    'temp_immunity_cost': 450, 
-    'rad_immunity_cost': 400,
+    'grav_immunity_cost': 350, 
+    'temp_immunity_cost': 400, 
+    'rad_immunity_cost': 350,
 }
 
 

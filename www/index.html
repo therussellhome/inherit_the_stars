@@ -266,69 +266,78 @@ void main() {
         <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
         <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
-        <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
+        <tr class="onsubmit_race_editor">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
+            <td rowspan="3" style="font-size: 300%" id="race_editor_icon"></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
-            <td class="onsubmit" id="race_editor_icon" onsubmit="get_race_color()"></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
         </tr>
-    </table><table class="hfill" style="font-size: 400%">
-        <caption style="font-size: 25%" onclick="toggle(this.parentElement, 'collapse')">+ Race Icons</caption>
+    </table><table class="hfill onsubmit" style="font-size: 300%" onsubmit="race_viewer(this); get_race_color()">
+        <caption style="font-size: 33%" onclick="toggle(this.parentElement, 'collapse')">+ Race Icons</caption>
+        <tr hidden="true"><td colspan="5"><input disabled="true" id="race_editor_icon_color"/></td></tr>
         <tr>
-            <td style="font-size: 25%" class="onload" colspan="2" rowspan="5" id="race_editor_color_picker" onload="color_picker(this)"></td>
-            <td class="button" onclik="post('race_editor', 'fas fa-pastafarianism')"><i class="fas fa-pastafarianism race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-mailchimp')"><i class="fab fa-mailchimp race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-gitkraken')"><i class="fab fa-gitkraken race_icon"></i>
+            <td style="font-size: 33%" class="onload" colspan="2" rowspan="4" id="race_editor_color_picker" onload="race_color_picker(this)"></td>
+            <td onclick="post('race_editor', '?fas fa-pastafarianism')"><i class="button fas fa-pastafarianism race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-mailchimp')"><i class="button fab fa-mailchimp race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-gitkraken')"><i class="button fab fa-gitkraken race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-phoenix-framework')"><i class="fab fa-phoenix-framework race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-grunt')"><i class="fab fa-grunt race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-grav')"><i class="fab fa-grav race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-phoenix-framework')"><i class="button fab fa-phoenix-framework race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-grunt')"><i class="button fab fa-grunt race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-grav')"><i class="button fab fa-grav race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-jenkins')"><i class="fab fa-jenkins race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-keybase')"><i class="fab fa-keybase race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-mandalorian')"><i class="fab fa-mandalorian race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-jenkins')"><i class="button fab fa-jenkins race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-keybase')"><i class="button fab fa-keybase race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-mandalorian')"><i class="button fab fa-mandalorian race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-octopus-deploy')"><i class="fab fa-octopus-deploy race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-odnoklassniki')"><i class="fab fa-odnoklassniki race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-napster')"><i class="fab fa-napster race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-octopus-deploy')"><i class="button fab fa-octopus-deploy race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-odnoklassniki')"><i class="button fab fa-odnoklassniki race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-napster')"><i class="button fab fa-napster race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-odnoklassniki-square')"><i class="fab fa-odnoklassniki-square race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-pied-piper-alt')"><i class="fab fa-pied-piper-alt race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-optin-monster')"><i class="fab fa-optin-monster race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-cat')"><i class="button fas fa-cat race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-pied-piper-alt')"><i class="button fab fa-pied-piper-alt race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-optin-monster')"><i class="button fab fa-optin-monster race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-snowman')"><i class="button fas fa-snowman race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-bug')"><i class="button fas fa-bug race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-earlybirds')"><i class="fab fa-earlybirds race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-linux')"><i class="fab fa-linux race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-reddit')"><i class="fab fa-reddit race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-reddit-alien')"><i class="fab fa-reddit-alien race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-slideshare')"><i class="fab fa-slideshare race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-earlybirds')"><i class="button fab fa-earlybirds race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-linux')"><i class="button fab fa-linux race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-crow')"><i class="button fas fa-crow race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-reddit-alien')"><i class="button fab fa-reddit-alien race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-slideshare')"><i class="button fab fa-slideshare race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-snapchat')"><i class="fab fa-snapchat race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-snapchat-ghost')"><i class="fab fa-snapchat-ghost race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-github')"><i class="fab fa-github race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-github-alt')"><i class="fab fa-github-alt race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-github-square')"><i class="fab fa-github-square race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-dove')"><i class="button fas fa-dove race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-snapchat-ghost')"><i class="button fab fa-snapchat-ghost race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-dog')"><i class="button fas fa-dog race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-github-alt')"><i class="button fab fa-github-alt race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-github-square')"><i class="button fab fa-github-square race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-evernote')"><i class="fab fa-evernote race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-deskpro')"><i class="fab fa-deskpro race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-qq')"><i class="fab fa-qq race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-python')"><i class="fab fa-python race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-swift')"><i class="fab fa-swift race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-evernote')"><i class="button fab fa-evernote race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-deskpro')"><i class="button fab fa-deskpro race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-qq')"><i class="button fab fa-qq race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-dragon')"><i class="button fas fa-dragon race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-swift')"><i class="button fab fa-swift race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-studiovinari')"><i class="fab fa-studiovinari race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-sticker-mule')"><i class="fab fa-sticker-mule race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-suse')"><i class="fab fa-suse race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-themeisle')"><i class="fab fa-themeisle race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-twitter')"><i class="fab fa-twitter race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-studiovinari')"><i class="button fab fa-studiovinari race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-sticker-mule')"><i class="button fab fa-sticker-mule race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-suse')"><i class="button fab fa-suse race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-themeisle')"><i class="button fab fa-themeisle race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-twitter')"><i class="button fab fa-twitter race_icon"></i>
         </tr><tr>
-            <td class="button" onclik="post('race_editor', 'fab fa-tripadvisor')"><i class="fab fa-tripadvisor race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-wolf-pack-battalion')"><i class="fab fa-wolf-pack-battalion race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-mailchimp')"><i class="fab fa-mailchimp race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-mailchimp')"><i class="fab fa-mailchimp race_icon"></i>
-            <td class="button" onclik="post('race_editor', 'fab fa-mailchimp')"><i class="fab fa-mailchimp race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-tripadvisor')"><i class="button fab fa-tripadvisor race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-wolf-pack-battalion')"><i class="button fab fa-wolf-pack-battalion race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-otter')"><i class="button fas fa-otter race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-frog')"><i class="button fas fa-frog race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-horse')"><i class="button fas fa-horse race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fas fa-horse-head')"><i class="button fas fa-horse-head race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-fish')"><i class="button fas fa-fish race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-hippo')"><i class="button fas fa-hippo race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-spider')"><i class="button fas fa-spider race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-kiwi-bird')"><i class="button fas fa-kiwi-bird race_icon"></i>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
