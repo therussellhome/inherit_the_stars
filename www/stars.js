@@ -457,6 +457,38 @@ function slider(element, form, min, max, step, formatter, units) {
 }
 
 // Create a slider
+function slider3(element, form, min, max, step, formatter, units) {
+    var tooltips = true;
+    if(units == null) {
+        tooltips = false;
+    }
+    noUiSlider.create(element, {
+        start: [min],
+        connect: [true, false],
+        step: step,
+        tooltips: [tooltips],
+        format: {
+            to: function(value) {
+                if(formatter == null) {
+                    return value;
+                } else if(units == null) {
+                    return formatter.format(value);
+                }
+                return formatter.format(value) + units;
+            },
+            from: function(value) {
+                return Number(value);
+            }
+        },
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
 function slider2(element, form, min, max, step, formatter) {
     noUiSlider.create(element, {
         start: [min, max],

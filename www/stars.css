@@ -226,7 +226,70 @@ textarea:disabled {
 #race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
     background: black;
 }
-
+/* titanium */
+#waypoints_load_ti .noUi-connect {
+    background: dodgerblue;
+}
+#waypoints_colonize_min_ti .noUi-connect {
+    background: dodgerblue;
+}
+#waypoints_unload_ti .noUi-connect {
+    background: dodgerblue;
+}
+#waypoints_buy_ti .noUi-connect {
+    background: dodgerblue;
+}/* titanium - lithium */
+#waypoints_load_li .noUi-connect {
+    background: lightgreen;
+}
+#waypoints_colonize_min_li .noUi-connect {
+    background: lightgreen;
+}
+#waypoints_unload_li .noUi-connect {
+    background: lightgreen;
+}
+#waypoints_buy_li .noUi-connect {
+    background: lightgreen;
+}/* lithium - silicon */
+#waypoints_load_si .noUi-connect {
+    background: orange;
+}
+#waypoints_colonize_min_si .noUi-connect {
+    background: orange;
+}
+#waypoints_unload_si .noUi-connect {
+    background: orange;
+}
+#waypoints_buy_si .noUi-connect {
+    background: orange;
+}/* silicon - people*/
+#waypoints_load_people .noUi-connect {
+    background: white;
+}
+#waypoints_colonize_min_people .noUi-connect {
+    background: white;
+}
+#waypoints_unload_people .noUi-connect {
+    background: white;
+}
+#waypoints_buy_people .noUi-connect {
+    background: white;
+}/* people - habinability */
+#waypoints_colonize_min_hab .noUi-connect {
+    background: white;
+}/* habitability - fuel */
+#waypoints_buy_fuel .noUi-connect {
+    background: magenta;
+}/* fuel - speed */
+#waypoints_speed .noUi-connect {
+    background: magenta;
+}/* speed - background */
+#waypoints_load_ti, #waypoints_colonize_min_ti, #waypoints_unload_ti, #waypoints_buy_ti, #waypoints_load_li, #waypoints_colonize_min_li, #waypoints_unload_li, #waypoints_buy_li, #waypoints_load_si, #waypoints_colonize_min_si, #waypoints_unload_si, #waypoints_buy_si, #waypoints_load_people, #waypoints_colonize_min_people, #waypoints_unload_people, #waypoints_buy_people, #waypoints_colonize_min_hab, #waypoints_buy_fuel, #waypoints_speed .noUi-connects {
+    background: black;
+}/* background - */
+div.fas.fa-random {
+    color: silver;
+}
 .power-color { background: cyan; }/* power-plants */
 .factory-color { background: goldenrod; }/* factories */
 .mine-color { background: silver; }/* mines */

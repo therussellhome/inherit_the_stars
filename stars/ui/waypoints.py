@@ -48,7 +48,7 @@ class Waypoints(PlayerUI):
             waypoint = self.player().fleets[self.waypoint_fleet_index].waypoints[self.waypoint_index]
             for key in Waypoint.defaults:
                 waypoint[key] = self['waypoints_' + key]
-            print(waypoint.__dict__, '\n')
+            #print(waypoint.__dict__, '\n')
 
     def display(self, item):
         if item == 'speed':
@@ -60,20 +60,21 @@ class Waypoints(PlayerUI):
                 return 'stopped'
             else:
                 return str(self['waypoints_' + item])
+        elif 'hab' in item:
+            return str(self['waypoints_' + item]) + '%'
+        elif 'min' in item:
+            return str(self['waypoints_' + item] / 100)
+        elif self['waypoints_' + item] == -1:
+            if 'unload' in item:
+                return 'unload all'
+            elif 'load' in item:
+                return 'load all available'
+            elif 'buy' in item:
+                return 'buy all allowed'
+        elif 'people' in item:
+            return str(self['waypoints_' + item]) + 'kT'
         else:
-            if 'hab' in item:
-                return str(self['waypoints_' + item]) + '%'
-            elif 'min' in item:
-                return str(self['waypoints_' + item] / 100)
-            elif self['waypoints_' + item] == -1:
-                if 'unload' in item:
-                    return 'unload all'
-                elif 'load' in item:
-                    return 'load all available'
-                elif 'buy' in item:
-                    return 'buy all allowed'
-            else:
-                return str(self['waypoints_' + item])
+            return str(self['waypoints_' + item])
 
     def find_max(self, item):
         if self.waypoint_fleet_index != -1:
