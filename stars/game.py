@@ -1,12 +1,12 @@
 import sys
 from random import randint
 from . import game_engine
+from . import multi_fleet
 from . import scan
 from . import stars_math
 from .defaults import Defaults
 from .fleet import Fleet
 from .location import Location
-import .multi_fleet
 from .star_system import StarSystem
 from .reference import Reference
 

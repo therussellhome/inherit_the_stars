@@ -45,6 +45,7 @@ __defaults = {
     'slots_general': (-1, -sys.maxsize, sys.maxsize),
     'slots_depot': (0, -sys.maxsize, sys.maxsize),
     'slots_orbital': (0, -sys.maxsize, sys.maxsize),
+    'image': '',
 }
 
 
@@ -127,7 +128,15 @@ class Tech(Defaults):
             quick_stats += '<i class="fa-luggage-cart"> ' + str(self.cargo_max) + '</i>'
         if self.fuel_max > 0:
             quick_stats += '<i class="fa-free-code-camp"> ' + str(self.fuel_max) + '</i>'
-        return ['<td><img style="width: 50px; height: 50px" src="tech_browser.png"/></td><td class="hfill">' \
+        # Don't show images if we don't have one
+        image = self.image
+        if self.image == '':
+            image = self.ID + '.png'
+        if (game_engine.user_file('img/' + image) / 'img' / image).exists():
+            image = '<img class="hfill" src="/img/' + image + '"/>'
+        else:
+            image = ''
+        return ['<td class="hfill">' \
             + '<div style="font-size: 180%; position: relative">' + self.ID \
             + '<div style="font-size: 50%; position: absolute; top: 0; right: 0">' + requirements + '</div>' \
             + '<div style="font-size: 50%; position: absolute; bottom: 0; right: 0">' + research + '</div>' \
@@ -135,8 +144,9 @@ class Tech(Defaults):
             + '<div style="font-size: 90%; position: relative">[' + self.category + ']' \
             + '<div style="position: absolute; top: 0; right: 0">' + self.cost.to_html() + '</div>' \
             + '</div></td>',
-            '<td colspan="2">' + quick_stats + '</td>',
-            '<td colspan="2" style="white-space: normal">' + self.description + '</td>' ]
+            '<td>' + image + '</td>',
+            '<td>' + quick_stats + '</td>',
+            '<td style="white-space: normal">' + self.description + '</td>' ]
 
     """ Build the combat chart """
     def html_combat(self, always=False):
@@ -156,12 +166,12 @@ class Tech(Defaults):
     
     """ Build the sensor chart """
     def html_sensor(self, always=False):
-        if self.scanner.normal > 0 or self.scanner.penetrating > 0 or self.scanner.anti_cloak > 0 or self.scanner.hyperdenial.range > 0 or always:
+        if self.scanner.normal > 0 or self.scanner.penetrating > 0 or self.scanner.anti_cloak > 0 or self.hyperdenial.radius > 0 or always:
             return [
                 self.scanner.normal,
                 self.scanner.penetrating,
                 self.scanner.anti_cloak,
-                self.hyperdenial.range
+                self.hyperdenial.radius
             ]
         return None
 

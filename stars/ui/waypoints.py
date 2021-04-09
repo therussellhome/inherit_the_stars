@@ -1,6 +1,6 @@
 from .playerui import PlayerUI
 from ..reference import Reference
-from ..waypoint import Waypoint as Waypoint_2
+#from ..waypoint import Waypoint as Waypoint_2
 import sys
 
 

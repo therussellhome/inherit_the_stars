@@ -105,6 +105,16 @@ def set_root_obj(obj):
     __root = obj
 
 
+""" Find the path to a user overridable file """
+def user_file(path, base_dir=None):
+    global __game_dir, __user_dir
+    if (__user_dir / path).exists():
+        return __user_dir
+    elif base_dir:
+        return base_dir
+    return __game_dir
+    
+
 """ Decode a string into an object """
 def from_json(raw, name='<Internal>'):
     try:

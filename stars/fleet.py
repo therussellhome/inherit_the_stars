@@ -1,6 +1,7 @@
 import math
 import sys
 import copy
+from . import multi_fleet
 from . import stars_math
 from . import scan
 from . import game_engine
@@ -15,20 +16,6 @@ from .reference import Reference
 
 """ Offset of ships from fleet center """
 SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
-
-
-""" Reset fleet here tracking """
-def reset_fleets_here():
-    pass #TODO
-
-""" Fleets also here """
-def fleets_here(location=None):
-    if location:
-        return []
-
-""" Add fleets here """
-def _add_fleet_here(fleet):
-    pass #TODO
 
 
 """ Default values (default, min, max)  """
@@ -124,7 +111,7 @@ class Fleet(Defaults):
         move = self.__cache__['move']
         if move == None:
             self.__cache__['moved'] = False
-            _add_fleet_here(fleet)
+            multi_fleet.add(fleet)
             return
         # Determine speed
         speed = self.order.speed
@@ -135,7 +122,7 @@ class Fleet(Defaults):
             # stargate use allows fleet actions this hundredth
             self.__cache__['move_in_system'] = move
             #TODO stargates
-            _add_fleet_here(fleet)
+            multi_fleet.add(fleet)
             return
         # Auto speed
         elif speed == -1:
@@ -161,7 +148,7 @@ class Fleet(Defaults):
         # Move the fleet
         self.location = self.location.move(move, distance)
         self.__cache__['moved'] = True
-        _add_fleet_here(fleet)
+        multi_fleet.add(fleet)
         # Use fuel
         fuel -= self._fuel_calc(speed, distance, denials)
         # Apply any over-drive damage and siphon antimatter
