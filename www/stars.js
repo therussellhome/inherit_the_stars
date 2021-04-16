@@ -381,6 +381,31 @@ function shutdown() {
     }
 }
 
+function race_color_picker(element) {
+    parentFixed = element,
+    pickerFixed = new Picker({
+        parent: parentFixed,
+        popup: false,
+        alpha: false,
+//        editor: false,
+        onChange: function(color) {
+            document.getElementById('race_editor_icon_color').value = color.rgbaString;
+            post('race_editor')
+            get_race_color()
+            //parentFixed.style.backgroundColor = color.rgbaString;
+        },
+    });
+    pickerFixed.openHandler();
+}
+
+function get_race_color() {
+    console.log('called ...........................................');
+    var all = document.getElementsByClassName('race_icon');
+    for (var i = 0; i < all.length; i++) {
+        all[i].style.color = document.getElementById('race_editor_icon_color').value;
+    }
+}
+
 // Create a slider
 function finance_slider(element, form, min, max, step) {
     noUiSlider.create(element, {

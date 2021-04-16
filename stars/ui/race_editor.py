@@ -11,6 +11,7 @@ __defaults = {
     'options_race_editor_file_to_load': [],
     'race_editor_advantage_points_left': (0, -2000000, 2000000),
     'race_editor_screen_title': 'Race Editor',
+    'race_editor_icon_color': ''
 }
 
 
@@ -22,6 +23,9 @@ class RaceEditor(PlayerUI):
         self.options_race_editor_file_to_load.insert(0, '')
         race = Race()
         self.race_editor_screen_title = 'Race Editor'
+        if action[:7] in ['fab fa-', 'fas fa-', 'far fa-']:
+            race.icon = '<i style="color: ' + self.race_editor_icon_color + '" class="' + action + '"></i>'
+            self.race_editor_icon = race.icon
         if self.player():
             race = self.player().race
             for key in Race.defaults:
@@ -35,8 +39,9 @@ class RaceEditor(PlayerUI):
         else:
             for key in Race.defaults:
                 race[key] = self['race_editor_' + key]
+            race_editor_icon_color = race.icon[17:24]
         """ calculate and aply the cost of habitablility """
-        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 1)) \
+        self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 2)) \
             + '% of planets should be habitable for you'
         """validate that race has non-negative advantage points left"""
         self.race_editor_advantage_points_left = int(race.calc_points())
@@ -44,7 +49,7 @@ class RaceEditor(PlayerUI):
             self.user_alerts.append(self.race_editor_ID + ' has negative advantage points')
         elif action == 'save':
             game_engine.save('Race', race.ID, race)
-
+    
 
 for key in Race.defaults:
     __defaults['race_editor_' + key] = Race.defaults[key]
