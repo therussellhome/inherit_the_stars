@@ -54,7 +54,7 @@ class ResearchMinister(PlayerUI):
             link = t.ID.replace('\'', '\\\'').replace('\"', '\\\"')
             research_queue.append(t.ID)
             self.research_queue.append('<td class="hfill"><div class="tech tech_template">' + t.ID + '</div></td>'
-                + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
+                + '<td style="vertical-align: top"><i class="button far fa-trash-alt" style="padding-top: 10px" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
         # Sort tech
         research_tech = []
         for t in self.player().tech:
@@ -63,7 +63,7 @@ class ResearchMinister(PlayerUI):
                 if cost > 0: 
                     link = t.ID.replace('\'', '\\\'').replace('\"', '\\\"')
                     row = '<td class="hfill"><div class="tech tech_template">' + t.ID + '</div></td>' \
-                        + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
+                        + '<td style="vertical-align: top"><i class="button fas fa-cart-plus" style="padding-top: 10px" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
                     research_tech.append((cost, row))
         research_tech.sort(key = lambda x: x[0])
         # Adds the html to the table

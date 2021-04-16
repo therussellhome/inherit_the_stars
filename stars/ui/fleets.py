@@ -7,7 +7,7 @@ __defaults = {
     'other_ships': [],
     'fleet_index': (0, 0, sys.maxsize),
     'ships': [],
-    'fleet_waypoints': [],
+    'fleet_orders': [],
 }
 
 
@@ -38,11 +38,11 @@ class Fleets(PlayerUI):
                 + '<td>' + str(fleet.location.x) + '</td>'
                 + '<td>' + str(fleet.location.y) + '</td>'
                 + '<td>' + str(fleet.location.z) + '</td>'
-                + '<td>' + str(fleet.get_fuel()[0]) + '</td>'
-                + '<td>' + str(fleet.get_cargo()[0].people) + '</td>'
-                + '<td>' + str(fleet.get_cargo()[0].titanium) + '</td>'
-                + '<td>' + str(fleet.get_cargo()[0].lithium) + '</td>'
-                + '<td>' + str(fleet.get_cargo()[0].silicon) + '</td>' + '</tr>')
+                + '<td>' + str(fleet.__cache__['fuel']) + '</td>'
+                + '<td>' + str(fleet.__cache__['cargo'].people) + '</td>'
+                + '<td>' + str(fleet.__cache__['cargo'].titanium) + '</td>'
+                + '<td>' + str(fleet.__cache__['cargo'].lithium) + '</td>'
+                + '<td>' + str(fleet.__cache__['cargo'].silicon) + '</td>' + '</tr>')
         """self.other_ships.append(
                 '<th><i title="Name of the ship">Name</i></th>'
                 + '<th><i title="X Cordinate">X</i></th>'
@@ -79,22 +79,23 @@ class Fleets(PlayerUI):
                     + '<td>' + str(ship.cargo.titanium) + '</td>'
                     + '<td>' + str(ship.cargo.lithium) + '</td>'
                     + '<td>' + str(ship.cargo.silicon) + '</td>' + '</tr>')
-        self.fleet_waypoints.append('<th><i title="Edit">Edit</i></th>'
-                + '<th><i title="Description of waypoint">Description</i></th>'
+        self.fleet_orders.append('<th><i title="Edit">Edit</i></th>'
+                + '<th><i title="Description of order">Description</i></th>'
                 + '<th><i title="X Cordinate">X</i></th>'
                 + '<th><i title="Y Cordinate">Y</i></th>'
                 + '<th><i title="Z Cordinate">Z</i></th>')
         #for i in self.player().fleets:
         if len(self.player().fleets) > 0:
-            for I in range(len(self.player().fleets[self.fleet_index].waypoints)):
-                waypoint = self.player().fleets[self.fleet_index].waypoints[I]
+            for I in range(len(self.player().fleets[self.fleet_index].orders)):
+                order = self.player().fleets[self.fleet_index].orders[I]
                 shown = ''
-                shown +=  str('<td>' + str(waypoint.description) + '</td>')
-                shown += str('<td>' + str(waypoint.location.x) + '</td>'
-                            + '<td>' + str(waypoint.location.y) + '</td>'
-                            + '<td>' + str(waypoint.location.z) + '</td>')
-                self.fleet_waypoints.append('<tr>'
-                    + '<td><i class="button fas fa-edit" title="Select waypoint" onclick="show_screen(\'waypoints\'), post(\'waypoints\', \'?waypoint=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'
+                if 'description' in order.__dict__:
+                    shown += str('<td>' + str(order.description) + '</td>')
+                shown += str('<td>' + str(order.location.x) + '</td>'
+                            + '<td>' + str(order.location.y) + '</td>'
+                            + '<td>' + str(order.location.z) + '</td>')
+                self.fleet_orders.append('<tr>'
+                    + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?order=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'
                     + shown + '</tr>')
         
 

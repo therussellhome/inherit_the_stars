@@ -800,13 +800,13 @@ function tech_expand(div, expand_guts) {
         guts.classList.toggle('hide');
         expand_guts.classList.toggle('fa-angle-double-up');
         expand_guts.classList.toggle('fa-angle-double-down');
-        if(div.style.height != '60px') {
-            div.style.height = '60px'
+        if(div.style.height != '55px') {
+            div.style.height = '55px'
             div.style.height = div.scrollHeight + 'px'
         }
     } else {
-        if((div.style.height != '60px') && (div.style.height != '')) {
-            div.style.height = '60px'
+        if((div.style.height != '55px') && (div.style.height != '')) {
+            div.style.height = '55px'
         } else {
             div.style.height = div.scrollHeight + 'px'
         }

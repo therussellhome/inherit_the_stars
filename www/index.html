@@ -497,7 +497,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_waypoints" style="width: 600px" onload="post('waypoints')">
+<div class="screen hide onload" id="screen_orders" style="width: 600px" onload="post('orders')">
     <table class="topbar hfill"><tr>
         <td><img title="Waypoints" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
@@ -507,134 +507,134 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Other</caption>
         <tr>
             <td>Speed</td>
-            <td class="hfill"><div class="onload" id="waypoints_speed" onload="slider3(this, 'waypoints', -2, 10, 1, null, null)"/></td>
-            <td id="waypoints_speed_display" style="text-align: center; min-width: 5em"></td>
+            <td class="hfill"><div class="onload" id="orders_speed" onload="slider3(this, 'orders', -2, 10, 1, null, null)"/></td>
+            <td id="orders_speed_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Description</td><td colspan="2"><input class="hfill" id="waypoints_description" onchange="post('waypoints')"/></td>
+            <td>Description</td><td colspan="2"><input class="hfill" id="orders_description" onchange="post('orders')"/></td>
         </tr><tr>
             <td>Transfer To</td>
-            <td colspan="2" class="hfill"><select id="waypoints_transgfer_to" class="hfill" onchange="post('waypoints')"/></td>
+            <td colspan="2" class="hfill"><select id="orders_transgfer_to" class="hfill" onchange="post('orders')"/></td>
         </tr><tr>
             <td>Standoff</td>
-            <td colspan="2" class="hfill"><select id="waypoints_standoff" class="hfill" onchange="post('waypoints')"/></td>
+            <td colspan="2" class="hfill"><select id="orders_standoff" class="hfill" onchange="post('orders')"/></td>
         </tr><tr>
             <td>Depart</td>
-            <td colspan="2" class="hfill"><select id="waypoints_depart" class="hfill" onchange="post('waypoints')"/></td>
+            <td colspan="2" class="hfill"><select id="orders_depart" class="hfill" onchange="post('orders')"/></td>
         </tr><tr>
-            <td colspan="3"><input id="waypoints_upgrade_if_commanded" type="checkbox" onchange="post('waypoints')"/> Upgrade if commanded</td>
+            <td colspan="3"><input id="orders_upgrade_if_commanded" type="checkbox" onchange="post('orders')"/> Upgrade if commanded</td>
         </tr><tr>
-            <td colspan="3"><input id="waypoints_hyperdenial" type="checkbox" onchange="post('waypoints')"/> Hyperdenial</td>
+            <td colspan="3"><input id="orders_hyperdenial" type="checkbox" onchange="post('orders')"/> Hyperdenial</td>
         </tr><tr>
-            <td colspan="3"><input id="waypoints_merge" type="checkbox" onchange="post('waypoints')"/> Merge</td>
+            <td colspan="3"><input id="orders_merge" type="checkbox" onchange="post('orders')"/> Merge</td>
         </tr><tr>
-            <td colspan="3"><input id="waypoints_scrap" type="checkbox" onchange="post('waypoints')"/> Scrap</td>
+            <td colspan="3"><input id="orders_scrap" type="checkbox" onchange="post('orders')"/> Scrap</td>
         </tr><tr>
-            <td colspan="3"><input id="waypoints_patrol" type="checkbox" onchange="post('waypoints')"/> Patrol</td>
+            <td colspan="3"><input id="orders_patrol" type="checkbox" onchange="post('orders')"/> Patrol</td>
         </tr>
     </table><table class="hfill" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Load</caption>
         <tr>
             <td>Load Titanium:</td>
-            <td><i class="ti" id="waypoints_load_ti_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="ti" id="orders_load_ti_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_load_ti" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_ti" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Load Lithium:</td>
-            <td><i class="li" id="waypoints_load_li_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="li" id="orders_load_li_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_load_li" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_li" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Load Silicon:</td>
-            <td><i class="si" id="waypoints_load_si_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="si" id="orders_load_si_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_load_si" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_si" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Load People:</td>
-            <td><i id="waypoints_load_people_display" style="text-align: center; min-width: 5em"/>kT</td>
+            <td><i id="orders_load_people_display" style="text-align: center; min-width: 5em"/>kT</td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_load_people" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_people" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td colspan="2"><input id="waypoint_load_dunnage" type="checkbox" onchange="post('waypoints')"/> Load Dunnage</td>
+            <td colspan="2"><input id="order_load_dunnage" type="checkbox" onchange="post('orders')"/> Load Dunnage</td>
         </tr>
     </table><table class="hfill" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Colonization Criteria</caption>
         <tr>
-            <td>>= <i class="ti" id="waypoints_colonize_min_ti_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
-            <td class="hfill"><div class="onload" id="waypoints_colonize_min_ti" onload="slider3(this, 'waypoints', 0, 100, 1, null, null)"/></td>
+            <td>>= <i class="ti" id="orders_colonize_min_ti_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_ti" onload="slider3(this, 'orders', 0, 100, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>>= <i class="li" id="waypoints_colonize_min_li_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
-            <td class="hfill"><div class="onload" id="waypoints_colonize_min_li" onload="slider3(this, 'waypoints', 0, 100, 1, null, null)"/></td>
+            <td>>= <i class="li" id="orders_colonize_min_li_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_li" onload="slider3(this, 'orders', 0, 100, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>>= <i class="si" id="waypoints_colonize_min_si_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
-            <td class="hfill"><div class="onload" id="waypoints_colonize_min_si" onload="slider3(this, 'waypoints', 0, 100, 1, null, null)"/></td>
+            <td>>= <i class="si" id="orders_colonize_min_si_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_si" onload="slider3(this, 'orders', 0, 100, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>>= <i id="waypoints_colonize_min_hab_display" style="text-align: center; min-width: 5em"/></td>
-            <td class="hfill"><div class="onload" id="waypoints_colonize_min_hab" onload="slider3(this, 'waypoints', 0, 100, 1, null, null)"/></td>
+            <td>>= <i id="orders_colonize_min_hab_display" style="text-align: center; min-width: 5em"/></td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_hab" onload="slider3(this, 'orders', 0, 100, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td colspan="3"><input id="waypoint_colonize only planet" type="checkbox" onchange="post('waypoints')"/> Colonize Only Waypoint</td>
+            <td colspan="3"><input id="order_colonize only planet" type="checkbox" onchange="post('orders')"/> Colonize Only Waypoint</td>
         </tr>
     </table><table class="hfill" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Unload</caption>
         <tr>
             <td>Unload Titanium:</td>
-            <td><i class="ti" id="waypoints_unload_ti_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="ti" id="orders_unload_ti_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_unload_ti" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_ti" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Unload Lithium:</td>
-            <td><i class="li" id="waypoints_unload_li_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="li" id="orders_unload_li_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_unload_li" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_li" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Unload Silicon:</td>
-            <td><i class="si" id="waypoints_unload_si_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="si" id="orders_unload_si_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_unload_si" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_si" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Unload People:</td>
-            <td><i id="waypoints_unload_people_display" style="text-align: center; min-width: 5em"/>kT</td>
+            <td><i id="orders_unload_people_display" style="text-align: center; min-width: 5em"/>kT</td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_unload_people" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_people" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Buy</caption>
         <tr>
             <td>Buy Titanium:</td>
-            <td><i class="ti" id="waypoints_buy_ti_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="ti" id="orders_buy_ti_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_buy_ti" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_ti" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Buy Lithium:</td>
-            <td><i class="li" id="waypoints_buy_li_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="li" id="orders_buy_li_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_buy_li" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_li" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Buy Silicon:</td>
-            <td><i class="si" id="waypoints_buy_si_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="si" id="orders_buy_si_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_buy_si" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_si" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Buy Fuel:</td>
-            <td><i class="fa-free-code-camp" id="waypoints_buy_fuel_display" style="text-align: center; min-width: 5em"/></td>
+            <td><i class="fa-free-code-camp" id="orders_buy_fuel_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><div class="onload" id="waypoints_buy_fuel" onload="slider3(this, 'waypoints', -1, 200, 1, null, null)"/></td>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_fuel" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Sell</caption>
         <tr>
-            <td colspan="2"><input id="waypoints_sell_ti" type="checkbox" onchange="post('waypoints')"/> Sell Titanium</td>
+            <td colspan="2"><input id="orders_sell_ti" type="checkbox" onchange="post('orders')"/> Sell Titanium</td>
         </tr><tr>
-            <td colspan="2"><input id="waypoints_sell_li" type="checkbox" onchange="post('waypoints')"/> Sell Lithium</td>
+            <td colspan="2"><input id="orders_sell_li" type="checkbox" onchange="post('orders')"/> Sell Lithium</td>
         </tr><tr>
-            <td colspan="2"><input id="waypoints_sell_si" type="checkbox" onchange="post('waypoints')"/> Sell Silicon</td>
+            <td colspan="2"><input id="orders_sell_si" type="checkbox" onchange="post('orders')"/> Sell Silicon</td>
         </tr><tr>
-            <td colspan="2"><input id="waypoints_sell_fuel" type="checkbox" onchange="post('waypoints')"/> Sell Fuel</td>
+            <td colspan="2"><input id="orders_sell_fuel" type="checkbox" onchange="post('orders')"/> Sell Fuel</td>
         </tr>
     </table><table class="hfill" style="text-align: center" onload="toggle(this.parentElement, 'collapse')">
         <tr>
-            <td><input disabled="true" id="waypoint_last_screen" class="hfill" onchange="post('waypoints')"/></td>
-            <td><input disabled="true" id="waypoint_fleet_index" type="number" min="0" max="10000" onchange="post('waypoints', 'start')"/></td>
-            <td><input disabled="true" id="waypoint_index" type="number" min="0" max="10000" onchange="post('waypoints', 'start')"/></td>
+            <td><input disabled="true" id="order_last_screen" class="hfill" onchange="post('orders')"/></td>
+            <td><input disabled="true" id="order_fleet_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
+            <td><input disabled="true" id="order_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
         </tr>
     </table>
 </div>
@@ -652,8 +652,8 @@ void main() {
     <table class="hfill" id="ships" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Ships</caption>
     </table>
-    <table class="hfill" id="fleet_waypoints" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Waypoints</caption>
+    <table class="hfill" id="fleet_orders" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orders</caption>
     </table>
     <table class="hfill" id="other_ships" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Other Player's Ships</caption>

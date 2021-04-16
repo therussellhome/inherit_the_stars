@@ -1,58 +1,226 @@
 import unittest
+from unittest.mock import patch
 from .. import *
 
 class FleetCase(unittest.TestCase):
-    """ Test distribute_cargo()"""
-    def test_distribute_cargo(self):
-        ship_1 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
-        ship_2 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
-        ship_3 = ship.Ship(cargo = cargo.Cargo(cargo_max = 200))
-        fleet_1 = fleet.Fleet(ships = [ship_1, ship_2, ship_3])
-        fleet_1.distribute_cargo(cargo.Cargo(titanium = 1), 'titanium', 600)
-        self.assertEqual(ship_1.cargo.titanium, 1)
-        fleet_1.distribute_cargo(cargo.Cargo(people = 13), 'people', 600)
-        self.assertEqual(ship_2.cargo.people, 5)
-        self.assertEqual(ship_3.cargo.people, 4)
-    
-    """ Test distribute_fuel()"""
-    def test_distribute_fuel(self):
-        ship_1 = ship.Ship(fuel_max = 200)
-        ship_2 = ship.Ship(fuel_max = 200)
-        fleet_1 = fleet.Fleet(ships = [ship_1, ship_2])
-        fleet_1.distribute_fuel(1, 400)
-        self.assertEqual(ship_1.fuel, 1)
-        fleet_1.distribute_fuel(2, 400)
-        self.assertEqual(ship_2.fuel, 1)
-    
     """ Test adding ships as one list """
-    def test_addships_1(self):
+    def test_add_1(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
-        fleet_one = fleet.Fleet()
-        fleet_one.add_ships([ship_1, ship_2])
-        self.assertEqual(fleet_one.ships[0], ship_1)
-        self.assertEqual(fleet_one.ships[1], ship_2)
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertTrue(ship_2 in fleet_one.ships)
     
     """ Test adding same ship twice """
-    def test_addships_2(self):
+    def test_add_2(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
-        fleet_one = fleet.Fleet()
-        fleet_one.add_ships([ship_2])
-        fleet_one.add_ships([ship_2])
-        self.assertEqual(fleet_one.ships[0], ship_2)
+        fleet_one = fleet.Fleet() + [ship_2, ship_2]
+        self.assertTrue(ship_2 in fleet_one.ships)
         self.assertEqual(len(fleet_one.ships), 1)
     
     """ Test adding ships to an established fleet """
-    def test_addships_3(self):
+    def test_add_3(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
-        fleet_one = fleet.Fleet()
-        fleet_one.add_ships([ship_1])
-        fleet_one.add_ships([ship_2])
-        self.assertEqual(fleet_one.ships[0], ship_1)
-        self.assertEqual(fleet_one.ships[1], ship_2)
+        fleet_one = fleet.Fleet() + ship_1
+        fleet_one += ship_2
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertTrue(ship_2 in fleet_one.ships)
     
+    """ Test adding fleet to another fleet """
+    def test_add_4(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_two = fleet.Fleet() + fleet_one
+        self.assertTrue(ship_1 in fleet_two.ships)
+        self.assertTrue(ship_2 in fleet_two.ships)
+    
+    """ Test adding ships at different locations """
+    def test_add_5(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship(location=location.Location(1, 1, 1))
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertFalse(ship_2 in fleet_one.ships)
+
+    """ Test ship removal """
+    def test_sub_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_one -= ship_2
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertFalse(ship_2 in fleet_one.ships)
+        self.assertEqual(len(fleet_one.ships), 1)
+
+    """ Test ship removal """
+    def test_sub_2(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_one -= [ship_2]
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertFalse(ship_2 in fleet_one.ships)
+        self.assertEqual(len(fleet_one.ships), 1)
+
+    """ Test ship removal """
+    def test_sub_3(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_two = fleet.Fleet() + [ship_1, ship_2]
+        fleet_one -= fleet_two
+        self.assertEqual(len(fleet_one.ships), 0)
+
+    """ Test caching """
+    def test_update_cache_1(self):
+        f = fleet.Fleet() + ship.Ship(fuel=1, fuel_max=10) + ship.Ship(fuel=2)
+        f.ships[1].hyperdenial.radius = 100
+        f.update_cache()
+        self.assertEqual(f.__cache__['fuel'], 3)
+        self.assertEqual(f.__cache__['fuel_max'], 10)
+        self.assertEqual(f.__cache__['hyperdenial'], True)
+
+    """ Test move calc """
+    def test_move_calc1(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.move_calc()
+        self.assertEqual(f.__cache__['move'], None)
+        self.assertEqual(f.__cache__['move_in_system'], location.Location())
+
+    """ Test move calc """
+    def test_move_calc2(self):
+        f = fleet.Fleet() + ship.Ship(engines=[engine.Engine()])
+        f.location = location.Location(1, 0, 0)
+        with patch.object(ship.Ship, 'is_space_station', return_value=True) as mock:
+            f.move_calc()
+        self.assertEqual(f.__cache__['move'], None)
+        self.assertEqual(f.__cache__['move_in_system'].xyz, (1, 0, 0))
+
+    """ Test move calc """
+    def test_move_calc3(self):
+        f = fleet.Fleet() + ship.Ship(engines=[engine.Engine()])
+        f.location = location.Location(1, 0, 0)
+        with patch.object(order.Order, 'move_calc', return_value=(location.Location(), location.Location())):
+            f.move_calc()
+        self.assertEqual(f.__cache__['move'], location.Location())
+        self.assertEqual(f.__cache__['move_in_system'], location.Location())
+
+    """ Test hyperdenial on """
+    def test_hyperdenial1(self):
+        f = fleet.Fleet() + ship.Ship()
+        with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
+            f.hyperdenial()
+            self.assertEqual(mock.call_count, 0)
+
+    """ Test hyperdenial on """
+    def test_hyperdenial2(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.__cache__['hyperdenial'] = True
+        with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
+            f.hyperdenial()
+            self.assertEqual(mock.call_count, 1)
+
+    """ Test hyperdenial on """
+    def test_hyperdenial3(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.__cache__['hyperdenial'] = True
+        f.__cache__['move'] = location.Location()
+        with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
+            f.hyperdenial()
+            self.assertEqual(mock.call_count, 0)
+
+    """ Test moving """
+    def test_move1(self):
+        pass #TODO!!!
+
+    """ Test moving in system """
+    def test_move_in_system1(self):
+        f = fleet.Fleet()
+        f.move_in_system()
+        self.assertEqual(f.location.xyz, (0, 0, 0))
+
+    """ Test moving in system """
+    def test_move_in_system2(self):
+        f = fleet.Fleet()
+        f.__cache__['move_in_system'] = location.Location(1, 0, 0)
+        f.move_in_system()
+        self.assertEqual(f.location.xyz, (0, 0, 0))
+
+    """ Test moving in system """
+    def test_move_in_system1(self):
+        # Use multiple fleets to "simulate" system location hierarchy
+        system = fleet.Fleet()
+        f = fleet.Fleet()
+        f.location = location.Location(1, 0, 0, reference=system)
+        f.__cache__['move_in_system'] = location.Location(-1, 0, 0, reference=system)
+        f.move_in_system()
+        self.assertEqual(f.location.xyz, (-1, 0, 0))
+
+
+
+    def test_stargate_check1(self):
+        pass #TODO method is also todo
+
+    def test_fuel_calc1(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].engines = [engine.Engine(), engine.Engine()]
+        with patch.object(engine.Engine, 'fuel_calc', return_value=200):
+            self.assertEqual(f._fuel_calc(1, 2, 3), 400)
+
+    def test_damage_check1(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].engines = [engine.Engine(), engine.Engine()]
+        with patch.object(engine.Engine, 'tachometer', return_value=100):
+            self.assertFalse(f._damage_check(1, 2))
+
+    def test_damage_check2(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].engines = [engine.Engine(), engine.Engine()]
+        with patch.object(engine.Engine, 'tachometer', return_value=101):
+            self.assertTrue(f._damage_check(1, 2))
+
+    def test_fuel_distribution1(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        f.ships[0].fuel_max = 100
+        f.ships[1].fuel_max = 200
+        f.update_cache()
+        f._fuel_distribution(151)
+        self.assertEqual(f.ships[0].fuel, 51)
+        self.assertEqual(f.ships[1].fuel, 100)
+
+    def test_fuel_distribution2(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        f.ships[0].fuel_max = 111
+        f.ships[1].fuel_max = 200
+        f.update_cache()
+        f._fuel_distribution(311)
+        self.assertEqual(f.ships[0].fuel, 111)
+        self.assertEqual(f.ships[1].fuel, 200)
+
+    def test_cargo_distribution1(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        f.ships[0].cargo_max = 200
+        f.ships[1].cargo_max = 400
+        f.update_cache()
+        f._cargo_distribution(cargo.Cargo(titanium=151, silicon=151, lithium=149, people=149))
+        self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=51, silicon=51, lithium=49, people=49))
+        self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=100, silicon=100, lithium=100, people=100))
+
+    def test_cargo_distribution2(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        f.ships[0].cargo_max = 100
+        f.ships[1].cargo_max = 1000
+        f.update_cache()
+        f._cargo_distribution(cargo.Cargo(titanium=276, silicon=276, lithium=274, people=274))
+        self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=26, silicon=26, lithium=24, people=24))
+        self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=250, silicon=250, lithium=250, people=250))
+
+
+
+
     """ Test normal merge """
     def test_merge_1(self):
         ship_1 = ship.Ship()

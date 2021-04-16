@@ -14,14 +14,13 @@ from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 from .ship import Ship
 from .cargo import Cargo
-from .waypoint import Waypoint
 from .message import Message
 # for testing
 from .planet import Planet
 from .facility import Facility
 from .ship_design import ShipDesign
 from .cost import Cost
-
+from .order import Order
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -105,8 +104,7 @@ class Player(Defaults):
             self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
-        self.__cache__ = {}
-        #'''Test line
+        '''Test line
         if len(self.fleets) < 3:
             fleet_3 = Fleet(
                 name = 'Fleet 3', 
@@ -144,9 +142,9 @@ class Player(Defaults):
                             titanium = 100, 
                             cargo_max = 1000
                         ))],
-                waypoints = [
-                    Waypoint(),
-                    Waypoint(
+                orders = [
+                    Order(),
+                    Order(
                         description = 'We are going to crash!!',
                         location = Reference(self.fleets[0]),
                         load_si = 200,

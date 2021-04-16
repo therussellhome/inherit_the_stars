@@ -18,13 +18,13 @@
 div.tech_expand {
     position: absolute;
     width: 50%;
-    height: 60px;
+    height: 55px;
     z-index: 9;
     cursor: pointer;
 }
 div.tech {
     width: 550px;
-    height: 60px;
+    height: 55px;
     border: 0;
     border-bottom: 1px solid white;
     overflow-x: hidden; 
@@ -227,64 +227,64 @@ textarea:disabled {
     background: black;
 }
 /* titanium */
-#waypoints_load_ti .noUi-connect {
+#orders_load_ti .noUi-connect {
     background: dodgerblue;
 }
-#waypoints_colonize_min_ti .noUi-connect {
+#orders_colonize_min_ti .noUi-connect {
     background: dodgerblue;
 }
-#waypoints_unload_ti .noUi-connect {
+#orders_unload_ti .noUi-connect {
     background: dodgerblue;
 }
-#waypoints_buy_ti .noUi-connect {
+#orders_buy_ti .noUi-connect {
     background: dodgerblue;
 }/* titanium - lithium */
-#waypoints_load_li .noUi-connect {
+#orders_load_li .noUi-connect {
     background: lightgreen;
 }
-#waypoints_colonize_min_li .noUi-connect {
+#orders_colonize_min_li .noUi-connect {
     background: lightgreen;
 }
-#waypoints_unload_li .noUi-connect {
+#orders_unload_li .noUi-connect {
     background: lightgreen;
 }
-#waypoints_buy_li .noUi-connect {
+#orders_buy_li .noUi-connect {
     background: lightgreen;
 }/* lithium - silicon */
-#waypoints_load_si .noUi-connect {
+#orders_load_si .noUi-connect {
     background: orange;
 }
-#waypoints_colonize_min_si .noUi-connect {
+#orders_colonize_min_si .noUi-connect {
     background: orange;
 }
-#waypoints_unload_si .noUi-connect {
+#orders_unload_si .noUi-connect {
     background: orange;
 }
-#waypoints_buy_si .noUi-connect {
+#orders_buy_si .noUi-connect {
     background: orange;
 }/* silicon - people*/
-#waypoints_load_people .noUi-connect {
+#orders_load_people .noUi-connect {
     background: white;
 }
-#waypoints_colonize_min_people .noUi-connect {
+#orders_colonize_min_people .noUi-connect {
     background: white;
 }
-#waypoints_unload_people .noUi-connect {
+#orders_unload_people .noUi-connect {
     background: white;
 }
-#waypoints_buy_people .noUi-connect {
+#orders_buy_people .noUi-connect {
     background: white;
 }/* people - habinability */
-#waypoints_colonize_min_hab .noUi-connect {
+#orders_colonize_min_hab .noUi-connect {
     background: white;
 }/* habitability - fuel */
-#waypoints_buy_fuel .noUi-connect {
+#orders_buy_fuel .noUi-connect {
     background: magenta;
 }/* fuel - speed */
-#waypoints_speed .noUi-connect {
+#orders_speed .noUi-connect {
     background: magenta;
 }/* speed - background */
-#waypoints_load_ti, #waypoints_colonize_min_ti, #waypoints_unload_ti, #waypoints_buy_ti, #waypoints_load_li, #waypoints_colonize_min_li, #waypoints_unload_li, #waypoints_buy_li, #waypoints_load_si, #waypoints_colonize_min_si, #waypoints_unload_si, #waypoints_buy_si, #waypoints_load_people, #waypoints_colonize_min_people, #waypoints_unload_people, #waypoints_buy_people, #waypoints_colonize_min_hab, #waypoints_buy_fuel, #waypoints_speed .noUi-connects {
+#orders_load_ti, #orders_colonize_min_ti, #orders_unload_ti, #orders_buy_ti, #orders_load_li, #orders_colonize_min_li, #orders_unload_li, #orders_buy_li, #orders_load_si, #orders_colonize_min_si, #orders_unload_si, #orders_buy_si, #orders_load_people, #orders_colonize_min_people, #orders_unload_people, #orders_buy_people, #orders_colonize_min_hab, #orders_buy_fuel, #orders_speed .noUi-connects {
     background: black;
 }/* background - */
 div.fas.fa-random {
