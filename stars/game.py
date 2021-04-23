@@ -190,7 +190,6 @@ class Game(Defaults):
         self._scan(fleets)
         self._call(multi_fleet.get(), 'round1_fight')
         self._call(fleets, 'move_in_system')
-        self._call(fleets, 'self_repair')
         self._call(fleets, 'repair')
         self._call(fleets, 'orbital_extraction')
         self._call(fleets, 'lay_mines')

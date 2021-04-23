@@ -5,6 +5,7 @@ from pathlib import Path
 
 
 """ Base directory for saved games, races, etc """
+__www_dir = Path(__file__).parent.parent / 'www'
 __game_dir = Path(__file__).parent.parent / 'data'
 __user_dir = Path.home() / 'Inherit!'
 
@@ -106,12 +107,12 @@ def set_root_obj(obj):
 
 
 """ Find the path to a user overridable file """
-def user_file(path, base_dir=None):
-    global __game_dir, __user_dir
+def user_file(path, is_www=False):
+    global __www_dir, __game_dir, __user_dir
     if (__user_dir / path).exists():
         return __user_dir
-    elif base_dir:
-        return base_dir
+    elif is_www:
+        return __www_dir
     return __game_dir
     
 

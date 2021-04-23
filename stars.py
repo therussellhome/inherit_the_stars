@@ -44,7 +44,7 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
     """ Allow override of tech images """
     def do_GET(self):
         if self.path.startswith('/img/'):
-            self.directory = game_engine.user_file(self.path[1:], self.directory)
+            self.directory = game_engine.user_file(self.path[1:], is_www=True)
         super().do_GET()
 
     """ Call the handler """

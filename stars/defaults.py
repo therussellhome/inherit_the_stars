@@ -29,7 +29,7 @@ class Defaults(game_engine.BaseClass):
     """ Override to enforce type and bounds checking """
     def __setattr__(self, name, value):
         if name[0] != '_':
-            default = getattr(self.__class__, 'defaults', {}).get(name, None)
+            default = get_default(self, name)
             if default is not None:
                 try:
                     if isinstance(default, bool):
@@ -83,12 +83,16 @@ Defaults.set_defaults = __set_defaults
 
 
 """ Write/overwrite with defaults """
-def apply_defaults(obj, field=None):
+def apply_defaults(obj):
     # populate with initial defaults
     obj_dict = object.__getattribute__(obj, '__dict__')
-    for (k, default) in getattr(object.__getattribute__(obj, '__class__'), 'defaults', {}).items():
-        if k == field or field == None:
-            if  isinstance(default, str) and default == '@UUID':
-                obj_dict[k] = str(uuid.uuid4())
-            else:
-                obj_dict[k] = copy.copy(default)
+    for key in getattr(object.__getattribute__(obj, '__class__'), 'defaults', {}).keys():
+        obj_dict[key] = get_default(obj, key)
+
+
+""" Get the default for a field """
+def get_default(obj, field):
+    default = getattr(obj.__class__, 'defaults', {}).get(field, None)
+    if isinstance(default, str) and default == '@UUID':
+        return str(uuid.uuid4())
+    return copy.copy(default)

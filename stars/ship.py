@@ -20,6 +20,7 @@ __defaults = {
     'cargo': Cargo(),
     'expirence': Expirence(),
     'under_construction': False,
+    'armor_damage': 0,
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
@@ -29,6 +30,7 @@ class Ship(ShipDesign):
         super().__init__(**kwargs)
         self.__cache__['mass'] = 0
         self.__cache__['mass_per_engine'] = 0
+        self.__cache__['shield_damage'] = 0
         game_engine.register(self)
 
     """ Precompute a number of values """
@@ -43,8 +45,8 @@ class Ship(ShipDesign):
 
     """ Take damage """
     def take_damage(self, shield, armor):
-        self.shield -= shield
-        self.armor -= armor
+        self.__cache__['shield_damage'] += shield
+        self.armor_damage += armor
         #TODO blow-up
 
     """ Calculates how much fuel it will take to move """

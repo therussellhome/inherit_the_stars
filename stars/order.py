@@ -12,7 +12,7 @@ __defaults = {
     'actions': [], # see fleet.feet_actions
     'location': Location(),
     'fly_to': Location(),
-    'speed': (1, 0, 10),
+    'speed': (1, -2, 10),
     'description': '',
     'standoff': 'No Standoff',
     'mode': 'auto',

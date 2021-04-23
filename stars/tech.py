@@ -5,7 +5,7 @@ from . import game_engine
 from . import stars_math
 from .cloak import Cloak
 from .cost import Cost
-from .defaults import Defaults
+from .defaults import Defaults, get_default
 from .hyperdenial import HyperDenial
 from .race import Race
 from .scanner import Scanner
@@ -39,7 +39,7 @@ __defaults = {
     'is_colonizer': False,
     'is_trading_post': False,
     'facility_output': (0.0, 0.0, sys.maxsize),
-    'mining_rate': (0.0, 0.0, sys.maxsize),
+    'extraction_rate': (0.0, 0.0, sys.maxsize),
     'mineral_depletion_factor': (0.0, 0.0, 100),
     'mat_trans_energy': (0, 0, sys.maxsize),
     'slots_general': (-1, -sys.maxsize, sys.maxsize),
@@ -53,12 +53,34 @@ __defaults = {
 TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Other']
 
 
+""" Items that can be miniaturized """
+TECH_MINIATURIZATION = ['cost', 'mass']
+
+
 """ Represent a tech component """
 class Tech(Defaults):
     """ Register with game engine """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
+
+    """ Reset by merging a list of tech items """
+    def init_from(self, tech, miniaturize_level=None):
+        global TECH_MINIATURIZATION
+        for key in Tech.defaults:
+            # Skip strings
+            if isinstance(self[key], str):
+                continue
+            # Reset to default
+            self[key] = get_default(self, key)
+            for t in tech:
+                # Merge
+                if miniaturize_level and key in TECH_MINIATURIZATION:
+                    self[key] += t.miniaturize(miniaturize_level, key)
+                elif isinstance(self[key], list):
+                    self[key].extend(t[key])
+                else:
+                    self[key] += t[key]
 
     """ Get tech group """
     def tech_group(self):
@@ -132,7 +154,7 @@ class Tech(Defaults):
         image = self.image
         if self.image == '':
             image = self.ID + '.png'
-        if (game_engine.user_file('img/' + image) / 'img' / image).exists():
+        if (game_engine.user_file('img/' + image, is_www=True) / 'img' / image).exists():
             image = '<img class="hfill" src="/img/' + image + '"/>'
         else:
             image = ''

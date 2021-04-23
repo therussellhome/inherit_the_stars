@@ -30,13 +30,13 @@ class Engine(Defaults):
         return round((mass ** self.kt_exponent) * (((speed - 1) / self.speed_divisor) ** self.speed_exponent))
     
     """ Calculate how much fuel would be used for a given speed, mass, and distance """
-    def fuel_calc(self, speed, mass, ly, num_denials):
-        return (self.tachometer(speed, mass, num_denials) * mass * ly) + self.siphon_calc(ly)
+    def fuel_calc(self, speed, mass, denials, ly):
+        return (self.tachometer(speed, mass, denials) * mass * ly) + self.siphon_calc(ly)
     
     """ Calculate how much damage is taken for a given speed, mass, and distance """
-    def damage_calc(self, speed, mass, ly, num_denials):
+    def damage_calc(self, speed, mass, denials, ly):
         #TODO play test this number
-        return max(0.0, self.tachometer(speed, mass, num_denials) - 100.0) * ly
+        return max(0.0, self.tachometer(speed, mass, denials) - 100.0) * ly
     
     """ How much antimatter is captured for the distance traveled """
     def siphon_calc(self, ly):

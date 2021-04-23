@@ -8,6 +8,10 @@ __defaults = {
 }
 
 
+""" List of mineral types """
+CARGO_TYPES = ['titanium', 'lithium', 'silicon', 'people']
+
+
 """ Represent 'cargo' that can be held """
 class Cargo(Minerals):
     """ Provide an addition operator """
