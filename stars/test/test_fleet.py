@@ -260,7 +260,93 @@ class FleetCase(unittest.TestCase):
         f.ships[1].armor = 20
         self.assertEqual(f.damage_level(), 20 / 120)
 
+    """ Test laying mines """
+    def test_lay_mines1(self):
+        f = fleet.Fleet() + ship.Ship()
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f.location = location.Location(reference=s)
+        f.lay_mines()
+        self.assertEqual(s.minefield, 0)
 
+    """ Test laying mines """
+    def test_lay_mines2(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].mines_laid = 100
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f.lay_mines()
+        self.assertEqual(s.minefield, 0)
+
+    """ Test laying mines """
+    def test_lay_mines3(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].mines_laid = 100
+        f.__cache__['moved'] = True
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f.location = location.Location(reference=s)
+        f.lay_mines()
+        self.assertEqual(s.minefield, 0)
+
+    """ Test laying mines """
+    def test_lay_mines4(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].mines_laid = 100
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f.location = location.Location(reference=s)
+        f.lay_mines()
+        self.assertEqual(s.minefield, 1)
+
+    """ Test bombing """
+    def test_bomb1(self):
+        f = fleet.Fleet() + ship.Ship()
+        p = planet.Planet()
+        f.location = location.Location(reference=p)
+        with patch.object(planet.Planet, 'bomb') as mock:
+            f.bomb()
+            self.assertEqual(mock.call_count, 0)
+
+    """ Test bombing """
+    def test_bomb2(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].bombs.append(bomb.Bomb(percent_pop_kill=10))
+        p = planet.Planet()
+        with patch.object(planet.Planet, 'bomb') as mock:
+            f.bomb()
+            self.assertEqual(mock.call_count, 0)
+
+    """ Test bombing """
+    def test_bomb3(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].bombs.append(bomb.Bomb(percent_pop_kill=10))
+        p = planet.Planet()
+        f.location = location.Location(reference=p)
+        with patch.object(planet.Planet, 'bomb') as mock:
+            f.bomb()
+            self.assertEqual(mock.call_count, 0)
+
+    """ Test bombing """
+    def test_bomb4(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].bombs.append(bomb.Bomb(percent_pop_kill=10))
+        p = planet.Planet()
+        p.on_surface.people = 100000
+        f.location = location.Location(reference=p)
+        with patch.object(planet.Planet, 'bomb') as mock:
+            with patch.object(player.Player, 'get_relation', return_value='me'):
+                f.bomb()
+            self.assertEqual(mock.call_count, 0)
+
+    """ Test bombing """
+    def test_bomb5(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.ships[0].bombs.append(bomb.Bomb(percent_pop_kill=10))
+        f.ships[0].bombs.append(bomb.Bomb(percent_pop_kill=10))
+        p = planet.Planet()
+        p.on_surface.people = 100000
+        f.location = location.Location(reference=p)
+        with patch.object(planet.Planet, 'bomb') as mock:
+            with patch.object(player.Player, 'get_relation', return_value='enemy'):
+                f.bomb()
+            self.assertEqual(mock.call_count, 2)
 
 
     def test_stargate_check1(self):

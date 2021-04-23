@@ -19,7 +19,7 @@ def get(location=None):
 """ Add fleet a fleet """
 def add(fleet):
     global __fleets
-    location = fleet.location.reference_root
+    location = fleet.location.root_location
     if location not in __fleets:
         __fleets[location] = MultiFleet()
     __fleets[location].fleets.append(fleet)

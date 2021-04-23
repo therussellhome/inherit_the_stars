@@ -45,7 +45,7 @@ class Order(Defaults):
             return
         self.__cache__['move_in_system'] = move
         # Move is in system only
-        if self.location.reference_root == move.reference_root:
+        if self.location.root_location == move.root_location:
             return
         # Move is to an in_system point, go to outer system first
         if move.in_system:

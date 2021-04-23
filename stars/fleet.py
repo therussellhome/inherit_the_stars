@@ -48,7 +48,7 @@ class Fleet(Defaults):
             ships = [ships]
         for ship in ships:
             if ship not in self.ships:
-                if ship.location.xyz == self.location.xyz or ship.location.reference_root == self.location.reference_root:
+                if ship.location.xyz == self.location.xyz or ship.location.root_location == self.location.root_location:
                     ship.location = Location(reference=self, offset=SHIP_OFFSET)
                     self.ships.append(ship)
                 else:
@@ -154,7 +154,7 @@ class Fleet(Defaults):
     """ Post combat, move inside the system """
     def move_in_system(self):
         in_system = self.__cache__['move_in_system']
-        if in_system != None and in_system.reference_root == self.location.reference_root:
+        if in_system != None and in_system.root_location == self.location.root_location:
             self.location = in_system
 
     """ Repair only self if moving, else repair most damaged fleet here """
@@ -182,9 +182,30 @@ class Fleet(Defaults):
     """ Orbital mineral extraction """
     def orbital_extraction(self):
         stats = self._stats()
-        if self.__cache__['moved'] or stats.orbital_extraction == 0:
+        if self.__cache__['moved'] or stats.extraction_rate == 0 or not self.location.reference ^ 'Planet' or self.location.reference.is_colonized():
             return
-        
+        #TODO Pam how does this work?
+
+    """ Lay mines """
+    def lay_mines(self):
+        stats = self._stats()
+        if self.__cache__['moved'] or stats.mines_laid == 0 or not self.location.in_system:
+            return
+        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.ships[0].player)
+
+    """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
+    def bomb(self):
+        stats = self._stats()
+        if self.__cache__['moved'] or len(stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
+            return
+        planet = self.location.reference
+        if self.ships[0].player.get_relation(planet.player) != 'enemy':
+            print('not an enemy')
+            return
+        print('commense bombing')
+        for b in stats.bombs:
+            planet.bomb(b)
+
 
 
 
@@ -594,19 +615,6 @@ class Fleet(Defaults):
         ships_here['damage'] -= damage_fixed
         return repair_points_left
     
-    """ Tells any ships that can lay mines to lay mines """
-    def lay_mines(self, player):
-        system = self.waypoints[0].recipiants['lay_mines']
-        for ship in self.ships:
-            ship.lay_mines(player, system)
-    
-    """ Tells all the ships to repair themselves (damage_control) """
-    def repair_ship(self):
-        if 'repair' in self.waypoints[0].actions:
-            return
-        for ship in self.ships:
-            repair_self(ship.damage_control())
-    
     """ Tells all the ships that can conduct orbital mining to conduct orbital mining as detailed in their waypoint orders """
     def orbital_mining(self):
         planet = self.waypoints[0].recipiants['orbital_mining']
@@ -623,25 +631,6 @@ class Fleet(Defaults):
     def piracy(self, player):
         pass #TODO
     
-    """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
-    def bomb(self, player):
-        planet = self.waypoints[0].recipiants['bomb']
-        #print("player.get_treaty(planet.player).__dict__ :\n", player.get_treaty(planet.player).__dict__)
-        print("player.get_treaty(planet.player).relation == 'enemy'", player.get_treaty(planet.player).relation == 'enemy')
-        if planet in game_engine.get('Planet') and planet.is_colonized() and planet.player != player and player.get_treaty(planet.player).relation == 'enemy':
-            shields = planet.raise_shields()
-            pop = planet.on_surface.people
-            facility_kill = 0
-            pop_kill = 0
-            #print(planet.facilities['defenses'].quantity, pop, self.ships[0].bombs[0].percent_defense(pop, shields))
-            for ship in self.ships:
-                f_kill, p_kill = ship.bomb(planet, shields, pop)
-                facility_kill += f_kill
-                pop_kill += p_kill
-            planet.facilities['defenses'].quantity -= round(facility_kill)
-            planet.on_surface.people -= round(pop_kill)
-            #print(planet.on_surface.people)
-
     """ Perform anticloak scanning """
     def scan_anticloak(self):
         anticloak = 0

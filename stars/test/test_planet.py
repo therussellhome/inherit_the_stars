@@ -322,6 +322,52 @@ class PlanetTestCase(unittest.TestCase):
         p.defenses = 16
         self.assertEqual(p.raise_shields(), 0)
 
+    def test_bomb1(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000000
+        p.bomb(bomb.Bomb(shield_kill=3))
+        self.assertEqual(p.__cache__['impact_shields'], 0.03)
+
+    def test_bomb2(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000000
+        p.__cache__['shields'] = 999999999999
+        p.bomb(bomb.Bomb(shield_kill=3))
+        self.assertEqual(p.__cache__['impact_shields'], 0)
+
+    def test_bomb3(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000000
+        p.bomb(bomb.Bomb(minimum_pop_kill=123))
+        self.assertEqual(p.__cache__['impact_people'], 1.23)
+
+    def test_bomb4(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000000
+        p.bomb(bomb.Bomb(percent_pop_kill=10))
+        self.assertEqual(p.__cache__['impact_people'], 100000)
+
+    def test_bomb5(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000000
+        p.__cache__['shields'] = 999999999999
+        p.bomb(bomb.Bomb(percent_pop_kill=10, max_defense=115))
+        self.assertEqual(p.__cache__['impact_people'], 0)
+
+    def test_impact1(self):
+        p = planet.Planet()
+        p.defenses = 20
+        p.__cache__['impact_shields'] = 5
+        p.bomb_impact()
+        self.assertEqual(p.defenses, 15)
+
+    def test_impact2(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000000
+        p.__cache__['impact_people'] = 200000
+        p.bomb_impact()
+        self.assertEqual(p.on_surface.people, 800000)
+
     def test_generate_energy1(self):
         p = planet.Planet()
         p.on_surface.people = 1000
@@ -369,7 +415,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertAlmostEqual(p.mineral_availability().lithium, 0.125)
         self.assertAlmostEqual(p.mineral_availability().silicon, 10.1) #max possible, remaining minerals too high
 
-    def test_mine_minerals1(self):
+    def test_extract_minerals1(self):
         p = planet.Planet()
         p.on_surface.people = 100000
         #copy of test_mineral_availability1
@@ -383,7 +429,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertAlmostEqual(p.mineral_availability().silicon, 3.7)
         p.mines = 1000
         p.player.tech_level.weapons = 0 #factor = 1.3
-        p.mine_minerals()
+        p.extract_minerals()
         self.assertAlmostEqual(p.on_surface.titanium, 7.25)
         self.assertAlmostEqual(p.on_surface.lithium, 17)
         self.assertAlmostEqual(p.on_surface.silicon, 37)
@@ -391,7 +437,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertAlmostEqual(p.remaining_minerals.lithium, 15977.9)
         self.assertAlmostEqual(p.remaining_minerals.silicon, 23951.9)
 
-    def test_mine_minerals2(self):
+    def test_extract_minerals2(self):
         p = planet.Planet()
         p.on_surface.people = 10000
         #copy of test_mineral_availability2
@@ -405,7 +451,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertEqual(p.mineral_availability().silicon, 2.6)
         p.mines = 100
         p.player.tech_level.weapons = 14 #factor = 1.075
-        p.mine_minerals()
+        p.extract_minerals()
         self.assertAlmostEqual(p.on_surface.titanium, .5)
         self.assertAlmostEqual(p.on_surface.lithium, 40.1)
         self.assertAlmostEqual(p.on_surface.silicon, 2.6)

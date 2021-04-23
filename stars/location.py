@@ -103,7 +103,12 @@ class Location(Defaults):
             ref_xyz = self_dict['reference'].location.xyz
             if 'ref_xyz' not in cache or cache['ref_xyz'] != ref_xyz:
                 cache['ref_xyz'] = ref_xyz
-                cache['ref_root'] = self_dict['reference'].location.reference_root
+                cache['root_location'] = self_dict['reference'].location.root_location
+                root_ref = self_dict['reference'].location.root_reference
+                if root_ref:
+                    cache['root_reference'] = root_ref
+                else:
+                    cache['root_reference'] = self_dict['reference']
                 # location does not have a fixed xyz offset
                 if self_dict['offset'] == 0.0:
                     cache['xyz'] = (ref_xyz[0] + self_dict['x'], ref_xyz[1] + self_dict['y'], ref_xyz[2] + self_dict['z'])
@@ -120,7 +125,8 @@ class Location(Defaults):
                         ref_xyz[2] + self_dict['offset'] * round(sin(lat * pi / 180), 10))
         # Created cached version
         elif 'xyz' not in cache:
-            cache['ref_root'] = self
+            cache['root_location'] = self
+            cache['root_reference'] = None
             cache['xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
         if name == 'xyz':
             return cache['xyz']
@@ -130,10 +136,12 @@ class Location(Defaults):
             return cache['xyz'][1]
         if name == 'z':
             return cache['xyz'][2]
-        if name == 'reference_root':
-            return cache['ref_root']
+        if name == 'root_location':
+            return cache['root_location']
+        if name == 'root_reference':
+            return cache['root_reference']
         if name == 'in_system':
-            return cache['ref_root'].is_system
+            return cache['root_location'].is_system
         return object.__getattribute__(self, name)
 
     """ Use the absolute position as the hash """

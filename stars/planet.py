@@ -71,6 +71,9 @@ class Planet(Defaults):
         if 'age' not in kwargs:
             self.age = randint(0, 3000)
         game_engine.register(self)
+        self.__cache__['shields'] = 0
+        self.__cache__['impact_shields'] = 0
+        self.__cache__['impact_people'] = 0
 
     """ Get the planet's color """
     # return it in a hexdecimal string so the webpage can use it
@@ -193,11 +196,26 @@ class Planet(Defaults):
 
     """ Incoming! """
     def raise_shields(self):
+        self.__cache__['shields'] = 0
         if self.player.race.primary_race_trait == 'Gaerhule':
-            return self._operate('defenses') * max(480, 240 * self.player.tech_level.energy)
+            self.__cache__['shields'] = self._operate('defenses') * max(480, 240 * self.player.tech_level.energy)
         elif self.player.race.primary_race_trait != 'Aku\'Ultan':
-            return self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
-        return 0
+            self.__cache__['shields'] = self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
+        return self.__cache__['shields']
+
+    """ Calculate bombing """
+    def bomb(self, bomb):
+        defense = bomb.percent_defense(self.on_surface.people, self.__cache__['shields'])
+        if defense < randint(0, 100):
+            self.__cache__['impact_shields'] += bomb.shield_kill / 100
+            self.__cache__['impact_people'] += max(bomb.minimum_pop_kill / 100, bomb.percent_pop_kill / 100 * self.on_surface.people)
+
+    """ Apply bombing """
+    def bomb_impact(self):
+        self.defenses -= self.__cache__['impact_shields']
+        self.on_surface.people -= self.__cache__['impact_people']
+        self.__cache__['impact_shields'] = 0
+        self.__cache__['impact_people'] = 0
 
     """ power plants make energy per 1/100th """
     def generate_energy(self):
@@ -207,13 +225,18 @@ class Planet(Defaults):
         return facility_yj + pop_yj
 
     """ mines mine the minerals per 100th """
-    def mine_minerals(self):
+    def extract_minerals(self, orbital=False):
+        if orbital:
+            extracted = Minerals()
+        else:
+            extracted = self.on_surface
         factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
         operate = self._operate('mines')
         availability = self.mineral_availability()
         for mineral in MINERAL_TYPES:
-            self.on_surface[mineral] += operate * availability[mineral] / 100
+            extracted[mineral] += operate * availability[mineral] / 100
             self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
+        return extracted
 
     """ Availability of the mineral type """
     def mineral_availability(self):

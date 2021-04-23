@@ -1,3 +1,4 @@
+import sys
 from random import random, randint
 from . import game_engine
 from .defaults import Defaults
@@ -12,10 +13,12 @@ __defaults = {
     'ID': '@UUID',
     'planets': [],
     'location': Location(),
+    'minefield': (0, 0, sys.maxsize),
+    'minefield_owner': Reference('Player'),
 }
 
 
-_roman = ["I", "II", "III", "IV", "V"]
+_roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 
 
 """ Star System with its planets """
@@ -71,7 +74,14 @@ class StarSystem(Defaults):
         y = self.y + (y/dis)*stars_math.TERAMETER_2_LIGHTYEAR
         z = self.z + (z/dis)*stars_math.TERAMETER_2_LIGHTYEAR
         return Location(x=x, y=y, z=z)
-    
+
+    """ Lay mines """
+    def lay_mines(self, quantity, player):
+        #TODO check treaty as non-teammate mines should function as mine sweeping
+        if not self.minefield_owner:
+            self.minefield_owner = Reference(player)
+        self.minefield += quantity
+
     """ sweeps mines """
     def sweep_mines(self, power, shot_factor, wep_range, field):
         return round(power * shot_factor * (wep_range * 10) ** 3 * self.mines[field] / 65000000000000000 * 100 * 20000000)
@@ -82,7 +92,7 @@ class StarSystem(Defaults):
         for planet in self.planets:
             g += planet.gravity ** 2
         for key in self.mines:
-            p_cap = self.mines[key] / 65000000000000000
+            p_cap = self.mines[key] / 65000000000000000 # TODO this number seem like it should move to a constant
             print(self.mines[key])
             self.mines[key] -= round(g * (p_cap ** 3) * 10000000000 + p_cap * 0.015 * 65000000000000000)
             print(self.mines[key])
