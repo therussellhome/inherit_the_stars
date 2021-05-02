@@ -203,8 +203,8 @@ class Game(Defaults):
         self._call(fleets, 'scrap')
         self._call(fleets, 'load')
         # redistribute cached values then process fleet changes
-        self._call(fleets, 'redistribute')
         self._call(multi_fleet.get(), 'share_fuel')
+        self._call(fleets, 'redistribute')
         self._call(fleets, 'transfer')
         self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)

@@ -38,6 +38,8 @@ __defaults = {
     'hyperdenial': HyperDenial(),
     'is_colonizer': False,
     'is_trading_post': False,
+    'is_piracy_cargo': False,
+    'is_piracy_fuel': False,
     'facility_output': (0.0, 0.0, sys.maxsize),
     'extraction_rate': (0.0, 0.0, sys.maxsize),
     'mineral_depletion_factor': (0.0, 0.0, 100),

@@ -86,9 +86,18 @@ class Location(Defaults):
             y = self_xyz[1] - (self_xyz[1] - target_xyz[1]) * f,
             z = self_xyz[2] - (self_xyz[2] - target_xyz[2]) * f)
 
+    """ Comparison allowing for close enough """
+    def __eq__(self, other):
+        if isinstance(other, Location):
+            if self - other < stars_math.TERAMETER_2_LIGHTYEAR / 1000:
+                return True
+        return False
+
     """ Distance between 2 points """
     def __sub__(self, other):
-        return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
+        self_xyz = self.xyz
+        other_xyz = other.xyz
+        return stars_math.distance(self_xyz[0], self_xyz[1], self_xyz[2], other_xyz[0], other_xyz[1], other_xyz[2])
     
     """ If a reference then get the attribute from the referenced class """
     def __getattribute__(self, name):

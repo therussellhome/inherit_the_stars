@@ -104,14 +104,10 @@ class Ship(ShipDesign):
     
     """ Scraps the ship """
     def scrap(self, planet, location, scrap_factor = 0.9):
-        t = round(self.cost.titanium * scrap_factor)
-        l = round(self.cost.lithium * scrap_factor)
-        s = round(self.cost.silicon * scrap_factor)
-        cargoo = Cargo(titanium = t, lithium = l, silicon = s)
-        if planet not in game_engine.get('Planet'):
-            self.create_salvage(copy.copy(location), cargoo + self.cargo)
-        else:
-            planet.on_surface += cargoo + self.cargo
+        scrap = self.hull.scrap_value(self.player.race, self.ship.level)
+        for (tech, cnt) in self.ship.components.items():
+            scrap += tech.scrap_value(self.player.race, self.ship.level) * cnt
+        return scrap
     
     """ Mines the planet if the planet is not colonized """
     def orbital_mining(self, planet):

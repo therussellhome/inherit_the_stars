@@ -349,6 +349,13 @@ class FleetCase(unittest.TestCase):
             self.assertEqual(mock.call_count, 2)
 
 
+
+
+    def test_transfer1(self):
+        pass #TODO
+
+
+
     def test_stargate_check1(self):
         pass #TODO method is also todo
 
@@ -374,7 +381,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].fuel_max = 100
         f.ships[1].fuel_max = 200
-        f._fuel_distribution(151)
+        stats = f._stats()
+        stats.fuel = 151
+        f._fuel_distribution()
         self.assertEqual(f.ships[0].fuel, 51)
         self.assertEqual(f.ships[1].fuel, 100)
 
@@ -382,7 +391,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].fuel_max = 111
         f.ships[1].fuel_max = 200
-        f._fuel_distribution(311)
+        stats = f._stats()
+        stats.fuel = 311
+        f._fuel_distribution()
         self.assertEqual(f.ships[0].fuel, 111)
         self.assertEqual(f.ships[1].fuel, 200)
 
@@ -390,7 +401,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].cargo_max = 200
         f.ships[1].cargo_max = 400
-        f._cargo_distribution(cargo.Cargo(titanium=151, silicon=151, lithium=149, people=149))
+        stats = f._stats()
+        stats.cargo = cargo.Cargo(titanium=151, silicon=151, lithium=149, people=149)
+        f._cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=51, silicon=50, lithium=50, people=49))
         self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=100, silicon=101, lithium=99, people=100))
 
@@ -398,7 +411,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].cargo_max = 100
         f.ships[1].cargo_max = 1000
-        f._cargo_distribution(cargo.Cargo(titanium=276, silicon=276, lithium=274, people=274))
+        stats = f._stats()
+        stats.cargo = cargo.Cargo(titanium=276, silicon=276, lithium=274, people=274)
+        f._cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=26, silicon=25, lithium=25, people=24))
         self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=250, silicon=251, lithium=249, people=250))
 
