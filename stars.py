@@ -21,6 +21,7 @@ _handlers = {
     '/launch': launch.Launch,
     '/messages': messages.Messages,
     '/new_game': new_game.NewGame,
+    '/orders': orders.Orders,
     '/planetary_minister': planetaryministers.PlanetaryMinisters,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
@@ -33,7 +34,6 @@ _handlers = {
     '/settings': settings.Settings,
     '/shipyard': shipyard.Shipyard,
     '/tech': tech.Tech,
-    '/waypoints': waypoints.Waypoints,
 }
 
 

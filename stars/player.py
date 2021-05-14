@@ -20,7 +20,7 @@ from .planet import Planet
 from .facility import Facility
 from .ship_design import ShipDesign
 from .cost import Cost
-
+from .order import Order
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -104,6 +104,55 @@ class Player(Defaults):
             self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
+        '''Test line
+        if len(self.fleets) < 3:
+            fleet_3 = Fleet(
+                name = 'Fleet 3', 
+                ships = [
+                    Ship(
+                        ID = 'Test Ship3', 
+                        fuel = 400, 
+                        fuel_max = 400, 
+                        cargo = Cargo(
+                            people = 200,
+                            silicon = 200,
+                            lithium = 200,
+                            titanium = 200, 
+                            cargo_max = 1000
+                        ))])
+            self.add_fleet(fleet_3)
+            self.create_fleet(
+                name = 'Fleet 1', 
+                ships = [
+                    Ship(
+                        ID = 'Test Ship1', 
+                        fuel = 100, 
+                        fuel_max = 400, 
+                        cargo = Cargo(
+                            people = 100, 
+                            titanium = 900, 
+                            cargo_max = 1000
+                        )), 
+                    Ship(
+                        ID = 'Test Ship2', 
+                        fuel = 100, 
+                        fuel_max = 400, 
+                        cargo = Cargo(
+                            people = 100, 
+                            titanium = 100, 
+                            cargo_max = 1000
+                        ))],
+                orders = [
+                    Order(),
+                    Order(
+                        description = 'We are going to crash!!',
+                        location = Reference(self.fleets[0]),
+                        load_si = 200,
+                        load_li = 200,
+                        load_people = 200,
+                        load_ti = 200,
+                        merge = True
+                    )])#'''
 
     """ Player filename """
     def filename(self):

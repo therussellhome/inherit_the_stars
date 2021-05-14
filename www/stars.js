@@ -230,6 +230,11 @@ function parse_json(url, json) {
                 element = document.getElementById(key);
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
+                        if(json.hasOwnProperty(key + '_max')) {
+                            options = element.noUiSlider.options;
+                            options['range']['max'] =  json[key + '_max'];
+                            element.noUiSlider.updateOptions(options);
+                        }
                         value = [json[key]];
                         //console.log(value)
                         if(Array.isArray(value[0])) {
@@ -428,6 +433,38 @@ function slider(element, form, min, max, step, formatter, units) {
     noUiSlider.create(element, {
         start: [min],
         connect: true,
+        step: step,
+        tooltips: [tooltips],
+        format: {
+            to: function(value) {
+                if(formatter == null) {
+                    return value;
+                } else if(units == null) {
+                    return formatter.format(value);
+                }
+                return formatter.format(value) + units;
+            },
+            from: function(value) {
+                return Number(value);
+            }
+        },
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function slider3(element, form, min, max, step, formatter, units) {
+    var tooltips = true;
+    if(units == null) {
+        tooltips = false;
+    }
+    noUiSlider.create(element, {
+        start: [min],
+        connect: [true, false],
         step: step,
         tooltips: [tooltips],
         format: {
