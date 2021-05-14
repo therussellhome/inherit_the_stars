@@ -60,7 +60,7 @@ veriable_maxes = [
 """ Default values (default, min, max)  """
 __defaults = {
     'location': Location(),
-    'speed': (-2, -2, 10),
+    'speed': (-2, -2, 10), # -2=manual stargate, -1=auto, 0-10=manual
     'description': '',
     'standoff': standoff_options[0],
     'upgrade_if_commanded': False,#???
@@ -89,11 +89,11 @@ __defaults = {
     'merge': False,
     'hyperdenial': False,
     'lay_mines': False,
-    'colonize_only_waypoint': False,
-    'colonize_min_hab': (0, -1, sys.maxsize),
-    'colonize_min_ti': (0, -1, sys.maxsize),
-    'colonize_min_li': (0, -1, sys.maxsize),
-    'colonize_min_si': (0, -1, sys.maxsize),
+    'colonize_manual': False, # 
+    'colonize_min_hab': (0, -1, sys.maxsize), # -1=do not auto colonize
+    'colonize_min_ti': (0, 0, sys.maxsize),
+    'colonize_min_li': (0, 0, sys.maxsize),
+    'colonize_min_si': (0, 0, sys.maxsize),
     'scrap': False,
 }
 

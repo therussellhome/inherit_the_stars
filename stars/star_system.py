@@ -33,8 +33,10 @@ class StarSystem(Defaults):
         planet_args = {
             'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
+            'radiation': randint(0, 100),
         }
         num_planets = round(random() * 5)
+        home = -1
         if player:
             planet_args['radiation'] = (player.race.hab_radiation_stop + player.race.hab_radiation) / 2
             if player.race.primary_race_trait == 'Pa\'anuri':
@@ -48,13 +50,15 @@ class StarSystem(Defaults):
             segment = 100.0 / num_planets
             planet_args['ID'] = self.ID + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
-            self.planets.append(Planet(**planet_args))
-        if player:
-            self.planets[home].homeworld = True
-            self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
-            self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
-            self.planets[home].colonize(player)
-            self.planets[home].on_surface.people = player.race.starting_colonists
+            if i != home:
+                self.planets.append(Planet(**planet_args))
+            else:
+                self.planets.append(Planet(**planet_args, 
+                    homeworld=True, 
+                    gravity=(player.race.hab_gravity_stop + player.race.hab_gravity) / 2,
+                    temperature=(player.race.hab_temperature_stop + player.race.hab_temperature) / 2))
+                self.planets[home].colonize(player)
+                self.planets[home].on_surface.people = player.race.starting_colonists
 
     """ get the sun for the system """
     def sun(self):

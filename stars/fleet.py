@@ -229,9 +229,13 @@ class Fleet(Defaults):
         player = self.ships[0].player
         if self.location.in_system:
             for planet in self.location.root_reference.planets:
-                # TODO implement colonization filters
-                if planet.habitability(player.race) > 50:
-                    planets.append(planet)
+                if self.order.colonize_manual:
+                    if planet == self.location.reference:
+                        planets.append(planet)
+                elif planet.habitability(player.race) >= self.order.colonize_min_hab:
+                    min_minerals = Minerals(self.orders.colonize_min_ti, self.orders.colonize_min_li, self.orders.colonize_min_si)
+                    if planet.mineral_availability() >= min_minerals:
+                        planets.append(planet)
         if len(planets) == 0:
             return
         planets.sort(key=lambda x: x.habitability(player.race), reverse=True)

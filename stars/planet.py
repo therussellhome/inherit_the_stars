@@ -60,9 +60,10 @@ class Planet(Defaults):
         if 'gravity' not in kwargs:
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
         if 'remaining_minerals' not in kwargs:
-            self.remaining_minerals.titanium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
-            self.remaining_minerals.lithium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
-            self.remaining_minerals.silicon += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+            if self.homeworld:
+                self.init_minerals(49)
+            else:
+                self.init_minerals(1)
         if 'location' not in kwargs:
             distance_ly = self.distance / 100 * stars_math.TERAMETER_2_LIGHTYEAR
             self.location = Location(reference=self.star_system, offset=distance_ly, lat=0)
@@ -74,6 +75,13 @@ class Planet(Defaults):
         self.__cache__['shields'] = 0
         self.__cache__['impact_shields'] = 0
         self.__cache__['impact_people'] = 0
+
+    """ Create remaining minerals with a minimum value 1-99 """
+    def init_minerals(self, minimum):
+        minimum = max(1, min(99, minimum))
+        for mineral in MINERAL_TYPES:
+            self.remaining_minerals[mineral] = (randint(minimum, 99) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+
 
     """ Get the planet's color """
     # return it in a hexdecimal string so the webpage can use it
