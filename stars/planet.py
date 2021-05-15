@@ -57,6 +57,10 @@ class Planet(Defaults):
                     self.temperature = round(self.distance * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
         if 'radiation' not in kwargs:
             self.radiation = randint(0, 100)
+            if 'star_system' in kwargs:
+                sun = self.star_system.sun()
+                if sun:
+                    self.radiation = sun.radiation
         if 'gravity' not in kwargs:
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
         if 'remaining_minerals' not in kwargs:
@@ -146,6 +150,10 @@ class Planet(Defaults):
     and 100 subtracted from the result
     """
     def habitability(self, race, terraform=(0, 0, 0)):
+        if self.__class__.__name__ != 'Sun' and race.primary_race_trait == 'Pa\'anuri':
+            return -100
+        elif self.__class__.__name__ == 'Sun' and race.primary_race_trait != 'Pa\'anuri':
+            return -100
         g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop, terraform[0])
         t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop, terraform[1])
         r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop, terraform[2])
@@ -389,9 +397,7 @@ class Planet(Defaults):
             worst_hab_from_center = 0.0
             if minister.min_terraform_only:
                 worst_hab_from_center = 1.0
-            max_offset = min(40, self.player.tech_level.biotechnology)
-            if not self.player.race.lrt_Bioengineer:
-                max_offset = int(max_offset / 2)
+            max_offset = self.player.max_terraform()
             for hab in ['temperature', 'radiation', 'gravity']:
                 hab_from_center = self._calc_range_from_center(self[hab], self.player.race['hab_' + hab], self.player.race['hab_' + hab + '_stop'], self[hab + '_terraform'])
                 if hab_from_center > worst_hab_from_center and self[hab + '_terraform'] < max_offset:

@@ -61,6 +61,7 @@ class BuildShip(BuildQueue):
             if self.component:
                 if self.component == self.ship_design.hull:
                     ship.hull = self.component
+                    ship.commissioning = float(self.planet.player.date) - self.race.start_date
                 else:
                     self.ship.add_component(self.component)
             # miniaturize returns the minerals

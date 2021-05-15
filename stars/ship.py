@@ -1,13 +1,13 @@
-import sys
 import copy
+import sys
+from random import randint
 from . import stars_math
 from . import game_engine
 from .cargo import Cargo
-from random import randint
+from .defaults import get_default
 from .engine import Engine
 from .scanner import Scanner
 from .location import Location
-from .expirence import Expirence
 from .reference import Reference
 from .ship_design import ShipDesign
 from .hyperdenial import HyperDenial
@@ -15,10 +15,11 @@ from .hyperdenial import HyperDenial
 """ Default values (default, min, max)  """
 __defaults = {
     'player': Reference('Player'),
+    'commissioning': 0.0,
+    'battle_experience': 0,
     'location': Location(),
     'fuel': (0, 0, sys.maxsize),
     'cargo': Cargo(),
-    'expirence': Expirence(),
     'under_construction': False,
     'armor_damage': 0,
 }
@@ -33,11 +34,20 @@ class Ship(ShipDesign):
         self.__cache__['shield_damage'] = 0
         game_engine.register(self)
 
+    """ Reset by merging a list of ships """
+    def init_from(self, ships):
+        super().init_from(ships)
+        for key in ['fuel', 'cargo', 'armor_damage']:
+            self[key] = get_default(self, key)
+            for s in ships:
+                self[key] += s[key]
+
     """ Precompute a number of values """
     def update_cache(self):
         self.__cache__['mass'] = self.calc_mass()
         if len(self.engines) > 0:
             self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
+        self.__cache__['initiative'] = 0 #TODO age, battles, mass_per_engine, scanners, stealth, ecm
 
     """ This is a space station if it has orbital slots """
     def is_space_station(self):
@@ -81,7 +91,6 @@ class Ship(ShipDesign):
             self.cargo[attr] = 0
         self.scrap(planet, self.location, 0.95)
     
-    
     """ Lays mines """
     def lay_mines(self, player, system):
         return #TODO system.mines[player.name] += self.mines_laid
@@ -101,13 +110,6 @@ class Ship(ShipDesign):
     """ Creates a salvage at a location """
     def create_salvage(self, location, cargo):
         return #TODO
-    
-    """ Scraps the ship """
-    def scrap(self, planet, location, scrap_factor = 0.9):
-        scrap = self.hull.scrap_value(self.player.race, self.ship.level)
-        for (tech, cnt) in self.ship.components.items():
-            scrap += tech.scrap_value(self.player.race, self.ship.level) * cnt
-        return scrap
     
     """ Mines the planet if the planet is not colonized """
     def orbital_mining(self, planet):

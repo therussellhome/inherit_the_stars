@@ -75,27 +75,151 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(len(f0.ships), 1)
         self.assertEqual(len(f1.ships), 0)
 
-    def test_move_calc1(self):
+    def test_next_hundreth(self):
+        f = fleet.Fleet()
+        f.next_hundreth()
+        self.assertTrue('stats' in f.__cache__)
+
+    def test_read_orders1(self):
         f = fleet.Fleet() + ship.Ship()
-        f.move_calc()
+        f.read_orders()
         self.assertEqual(f.__cache__['move'], None)
         self.assertEqual(f.__cache__['move_in_system'], location.Location())
 
-    def test_move_calc2(self):
+    def test_read_orders2(self):
         f = fleet.Fleet() + ship.Ship(engines=[engine.Engine()])
         f.location = location.Location(1, 0, 0)
         with patch.object(ship.Ship, 'is_space_station', return_value=True) as mock:
-            f.move_calc()
+            f.read_orders()
         self.assertEqual(f.__cache__['move'], None)
         self.assertEqual(f.__cache__['move_in_system'].xyz, (1, 0, 0))
 
-    def test_move_calc3(self):
+    def test_read_orders3(self):
         f = fleet.Fleet() + ship.Ship(engines=[engine.Engine()])
         f.location = location.Location(1, 0, 0)
         with patch.object(order.Order, 'move_calc', return_value=(location.Location(), location.Location())):
-            f.move_calc()
+            f.read_orders()
         self.assertEqual(f.__cache__['move'], location.Location())
         self.assertEqual(f.__cache__['move_in_system'], location.Location())
+
+    def test_colonize1(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        s.create_system(num_planets=1)
+        f = fleet.Fleet() + ship.Ship()
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+        self.assertFalse(s.planets[1].is_colonized())
+
+    def test_colonize2(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True)
+        s.create_system(num_planets=1)
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+        self.assertFalse(s.planets[1].is_colonized())
+
+    def test_colonize3(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        s.create_system(num_planets=1)
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+        self.assertFalse(s.planets[1].is_colonized())
+
+    def test_colonize4(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=1)
+        s.planets[1].on_surface.people = 1
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+
+    def test_colonize5(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=1)
+        f.order.colonize_manual = True
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+        self.assertFalse(s.planets[1].is_colonized())
+
+    def test_colonize6(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=1)
+        f.order.colonize_manual = True
+        f.order.location = location.Location(reference=s.planets[1])
+        f.colonize()
+        self.assertEqual(len(f.ships), 0)
+        self.assertTrue(s.planets[1].is_colonized())
+        self.assertTrue(s.planets[1].on_surface.people, 500)
+
+    def test_colonize7(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=1)
+        s.planets[1].temperature = -1
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+        self.assertFalse(s.planets[1].is_colonized())
+
+    def test_colonize8(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=1)
+        s.planets[1].temperature = (f.ships[0].player.race.hab_temperature_stop + f.ships[0].player.race.hab_temperature) / 2
+        s.planets[1].gravity = (f.ships[0].player.race.hab_gravity_stop + f.ships[0].player.race.hab_gravity) / 2
+        s.planets[1].radiation = (f.ships[0].player.race.hab_radiation_stop + f.ships[0].player.race.hab_radiation) / 2
+        f.colonize()
+        self.assertEqual(len(f.ships), 0)
+        self.assertTrue(s.planets[1].is_colonized())
+        self.assertTrue(s.planets[1].on_surface.people, 500)
+
+    def test_colonize9(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
+        f.ships[0].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=2)
+        # Planet 1 is less ideal
+        s.planets[1].temperature = (f.ships[0].player.race.hab_temperature_stop + f.ships[0].player.race.hab_temperature) / 2 - 1
+        s.planets[1].gravity = (f.ships[0].player.race.hab_gravity_stop + f.ships[0].player.race.hab_gravity) / 2 - 1
+        s.planets[1].radiation = (f.ships[0].player.race.hab_radiation_stop + f.ships[0].player.race.hab_radiation) / 2 - 1
+        s.planets[2].temperature = (f.ships[0].player.race.hab_temperature_stop + f.ships[0].player.race.hab_temperature) / 2
+        s.planets[2].gravity = (f.ships[0].player.race.hab_gravity_stop + f.ships[0].player.race.hab_gravity) / 2
+        s.planets[2].radiation = (f.ships[0].player.race.hab_radiation_stop + f.ships[0].player.race.hab_radiation) / 2
+        f.colonize()
+        self.assertEqual(len(f.ships), 0)
+        self.assertTrue(s.planets[2].is_colonized())
+        self.assertTrue(s.planets[2].on_surface.people, 500)
+
+    def test_colonize10(self):
+        s = star_system.StarSystem(location=location.Location(is_system=True))
+        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500, commissioning=101) + ship.Ship(is_colonizer=True, cargo_max=500, commissioning=100)
+        f.ships[0].cargo.people = 500
+        f.ships[1].cargo.people = 500
+        f.location = location.Location(reference=s)
+        s.create_system(num_planets=1)
+        s.planets[1].temperature = (f.ships[0].player.race.hab_temperature_stop + f.ships[0].player.race.hab_temperature) / 2
+        s.planets[1].gravity = (f.ships[0].player.race.hab_gravity_stop + f.ships[0].player.race.hab_gravity) / 2
+        s.planets[1].radiation = (f.ships[0].player.race.hab_radiation_stop + f.ships[0].player.race.hab_radiation) / 2
+        f.colonize()
+        self.assertEqual(len(f.ships), 1)
+        self.assertEqual(f.ships[0].commissioning, 101)
+        print(s.planets[1].ID)
+        self.assertTrue(s.planets[1].is_colonized())
+        self.assertTrue(s.planets[1].on_surface.people, 500)
 
     def test_hyperdenial1(self):
         f = fleet.Fleet() + ship.Ship()
@@ -333,6 +457,8 @@ class FleetCase(unittest.TestCase):
             with patch.object(player.Player, 'get_relation', return_value='enemy'):
                 f.bomb()
             self.assertEqual(mock.call_count, 2)
+
+
 
 
 

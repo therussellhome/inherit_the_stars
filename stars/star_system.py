@@ -29,13 +29,14 @@ class StarSystem(Defaults):
         game_engine.register(self)
 
     """ create planets """
-    def create_system(self, player=None):
+    def create_system(self, player=None, num_planets=-1):
         planet_args = {
             'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
             'radiation': randint(0, 100),
         }
-        num_planets = round(random() * 5)
+        if num_planets < 0:
+            num_planets = round(random() * 5)
         home = -1
         if player:
             planet_args['radiation'] = (player.race.hab_radiation_stop + player.race.hab_radiation) / 2

@@ -9,10 +9,11 @@ from . import hyperdenial
 from .cargo import Cargo, CARGO_TYPES
 from .defaults import Defaults
 from .location import Location
+from .minerals import Minerals
 from .order import Order
 from .location import Location
 from .reference import Reference
-from .tech import Tech
+from .ship import Ship
 
 
 """ Offset of ships from fleet center """
@@ -80,9 +81,13 @@ class Fleet(Defaults):
         f.orders_repeat = self.orders_repeat
         f.location = copy.copy(self.location)
         return f
-    
+
+    """ Update cache """
+    def next_hundreth(self):
+        self._stats(hundreth=True)
+
     """ Check if the fleet can/ordered to move """
-    def move_calc(self):
+    def read_orders(self):
         self.__cache__['move'] = None
         # Set move in system in case combat displaces
         self.__cache__['move_in_system'] = self.location
@@ -93,6 +98,45 @@ class Fleet(Defaults):
             elif len(ship.engines) == 0:
                 return
         (self.__cache__['move'], self.__cache__['move_in_system']) = self.order.move_calc(self.location)
+
+    """ Colonize planets per the order """
+    def colonize(self):
+        stats = self._stats()
+        if not stats.is_colonizer or stats.cargo.people == 0:
+            return
+        # Check for planets meeting the criteria
+        planets = []
+        player = self.ships[0].player
+        if self.location.in_system:
+            max_terraform = player.max_terraform()
+            hab_terraform = (max_terraform, max_terraform, max_terraform)
+            for planet in self.location.root_reference.planets:
+                if planet.is_colonized():
+                    continue
+                elif self.order.colonize_manual:
+                    if self.order.location.reference and self.order.location.reference == planet:
+                        planets.append(planet)
+                elif planet.habitability(player.race, hab_terraform) >= self.order.colonize_min_hab:
+                    min_minerals = Minerals(titanium=self.order.colonize_min_ti, lithium=self.order.colonize_min_li, silicon=self.order.colonize_min_si)
+                    if planet.mineral_availability() >= min_minerals:
+                        planets.append(planet)
+        if len(planets) == 0:
+            return
+        planets.sort(key=lambda x: x.habitability(player.race), reverse=True)
+        # Filter the fleet for colonizers and then sort by age
+        colonizers = []
+        for ship in self.ships:
+            if ship.is_colonizer and ship.cargo.people > 0:
+                colonizers.append(ship)
+        colonizers.sort(key=lambda x: x.commissioning, reverse=True)
+        # Colonize
+        for p in planets:
+            if len(colonizers) == 0:
+                return
+            if p.colonize(player):
+                p.on_surface += colonizers[-1].cargo
+                p.on_surface += colonizers[-1].scrap_value(colonizers[-1].player.race, colonizers[-1].level)
+                self -= colonizers.pop()
 
     """ Deploy hyperdenial """
     def hyperdenial(self):
@@ -217,44 +261,6 @@ class Fleet(Defaults):
         for b in stats.bombs:
             planet.bomb(b)
 
-    """ Colonize planets per the order """
-    def colonize(self):
-        if not self.order.colonize:
-            return
-        stats = self._stats()
-        if not stats.is_colonizer or stats.cargo.people == 0:
-            return
-        # Check for planets meeting the criteria
-        planets = []
-        player = self.ships[0].player
-        if self.location.in_system:
-            for planet in self.location.root_reference.planets:
-                if self.order.colonize_manual:
-                    if planet == self.location.reference:
-                        planets.append(planet)
-                elif planet.habitability(player.race) >= self.order.colonize_min_hab:
-                    min_minerals = Minerals(self.orders.colonize_min_ti, self.orders.colonize_min_li, self.orders.colonize_min_si)
-                    if planet.mineral_availability() >= min_minerals:
-                        planets.append(planet)
-        if len(planets) == 0:
-            return
-        planets.sort(key=lambda x: x.habitability(player.race), reverse=True)
-        # Filter the fleet for colonizers and then sort by age
-        colonizers = []
-        for ship in self.ships:
-            if ship.is_colonizer:
-                colonizers.append(ship)
-        ships.sort(key=lambda x: x.experience.comishoning_date, reverse=False)
-        # TODO I propose that colonizers can colonize in the same hundredth as moving
-        # Colonize
-        for p in planets:
-            if len(colonizers) == 0:
-                return
-            if p.colonize(player):
-                p.on_surface += colonizers[0].cargo
-                p.on_surface += colonizers[0].scrap()
-                self -= colonizers.pop()
-
     """ Steal from other players """
     def piracy(self):
         pass #TODO
@@ -321,12 +327,12 @@ class Fleet(Defaults):
         self.ships[0].player.remove_fleet(self)
 
     """ Update cached values of the fleet """
-    def _stats(self, fleet_change=False):
+    def _stats(self, fleet_change=False, hundreth=False):
         if 'stats' not in self.__cache__ and fleet_change:
             # Skip the computational effort if cache not yet needed
             return None
-        elif 'stats' not in self.__cache__ or fleet_change:
-            stats = Tech()
+        elif 'stats' not in self.__cache__ or fleet_change or hundreth:
+            stats = Ship()
             self.__cache__['stats'] = stats
             stats.init_from(self.ships)
             stats.__dict__['repair_moving'] = 0
@@ -334,6 +340,7 @@ class Fleet(Defaults):
             stats.hyperdenial.radius = 0
             stats.scanner.penetrating = 0
             stats.scanner.normal = 0
+            stats.initiative = 0
             for ship in self.ships:
                 ship.update_cache()
                 stats['repair_moving'] += ship.hull.repair
@@ -341,6 +348,8 @@ class Fleet(Defaults):
                 stats.hyperdenial.radius = max(stats.hyperdenial.radius, ship.hyperdenial.radius)
                 stats.scanner.penetrating = max(stats.scanner.penetrating, ship.scanner.penetrating)
                 stats.scanner.normal = max(stats.scanner.normal, ship.scanner.normal)
+                if ship['initiative'] > stats.initiative:
+                    stats.initiative = ship['initiative']
             return stats
         return self.__cache__['stats']
 
@@ -572,22 +581,6 @@ class Fleet(Defaults):
                 recipiant.on_surface[item] = unload_cargo[item]
             recipiant.space_stations.distribute_fuel(unload_fuel, unload_fuel_max)
         
-    """ Eelles the first ship in the fleet that can colonize to colonize the planet specified in the waypoint orders """
-    def colonize(self, player):
-        planet = self.waypoints[0].recipiants['colonize']
-        if planet not in game_engine.get('Planet'):
-            return
-        if planet.is_colonized():
-            return
-        for ship in self.ships:
-            if ship.colonizer and ship.cargo.people > 0:
-                ship.colonize(Reference(player), planet)
-                ship.scrap(planet, self.location)
-                self.ships.remove(ship)
-                if len(self.ships) == 0:
-                    player.remove_fleet(self)
-                break
-    
     """ A check to ensure you do not give away or steal minerals or people from a planet or fleet that is not yours """
     def check_self(self, recipiant, player):
         if recipiant in player.fleets:
