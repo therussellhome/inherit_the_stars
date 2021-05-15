@@ -13,7 +13,7 @@ __defaults = {
 
 """ Represent 'an engine' """
 class Engine(Defaults):
-    """ What is the fastest speed the engine can go without exceeding the tacometer """
+    """ What is the fastest speed the engine can go without exceeding the tachometer """
     def speed_at_tach_100(self, mass, denials):
         for speed in range(10, 1, -1):
             if self.tachometer(speed, mass, denials) <= 100:
@@ -35,8 +35,7 @@ class Engine(Defaults):
     
     """ Calculate how much damage is taken for a given speed, mass, and distance """
     def damage_calc(self, speed, mass, ly, num_denials):
-        #TODO play test this number
-        return max(0.0, self.tachometer(speed, mass, num_denials) - 100.0) * ly
+        return max(0.0, round((self.tachometer(speed, mass, num_denials) - 100.0) / 2.7) * min(1, ly))
     
     """ How much antimatter is captured for the distance traveled """
     def siphon_calc(self, ly):
