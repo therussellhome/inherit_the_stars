@@ -33,7 +33,7 @@ _handlers = {
     '/settings': settings.Settings,
     '/shipyard': shipyard.Shipyard,
     '/tech': tech.Tech,
-    '/waypoints': waypoints.Waypoints,
+    '/orders': orders.Orders,
 }
 
 
@@ -41,6 +41,13 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args):
         super().__init__(*args, directory='./www')
 
+    """ Allow override of tech images """
+    def do_GET(self):
+        if self.path.startswith('/img/'):
+            self.directory = game_engine.user_file(self.path[1:], self.directory)
+        super().do_GET()
+
+    """ Call the handler """
     def do_POST(self):
         if self.path == '/shutdown':
             self.server._BaseServer__shutdown_request = True

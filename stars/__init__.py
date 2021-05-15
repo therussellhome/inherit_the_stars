@@ -21,6 +21,8 @@ __all__ = [
     'message',
     'minerals',
     'minister',
+    'multi_fleet',
+    'order',
     'planet', 
     'planetary_minister',
     'player', 
@@ -37,7 +39,6 @@ __all__ = [
     'tech_level',
     'terraform',
     'treaty',
-    'waypoint',
     'weapon',
     'wormhole',
 ]

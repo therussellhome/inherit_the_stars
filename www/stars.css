@@ -18,13 +18,13 @@
 div.tech_expand {
     position: absolute;
     width: 50%;
-    height: 60px;
+    height: 55px;
     z-index: 9;
     cursor: pointer;
 }
 div.tech {
     width: 550px;
-    height: 60px;
+    height: 55px;
     border: 0;
     border-bottom: 1px solid white;
     overflow-x: hidden; 
@@ -226,7 +226,70 @@ textarea:disabled {
 #race_editor_hab_gravity, #race_editor_hab_temperature, #race_editor_hab_radiation .noUi-connects {
     background: black;
 }
-
+/* titanium */
+#orders_load_ti .noUi-connect {
+    background: dodgerblue;
+}
+#orders_colonize_min_ti .noUi-connect {
+    background: dodgerblue;
+}
+#orders_unload_ti .noUi-connect {
+    background: dodgerblue;
+}
+#orders_buy_ti .noUi-connect {
+    background: dodgerblue;
+}/* titanium - lithium */
+#orders_load_li .noUi-connect {
+    background: lightgreen;
+}
+#orders_colonize_min_li .noUi-connect {
+    background: lightgreen;
+}
+#orders_unload_li .noUi-connect {
+    background: lightgreen;
+}
+#orders_buy_li .noUi-connect {
+    background: lightgreen;
+}/* lithium - silicon */
+#orders_load_si .noUi-connect {
+    background: orange;
+}
+#orders_colonize_min_si .noUi-connect {
+    background: orange;
+}
+#orders_unload_si .noUi-connect {
+    background: orange;
+}
+#orders_buy_si .noUi-connect {
+    background: orange;
+}/* silicon - people*/
+#orders_load_people .noUi-connect {
+    background: white;
+}
+#orders_colonize_min_people .noUi-connect {
+    background: white;
+}
+#orders_unload_people .noUi-connect {
+    background: white;
+}
+#orders_buy_people .noUi-connect {
+    background: white;
+}/* people - habinability */
+#orders_colonize_min_hab .noUi-connect {
+    background: white;
+}/* habitability - fuel */
+#orders_buy_fuel .noUi-connect {
+    background: magenta;
+}/* fuel - speed */
+#orders_speed .noUi-connect {
+    background: magenta;
+}/* speed - background */
+#orders_load_ti, #orders_colonize_min_ti, #orders_unload_ti, #orders_buy_ti, #orders_load_li, #orders_colonize_min_li, #orders_unload_li, #orders_buy_li, #orders_load_si, #orders_colonize_min_si, #orders_unload_si, #orders_buy_si, #orders_load_people, #orders_colonize_min_people, #orders_unload_people, #orders_buy_people, #orders_colonize_min_hab, #orders_buy_fuel, #orders_speed .noUi-connects {
+    background: black;
+}/* background - */
+div.fas.fa-random {
+    color: silver;
+}
 .power-color { background: cyan; }/* power-plants */
 .factory-color { background: goldenrod; }/* factories */
 .mine-color { background: silver; }/* mines */

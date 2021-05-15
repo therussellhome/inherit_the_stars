@@ -24,7 +24,7 @@ class Launch(Defaults):
             # Fail if player not found
             self.player_token = str(id(p))
             # Set the player object to autosave
-            game_engine.set_auto_save(p)
+            game_engine.set_root_obj(p)
         else:
             # List of games
             for f in sorted(game_engine.load_list('Player')):

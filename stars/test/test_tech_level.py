@@ -14,6 +14,16 @@ class TechLevelTestCase(unittest.TestCase):
         self.assertEqual(t3.electronics, 5)
         self.assertEqual(t3.biotechnology, 6)
 
+    def test_gt1(self):
+        t1 = tech_level.TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=6)
+        t2 = tech_level.TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=6)
+        self.assertFalse(t1 > t2)
+
+    def test_gt2(self):
+        t1 = tech_level.TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=7)
+        t2 = tech_level.TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=6)
+        self.assertTrue(t1 > t2)
+
     def test_is_available(self):
         tech_item = tech_level.TechLevel(energy=1, weapons=2, propulsion=3, construction=4, electronics=5, biotechnology=6)
         player_level = tech_level.TechLevel(evergy=1)

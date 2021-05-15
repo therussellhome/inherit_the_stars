@@ -9,45 +9,44 @@ from .scanner import Scanner
 from .location import Location
 from .expirence import Expirence
 from .reference import Reference
-from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
 from .hyperdenial import HyperDenial
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'player': Reference('Player'),
     'location': Location(),
-    'battle_plan': BattlePlan(),
-    'initative': (0, 0, sys.maxsize),
-    'armor': (10, 0, sys.maxsize),
-    'armor_damage': (0, 0, sys.maxsize),
-    'shields': (0, 0, sys.maxsize),
-    'shields_damage': (0, 0, sys.maxsize),
-    'max_distance': (0.0, 0.0, sys.maxsize),
-    'damage_armor': (0, 0, sys.maxsize),
     'fuel': (0, 0, sys.maxsize),
-    'fuel_max': (0, 0, sys.maxsize),
-    'engines': [],
     'cargo': Cargo(),
     'expirence': Expirence(),
-    'player': Reference('Player'),
-    'fuel_max': (0, 0, sys.maxsize),
-    'fuel': (0, 0, sys.maxsize),
-    'in_queue': False,
+    'under_construction': False,
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
 class Ship(ShipDesign):
-    """ Calculates how much fuel it will take to move """
-    """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def fuel_check(self, speed, num_denials, distance):
-        if len(self.engines) == 0:
-            return 0
-        fuel = 0
-        mass_per_engine = self.calc_mass()/len(self.engines)
-        for engine in self.engines:
-            fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
-        return fuel
-    
+    """ Initialize the cache """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.__cache__['mass'] = 0
+        self.__cache__['mass_per_engine'] = 0
+        game_engine.register(self)
+
+    """ Precompute a number of values """
+    def update_cache(self):
+        self.__cache__['mass'] = self.calc_mass()
+        if len(self.engines) > 0:
+            self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
+
+    """ This is a space station if it has orbital slots """
+    def is_space_station(self):
+        return self.hull.slots_orbital > 0
+
+    """ Take damage """
+    def take_damage(self, shield, armor):
+        self.shield -= shield
+        self.armor -= armor
+        #TODO blow-up
+
     """ Calculates how much fuel it will take to move """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
     def move(self, speed, num_denials, distance):
@@ -83,7 +82,7 @@ class Ship(ShipDesign):
     
     """ Lays mines """
     def lay_mines(self, player, system):
-        return#TODO system.mines[player.name] += self.mines_laid
+        return #TODO system.mines[player.name] += self.mines_laid
     
     """ Returns the repair value of the repair bay """
     def open_repair_bays(self):
@@ -99,14 +98,14 @@ class Ship(ShipDesign):
     
     """ Creates a salvage at a location """
     def create_salvage(self, location, cargo):
-        return#TODO
+        return #TODO
     
     """ Scraps the ship """
     def scrap(self, planet, location, scrap_factor = 0.9):
         t = round(self.cost.titanium * scrap_factor)
         l = round(self.cost.lithium * scrap_factor)
         s = round(self.cost.silicon * scrap_factor)
-        cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
+        cargoo = Cargo(titanium = t, lithium = l, silicon = s)
         if planet not in game_engine.get('Planet'):
             self.create_salvage(copy.copy(location), cargoo + self.cargo)
         else:

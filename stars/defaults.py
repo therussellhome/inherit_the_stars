@@ -15,9 +15,12 @@ class Defaults(game_engine.BaseClass):
         # create a dictionary that is not written to file
         object.__setattr__(self, '__cache__', {})
 
-    """ Override the subscript operator """
+    """ Override the subscript operator defaulting to reading from the cache """
     def __getitem__(self, name):
-        return getattr(self, name)
+        try:
+            return getattr(self, name)
+        except:
+            return getattr(self, '__cache__')[name]
 
     """ Override the subscript operator """
     def __setitem__(self, name, value):

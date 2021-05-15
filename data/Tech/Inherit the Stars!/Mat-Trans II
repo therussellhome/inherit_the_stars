@@ -1,5 +1,5 @@
 {
-    "name": "Mat-Trans II",
+    "ID": "Mat-Trans II",
     "category": "Orbital",
     "description": "Allows your colonists to relocate to a less-crowded (or more habitable) world so they can continue to multiply.  Requires 25% less energy than Mat-Trans I per colonists moved.",
     "race_requirements": "-Formics",
@@ -8,14 +8,16 @@
         "lithium": 4,
         "silicon": 5,
         "energy": 2400,
-        "__uuid__": "Cost"
+        "__class__": "Cost"
     },
     "level": {
         "energy": 5,
         "biotechnology": 10,
-        "__uuid__": "TechLevel"
+        "__class__": "TechLevel"
     },
     "mass": 11,
     "mat_trans_energy": 45,
-    "__uuid__": "Tech"
+    "slots_orbital": -1,
+    "slots_general": 0,
+    "__class__": "Tech"
 }

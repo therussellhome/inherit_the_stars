@@ -1,6 +1,6 @@
 import sys
 from colorsys import hls_to_rgb
-from math import cos, sin
+from math import cos, sin, sqrt
 from random import randint, uniform
 from . import game_engine
 from . import scan
