@@ -41,24 +41,24 @@ class EngineTestCase(unittest.TestCase):
 
     def test_fuel(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
-        self.assertEqual(e.fuel_calc(1, 100, 100, 0), 0)
-        self.assertEqual(e.fuel_calc(2, 100, 100, 0), 0)
-        self.assertEqual(e.fuel_calc(3, 100, 100, 0), 0)
-        self.assertEqual(e.fuel_calc(4, 100, 100, 0), 10000)
-        self.assertEqual(e.fuel_calc(5, 100, 100, 0), 30000)
-        self.assertEqual(e.fuel_calc(6, 100, 100, 0), 70000)
-        self.assertEqual(e.fuel_calc(7, 100, 100, 0), 140000)
-        self.assertEqual(e.fuel_calc(8, 100, 100, 0), 260000)
-        self.assertEqual(e.fuel_calc(9, 100, 100, 0), 440000)
-        self.assertEqual(e.fuel_calc(10, 100, 100, 0), 710000)
+        self.assertEqual(e.fuel_calc(1, 100, 0, 100), 0)
+        self.assertEqual(e.fuel_calc(2, 100, 0, 100), 0)
+        self.assertEqual(e.fuel_calc(3, 100, 0, 100), 0)
+        self.assertEqual(e.fuel_calc(4, 100, 0, 100), 10000)
+        self.assertEqual(e.fuel_calc(5, 100, 0, 100), 30000)
+        self.assertEqual(e.fuel_calc(6, 100, 0, 100), 70000)
+        self.assertEqual(e.fuel_calc(7, 100, 0, 100), 140000)
+        self.assertEqual(e.fuel_calc(8, 100, 0, 100), 260000)
+        self.assertEqual(e.fuel_calc(9, 100, 0, 100), 440000)
+        self.assertEqual(e.fuel_calc(10, 100, 0, 100), 710000)
         # Hyper Denial
-        self.assertEqual(e.fuel_calc(10, 100, 100, 1), 8940000)
+        self.assertEqual(e.fuel_calc(10, 100, 1, 100), 8940000)
 
     def test_damage(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
-        self.assertEqual(e.damage_calc(4, 100, 100, 0), 0)
-        self.assertEqual(e.damage_calc(8, 500, 100, 0), 5300)
-        self.assertEqual(e.damage_calc(10, 100, 100, 1), 79400)
+        self.assertEqual(e.damage_calc(4, 100, 0, 100), 0)
+        self.assertEqual(e.damage_calc(8, 500, 0, 100), 5300)
+        self.assertEqual(e.damage_calc(10, 100, 1, 100), 79400)
 
     def test_siphon(self):
         e = engine.Engine(antimatter_siphon=123)

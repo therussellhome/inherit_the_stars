@@ -146,6 +146,7 @@ class Game(Defaults):
     def generate_hundreth(self):
         # players in lowest to highest score
         players = list(self.players)
+        self._call(players, 'next_hundreth')
         players.sort(key=lambda x: x.score.rank, reverse=False)
         # planets in lowest to highest population
         planets = self.get_planets()
@@ -155,7 +156,8 @@ class Game(Defaults):
         for player in players:
             for fleet in player.fleets:
                 fleets.append(fleet)
-        fleets.sort(key=lambda x: x.initiative, reverse=False)
+        self._call(fleets, 'next_hundreth')
+        fleets.sort(key=lambda x: x.initiative(), reverse=False)
         multi_fleet.reset()
         #
         # actions only done at the beginning of a year
@@ -166,22 +168,20 @@ class Game(Defaults):
             self._scan(fleets) # scanning is needed to support fleet patroling
             hyperdenial.reset(True)
             self._call(self.blackholes, 'create_hyperdenials')
-            self._call(fleets, 'update_cache')
         else:
             hyperdenial.reset()
-        self.hundreth += 1
         #
         # actions in order
-        self._call(players, 'next_hundreth')
         self._call(planets, 'have_babies')
         self._call(planets, 'generate_energy')
-        self._call(planets, 'mine_minerals')
+        self._call(planets, 'extract_minerals')
         self._call(planets, 'operate_factories')
         self._call(players, 'allocate_budget')
         self._call(players, 'build_from_queue')
         self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)
-        self._call(fleets, 'move_calc')
+        self._call(fleets, 'read_orders')
+        self._call(fleets, 'colonize') # occurs before move because the fleet does not need to wait around for the colonizer but does not occur in the same hundreth as the colonizer moved
         self._call(fleets, 'hyperdenial')
         self._call(self.wormholes, 'move')
         self._call(self.asteroids, 'move')
@@ -190,26 +190,27 @@ class Game(Defaults):
         self._scan(fleets)
         self._call(multi_fleet.get(), 'round1_fight')
         self._call(fleets, 'move_in_system')
-        self._call(fleets, 'self_repair')
         self._call(fleets, 'repair')
         self._call(fleets, 'orbital_extraction')
         self._call(fleets, 'lay_mines')
+        self._call(planets, 'raise_shields')
         self._call(fleets, 'bomb')
-        self._call(fleets, 'colonize')
+        self._call(planets, 'bomb_impact')
         self._call(fleets, 'piracy')
         self._call(fleets, 'unload')
         self._call(fleets, 'buy')
         self._call(fleets, 'scrap')
         self._call(fleets, 'load')
         # redistribute cached values then process fleet changes
-        self._call(fleets, 'redistribute')
         self._call(multi_fleet.get(), 'share_fuel')
+        self._call(fleets, 'redistribute')
         self._call(fleets, 'transfer')
         self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
         #
         # actions only done at the end of a year
+        self.hundreth += 1
         if self.hundreth % 100 == 0:
             self._scan(fleets)
             self._call(players, 'calc_score')

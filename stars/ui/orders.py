@@ -53,9 +53,9 @@ class Orders(PlayerUI):
     def display(self, item):
         if item == 'speed':
             if self['orders_' + item] == -2:
-                return 'auto'
+                return 'stargate only'
             elif self['orders_' + item] == -1:
-                return 'use stargate'
+                return 'auto'
             elif self['orders_' + item] == 0:
                 return 'stopped'
             else:

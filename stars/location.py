@@ -86,9 +86,18 @@ class Location(Defaults):
             y = self_xyz[1] - (self_xyz[1] - target_xyz[1]) * f,
             z = self_xyz[2] - (self_xyz[2] - target_xyz[2]) * f)
 
+    """ Comparison allowing for close enough """
+    def __eq__(self, other):
+        if isinstance(other, Location):
+            if self - other < stars_math.TERAMETER_2_LIGHTYEAR / 1000:
+                return True
+        return False
+
     """ Distance between 2 points """
     def __sub__(self, other):
-        return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
+        self_xyz = self.xyz
+        other_xyz = other.xyz
+        return stars_math.distance(self_xyz[0], self_xyz[1], self_xyz[2], other_xyz[0], other_xyz[1], other_xyz[2])
     
     """ If a reference then get the attribute from the referenced class """
     def __getattribute__(self, name):
@@ -103,7 +112,12 @@ class Location(Defaults):
             ref_xyz = self_dict['reference'].location.xyz
             if 'ref_xyz' not in cache or cache['ref_xyz'] != ref_xyz:
                 cache['ref_xyz'] = ref_xyz
-                cache['ref_root'] = self_dict['reference'].location.reference_root
+                cache['root_location'] = self_dict['reference'].location.root_location
+                root_ref = self_dict['reference'].location.root_reference
+                if root_ref:
+                    cache['root_reference'] = root_ref
+                else:
+                    cache['root_reference'] = self_dict['reference']
                 # location does not have a fixed xyz offset
                 if self_dict['offset'] == 0.0:
                     cache['xyz'] = (ref_xyz[0] + self_dict['x'], ref_xyz[1] + self_dict['y'], ref_xyz[2] + self_dict['z'])
@@ -120,7 +134,8 @@ class Location(Defaults):
                         ref_xyz[2] + self_dict['offset'] * round(sin(lat * pi / 180), 10))
         # Created cached version
         elif 'xyz' not in cache:
-            cache['ref_root'] = self
+            cache['root_location'] = self
+            cache['root_reference'] = None
             cache['xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
         if name == 'xyz':
             return cache['xyz']
@@ -130,10 +145,12 @@ class Location(Defaults):
             return cache['xyz'][1]
         if name == 'z':
             return cache['xyz'][2]
-        if name == 'reference_root':
-            return cache['ref_root']
+        if name == 'root_location':
+            return cache['root_location']
+        if name == 'root_reference':
+            return cache['root_reference']
         if name == 'in_system':
-            return cache['ref_root'].is_system
+            return cache['root_location'].is_system
         return object.__getattribute__(self, name)
 
     """ Use the absolute position as the hash """

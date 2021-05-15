@@ -300,7 +300,13 @@ class Player(Defaults):
         if player == self:
             return 'me'
         return self.get_treaty(player).relation
-    
+
+    """ Get max terraform """
+    def max_terraform(self):
+        if self.race.lrt_Bioengineer:
+            return min(40, self.tech_level.biotechnology)
+        return min(40, self.tech_level.biotechnology) / 2
+
     """ predict the next years budget """
     def predict_budget(self):
         return 10000
