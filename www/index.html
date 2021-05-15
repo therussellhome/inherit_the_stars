@@ -248,11 +248,11 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
         <tr>
             <td>Technology Tree</td>
-            <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
+            <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"></select></td>
         </tr>
         <tr>
             <td>System Names</td>
-            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"/></td>
+            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"></select></td>
         </tr>
     </table>
 </div>
@@ -267,7 +267,7 @@ void main() {
     </tr></table><table class="hfill">
         <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
             <td>Load Existing</td>
-            <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
+            <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"></select></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
@@ -278,7 +278,7 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
         <tr>
             <td>Primary Racial Trait</td>
-            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"/></td>
+            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Lesser Racial Traits</td>
         </tr><tr>
@@ -489,10 +489,10 @@ void main() {
         <td><i class="button far fa-times-circle" title="Close Planets" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
-        <tr><td>Filter</td><td class="hfill"><select id="planets_filter" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
-        <tr><td>Field</td><td class="hfill"><select id="planets_field" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
+        <tr><td>Filter</td><td class="hfill"><select id="planets_filter" style="width: 100%" onchange="post('planets')"></select></td></tr>
+        <tr><td>Field</td><td class="hfill"><select id="planets_field" style="width: 100%" onchange="post('planets')"></select></td></tr>
     </table>
-    <table id="planets_report">
+    <table id="planets_report" class="hfill">
     </table>
 </div>
 
@@ -581,7 +581,7 @@ void main() {
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill"><tr><td>
-        <select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"/>
+        <select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"></select>
     </td></tr></table>
     <table id="planetary_planets" class="hfill">
     </table>    
@@ -644,7 +644,7 @@ void main() {
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
         <tr><td colspan="2"><table id="research_queue"></table></td></tr>
-		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"/></td></tr>
+		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"></select></td></tr>
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
@@ -860,7 +860,7 @@ void main() {
         </tr>
     </table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"/></caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"></select></caption>
         <tr>
             <td>TODO</td>
         </tr>
