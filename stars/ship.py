@@ -1,50 +1,64 @@
-import sys
 import copy
+import sys
+from random import randint
 from . import stars_math
 from . import game_engine
 from .cargo import Cargo
-from random import randint
+from .defaults import get_default
 from .engine import Engine
 from .scanner import Scanner
 from .location import Location
-from .expirence import Expirence
 from .reference import Reference
-from .battle_plan import BattlePlan
 from .ship_design import ShipDesign
 from .hyperdenial import HyperDenial
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'location': Location(),
-    'battle_plan': BattlePlan(),
-    'initative': (0, 0, sys.maxsize),
-    'armor': (10, 0, sys.maxsize),
-    'armor_damage': (0, 0, sys.maxsize),
-    'shields': (0, 0, sys.maxsize),
-    'shields_damage': (0, 0, sys.maxsize),
-    'max_distance': (0.0, 0.0, sys.maxsize),
-    'damage_armor': (0, 0, sys.maxsize),
-    'fuel': (0, 0, sys.maxsize),
-    'fuel_max': (0, 0, sys.maxsize),
-    'engines': [],
-    'cargo': Cargo(),
-    'expirence': Expirence(),
     'player': Reference('Player'),
+    'commissioning': 0.0,
+    'battle_experience': 0,
+    'location': Location(),
+    'fuel': (0, 0, sys.maxsize),
+    'cargo': Cargo(),
+    'under_construction': False,
+    'armor_damage': 0,
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
 class Ship(ShipDesign):
-    """ Calculates how much fuel it will take to move """
-    """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def fuel_check(self, speed, num_denials, distance):
-        if len(self.engines) == 0:
-            return 0
-        fuel = 0
-        mass_per_engine = self.calc_mass()/len(self.engines)
-        for engine in self.engines:
-            fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
-        return fuel
-    
+    """ Initialize the cache """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.__cache__['mass'] = 0
+        self.__cache__['mass_per_engine'] = 0
+        self.__cache__['shield_damage'] = 0
+        game_engine.register(self)
+
+    """ Reset by merging a list of ships """
+    def init_from(self, ships):
+        super().init_from(ships)
+        for key in ['fuel', 'cargo', 'armor_damage']:
+            self[key] = get_default(self, key)
+            for s in ships:
+                self[key] += s[key]
+
+    """ Precompute a number of values """
+    def update_cache(self):
+        self.__cache__['mass'] = self.calc_mass()
+        if len(self.engines) > 0:
+            self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
+        self.__cache__['initiative'] = 0 #TODO age, battles, mass_per_engine, scanners, stealth, ecm
+
+    """ This is a space station if it has orbital slots """
+    def is_space_station(self):
+        return self.hull.slots_orbital > 0
+
+    """ Take damage """
+    def take_damage(self, shield, armor):
+        self.__cache__['shield_damage'] += shield
+        self.armor_damage += armor
+        #TODO blow-up
+
     """ Calculates how much fuel it will take to move """
     """ If there are no engines it returns 0 because it doesn't use any fuel """
     def move(self, speed, num_denials, distance):
@@ -77,10 +91,9 @@ class Ship(ShipDesign):
             self.cargo[attr] = 0
         self.scrap(planet, self.location, 0.95)
     
-    
     """ Lays mines """
     def lay_mines(self, player, system):
-        return#TODO system.mines[player.name] += self.mines_laid
+        return #TODO system.mines[player.name] += self.mines_laid
     
     """ Returns the repair value of the repair bay """
     def open_repair_bays(self):
@@ -96,18 +109,7 @@ class Ship(ShipDesign):
     
     """ Creates a salvage at a location """
     def create_salvage(self, location, cargo):
-        return#TODO
-    
-    """ Scraps the ship """
-    def scrap(self, planet, location, scrap_factor = 0.9):
-        t = round(self.cost.titanium * scrap_factor)
-        l = round(self.cost.lithium * scrap_factor)
-        s = round(self.cost.silicon * scrap_factor)
-        cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
-        if planet not in game_engine.get('Planet'):
-            self.create_salvage(copy.copy(location), cargoo + self.cargo)
-        else:
-            planet.on_surface += cargoo + self.cargo
+        return #TODO
     
     """ Mines the planet if the planet is not colonized """
     def orbital_mining(self, planet):
@@ -174,5 +176,18 @@ class Ship(ShipDesign):
         if scan_type != 'hyperdenial':
             report['Apparent Mass'] = self.calc_apparent_mass()
         return report
+
+    """ Find owning fleet """
+    def find_fleet(self):
+        for f in self.player.fleets:
+            if self in f.ships:
+                return f
+        return Fleet()
+
+    """ Recompute self from components """
+    def compute_stats(self, tech_level):
+        if tech_level > self.level:
+            self.level = tech_level
+        super().compute_stats(self.level)
 
 Ship.set_defaults(Ship, __defaults)

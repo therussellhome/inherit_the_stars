@@ -6,21 +6,27 @@ from .reference import Reference
 """ Default values (default, min, max)  """
 __defaults = {
     'cost': Cost(), # cost remaining
-    'planet': Reference('Planet'),
+    'spent': Cost(), # cost applied so far
+    'planet': Reference('Planet'), # where the thing is being built
     'baryogenesis': False,
-    'original_cost': Cost(), #original cost
 }
 
 
 """ Base class for the build queue """
 class BuildQueue(Defaults):
-    """ Child classes should override this to set the cost """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
-    """ Child classes need to override this """
-    def finish(self):
+    """ Apply effort, child classes should override to determine when finished """
+    def build(self, spend=Cost()):
+        self.spent += spend
+        self.cost -= spend
+        return self.cost
+
+    """ Called when being removed from the build queue """
+    def cancel(self):
         pass
+
+    """ Build for display, child classes should override """
+    def to_html(self):
+        return '??? mystery item ???'
 
 
 BuildQueue.set_defaults(BuildQueue, __defaults)

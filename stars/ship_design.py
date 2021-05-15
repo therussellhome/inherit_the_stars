@@ -1,4 +1,5 @@
-from .defaults import Defaults, apply_defaults
+import sys
+from .defaults import Defaults
 from .reference import Reference
 from .tech import Tech
 
@@ -10,7 +11,7 @@ __defaults = {
     'category': 'Ship Design',
     'description': '',
     'components': {}, # map of tech names to count of components
-    'race': Reference('Race'),
+    'slots_general': 0,
 }
 
 
@@ -23,7 +24,6 @@ class ShipDesign(Tech):
     """ Set the hull """
     def set_hull(self, tech):
         self.hull = Reference(tech)
-        self.compute_stats()
 
     """ Add a component """
     def add_component(self, tech):
@@ -32,46 +32,23 @@ class ShipDesign(Tech):
             self.components[tech] += 1
         else:
             self.components[tech] = 1
-        self.compute_stats()
 
     """ Remove a component """
-    def remove_component(self, tech):
+    def remove_component(self, tech, cnt=1):
         tech = Reference(tech)
         if tech in self.components:
-            if self.components[tech] == 1:
+            if self.components[tech] <= cnt:
                 del self.components[tech]
             else:
-                self.components[tech] -= 1
-        self.compute_stats()
+                self.components[tech] -= cnt
 
     """ Recompute self from components """
-    def compute_stats(self):
-        # Start by setting each field in the hull then add from the components
-        for (k, v) in self.__dict__.items():
-            # Skip certain fields and all strings
-            if k in ['hull', 'components', 'race', '__cache__'] or isinstance(v, str):
-                pass
-            # Lists
-            elif isinstance(v, list):
-                self[k] = []
-                self[k].extend(self.hull[k])
-                for tech in self.components:
-                    for i in range(0, self.components[tech]):
-                        self[k].extend(tech[k])
-            # If not a list assume it can be added
-            else:
-                self[k] = self.hull[k]
-                for tech in self.components:
-                    for i in range(0, self.components[tech]):
-                        self[k] += tech[k]
-    
-    """ Recompute self from components """
-    def max_armor(self):
-        # Start by setting each field in the hull then add from the components
-        armor = self.hull['armor']
-        for tech in self.components:
-            armor += tech['armor']
-        return armor
+    def compute_stats(self, tech_level):
+        tech = [self.hull]
+        for c in self.components:
+            for i in range(0, self.components[c]):
+                tech.append(c)
+        self.init_from(tech, tech_level)
     
     """ Check if design is valid """
     def is_valid(self, level=None, race=None):
@@ -86,12 +63,11 @@ class ShipDesign(Tech):
 
     """ Clone the design """
     def clone_design(self):
-        d = ShipDesign()
-        d.set_hull(self.hull)
+        clone = ShipDesign()
+        clone.set_hull(self.hull)
         for c in self.components:
-            d.components[c] = self.components[c]
-        d.compute_stats()
-        return d
+            clone.components[c] = self.components[c]
+        return clone
 
 
 ShipDesign.set_defaults(ShipDesign, __defaults)

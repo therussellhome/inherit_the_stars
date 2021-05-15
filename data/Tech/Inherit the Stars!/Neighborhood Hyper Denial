@@ -16,7 +16,10 @@
         "__class__": "TechLevel"
     },
     "mass": 32,
-    "hyperdenial": 30,
+    "hyperdenial": {
+        "radius": 30,
+        "__class__": "HyperDenial"
+    },
     "slots_depot": -1,
     "slots_general": 0,
     "__class__": "Tech"

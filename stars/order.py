@@ -5,34 +5,122 @@ from . import game_engine
 from .defaults import Defaults
 from .location import Location
 from .reference import Reference
+#from .player import Player
+cargo_options = ['_ti', '_li', '_si', '_people']
+depart_options = [
+    'immediately',
+    'after x years',
+    'repair to x',
+    'remain indef',
+]
 
+standoff_options = [
+    'No Standoff',
+    'Avoid Detection',
+    'Penetrating Minimum',
+    'Anti-Cloak Minimum',
+    'Hyper-Denial Minimum',
+]
+
+seperate_display = [
+    'speed',
+    'load_si',
+    'load_ti',
+    'load_li',
+    'load_people',
+    'unload_si',
+    'unload_ti',
+    'unload_li',
+    'unload_people',
+    'buy_si',
+    'buy_ti',
+    'buy_li',
+    'buy_fuel',
+    'colonize_min_hab',
+    'colonize_min_ti',
+    'colonize_min_li',
+    'colonize_min_si',
+]
+
+veriable_maxes = [
+    'load_si',
+    'load_ti',
+    'load_li',
+    'load_people',
+    'unload_si',
+    'unload_ti',
+    'unload_li',
+    'unload_people',
+    'buy_si',
+    'buy_ti',
+    'buy_li',
+    'buy_fuel',
+]
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'actions': [], # see fleet.feet_actions
     'location': Location(),
-    'fly_to': Location(),
-    'speed': (1, 0, 10),
+    'speed': (-2, -2, 10), # -2=manual stargate, -1=auto, 0-10=manual
     'description': '',
-    'standoff': 'No Standoff',
-    'mode': 'auto',
-    # 'Avoid Detection', 'Penetrating Minimum', 'Anti-Cloak Minimum', 'Hyper-Denial Minimum', 'No Standoff'=(intercept if target is a ship)
-    'upgrade_if_commanded': False,
-    'depart': 'immediately',# 'after x years', 'repair to x', 'remain indef',
-    'recipiants': {},
-    # 'load':"your; Planet(), Fleet() or empty_space, salvage",
-    # 'unload':"your; Planet(), Fleet() or salvege",
-    # 'sell':"other; Planet()",
-    # 'buy':"other; Planet()",
-    # 'merge':Reference(Fleet())
-    # 'transfer':Reference(Fleet().player)
-    #?'piracy':"other; Fleet()"?
-    'transfers': {}, # 'action':[[item, amount][item, amount][item, amount][item, amount][fuel, amount]],
+    'standoff': standoff_options[0],
+    'upgrade_if_commanded': False,#???
+    'depart': depart_options[0],
+    'depart_after_x': (0.01, 0.0, sys.maxsize),
+    'repair_to_x': (0, 0, sys.maxsize),
+    'load_si': (0, -1, sys.maxsize),
+    'load_ti': (0, -1, sys.maxsize),
+    'load_li': (0, -1, sys.maxsize),
+    'load_people': (0, -1, sys.maxsize),
+    'load_dunnage': False,
+    'unload_si': (0, -1, sys.maxsize),
+    'unload_ti': (0, -1, sys.maxsize),
+    'unload_li': (0, -1, sys.maxsize),
+    'unload_people': (0, -1, sys.maxsize),
+    'buy_si': (0, -1, sys.maxsize),
+    'buy_ti': (0, -1, sys.maxsize),
+    'buy_li': (0, -1, sys.maxsize),
+    'buy_fuel': (0, -1, sys.maxsize),
+    'sell_si': False,
+    'sell_ti': False,
+    'sell_li': False,
+    'sell_fuel': False,
+    'patrol': False,
+    #'transfer_to': Player(),
+    'merge': False,
+    'hyperdenial': False,
+    'lay_mines': False,
+    'colonize_manual': False, # 
+    'colonize_min_hab': (70, 0, 101), # 101=do not auto colonize
+    'colonize_min_ti': (0, 0, 10),
+    'colonize_min_li': (0, 0, 10),
+    'colonize_min_si': (0, 0, 10),
+    'scrap': False,
 }
 
-
 """ Class defining waypoints - edited by the player through fleet """
-class Waypoint(Defaults):
+class Order(Defaults):
+    def move_calc(self, fleet_location):
+        """ 
+        # Intentionally stopped
+        if self.order.speed == 0:
+            return
+        # Calculate destination (patrol, standoff, etc)
+        move = self.order.calc_fly_to(self.location)
+        # Already there
+        if self.location == move:
+            return
+        self.__cache__['move_in_system'] = move
+        # Move is in system only
+        if self.location.root_location == move.root_location:
+            return
+        # Move is to an in_system point, go to outer system first
+        if move.in_system:
+            self.__cache__['move'] = self.location.move(move, sys.maxsize, standoff=stars_math.TERAMETER_2_LIGHTYEAR)
+        else:
+            self.__cache__['move'] = move
+        """
+        return (self.location, self.location) #TODO
+
     """ calculates the standoff distance for the fleet """
     def move_to(self, fleet):
         self.fly_to = copy.copy(self.location)
@@ -122,4 +210,4 @@ class Waypoint(Defaults):
         cords = self.predict_movment(top_speed, ship.location, pre_location)
         self.fly_to = self.chose_intercept(cords)
 
-Waypoint.set_defaults(Waypoint, __defaults)
+Order.set_defaults(Order, __defaults)

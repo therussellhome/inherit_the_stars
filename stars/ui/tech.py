@@ -43,6 +43,7 @@ class Tech(PlayerUI):
             player_race = self.player().race
             player_level = self.player().tech_level
             player_partial = self.player().research_partial
+            tech_tree = self.player().tech
         else:
             if len(tech_tree) < 10:
                 tech_tree = game_engine.load('Tech', 'Inherit the Stars!')
@@ -61,6 +62,6 @@ class Tech(PlayerUI):
             if engine:
                 self.engine[tech.ID] = engine
             self.guts[tech.ID] = tech.html_guts()
-    
+
 
 Tech.set_defaults(Tech, __defaults, sparse_json=False)

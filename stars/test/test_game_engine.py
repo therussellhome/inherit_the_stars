@@ -137,7 +137,7 @@ class GameEngineTestCase(unittest.TestCase):
         t1 = _TestGameEngine(ID='test_unreg3')
         ts = game_engine.get('_TestGameEngine')
         self.assertEqual(len(ts), 1)
-        game_engine.set_auto_save(t1)
+        game_engine.set_root_obj(t1)
         # Unregister t1
         game_engine.unregister(t1)
         ts = game_engine.get('_TestGameEngine')
@@ -148,10 +148,16 @@ class GameEngineTestCase(unittest.TestCase):
     def test_autosave1(self):
         game_engine.unregister()
         t1 = _TestGameEngine(ID='test_save1')
-        game_engine.set_auto_save(t1)
+        game_engine.set_root_obj(t1)
         self.assertEqual(t1.saved, False)
         game_engine.auto_save()
         self.assertEqual(t1.saved, True)
+
+    def test_root1(self):
+        game_engine.unregister()
+        t1 = _TestGameEngine(ID='test_save1')
+        game_engine.set_root_obj(t1)
+        self.assertEqual(game_engine.get_root_obj(), t1)
 
     def test_json1(self):
         t1 = _TestGameEngine(ID='test_json')
@@ -161,6 +167,7 @@ class GameEngineTestCase(unittest.TestCase):
     
     def test_json2(self):
         self.assertEqual(game_engine.from_json('this is bad json and is supposed to print'), None)
+        self.assertEqual(game_engine.to_json({self: ''}), None)
 
     def test_json3(self):
         t1 = _TestGameEngine(ID='test_json')

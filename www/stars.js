@@ -172,7 +172,7 @@ function post(form = '', action = '') {
     // Only post what is in both the map and has an element
     json_post = {}
     //console.log(json_post);
-    console.log('data is: ', json_map);
+    //console.log(json_map);
     for(key in json_map[form]) {
         element = document.getElementById(key);
         if(element != null) {
@@ -230,6 +230,11 @@ function parse_json(url, json) {
                 element = document.getElementById(key);
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
+                        if(json.hasOwnProperty(key + '_max')) {
+                            options = element.noUiSlider.options;
+                            options['range']['max'] =  json[key + '_max'];
+                            element.noUiSlider.updateOptions(options);
+                        }
                         value = [json[key]];
                         //console.log(value)
                         if(Array.isArray(value[0])) {
@@ -453,6 +458,38 @@ function slider(element, form, min, max, step, formatter, units) {
     noUiSlider.create(element, {
         start: [min],
         connect: true,
+        step: step,
+        tooltips: [tooltips],
+        format: {
+            to: function(value) {
+                if(formatter == null) {
+                    return value;
+                } else if(units == null) {
+                    return formatter.format(value);
+                }
+                return formatter.format(value) + units;
+            },
+            from: function(value) {
+                return Number(value);
+            }
+        },
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function slider3(element, form, min, max, step, formatter, units) {
+    var tooltips = true;
+    if(units == null) {
+        tooltips = false;
+    }
+    noUiSlider.create(element, {
+        start: [min],
+        connect: [true, false],
         step: step,
         tooltips: [tooltips],
         format: {
@@ -788,13 +825,13 @@ function tech_expand(div, expand_guts) {
         guts.classList.toggle('hide');
         expand_guts.classList.toggle('fa-angle-double-up');
         expand_guts.classList.toggle('fa-angle-double-down');
-        if(div.style.height != '60px') {
-            div.style.height = '60px'
+        if(div.style.height != '55px') {
+            div.style.height = '55px'
             div.style.height = div.scrollHeight + 'px'
         }
     } else {
-        if((div.style.height != '60px') && (div.style.height != '')) {
-            div.style.height = '60px'
+        if((div.style.height != '55px') && (div.style.height != '')) {
+            div.style.height = '55px'
         } else {
             div.style.height = div.scrollHeight + 'px'
         }

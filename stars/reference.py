@@ -83,6 +83,8 @@ class Reference(game_engine.BaseClass):
     """ Equality test """
     def __eq__(self, other):
         if type(self) != type(other):
+            if hasattr(other, 'ID'):
+                return (object.__getattribute__(self, '__reference__') == other.__class__.__name__ + '/' + other.ID)
             return False
         return (object.__getattribute__(self, '__reference__') == object.__getattribute__(other, '__reference__'))
 

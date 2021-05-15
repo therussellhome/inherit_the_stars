@@ -5,7 +5,7 @@ from . import game_engine
 from . import stars_math
 from .cloak import Cloak
 from .cost import Cost
-from .defaults import Defaults
+from .defaults import Defaults, get_default
 from .hyperdenial import HyperDenial
 from .race import Race
 from .scanner import Scanner
@@ -37,20 +37,26 @@ __defaults = {
     'fuel_generation': (0, 0, sys.maxsize),
     'hyperdenial': HyperDenial(),
     'is_colonizer': False,
-    'is_starbase': False,
     'is_trading_post': False,
+    'is_piracy_cargo': False,
+    'is_piracy_fuel': False,
     'facility_output': (0.0, 0.0, sys.maxsize),
-    'mining_rate': (0.0, 0.0, sys.maxsize),
+    'extraction_rate': (0.0, 0.0, sys.maxsize),
     'mineral_depletion_factor': (0.0, 0.0, 100),
     'mat_trans_energy': (0, 0, sys.maxsize),
     'slots_general': (-1, -sys.maxsize, sys.maxsize),
     'slots_depot': (0, -sys.maxsize, sys.maxsize),
     'slots_orbital': (0, -sys.maxsize, sys.maxsize),
+    'image': '',
 }
 
 
 """ Grouping of tech items """
 TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Other']
+
+
+""" Items that can be miniaturized """
+TECH_MINIATURIZATION = ['cost', 'mass']
 
 
 """ Represent a tech component """
@@ -60,9 +66,29 @@ class Tech(Defaults):
         super().__init__(**kwargs)
         game_engine.register(self)
 
+    """ Reset by merging a list of tech items """
+    def init_from(self, tech, miniaturize_level=None):
+        global TECH_MINIATURIZATION
+        for key in Tech.defaults:
+            # Skip strings
+            if isinstance(self[key], str):
+                continue
+            # Reset to default
+            self[key] = get_default(self, key)
+            for t in tech:
+                # Merge
+                if miniaturize_level and key in TECH_MINIATURIZATION:
+                    self[key] += t.miniaturize(miniaturize_level, key)
+                elif isinstance(self[key], list):
+                    self[key].extend(t[key])
+                else:
+                    self[key] += t[key]
+
     """ Get tech group """
     def tech_group(self):
-        if self.category in ['Beam Weapon', 'Bomb', 'Missile']:
+        if self.category.endswith('Hull') or self.category in ['Mechanical']:
+            return 'Hulls & Mechanicals'
+        elif self.category in ['Beam Weapon', 'Bomb', 'Missile']:
             return 'Weapons'
         elif self.category in ['Shield', 'Armor']:
             return 'Defense'
@@ -70,8 +96,6 @@ class Tech(Defaults):
             return 'Electronics'
         elif self.category in ['Engine']:
             return 'Engines'
-        elif self.category in ['Starbase', 'Hull', 'Mechanical']:
-            return 'Hulls & Mechanicals'
         elif self.category in ['Depot', 'Orbital']:
             return 'Heavy Equipment'
         else:
@@ -91,12 +115,23 @@ class Tech(Defaults):
                     return False
         return True
 
+    """ Get the minituarized value """
+    def miniaturize(self, tech_level, field=None):
+        if field == 'cost':
+            return self.cost # TODO
+        else:
+            return self.mass # TODO
+
+    """ Get the cost to reminituarize """
+    def reminiaturize(self, current_level, new_level):
+        if new_level > current_level:
+            return self.cost * 0.1 #TODO
+        return Cost()
+
     """ Calculate the scrap value """
-    def scrap_value(self, race):
-        if self.under_construction:
-            return Cost()
-        c = copy.copy(self.cost)
-        complete.energy = 0
+    def scrap_value(self, race, tech_level):
+        c = self.miniaturize(tech_level, 'cost')
+        c.energy = 0
         return c * (race.scrap_rate() / 100)
 
     """ Build the overview table """
@@ -117,7 +152,15 @@ class Tech(Defaults):
             quick_stats += '<i class="fa-luggage-cart"> ' + str(self.cargo_max) + '</i>'
         if self.fuel_max > 0:
             quick_stats += '<i class="fa-free-code-camp"> ' + str(self.fuel_max) + '</i>'
-        return ['<td><img style="width: 50px; height: 50px" src="tech_browser.png"/></td><td class="hfill">' \
+        # Don't show images if we don't have one
+        image = self.image
+        if self.image == '':
+            image = self.ID + '.png'
+        if (game_engine.user_file('img/' + image, is_www=True) / 'img' / image).exists():
+            image = '<img class="hfill" src="/img/' + image + '"/>'
+        else:
+            image = ''
+        return ['<td class="hfill">' \
             + '<div style="font-size: 180%; position: relative">' + self.ID \
             + '<div style="font-size: 50%; position: absolute; top: 0; right: 0">' + requirements + '</div>' \
             + '<div style="font-size: 50%; position: absolute; bottom: 0; right: 0">' + research + '</div>' \
@@ -125,8 +168,9 @@ class Tech(Defaults):
             + '<div style="font-size: 90%; position: relative">[' + self.category + ']' \
             + '<div style="position: absolute; top: 0; right: 0">' + self.cost.to_html() + '</div>' \
             + '</div></td>',
-            '<td colspan="2">' + quick_stats + '</td>',
-            '<td colspan="2" style="white-space: normal">' + self.description + '</td>' ]
+            '<td>' + image + '</td>',
+            '<td>' + quick_stats + '</td>',
+            '<td style="white-space: normal">' + self.description + '</td>' ]
 
     """ Build the combat chart """
     def html_combat(self, always=False):
@@ -146,12 +190,12 @@ class Tech(Defaults):
     
     """ Build the sensor chart """
     def html_sensor(self, always=False):
-        if self.scanner.normal > 0 or self.scanner.penetrating > 0 or self.scanner.anti_cloak > 0 or self.scanner.hyperdenial.range > 0 or always:
+        if self.scanner.normal > 0 or self.scanner.penetrating > 0 or self.scanner.anti_cloak > 0 or self.hyperdenial.radius > 0 or always:
             return [
                 self.scanner.normal,
                 self.scanner.penetrating,
                 self.scanner.anti_cloak,
-                self.hyperdenial.range
+                self.hyperdenial.radius
             ]
         return None
 

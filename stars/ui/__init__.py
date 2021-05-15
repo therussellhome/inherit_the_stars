@@ -19,4 +19,5 @@ __all__ = [
     'settings',
     'shipyard',
     'tech',
+    'orders',
 ]
