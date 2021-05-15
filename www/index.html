@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
+<script src="https://unpkg.com/vanilla-picker@2"></script>
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
 <!-- 3d UI -->
@@ -265,14 +266,78 @@ void main() {
         <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
         <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
-        <tr class="onsubmit_race_editor" onsubmit="race_viewer(this)">
+        <tr class="onsubmit_race_editor">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"></select></td>
+            <td rowspan="3" style="font-size: 300%" id="race_editor_icon"></td>
         </tr><tr>
             <td>Race Name</td>
             <td class="hfill" style="padding-right: 6px"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        </tr>
+    </table><table class="hfill onsubmit" style="font-size: 300%" onsubmit="race_viewer(this); get_race_color()">
+        <caption style="font-size: 33%" onclick="toggle(this.parentElement, 'collapse')">+ Race Icons</caption>
+        <tr hidden="true"><td colspan="5"><input disabled="true" id="race_editor_icon_color"/></td></tr>
+        <tr>
+            <td style="font-size: 33%" class="onload" colspan="2" rowspan="4" id="race_editor_color_picker" onload="race_color_picker(this)"></td>
+            <td onclick="post('race_editor', '?fas fa-pastafarianism')"><i class="button fas fa-pastafarianism race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-mailchimp')"><i class="button fab fa-mailchimp race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-gitkraken')"><i class="button fab fa-gitkraken race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-phoenix-framework')"><i class="button fab fa-phoenix-framework race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-grunt')"><i class="button fab fa-grunt race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-grav')"><i class="button fab fa-grav race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-jenkins')"><i class="button fab fa-jenkins race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-keybase')"><i class="button fab fa-keybase race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-mandalorian')"><i class="button fab fa-mandalorian race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-octopus-deploy')"><i class="button fab fa-octopus-deploy race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-odnoklassniki')"><i class="button fab fa-odnoklassniki race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-napster')"><i class="button fab fa-napster race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fas fa-cat')"><i class="button fas fa-cat race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-pied-piper-alt')"><i class="button fab fa-pied-piper-alt race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-optin-monster')"><i class="button fab fa-optin-monster race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-snowman')"><i class="button fas fa-snowman race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-bug')"><i class="button fas fa-bug race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-earlybirds')"><i class="button fab fa-earlybirds race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-linux')"><i class="button fab fa-linux race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-crow')"><i class="button fas fa-crow race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-reddit-alien')"><i class="button fab fa-reddit-alien race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-slideshare')"><i class="button fab fa-slideshare race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fas fa-dove')"><i class="button fas fa-dove race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-snapchat-ghost')"><i class="button fab fa-snapchat-ghost race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-dog')"><i class="button fas fa-dog race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-github-alt')"><i class="button fab fa-github-alt race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-github-square')"><i class="button fab fa-github-square race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-evernote')"><i class="button fab fa-evernote race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-deskpro')"><i class="button fab fa-deskpro race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-qq')"><i class="button fab fa-qq race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-dragon')"><i class="button fas fa-dragon race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-swift')"><i class="button fab fa-swift race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-studiovinari')"><i class="button fab fa-studiovinari race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-sticker-mule')"><i class="button fab fa-sticker-mule race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-suse')"><i class="button fab fa-suse race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-themeisle')"><i class="button fab fa-themeisle race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-twitter')"><i class="button fab fa-twitter race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fab fa-tripadvisor')"><i class="button fab fa-tripadvisor race_icon"></i>
+            <td onclick="post('race_editor', '?fab fa-wolf-pack-battalion')"><i class="button fab fa-wolf-pack-battalion race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-otter')"><i class="button fas fa-otter race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-frog')"><i class="button fas fa-frog race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-horse')"><i class="button fas fa-horse race_icon"></i>
+        </tr><tr>
+            <td onclick="post('race_editor', '?fas fa-horse-head')"><i class="button fas fa-horse-head race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-fish')"><i class="button fas fa-fish race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-hippo')"><i class="button fas fa-hippo race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-spider')"><i class="button fas fa-spider race_icon"></i>
+            <td onclick="post('race_editor', '?fas fa-kiwi-bird')"><i class="button fas fa-kiwi-bird race_icon"></i>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
@@ -325,8 +390,14 @@ void main() {
             <td>Immune <input id="race_editor_hab_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Growth Rate</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
+            <td>body mass</td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 150, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), 'kgs')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>starting colonists</td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' people')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse'); 
                 gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
@@ -344,23 +415,20 @@ void main() {
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
         <tr>
-            <td>colonists to operate mine</td>
-            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_mine" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+            <td>Mines per 10,000 colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_mines_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>colonists to operate factory</td>
-            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_factory" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+            <td>Factories per 10,000 colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' facories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>colonists to operate power plant</td>
-            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_power_plant" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+            <td>Power plants per 10,000 colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>colonists to operate defense</td>
-            <td class="hfill"><div class="onload" id="race_editor_colonists_to_operate_defense" onload="slider(this, 'race_editor', 200, 5000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' people')"/></td>
+            <td>Defenses per 10,000 colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Energy per colonist</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_colonist" onload="slider(this, 'race_editor', 1, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>starting colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175, 350, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ',000 people')"/></td>
+            <td>Energy per 10,000 colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>cost of baryogenesis</td>
             <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 1200, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ / kT')"/></td>
@@ -369,32 +437,32 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
         <tr>
             <td></td>
-            <td style="text-align: center">Research Cost</td>
+            <td style="text-align: center">Research Modifier</td>
             <td style="text-align: center">Starting Level</td>
         </tr>
         <tr>
             <td>Energy Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
             <td><input id="race_editor_starting_tech_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Weapons Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
             <td><input id="race_editor_starting_tech_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Propulsion Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
             <td><input id="race_editor_starting_tech_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Construction Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
             <td><input id="race_editor_starting_tech_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Electronics Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ')"/></td>
             <td><input id="race_editor_starting_tech_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Biotechnology Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 50, 200, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
             <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
