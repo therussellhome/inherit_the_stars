@@ -106,7 +106,7 @@ class Player(Defaults):
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
         self.__cache__ = {}
-        #'''Test line
+        '''Test line
         if len(self.fleets) < 3:
             fleet_3 = Fleet(
                 name = 'Fleet 3', 
@@ -174,14 +174,17 @@ class Player(Defaults):
         if self.validation_key == p.validation_key:
             for field in _player_fields:
                 self[field] = p[field]
-    
-    def get_planetary_minister(self, Id, name=False):
-        for minister in self.planetary_ministers:
-            if minister.name == Id and name:
-                return minister
-            elif minister.ID == Id and not name:
-                return minister
-        return self.planetary_ministers[0]
+      
+    """ Get the minister for a given planet """
+    def get_minister(self, planet):
+        try:
+            return self.planetary_minister_map[Reference(planet)]
+        except:
+            for minister in self.ministers:
+                if hasattr(minister, 'new_colony_minister'):
+                    if minister.new_colony_minister:
+                        return minister
+        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
     
     """ Update the date """
     def next_hundreth(self):
@@ -251,9 +254,6 @@ class Player(Defaults):
         #TODO
         pass
     
-    """ Get the minister for a given planet """
-    def get_minister(self, planet):
-        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
     
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
