@@ -54,7 +54,7 @@ function onSubmit() {
                 var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" )
                 var texture_sun = new THREE.TextureLoader().load( "/alphamap-circle.png" )
                 //var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" )
-                suns = json_map['render_stars']['suns'];
+                suns = json_map['render_stars']['systems'];
                 var planets = json_map['render_stars']['planets'];
                 // reusable geometry
                 var geometry = new THREE.BufferGeometry();
@@ -93,8 +93,9 @@ function onSubmit() {
                 // Zoom to home world
                 system_name = "The "+suns[0].name.replaceAll(/\'.*/g, "")+" system";
                 system_intersect = 0
-                select_object(systems, 0, true, true); // Replace with with the home system's sun
-                console.log(scene);
+                console.log('suns:', suns)
+                select_object(systems, 0, true, true); // TODO Replace with with the home system's sun
+                console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
             }
@@ -123,7 +124,7 @@ function onWheel(event) {
 function onKeyPress(event) {
     var apos = new THREE.Vector3( systems.geometry.attributes.position.array[intersect*3], systems.geometry.attributes.position.array[intersect*3+1], systems.geometry.attributes.position.array[intersect*3+2] )
     var pos = apos.clone().sub(camera.position)
-    console.log(event.keyCode, camera.up, camera.position, apos, pos);//, camera);
+    console.log('key:', event.keyCode, 'camera(', 'up:', camera.up, 'position:', camera.position, ') apos:', apos, 'pos:', pos);//, camera);
     var rotateDirection;
     // up
     if(event.keyCode == 38) {
@@ -251,7 +252,7 @@ function get_system(is_in_system) {
     }
     console.log('system_intersect: ', system_intersect)
     system_name = "The "+suns[system_intersect].name.replaceAll(/\'.*/g, "")+" system";
-    console.log(system_name)
+    console.log('system_name:', system_name)
     var geometry = new THREE.BufferGeometry();
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" )
     /**/// Make dummy planets
