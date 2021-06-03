@@ -10,7 +10,7 @@ const TERAMETER = 0.0001057;
 // -- these are hidden unless the system is selected
 // intersteller objects are added directly to the scene
 
-var scene, renderer, camera, intersect, intersected, system_intersect, camera_lookat, camera_flyto, fixed_camera, in_system, systems, suns, system_name;
+var scene, renderer, camera, intersect, prev_intersect, intersected, system_intersect, camera_lookat, camera_flyto, fixed_camera, in_system, systems, suns, system_name;
 
 init();
 
@@ -20,7 +20,8 @@ function init() {
 	geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
 	systems = new THREE.Points( geometry );
     intersected = systems;
-    intersect = 0
+    prev_intersect = 0;
+    intersect = 0;
     var div = document.getElementById('play_mode');
     // create the scene and renderer
     scene = new THREE.Scene();
@@ -28,6 +29,7 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     div.appendChild( renderer.domElement );
     // look at center of galaxy
+    prev_intersect = 0;
     intersect = 0;
     fixed_camera = false;
     camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, TERAMETER / 1000, 2000);
@@ -64,7 +66,7 @@ function onSubmit() {
                 var sizes = new Float32Array( suns.length );
                 for(var i = 0; i < suns.length; i++) {
                     var color = new THREE.Color (suns[i].color);
-                    sizes[i] = ((suns[i].size + 200) * TERAMETER / 1000);
+                    sizes[i] = ((suns[i].size + 200) * TERAMETER / 100);
                     positions[ i * 3 ] = suns[i].location[0];
                     positions[ i * 3 + 1 ] = suns[i].location[1];
                     positions[ i * 3 + 2 ] = suns[i].location[2];
@@ -229,9 +231,11 @@ function onClick(event) {
 // Refocus on the clicked object
 function select_object(obj, index=true, flyto=true, is_in_system=true) {
     if(index !== true){
+        console.log('intersect:', intersect, 'prev_intersect:', prev_intersect);
+        prev_intersect = intersect;
         intersected = obj;
-        //console.log(intersected);
         intersect = index;
+        console.log('intersect:', intersect, 'prev_intersect:', prev_intersect);
     }
     get_system(is_in_system);
     if(flyto && intersected) {
@@ -263,9 +267,9 @@ function get_system(is_in_system) {
     for(var i = 0; i < planet_colors.length; i++) {
         var color = new THREE.Color( planet_colors[i] );
         sizes[i] = (Math.random() * 100 + 200) * TERAMETER / 10000;
-        positions[ i * 3 ] = suns[intersect].x + TERAMETER * Math.random() * 2 - TERAMETER;
-        positions[ i * 3 + 1 ] = suns[intersect].y + TERAMETER * Math.random() * 2 - TERAMETER;
-        positions[ i * 3 + 2 ] = suns[intersect].z;
+        positions[ i * 3 ] = suns[intersect].location[0] + TERAMETER * Math.random() * 2 - TERAMETER;
+        positions[ i * 3 + 1 ] = suns[intersect].location[1] + TERAMETER * Math.random() * 2 - TERAMETER;
+        positions[ i * 3 + 2 ] = suns[intersect].location[2];
         colors[ i * 3 ] = color.r;
         colors[ i * 3 + 1 ] = color.g;
         colors[ i * 3 + 2 ] = color.b;
@@ -283,9 +287,11 @@ function get_system(is_in_system) {
 		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
         alphaTest: 0.9
     } );
+    systems.geometry.attributes.size.array[prev_intersect]*=10
     scene.remove(in_system)
     in_system = new THREE.Points( geometry, material );
     in_system.name = 'in_system'
+    systems.geometry.attributes.size.array[intersect]/=10
     scene.add(in_system);
 }
 
