@@ -39,7 +39,7 @@ __defaults = {
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
-    'mines': (0, 0, sys.maxsize),
+    'mineral_extractors': (0, 0, sys.maxsize),
     'defenses': (0, 0, sys.maxsize),
 }
 
@@ -232,6 +232,8 @@ class Planet(Defaults):
         self.on_surface.people -= self.__cache__['impact_people']
         self.__cache__['impact_shields'] = 0
         self.__cache__['impact_people'] = 0
+        if self.on_surface.people == 0:
+            pass #TODO
 
     """ power plants make energy per 1/100th """
     def generate_energy(self):
@@ -240,18 +242,23 @@ class Planet(Defaults):
         self.player.energy += facility_yj + pop_yj
         return facility_yj + pop_yj
 
-    """ mines mine the minerals per 100th """
-    def extract_minerals(self, orbital=False):
-        if orbital:
-            extracted = Minerals()
+    """ mineral extractors extract the minerals per 100th """
+    def extract_minerals(self, component=None, qty=0, max_extraction=sys.maxsize):
+        if component:
+            operate = component.extraction_rate * qty
+            factor = component.mineral_depletion_factor
         else:
-            extracted = self.on_surface
-        factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
-        operate = self._operate('mines')
+            operate = self._operate('mineral_extractors')
+            factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
         availability = self.mineral_availability()
+        extracted = Minerals()
         for mineral in MINERAL_TYPES:
-            extracted[mineral] += operate * availability[mineral] / 100
-            self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
+            extract = min(max_extraction, operate * availability[mineral] / 100)
+            max_extraction -= extract
+            extracted[mineral] = extract
+            self.remaining_minerals[mineral] -= extract * factor
+        if not component:
+            self.on_surface += extracted
         return extracted
 
     """ Availability of the mineral type """
@@ -287,21 +294,21 @@ class Planet(Defaults):
         pro = ti + li + si
         # calculate the time needed to get what is needed
         try:
-            t_ti = ceil(max((ti - self.on_surface.titanium) / (self.mineral_availability('titanium') * self._operate('mines')), 1))/100
+            t_ti = ceil(max((ti - self.on_surface.titanium) / (self.mineral_availability('titanium') * self._operate('mineral_extractors')), 1))/100
         except ZeroDivisionError:
             if ti - self.on_surface.titanium >= 0:
                 t_ti = 0.01
             else:
                 t_ti = 'never'
         try:
-            t_li = ceil(max((li - self.on_surface.lithium) / (self.mineral_availability('lithium') * self._operate('mines')), 1))/100
+            t_li = ceil(max((li - self.on_surface.lithium) / (self.mineral_availability('lithium') * self._operate('mineral_extractors')), 1))/100
         except ZeroDivisionError:
             if li - self.on_surface.lithium >= 0:
                 t_li = 0.01
             else:
                 t_li = 'never'
         try:
-            t_si = ceil(max((si - self.on_surface.silicon) / (self.mineral_availability('silicon') * self._operate('mines')), 1))/100
+            t_si = ceil(max((si - self.on_surface.silicon) / (self.mineral_availability('silicon') * self._operate('mineral_extractors')), 1))/100
         except ZeroDivisionError:
             if si - self.on_surface.silicon >= 0:
                 t_si = 0.01

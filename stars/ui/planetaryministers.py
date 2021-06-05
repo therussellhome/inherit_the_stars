@@ -38,7 +38,7 @@ class PlanetaryMinisters(PlayerUI):
                 setattr(self, 'planetary_' + key, getattr(self.player().get_planetary_minister(self.planetary_ID), key))
             self.planetary_facility_types[0] = self.planetary_power_plants
             self.planetary_facility_types[1] = self.planetary_factories + self.planetary_facility_types[0]
-            self.planetary_facility_types[2] = self.planetary_mines + self.planetary_facility_types[1]
+            self.planetary_facility_types[2] = self.planetary_mineral_extractors + self.planetary_facility_types[1]
         #for minister in self.player().planetary_ministers:
         #    print('minister  = ', minister.__dict__)
         #print('self  = ', self.__dict__)
@@ -54,7 +54,7 @@ class PlanetaryMinisters(PlayerUI):
         """ save """
         self.planetary_power_plants = self.planetary_facility_types[0]
         self.planetary_factories = self.planetary_facility_types[1]-self.planetary_facility_types[0]
-        self.planetary_mines = self.planetary_facility_types[2]-self.planetary_facility_types[1]
+        self.planetary_mineral_extractors = self.planetary_facility_types[2]-self.planetary_facility_types[1]
         self.planetary_defenses = 100-self.planetary_facility_types[2]
         for key in PlanetaryMinister.defaults:
             setattr(self.player().get_planetary_minister(self.planetary_ID), key, getattr(self, 'planetary_' + key))
@@ -65,7 +65,7 @@ class PlanetaryMinisters(PlayerUI):
             self.options_planetary_new_col_minister.append(minister.name)
         self.planetary_power = str(self.planetary_power_plants) + ' %'
         self.planetary_factory = str(self.planetary_factories) + ' %'
-        self.planetary_mine = str(self.planetary_mines) + ' %'
+        self.planetary_mine = str(self.planetary_mineral_extractors) + ' %'
         self.planetary_shield = str(self.planetary_defenses) + ' %'
 
         m_list = ''

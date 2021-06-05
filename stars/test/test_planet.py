@@ -427,7 +427,7 @@ class PlanetTestCase(unittest.TestCase):
         self.assertAlmostEqual(p.mineral_availability().titanium, .725)
         self.assertAlmostEqual(p.mineral_availability().lithium, 1.7)
         self.assertAlmostEqual(p.mineral_availability().silicon, 3.7)
-        p.mines = 1000
+        p.mineral_extractors = 1000
         p.player.tech_level.weapons = 0 #factor = 1.3
         p.extract_minerals()
         self.assertAlmostEqual(p.on_surface.titanium, 7.25)
@@ -449,12 +449,25 @@ class PlanetTestCase(unittest.TestCase):
         self.assertAlmostEqual(p.mineral_availability().titanium, .5)
         self.assertAlmostEqual(p.mineral_availability().lithium, 40.1) #max possible, remaining minerals is too high for size of world
         self.assertEqual(p.mineral_availability().silicon, 2.6)
-        p.mines = 100
+        p.mineral_extractors = 100
         p.player.tech_level.weapons = 14 #factor = 1.075
         p.extract_minerals()
         self.assertAlmostEqual(p.on_surface.titanium, .5)
         self.assertAlmostEqual(p.on_surface.lithium, 40.1)
         self.assertAlmostEqual(p.on_surface.silicon, 2.6)
+        self.assertAlmostEqual(p.remaining_minerals.titanium, 3199.4625)
+        self.assertAlmostEqual(p.remaining_minerals.lithium, 31956.8925)
+        self.assertAlmostEqual(p.remaining_minerals.silicon, 7997.205)
+
+    def test_extract_minerals3(self):
+        p = planet.Planet()
+        p.gravity = 10
+        p.remaining_minerals = minerals.Minerals(titanium=3200, lithium=32000, silicon=8000)
+        self.assertAlmostEqual(p.mineral_availability().titanium, .5)
+        self.assertAlmostEqual(p.mineral_availability().lithium, 40.1) #max possible, remaining minerals is too high for size of world
+        self.assertEqual(p.mineral_availability().silicon, 2.6)
+        e = tech.Tech(extraction_rate=20, mineral_depletion_factor=1.075)
+        self.assertEqual(p.extract_minerals(e, 5), minerals.Minerals(titanium=.5, lithium=40.1, silicon=2.6))
         self.assertAlmostEqual(p.remaining_minerals.titanium, 3199.4625)
         self.assertAlmostEqual(p.remaining_minerals.lithium, 31956.8925)
         self.assertAlmostEqual(p.remaining_minerals.silicon, 7997.205)
@@ -488,38 +501,38 @@ class PlanetTestCase(unittest.TestCase):
     def test_auto_build(self):
         return #TODO
         p.on_surface.people = 1000
-        p.mines = 25
+        p.mineral_extractors = 25
         p.power_plants = 50
         p.factories = 2
         p.defenses = 4
         self.assertEqual(p.auto_build(), p.scanner_tech)
-        p.mines = 25
+        p.mineral_extractors = 25
         p.power_plants = 47
         p.factories = 25
         p.defenses = 4
         self.assertEqual(p.auto_build(), p.penetrating_tech)
-        p.mines = 25
+        p.mineral_extractors = 25
         p.power_plants = 3
         p.factories = 2
         p.defenses = 4
         #p.auto_build().debug_display()
         #p.facilities['Factory'].debug_display()
         self.assertEqual(p.auto_build() is p.facilities['Factory'], True, 'This error does not seem logical')#'FIX ME'
-        p.mines = 2
+        p.mineral_extractors = 2
         p.power_plants = 5
         p.factories = 2
         p.defenses = 1
         #p.auto_build().debug_display()
         #p.facilities['Defense'].debug_display()
         #self.assertEqual(p.auto_build(), p.facilities['Defense'], 'FIX ME')
-        p.mines = 5
+        p.mineral_extractors = 5
         p.power_plants = 3
         p.factories = 22
         p.defenses = 4
         #p.auto_build().debug_display()
         #p.facilities['Power'].debug_display()
         #self.assertEqual(p.auto_build(), p.facilities['Power'], 'FIX ME')
-        p.mines = 2
+        p.mineral_extractors = 2
         p.power_plants = 3
         p.factories = 26
         p.defenses = 4

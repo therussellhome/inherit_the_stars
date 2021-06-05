@@ -55,7 +55,8 @@ class Fleet(Defaults):
                     self.ships.append(ship)
                 else:
                     print('Cannot add ship to fleet - not at the same location', self.location, ship.location, file=sys.stderr)
-        self._stats(fleet_change=True)
+        if 'stats' in self.__cache__:
+            del self.__cache__['stats']
         return self
 
     """ Remove ship from fleet """
@@ -69,7 +70,8 @@ class Fleet(Defaults):
                 self.ships.remove(ship)
         if len(self.ships) == 0:
             pass #TODO remove from player's fleets
-        self._stats(fleet_change=True)
+        if 'stats' in self.__cache__:
+            del self.__cache__['stats']
         return self
 
     """ Duplicates the flees except for the ships for use with split """
@@ -84,7 +86,8 @@ class Fleet(Defaults):
 
     """ Update cache """
     def next_hundreth(self):
-        self._stats(hundreth=True)
+        if 'stats' in self.__cache__:
+            del self.__cache__['stats']
 
     """ Check if the fleet can/ordered to move """
     def read_orders(self):
@@ -106,9 +109,8 @@ class Fleet(Defaults):
             return
         # Check for planets meeting the criteria
         planets = []
-        player = self.ships[0].player
         if self.location.in_system:
-            max_terraform = player.max_terraform()
+            max_terraform = stats.player.max_terraform()
             hab_terraform = (max_terraform, max_terraform, max_terraform)
             for planet in self.location.root_reference.planets:
                 if planet.is_colonized():
@@ -116,13 +118,13 @@ class Fleet(Defaults):
                 elif self.order.colonize_manual:
                     if self.order.location.reference and self.order.location.reference == planet:
                         planets.append(planet)
-                elif planet.habitability(player.race, hab_terraform) >= self.order.colonize_min_hab:
+                elif planet.habitability(stats.player.race, hab_terraform) >= self.order.colonize_min_hab:
                     min_minerals = Minerals(titanium=self.order.colonize_min_ti, lithium=self.order.colonize_min_li, silicon=self.order.colonize_min_si)
                     if planet.mineral_availability() >= min_minerals:
                         planets.append(planet)
         if len(planets) == 0:
             return
-        planets.sort(key=lambda x: x.habitability(player.race), reverse=True)
+        planets.sort(key=lambda x: x.habitability(stats.player.race), reverse=True)
         # Filter the fleet for colonizers and then sort by age
         colonizers = []
         for ship in self.ships:
@@ -133,9 +135,9 @@ class Fleet(Defaults):
         for p in planets:
             if len(colonizers) == 0:
                 return
-            if p.colonize(player):
+            if p.colonize(stats.player):
                 p.on_surface += colonizers[-1].cargo
-                p.on_surface += colonizers[-1].scrap_value(colonizers[-1].player.race, colonizers[-1].level)
+                p.on_surface += colonizers[-1].scrap_value(stats.player.race, colonizers[-1].level)
                 self -= colonizers.pop()
 
     """ Deploy hyperdenial """
@@ -241,14 +243,19 @@ class Fleet(Defaults):
         stats = self._stats()
         if self.__cache__['moved'] or stats.extraction_rate == 0 or not self.location.reference ^ 'Planet' or self.location.reference.is_colonized():
             return
-        #TODO Pam how does this work?
+        for ship in self.ships:
+            for (component, qty) in ship.components.items():
+                if component.extraction_rate > 0:
+                    cargo_space = stats.cargo_max - stats.cargo.sum()
+                    stats.cargo += self.location.reference.extract_minerals(component, qty, cargo_space)
+        # cargo is intentionally not redistributed yet
 
     """ Lay mines """
     def lay_mines(self):
         stats = self._stats()
         if self.__cache__['moved'] or stats.mines_laid == 0 or not self.location.in_system:
             return
-        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.ships[0].player)
+        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), stats.player)
 
     """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
     def bomb(self):
@@ -269,7 +276,22 @@ class Fleet(Defaults):
     def unload(self):
         if self.__cache__['moved']:
             return
-        #TODO
+        stats = self._stats()
+        (cargo, cargo_max) = self._other_cargo()
+        if not cargo or cargo.sum() >= cargo_max:
+            return
+        order = {'titanium': self.order.unload_ti, 'lithium': self.order.unload_li, 'silicon': self.order.unload_si, 'people': self.order.unload_people} # cannot use cargo type because of 0 min
+        for ctype in CARGO_TYPES:
+            if order[ctype] > 0:
+                order[ctype] = min(cargo_max - cargo.sum(), order[ctype], stats.cargo[ctype])
+                stats.cargo[ctype] -= order[ctype]
+                cargo[ctype] += order[ctype]
+        for ctype in CARGO_TYPES:
+            if order[ctype] == -1:
+                order[ctype] = min(cargo_max - cargo.sum(), stats.cargo[ctype])
+                stats.cargo[ctype] -= order[ctype]
+                cargo[ctype] += order[ctype]
+        # cargo is intentionally not redistributed yet
 
     """ Conduct trade """
     def buy(self):
@@ -297,6 +319,22 @@ class Fleet(Defaults):
     def load(self):
         if self.__cache__['moved']:
             return
+        stats = self._stats()
+        (cargo, cargo_max) = self._other_cargo()
+        if not cargo or stats.cargo.sum() >= stats.cargo_max:
+            return
+        order = {'titanium': self.order.load_ti, 'lithium': self.order.load_li, 'silicon': self.order.load_si, 'people': self.order.load_people} # cannot use cargo type because of 0 min
+        for ctype in CARGO_TYPES:
+            if order[ctype] > 0:
+                order[ctype] = min(stats.cargo_max - stats.cargo.sum(), order[ctype], cargo[ctype])
+                cargo[ctype] -= order[ctype]
+                stats.cargo[ctype] += order[ctype]
+        for ctype in CARGO_TYPES:
+            if order[ctype] == -1:
+                order[ctype] = min(stats.cargo_max - stats.cargo.sum(), cargo[ctype])
+                cargo[ctype] -= order[ctype]
+                stats.cargo[ctype] += order[ctype]
+        # cargo is intentionally not redistributed yet
 
     """ Redistribute cargo and fuel """
     def redistribute(self):
@@ -325,13 +363,34 @@ class Fleet(Defaults):
         for ship in self.ships:
             f += ship
         self.ships[0].player.remove_fleet(self)
+    
+    """ Perform anticloak scanning """
+    def scan_anticloak(self):
+        stats = self._stats()
+        if stats.scanner.anticloak > 0:
+            scan.anticloak(stats.player, fleet.location, stats.scanner.anticloak)
+
+    """ Perform hyperdenial scanning """
+    def scan_hyperdenial(self):
+        stats = self._stats()
+        if stats.hyperdenial.radius > 0:
+            scan.hyperdenial(stats.player, fleet.location, stats.hyperdenial.radius)
+           
+    """ Perform penetrating scanning """
+    def scan_penetrating(self):
+        stats = self._stats()
+        if stats.scanner.penetrating > 0:
+            scan.penetrating(stats.player, fleet.location, stats.scanner.penetrating)
+
+    """ Perform normal scanning """
+    def scan_normal(self):
+        stats = self._stats()
+        if stats.scanner.normal > 0:
+            scan.normal(stats.player, fleet.location, stats.scanner.normal)
 
     """ Update cached values of the fleet """
-    def _stats(self, fleet_change=False, hundreth=False):
-        if 'stats' not in self.__cache__ and fleet_change:
-            # Skip the computational effort if cache not yet needed
-            return None
-        elif 'stats' not in self.__cache__ or fleet_change or hundreth:
+    def _stats(self):
+        if 'stats' not in self.__cache__:
             stats = Ship()
             self.__cache__['stats'] = stats
             stats.init_from(self.ships)
@@ -343,6 +402,7 @@ class Fleet(Defaults):
             stats.initiative = 0
             for ship in self.ships:
                 ship.update_cache()
+                stats.player = ship.player
                 stats['repair_moving'] += ship.hull.repair
                 stats.scanner.anti_cloak = max(stats.scanner.anti_cloak, ship.scanner.anti_cloak)
                 stats.hyperdenial.radius = max(stats.hyperdenial.radius, ship.hyperdenial.radius)
@@ -352,6 +412,18 @@ class Fleet(Defaults):
                     stats.initiative = ship['initiative']
             return stats
         return self.__cache__['stats']
+
+    """ Cargo of unload/load fleet/planet """
+    def _other_cargo(self):
+        stats = self._stats()
+        if self.location.reference ^ 'Fleet':
+            other_stats = self.location.reference._stats()
+            if other_stats.player == stats.player:
+                return (other_stats.cargo, other_stats.cargo_max)
+        elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
+            if self.location.reference.player == stats.player:
+                return (self.location.reference.on_surface, sys.maxsize)
+        return (None, 0)
 
     """ Check if fleet can safely gate to waypoint """
     def _stargate_check(self):
@@ -405,328 +477,6 @@ class Fleet(Defaults):
                 while cargo_left[ctype] > 0 and ship.cargo.sum() < ship.cargo_max:
                     ship.cargo[ctype] += 1
                     cargo_left[ctype] -= 1
-    
-           
-
-    """ Executes the unload function """
-    def unload(self, player):
-        recipiant = self.waypoints[0].recipiants['unload']
-        if not self.check_self(recipiant, player) and recipiant.is_colonized():
-            return
-        """ gets the fuel and cargo from your ships """
-        self_cargo, self_cargo_max = self.get_cargo()
-        self_fuel, self_fuel_max = self.get_fuel()
-        if recipiant in player.fleets:
-            """ gets fuel and cargo from the ships in the other fleet """
-            load_cargo, load_cargo_max = recipiant.get_cargo()
-            load_fuel, load_fuel_max = recipiant.get_fuel()
-        else:
-            """ ensures cargo is correctly fetched from the planet's surface and fuel is fetched from the space stations fuel tanks """
-            load_cargo = recipiant.on_surface
-            load_cargo_max = recipiant.on_surface.cargo_max
-            load_fuel, load_fuel_max = recipiant.space_stations.get_fuel()
-        """ checks if the amount of each sceduled transhipment of cargo or fuel is fullfilable and ajusts the amount if not """
-        for transfer in self.waypoints[0].transfers['unload']:
-            item = transfer[0]
-            amount = transfer[1]
-            amount = self.handle_cargo(self_fuel, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo)
-            """ actual transhipment of cargo and fuel """
-            if item == 'fuel':
-                load_fuel += amount
-                self_fuel -= amount
-            else:
-                load_cargo[item] += amount
-                self_cargo[item] -= amount
-        """ returns the fuel and cargo to your ships """
-        for item in ["titanium", "silicon", "lithium", "people"]:
-            self.distribute_cargo(self_cargo, item, self_cargo_max)
-        self.distribute_fuel(self_fuel, self_fuel_max)
-        if recipiant in player.fleets:
-            """ returns fuel and cargo to the ships in the other fleet """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.distribute_cargo(load_cargo, item, load_cargo_max)
-            recipiant.distribute_fuel(load_fuel, load_fuel_max)
-        else:
-            """ ensures cargo is correctly stoed on the planet's surface and fuel is in the space stations fuel tanks """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.on_surface[item] = load_cargo[item]
-            recipiant.space_stations.distribute_fuel(load_fuel, load_fuel_max)
-    
-    """ Executes the sell function """
-    def sell(self, player):
-        recipiant = self.waypoints[0].recipiants['sell']
-        if not self.check_trade(recipiant, player):
-            return
-        """ gets the fuel and cargo from your ships """
-        self_cargo, self_cargo_max = self.get_cargo()
-        self_fuel, self_fuel_max = self.get_fuel()
-        if False:#TODO recipiant.__class__.__name__ == 'fleet':
-            """ gets fuel and cargo from the ships in the other fleet """
-            load_cargo, load_cargo_max = recipiant.get_cargo()
-            load_fuel, load_fuel_max = recipiant.get_fuel()
-        else:
-            """ ensures cargo is correctly fetched from the planet's surface and fuel is fetched from the space stations fuel tanks """
-            load_cargo = recipiant.on_surface
-            load_cargo_max = recipiant.on_surface.cargo_max
-            load_fuel, load_fuel_max = recipiant.space_stations.get_fuel()
-        """ checks if the amount of each sceduled purchase of cargo or fuel is fullfilable at price and ajusts the amount if not """
-        for transfer in self.waypoints[0].transfers['sell']:
-            item = transfer[0]
-            amount = transfer[1]
-            traety = player.get_treaty(recipiant.player)
-            abreve = False
-            if item == 'fuel':
-                abreve = item
-            if item in ['titanium', 'silicon', 'lithium']:
-                abreve = item[0:2]
-            if abreve and traety['sell_' + abreve] >= 0:
-                amount = self.handle_cargo(self_fuel, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, self_cargo)
-                true_amount = int(recipiant.player.spend('trade', traety['sell_' + abreve] * amount, False) / traety['sell_' + abreve])
-                """ actual purchace of cargo and fuel,  """
-                if item == 'fuel':
-                    load_fuel += true_amount
-                    self_fuel -= true_amount
-                else:
-                    load_cargo[item] += true_amount
-                    self_cargo[item] -= true_amount
-                player.energy += recipiant.player.spend('trade', traety['sell_' + abreve] * true_amount)
-        """ returns the fuel and cargo to your ships """
-        for item in ["titanium", "silicon", "lithium", "people"]:
-            self.distribute_cargo(self_cargo, item, self_cargo_max)
-        self.distribute_fuel(self_fuel, self_fuel_max)
-        if False:#TODO recipiant.__class__.__name__ == 'fleet':
-            """ returns fuel and cargo to the ships in the other fleet """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.distribute_cargo(load_cargo, item, load_cargo_max)
-            recipiant.distribute_fuel(load_fuel, load_fuel_max)
-        else:
-            """ ensures cargo is correctly stoed on the planet's surface and fuel is in the space stations fuel tanks """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.on_surface[item] = load_cargo[item]
-            recipiant.space_stations.distribute_fuel(load_fuel, load_fuel_max)
-    
-    """ Generic method for handling cargo """
-    def handle_cargo(self, unload_fuel, load_fuel, load_fuel_max, item, amount, load_cargo, load_cargo_max, unload_cargo):
-        print(amount, item, 'with problem', end=' ')
-        if item in ["fuel", "titanium", "silicon", "lithium", "people"]:
-            if item == 'fuel':
-                if unload_fuel < amount and (load_fuel_max - load_fuel) >= unload_fuel:
-                    print("'not enough", item + "'", "{'fuel':", str(unload_fuel) + "}", end=' ')
-                    amount = unload_fuel
-                elif (load_fuel_max - load_fuel) < amount and unload_fuel >= (load_fuel_max - load_fuel):
-                    print("'not enough capacity'", "{'fuel':", str(load_fuel_max) + ", 'fuel_max':", str(load_fuel_max) + "}", end=' ')
-                    amount = (load_fuel_max - load_fuel)
-                else:
-                    print('none ', end='')
-            else:
-                if unload_cargo[item] < amount and (load_cargo_max - load_cargo._sum()) >= unload_cargo[item]:
-                    print("'not enough", item + "'", unload_cargo.__dict__, end=' ')
-                    amount = unload_cargo[item]
-                elif (load_cargo_max - load_cargo._sum()) < amount and unload_cargo[item] >= (load_cargo_max - load_cargo._sum()):
-                    print("'not enough capacity'", load_cargo.__dict__, "'cargo_max':", load_cargo_max, end=' ')
-                    amount = (load_cargo_max - load_cargo._sum())
-                else:
-                    print('none ', end='')
-        print('becomes', amount)
-        return amount
-    
-    """ Executes the buy function """
-    def buy(self, player):
-        recipiant = self.waypoints[0].recipiants['buy']
-        if not self.check_trade(recipiant, player):
-            return
-        """ gets the fuel and cargo from your ships """
-        self_cargo, self_cargo_max = self.get_cargo()
-        self_fuel, self_fuel_max = self.get_fuel()
-        if False:#TODO recipiant.__class__.__name__ == 'fleet':
-            """ gets fuel and cargo from the ships in the other fleet """
-            unload_cargo, unload_cargo_max = recipiant.get_cargo()
-            unload_fuel, unload_fuel_max = recipiant.get_fuel()
-        else:
-            """ ensures cargo is correctly fetched from the planet's surface and fuel is fetched from the space stations fuel tanks """
-            unload_cargo = recipiant.on_surface
-            unload_fuel, unload_fuel_max = recipiant.space_stations.get_fuel()
-        """ checks if the amount of each sceduled purchace of cargo or fuel is fullfilable at price and ajusts the amount if not """
-        for transfer in self.waypoints[0].transfers['buy']:
-            item = transfer[0]
-            amount = transfer[1]
-            traety = player.get_treaty(recipiant.player)
-            if item == 'fuel':
-                abreve = item
-            if item in ['titanium', 'silicon', 'lithium']:
-                abreve = item[0:2]
-            if traety['buy_' + abreve] >= 0:
-                amount = self.handle_cargo(unload_fuel, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo)
-                true_amount = int(player.spend('trade', traety['buy_' + abreve] * amount, False) / traety['buy_' + abreve])
-                """ actual purchace of cargo and fuel """
-                if item == 'fuel':
-                    unload_fuel -= true_amount
-                    self_fuel += true_amount
-                else:
-                    unload_cargo[item] -= true_amount
-                    self_cargo[item] += true_amount
-                recipiant.player.energy += player.spend('trade', traety['buy_' + abreve] * true_amount)
-        """ returns the fuel and cargo to your ships """
-        for item in ["titanium", "silicon", "lithium", "people"]:
-            self.distribute_cargo(self_cargo, item, self_cargo_max)
-        self.distribute_fuel(self_fuel, self_fuel_max)
-        if False:#TODO recipiant.__class__.__name__ == 'fleet':
-            """ returns fuel and cargo to the ships in the other fleet """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.distribute_cargo(unload_cargo, item, unload_cargo_max)
-            recipiant.distribute_fuel(unload_fuel, unload_fuel_max)
-        else:
-            """ ensures cargo is correctly stoed on the planet's surface and fuel is in the space stations fuel tanks """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.on_surface[item] = unload_cargo[item]
-            recipiant.space_stations.distribute_fuel(unload_fuel, unload_fuel_max)
-        
-    """ A check to ensure you do not give away or steal minerals or people from a planet or fleet that is not yours """
-    def check_self(self, recipiant, player):
-        if recipiant in player.fleets:
-            print('Fleet-Yours')
-            return True
-        if recipiant in game_engine.get('Planet'):
-            print('Planet-', end='')
-            if recipiant.is_colonized() and recipiant.player.ID != player.ID:
-                print('Other')
-                return False
-            print('Yours or Uninhadited')
-            print(recipiant.player.ID)
-            print(player.ID)
-            return True
-        return False
-    
-    """ Checks that you are not enemies and might trade """
-    def check_trade(self, recipiant, player):
-        if recipiant in game_engine.get('Planet'):
-            print(player.get_treaty(recipiant.player).status)
-            if player.get_treaty(recipiant.player).relation != 'enemy' and player.get_treaty(recipiant.player).is_active():
-                return True
-        return False
-    
-    """ Executes the load function """
-    def load(self, player):
-        recipiant = self.waypoints[0].recipiants['load']
-        if not self.check_self(recipiant, player):
-            return
-        """ gets the fuel and cargo from your ships """
-        self_cargo, self_cargo_max = self.get_cargo()
-        self_fuel, self_fuel_max = self.get_fuel()
-        if recipiant in player.fleets:
-            """ gets fuel and cargo from the ships in the other fleet """
-            unload_cargo, unload_cargo_max = recipiant.get_cargo()
-            unload_fuel, unload_fuel_max = recipiant.get_fuel()
-        else:
-            """ ensures cargo is correctly fetched from the planet's surface and fuel is fetched from the space stations fuel tanks """
-            unload_cargo = recipiant.on_surface
-            unload_fuel, unload_fuel_max = recipiant.space_stations.get_fuel()
-        """ checks if the amount of each sceduled transhipment of cargo or fuel is fullfilable and ajusts the amount if not """
-        for transfer in self.waypoints[0].transfers['load']:
-            item = transfer[0]
-            amount = transfer[1]
-            amount = self.handle_cargo(unload_fuel, self_fuel, self_fuel_max, item, amount, self_cargo, self_cargo_max, unload_cargo)
-            """ actual transhipment of cargo and fuel """
-            if item == 'fuel':
-                unload_fuel -= amount
-                self_fuel +=  amount
-            else:
-                unload_cargo[item] -= amount
-                self_cargo[item] += amount
-        """ returns the fuel and cargo to your ships """
-        for item in ["titanium", "silicon", "lithium", "people"]:
-            self.distribute_cargo(self_cargo, item, self_cargo_max)
-        self.distribute_fuel(self_fuel, self_fuel_max)
-        if recipiant in player.fleets:
-            """ returns fuel and cargo to the ships in the other fleet """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.distribute_cargo(unload_cargo, item, unload_cargo_max)
-            recipiant.distribute_fuel(unload_fuel, unload_fuel_max)
-        else:
-            """ ensures cargo is correctly stoed on the planet's surface and fuel is in the space stations fuel tanks """
-            for item in ["titanium", "silicon", "lithium", "people"]:
-                recipiant.on_surface[item] = unload_cargo[item]
-            recipiant.space_stations.distribute_fuel(unload_fuel, unload_fuel_max)
-    
-    """ Repairs ships, prioitizing your fleet and then your other fleets before other friendly units """
-    def repair_friendlys(self, player):
-        repair_points = 0
-        ships_here = {'self':{'ships':[], 'damage':0}, 'you':{'ships':[], 'damage':0}, 'friendly':{'ships':[], 'damage':0}}
-        for ship in self.ships:
-            repair_points += ship.open_repair_bays() + ship.damage_control()
-            ships_here['self']['ships'].append(ship)
-            ships_here['self']['damage'] += ship.max_armor() - ship.armor
-        for fleet in player.fleets:
-            if (self.location - fleet.location) == 0 and fleet != self:
-                for ship in fleet.ships:
-                    ships_here['you']['ships'].append(ship)
-                    ships_here['you']['damage'] += ship.max_armor() - ship.armor
-        #TODO Repair bays enable repair of ships, belonging to other players, that are at the same location.  
-        #for ship in find_bin(self.location):
-        #    if ship.PlayerID != player.ID and get_player(ship.PlayerID).get_treaty(player).relation == 'team':
-        #        if (self.location - ship.location) == 0:
-        #            ships_here['friendly']['ships'].append(ship)
-        #            ships_here['friendly']['damage'] += ship.max_armor() - ship.armor
-        repair_points = self.distribute_repair(ships_here['self'], repair_points)
-        repair_points = self.distribute_repair(ships_here['you'], repair_points)
-        repair_points = self.distribute_repair(ships_here['friendly'], repair_points)
-    
-    """ Tells the ships to repair """
-    def distribute_repair(self, ships_here, repair_points):
-        repair_points_left = repair_points
-        damage = ships_here['damage']
-        damage_fixed = 0
-        temp_repair = min(repair_points, damage)
-        for ship in ships_here['ships']:
-            amount = int(temp_repair * ((ship.max_armor() - ship.armor) / damage) * (temp_repair / damage))
-            ship.repair_self(amount)
-            repair_points_left -= amount
-            damage_fixed += amount
-        for ship in ships_here['ships']:
-            if temp_repair > damage_fixed:
-                ship.repair_self(1)
-                damage_fixed += 1
-                repair_points_left -= 1
-        ships_here['damage'] -= damage_fixed
-        return repair_points_left
-    
-    """ Tells all the ships that can conduct orbital mining to conduct orbital mining as detailed in their waypoint orders """
-    def orbital_mining(self):
-        planet = self.waypoints[0].recipiants['orbital_mining']
-        if planet not in game_engine.get('Planet'):
-            return False
-        for ship in self.ships:
-            ship.orbital_mining(planet)
-    
-    """ Perform anticloak scanning """
-    def scan_anticloak(self):
-        stats = self._stats()
-        if stats.scanner.anticloak > 0:
-            scan.anticloak(ships[0].player, fleet.location, stats.scanner.anticloak)
-
-    """ Perform hyperdenial scanning """
-    def scan_hyperdenial(self):
-        stats = self._stats()
-        if stats.hyperdenial.radius > 0:
-            scan.hyperdenial(ships[0].player, fleet.location, stats.hyperdenial.radius)
-           
-    """ Perform penetrating scanning """
-    def scan_penetrating(self):
-        stats = self._stats()
-        if stats.scanner.penetrating > 0:
-            scan.penetrating(ships[0].player, fleet.location, stats.scanner.penetrating)
-
-    """ Perform normal scanning """
-    def scan_normal(self):
-        stats = self._stats()
-        if stats.scanner.normal > 0:
-            scan.normal(ships[0].player, fleet.location, stats.scanner.normal)
-
-    """ Sum field across ships """
-    def _sum(self, field, total=0):
-        for ship in ships:
-            total += ship[field]
-        return total
 
 Fleet.set_defaults(Fleet, __defaults)
 

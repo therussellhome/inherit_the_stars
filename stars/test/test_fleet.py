@@ -21,6 +21,7 @@ class FleetCase(unittest.TestCase):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
         fleet_one = fleet.Fleet() + ship_1
+        fleet_one._stats()
         fleet_one += ship_2
         self.assertTrue(ship_1 in fleet_one.ships)
         self.assertTrue(ship_2 in fleet_one.ships)
@@ -44,6 +45,7 @@ class FleetCase(unittest.TestCase):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
         fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_one._stats()
         fleet_one -= ship_2
         self.assertTrue(ship_1 in fleet_one.ships)
         self.assertFalse(ship_2 in fleet_one.ships)
@@ -77,8 +79,9 @@ class FleetCase(unittest.TestCase):
 
     def test_next_hundreth(self):
         f = fleet.Fleet()
+        f._stats()
         f.next_hundreth()
-        self.assertTrue('stats' in f.__cache__)
+        self.assertTrue('stats' not in f.__cache__)
 
     def test_read_orders1(self):
         f = fleet.Fleet() + ship.Ship()
@@ -379,6 +382,29 @@ class FleetCase(unittest.TestCase):
         f.ships[1].armor = 20
         self.assertEqual(f.damage_level(), 20 / 120)
 
+    def test_orbital_extraction1(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=100)
+        with patch.object(planet.Planet, 'extract_minerals') as mock:
+            f.orbital_extraction()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_orbital_extraction2(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=100, extraction_rate=20)
+        with patch.object(planet.Planet, 'extract_minerals') as mock:
+            f.orbital_extraction()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_orbital_extraction3(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=100, extraction_rate=20)
+        p = planet.Planet()
+        f.location = location.Location(reference=p)
+        t = tech.Tech(extraction_rate=20)
+        f.ships[0].add_component(t)
+        m = minerals.Minerals(titanium=10, lithium=10, silicon=10)
+        with patch.object(planet.Planet, 'extract_minerals', return_value=m) as mock:
+            f.orbital_extraction()
+            self.assertEqual(f._stats().cargo.sum(), 30)
+
     def test_lay_mines1(self):
         f = fleet.Fleet() + ship.Ship()
         s = star_system.StarSystem(location=location.Location(is_system=True))
@@ -458,6 +484,124 @@ class FleetCase(unittest.TestCase):
                 f.bomb()
             self.assertEqual(mock.call_count, 2)
 
+    def test_piracy1(self):
+        pass #TODO
+
+    def test_unload1(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.__cache__['moved'] = True
+        with patch.object(fleet.Fleet, '_other_cargo') as mock:
+            f.unload()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_unload2(self):
+        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        f2 = fleet.Fleet() + ship.Ship(cargo_max=10)
+        f2.ships[0].player = reference.Reference(player.Player())
+        f.location = location.Location(reference=f2)
+        f.order.unload_ti = 1
+        f.order.unload_li = 0
+        f.order.unload_si = -1
+        f.unload()
+        self.assertEqual(f._stats().cargo.sum(), 6)
+        self.assertEqual(f2._stats().cargo.sum(), 0)
+
+    def test_unload3(self):
+        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        f2 = fleet.Fleet() + ship.Ship(cargo_max=0)
+        f2.ships[0].player = f.ships[0].player
+        f.location = location.Location(reference=f2)
+        f.order.unload_ti = 1
+        f.order.unload_li = 0
+        f.order.unload_si = -1
+        f.unload()
+        self.assertEqual(f._stats().cargo.sum(), 6)
+        self.assertEqual(f2._stats().cargo.sum(), 0)
+
+    def test_unload4(self):
+        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        f2 = fleet.Fleet() + ship.Ship(cargo_max=10)
+        f2.ships[0].player = f.ships[0].player
+        f.location = location.Location(reference=f2)
+        f.order.unload_ti = 1
+        f.order.unload_li = 0
+        f.order.unload_si = -1
+        f.unload()
+        self.assertEqual(f._stats().cargo.sum(), 3)
+        self.assertEqual(f2._stats().cargo.sum(), 3)
+
+    def test_unload5(self):
+        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        p = planet.Planet()
+        p.player = f.ships[0].player
+        f.location = location.Location(reference=p)
+        f.order.unload_ti = 1
+        f.order.unload_li = 0
+        f.order.unload_si = -1
+        f.unload()
+        self.assertEqual(f._stats().cargo.sum(), 3)
+        self.assertEqual(p.on_surface.sum(), 3)
+
+    def test_buy1(self):
+        pass #TODO
+
+    def test_scrap1(self):
+        pass #TODO
+
+    def test_load1(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.__cache__['moved'] = True
+        with patch.object(fleet.Fleet, '_other_cargo') as mock:
+            f.load()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_load2(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=10)
+        f2 = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        f2.ships[0].player = reference.Reference(player.Player())
+        f.location = location.Location(reference=f2)
+        f.order.load_ti = 1
+        f.order.load_li = 0
+        f.order.load_si = -1
+        f.load()
+        self.assertEqual(f._stats().cargo.sum(), 0)
+        self.assertEqual(f2._stats().cargo.sum(), 6)
+
+    def test_load3(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=0)
+        f2 = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        f2.ships[0].player = f.ships[0].player
+        f.location = location.Location(reference=f2)
+        f.order.load_ti = 1
+        f.order.load_li = 0
+        f.order.load_si = -1
+        f.load()
+        self.assertEqual(f._stats().cargo.sum(), 0)
+        self.assertEqual(f2._stats().cargo.sum(), 6)
+
+    def test_load4(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=10)
+        f2 = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        f2.ships[0].player = f.ships[0].player
+        f.location = location.Location(reference=f2)
+        f.order.load_ti = 1
+        f.order.load_li = 0
+        f.order.load_si = -1
+        f.load()
+        self.assertEqual(f._stats().cargo.sum(), 3)
+        self.assertEqual(f2._stats().cargo.sum(), 3)
+
+    def test_load5(self):
+        f = fleet.Fleet() + ship.Ship(cargo_max=10)
+        p = planet.Planet(on_surface=cargo.Cargo(titanium=2, lithium=2, silicon=2))
+        p.player = f.ships[0].player
+        f.location = location.Location(reference=p)
+        f.order.load_ti = 1
+        f.order.load_li = 0
+        f.order.load_si = -1
+        f.load()
+        self.assertEqual(f._stats().cargo.sum(), 3)
+        self.assertEqual(p.on_surface.sum(), 3)
 
 
 
