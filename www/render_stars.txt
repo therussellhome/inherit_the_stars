@@ -1,0 +1,46 @@
+Functions:
+    init - init
+    onSubmit - create data structures
+    onClick - select detail or top_level
+    onDoubleClick - select & camera manipulation
+    onWheel - camera manipulation
+    onWindowResize - camera manipulation
+    onKeyPress - camera manipulation
+    render - draw camera
+
+Functionality
+    create data structures
+    select
+        top_level points
+        detail points
+        scene
+        camera
+        detail data
+    camera manipulation
+        camera
+        position of selected object
+        camera_flyto
+    render
+        scene
+        camera
+        position of selected object
+        camera_flyto
+
+globals:
+    scene
+    camera
+    top_level
+    in_system
+    detail_data
+    selected_position
+    camera_lookat
+    camera_flyto
+
+    Points systems
+    Points asteroids
+    Points deep_space
+    Points wormholes
+
+    capture_selected
+    selected_id
+
