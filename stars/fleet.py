@@ -23,6 +23,7 @@ SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
 """ Default values (default, min, max)  """
 __defaults = {
     'ID': '@UUID',
+    'player': Reference('Player'),
     'order': Order(), # current actions
     'orders': [], # future actions
     'orders_repeat': False,
@@ -68,8 +69,10 @@ class Fleet(Defaults):
         for ship in ships:
             if ship in self.ships:
                 self.ships.remove(ship)
+        # Remove from player fleets and let die
         if len(self.ships) == 0:
-            pass #TODO remove from player's fleets
+            if self in self.player.fleets:
+                self.player.fleets.remove(self)
         if 'stats' in self.__cache__:
             del self.__cache__['stats']
         return self
@@ -110,7 +113,7 @@ class Fleet(Defaults):
         # Check for planets meeting the criteria
         planets = []
         if self.location.in_system:
-            max_terraform = stats.player.max_terraform()
+            max_terraform = self.player.max_terraform()
             hab_terraform = (max_terraform, max_terraform, max_terraform)
             for planet in self.location.root_reference.planets:
                 if planet.is_colonized():
@@ -118,13 +121,13 @@ class Fleet(Defaults):
                 elif self.order.colonize_manual:
                     if self.order.location.reference and self.order.location.reference == planet:
                         planets.append(planet)
-                elif planet.habitability(stats.player.race, hab_terraform) >= self.order.colonize_min_hab:
+                elif planet.habitability(self.player.race, hab_terraform) >= self.order.colonize_min_hab:
                     min_minerals = Minerals(titanium=self.order.colonize_min_ti, lithium=self.order.colonize_min_li, silicon=self.order.colonize_min_si)
                     if planet.mineral_availability() >= min_minerals:
                         planets.append(planet)
         if len(planets) == 0:
             return
-        planets.sort(key=lambda x: x.habitability(stats.player.race), reverse=True)
+        planets.sort(key=lambda x: x.habitability(self.player.race), reverse=True)
         # Filter the fleet for colonizers and then sort by age
         colonizers = []
         for ship in self.ships:
@@ -135,9 +138,9 @@ class Fleet(Defaults):
         for p in planets:
             if len(colonizers) == 0:
                 return
-            if p.colonize(stats.player):
+            if p.colonize(self.player):
                 p.on_surface += colonizers[-1].cargo
-                p.on_surface += colonizers[-1].scrap_value(stats.player.race, colonizers[-1].level)
+                p.on_surface += colonizers[-1].scrap_value(self.player.race, colonizers[-1].level)
                 self -= colonizers.pop()
 
     """ Deploy hyperdenial """
@@ -145,7 +148,7 @@ class Fleet(Defaults):
         # Not scheduled to move
         if self._stats().hyperdenial.radius > 0 and self.__cache__['move'] == None:
             for ship in self.ships:
-                ship.hyperdenial.activate(ship.player)
+                ship.hyperdenial.activate(self.player)
 
     """ Does all the moving calculations and then moves the ships """
     def move(self):
@@ -255,7 +258,7 @@ class Fleet(Defaults):
         stats = self._stats()
         if self.__cache__['moved'] or stats.mines_laid == 0 or not self.location.in_system:
             return
-        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), stats.player)
+        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.player)
 
     """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
     def bomb(self):
@@ -263,7 +266,7 @@ class Fleet(Defaults):
         if self.__cache__['moved'] or len(stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
             return
         planet = self.location.reference
-        if self.ships[0].player.get_relation(planet.player) != 'enemy':
+        if self.player.get_relation(planet.player) != 'enemy':
             return
         for b in stats.bombs:
             planet.bomb(b)
@@ -348,45 +351,44 @@ class Fleet(Defaults):
         if self.cargo.people > 0:
             # TODO message
             return
-        self.ships[0].player.remove_fleet(self)
-        self.order.transfer_to.add_fleet(self)
-        for ship in self.ships:
-            ship.player = self.order.transfer_to
+        self.player.remove_fleet(self)
+        self.player = self.order.transfer_to
+        self.player.add_fleet(self)
         self.orders = []
         self.orders_repeat = False
 
     """ Merges the fleet with the target fleet """
     def merge(self):
         f = self.location.reference
-        if not f ^ 'Fleet' or f.ships[0].player != self.ships[0].player:
+        if not f ^ 'Fleet' or f.player != self.player:
             return
         for ship in self.ships:
             f += ship
-        self.ships[0].player.remove_fleet(self)
+        self.player.remove_fleet(self)
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):
         stats = self._stats()
         if stats.scanner.anticloak > 0:
-            scan.anticloak(stats.player, fleet.location, stats.scanner.anticloak)
+            scan.anticloak(self.player, fleet.location, stats.scanner.anticloak)
 
     """ Perform hyperdenial scanning """
     def scan_hyperdenial(self):
         stats = self._stats()
         if stats.hyperdenial.radius > 0:
-            scan.hyperdenial(stats.player, fleet.location, stats.hyperdenial.radius)
+            scan.hyperdenial(self.player, fleet.location, stats.hyperdenial.radius)
            
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         stats = self._stats()
         if stats.scanner.penetrating > 0:
-            scan.penetrating(stats.player, fleet.location, stats.scanner.penetrating)
+            scan.penetrating(self.player, fleet.location, stats.scanner.penetrating)
 
     """ Perform normal scanning """
     def scan_normal(self):
         stats = self._stats()
         if stats.scanner.normal > 0:
-            scan.normal(stats.player, fleet.location, stats.scanner.normal)
+            scan.normal(self.player, fleet.location, stats.scanner.normal)
 
     """ Update cached values of the fleet """
     def _stats(self):
@@ -401,8 +403,7 @@ class Fleet(Defaults):
             stats.scanner.normal = 0
             stats.initiative = 0
             for ship in self.ships:
-                ship.update_cache()
-                stats.player = ship.player
+                ship.update_cache(self.player)
                 stats['repair_moving'] += ship.hull.repair
                 stats.scanner.anti_cloak = max(stats.scanner.anti_cloak, ship.scanner.anti_cloak)
                 stats.hyperdenial.radius = max(stats.hyperdenial.radius, ship.hyperdenial.radius)
@@ -417,11 +418,11 @@ class Fleet(Defaults):
     def _other_cargo(self):
         stats = self._stats()
         if self.location.reference ^ 'Fleet':
-            other_stats = self.location.reference._stats()
-            if other_stats.player == stats.player:
+            if self.location.reference.player == self.player:
+                other_stats = self.location.reference._stats()
                 return (other_stats.cargo, other_stats.cargo_max)
         elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
-            if self.location.reference.player == stats.player:
+            if self.location.reference.player == self.player:
                 return (self.location.reference.on_surface, sys.maxsize)
         return (None, 0)
 
