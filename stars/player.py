@@ -309,7 +309,7 @@ class Player(Defaults):
 
     """ predict the next years budget """
     def predict_budget(self):
-        return 10000
+        return 10000 # TODO 
     
     """ Allocate the available energy into budget categories """
     def allocate_budget(self):

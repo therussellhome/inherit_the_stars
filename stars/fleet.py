@@ -157,11 +157,16 @@ class Fleet(Defaults):
         stats = self._stats()
         speed = self.order.speed
         # Manual stargate or auto stargate
-        if speed == -2 or (speed == -1 and self._stargate_check()):
+        start, end = self._stargate_find(move, False)
+        print(start, end)
+        if speed == -2 or (speed == -1 and self._stargate_find(move, True)[0]):
             self.__cache__['moved'] = False
             # stargate use allows fleet actions this hundredth
             self.__cache__['move_in_system'] = move
-            #TODO stargates
+            # TODO pay for stargateing
+            # TODO asses damage
+            if start and end:
+                self.location = self.location.move(move, self.location - move)
             multi_fleet.add(self)
             return
         # Auto speed
@@ -352,11 +357,37 @@ class Fleet(Defaults):
                     stats.initiative = ship['initiative']
             return stats
         return self.__cache__['stats']
-
-    """ Check if fleet can safely gate to waypoint """
-    def _stargate_check(self):
-        return False #TODO
-
+    
+    """ find the stargates to use """
+    def _stargate_find(self, moveto, be_picky):
+        start_gates = []
+        end_gates = []
+        for fleet in multi_fleet.get(self.location):
+            for ship in fleet.ships:
+                #print(ship.ID, ship.stargate.strength, ship, ship.player)
+                if ship.stargate.strength > 0 and (ship.player.get_treaty(ship.player).buy_gate >= 0 or ship.player == self.ships[0].player):
+                    start_gates.append(ship)
+        for fleet in multi_fleet.get(moveto):
+            for ship in fleet.ships:
+                if ship.stargate.strength > 0 and (ship.player.get_treaty(ship.player).buy_gate >= 0 or ship.player == self.ships[0].player):
+                    end_gates.append(ship)
+        start = None
+        end = None
+        if len(start_gates) > 0:
+            start_gates.sort(key=lambda x: x.stargate.strength, reverse=True)
+            start = start_gates[0]
+        if len(end_gates) > 0:
+            end_gates.sort(key=lambda x: x.player.get_treaty(ship.player).buy_gate, reverse=True)
+            end = end_gates[0]
+        if be_picky:
+            self.ships.sort(key=lambda x: x.mass, reverse=True)
+            if start and end:
+                self.ships.sort(key=lambda x: x.mass, reverse=True)
+                if self.ships[0].mass + (moveto-self.location) <= start.stargate.strength: # and minimal damage
+                    return (True, None) # test
+            return (False, None)
+        return (start, end)
+        
     """ Calculates fuel usage for fleet """
     def _fuel_calc(self, speed, denials, distance):
         fuel = 0
@@ -601,7 +632,7 @@ class Fleet(Defaults):
     def check_trade(self, recipiant, player):
         if recipiant in game_engine.get('Planet'):
             print(player.get_treaty(recipiant.player).status)
-            if player.get_treaty(recipiant.player).relation != 'enemy' and player.get_treaty(recipiant.player).is_active():
+            if player.get_treaty(recipiant.player).relation != 'enemy' and player.get_treaty(recipiant.player).is_active(): # TODO SIMPLIFY !!!!!!!! TODO
                 return True
         return False
     
@@ -760,4 +791,17 @@ Fleet.set_defaults(Fleet, __defaults)
         attack = max(0, attract - sweep)/attract
         for ship in self.ships:
             ship.hit_mines(round(ship.attract_mines(mines) * attack), system)
+'''
+''' """ Tiernan's with more senceical codeing: """
+    """ evenly distributed protection """
+        mines = system.mines
+        sweep = 0
+        attract = 0
+        for ship in self.ships:
+            sweep += ship.sweep_mines(mines)
+            attract += ship.attract_mines(mines)
+        attack = max(0, attract - sweep)/attract
+        system.sweep(sweep)
+        for ship in self.ships:
+            ship.hit_mines(round(attract * attack), system)
 '''

@@ -7,6 +7,7 @@ from .cloak import Cloak
 from .cost import Cost
 from .defaults import Defaults, get_default
 from .hyperdenial import HyperDenial
+from .stargate import Stargate
 from .race import Race
 from .scanner import Scanner
 from .tech_level import TechLevel
@@ -36,6 +37,7 @@ __defaults = {
     'mines_laid': (0, 0, sys.maxsize),
     'fuel_generation': (0, 0, sys.maxsize),
     'hyperdenial': HyperDenial(),
+    'stargate': Stargate(),
     'is_colonizer': False,
     'is_trading_post': False,
     'is_piracy_cargo': False,
