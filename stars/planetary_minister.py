@@ -1,5 +1,6 @@
 import sys
 from .minister import Minister
+from . import game_engine
 
 
 """ Default values (default, min, max)  """
