@@ -68,6 +68,16 @@ class FleetCase(unittest.TestCase):
         fleet_one -= fleet_two
         self.assertEqual(len(fleet_one.ships), 0)
 
+    def test_sub_4(self):
+        ship_1 = ship.Ship()
+        ship_2 = ship.Ship()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_two = fleet.Fleet() + [ship_1, ship_2]
+        fleet_one.player.fleets.append(fleet_one)
+        fleet_one.player.fleets.append(fleet_two)
+        fleet_one -= fleet_two
+        self.assertEqual(len(fleet_one.ships), 0)
+
     def test_duplicate1(self):
         f0 = fleet.Fleet() + ship.Ship()
         f0.location = location.Location(1, 0, 0)
@@ -485,7 +495,68 @@ class FleetCase(unittest.TestCase):
             self.assertEqual(mock.call_count, 2)
 
     def test_piracy1(self):
-        pass #TODO
+        multi_fleet.reset()
+        f1 = fleet.Fleet() + ship.Ship(fuel_max=100)
+        f2 = fleet.Fleet() + ship.Ship(fuel=200)
+        multi_fleet.add(f1)
+        multi_fleet.add(f2)
+        f1.piracy()
+        self.assertEqual(f1._stats().fuel, 0)
+        self.assertEqual(f2._stats().fuel, 200)
+
+    def test_piracy2(self):
+        multi_fleet.reset()
+        f1 = fleet.Fleet() + ship.Ship(is_piracy_fuel=True, fuel_max=100)
+        f2 = fleet.Fleet() + ship.Ship(fuel=200)
+        multi_fleet.add(f1)
+        multi_fleet.add(f2)
+        f1.piracy()
+        self.assertEqual(f1._stats().fuel, 100)
+        self.assertEqual(f2._stats().fuel, 100)
+
+    def test_piracy3(self):
+        multi_fleet.reset()
+        f1 = fleet.Fleet() + ship.Ship(is_piracy_fuel=True, fuel_max=100)
+        f2 = fleet.Fleet() + ship.Ship(fuel=50)
+        multi_fleet.add(f1)
+        multi_fleet.add(f2)
+        f1.piracy()
+        self.assertEqual(f1._stats().fuel, 50)
+        self.assertEqual(f2._stats().fuel, 0)
+
+    def test_piracy4(self):
+        multi_fleet.reset()
+        f1 = fleet.Fleet() + ship.Ship(is_piracy_fuel=True, fuel_max=100)
+        f2 = fleet.Fleet() + ship.Ship(fuel=0)
+        multi_fleet.add(f1)
+        multi_fleet.add(f2)
+        f1.piracy()
+        self.assertEqual(f1._stats().fuel, 0)
+        self.assertEqual(f2._stats().fuel, 0)
+
+    def test_piracy5(self):
+        multi_fleet.reset()
+        f1 = fleet.Fleet() + ship.Ship(is_piracy_fuel=True, fuel_max=100)
+        f2 = fleet.Fleet() + ship.Ship(fuel=75)
+        f3 = fleet.Fleet() + ship.Ship(fuel=75)
+        multi_fleet.add(f1)
+        multi_fleet.add(f2)
+        multi_fleet.add(f3)
+        f1.piracy()
+        self.assertEqual(f1._stats().fuel, 100)
+        self.assertEqual(f2._stats().fuel, 0)
+        self.assertEqual(f3._stats().fuel, 50)
+
+    def test_piracy6(self):
+        multi_fleet.reset()
+        f1 = fleet.Fleet() + ship.Ship(is_piracy_cargo=True, cargo_max=100)
+        f2 = fleet.Fleet() + ship.Ship()
+        f2.ships[0].cargo.titanium = 200
+        multi_fleet.add(f1)
+        multi_fleet.add(f2)
+        f1.piracy()
+        self.assertEqual(f1._stats().cargo.titanium, 100)
+        self.assertEqual(f2._stats().cargo.titanium, 100)
 
     def test_unload1(self):
         f = fleet.Fleet() + ship.Ship()

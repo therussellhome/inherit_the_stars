@@ -1,6 +1,7 @@
-import math
-import sys
 import copy
+import math
+import random
+import sys
 from . import multi_fleet
 from . import stars_math
 from . import scan
@@ -9,7 +10,7 @@ from . import hyperdenial
 from .cargo import Cargo, CARGO_TYPES
 from .defaults import Defaults
 from .location import Location
-from .minerals import Minerals
+from .minerals import Minerals, MINERAL_TYPES
 from .order import Order
 from .location import Location
 from .reference import Reference
@@ -273,7 +274,28 @@ class Fleet(Defaults):
 
     """ Steal from other players """
     def piracy(self):
-        pass #TODO
+        stats = self._stats()
+        if self.__cache__['moved'] or not (stats.is_piracy_cargo or stats.is_piracy_fuel):
+            return
+        marks = []
+        for f in multi_fleet.get(self.location):
+            if self.player.get_relation(f.player) not in ['me', 'team']:
+                marks.append(f)
+        random.shuffle(marks)
+        for mark in marks:
+            mstats = mark._stats()
+            cargo_space = stats.cargo_max - stats.cargo.sum()
+            if stats.is_piracy_cargo and cargo_space > 0:
+                for m in MINERAL_TYPES:
+                    steal = min(mstats.cargo[m], cargo_space)
+                    stats.cargo[m] += steal
+                    mstats.cargo[m] -= steal
+                    cargo_space -= steal
+            fuel_space = stats.fuel_max - stats.fuel
+            if stats.is_piracy_fuel and fuel_space > 0:
+                steal = min(mstats.fuel, fuel_space)
+                stats.fuel += steal
+                mstats.fuel -= steal
 
     """ Unload cargo """
     def unload(self):
