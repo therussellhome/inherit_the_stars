@@ -128,6 +128,11 @@ class ReferenceTestCase(unittest.TestCase):
         r2 = reference.Reference('_TestReference/ne')
         self.assertFalse(r1 == r2)
 
+    def test_eq4(self):
+        t1 = _TestReference()
+        r1 = reference.Reference(t1)
+        self.assertTrue(r1 == t1)
+
     def test_valid1(self):
         r1 = reference.Reference('_TestReference/bool')
         self.assertFalse(r1)

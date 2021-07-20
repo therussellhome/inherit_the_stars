@@ -13,6 +13,7 @@ potential to be fragile
 
 import unittest
 import pathlib
+import sys
 
 """ Coverage object """
 cov = None
@@ -44,10 +45,13 @@ unittest.TestCase.run = test_run
 # Put restricted coverage tracking into place and run the tests
 try:
     import coverage
+    test_search = 'test_*.py'
+    if len(sys.argv) > 1:
+        test_search = 'test_' + sys.argv[1] + '.py'
     cov = coverage.Coverage(data_file=None, source=['stars'])
     cov.start()
     # Run test
-    tests = unittest.TestLoader().discover(root / 'stars' / 'test', 'test_*.py', root)
+    tests = unittest.TestLoader().discover(root / 'stars' / 'test', test_search, root)
     cov.get_data()
     # Install filter overrides
     cov._data.__class__.add_lines_real = cov._data.__class__.add_lines
@@ -56,7 +60,10 @@ try:
     # Print results
     cov.stop()
     print()
-    cov.report(show_missing=True, skip_covered=True, omit=['stars/ui/*', 'stars/test/*'])
+    if len(sys.argv) > 1:
+        cov.report(show_missing=True, skip_covered=False, include=['stars/' + sys.argv[1] + '.py'])
+    else:
+        cov.report(show_missing=True, skip_covered=True, omit=['stars/ui/*', 'stars/test/*'])
 # No coverage module so just run the tests
 except Exception as e:
     tests = unittest.TestLoader().discover(root / 'stars' / 'test', 'test_*.py', root)

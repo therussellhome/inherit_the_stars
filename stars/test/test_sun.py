@@ -39,3 +39,7 @@ class SunTestCase(unittest.TestCase):
     def test_colonize2(self):
         s = sun.Sun()
         self.assertTrue(s.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri'))))
+
+    def test_extract1(self):
+        s = sun.Sun()
+        self.assertTrue(s.extract_minerals(), minerals.Minerals())

@@ -16,7 +16,8 @@ from .hyperdenial import HyperDenial
 __defaults = {
     'commissioning': 0.0,
     'crew': Reference('Race'),
-    'battle_experience': 0,
+    'battle_experience': 0.0, # From surviving battle
+    'navigation_experience': 0.0, # From survivng overgating
     'location': Location(),
     'fuel': (0, 0, sys.maxsize),
     'cargo': Cargo(),
@@ -59,6 +60,7 @@ class Ship(ShipDesign):
         if self.crew.primary_race_trait == 'Kender':
             self.__cache__['apparent_mass'] -= 25
         self.__cache__['apparent_ke'] = 0
+        self.__cache__['experience'] = float(self.__cache__['player'].date) - self.__cache__['player'].race.start_date + self.battle_experience + self.navigation_experience
 
     """ This is a space station if it has orbital slots """
     def is_space_station(self):
