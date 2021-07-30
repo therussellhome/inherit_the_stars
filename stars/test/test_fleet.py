@@ -705,14 +705,83 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(f.stats().cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
 
-
-
-
-
     def test_transfer1(self):
-        pass #TODO
+        f = fleet.Fleet() + ship.Ship()
+        p = f.player
+        f.transfer()
+        self.assertEqual(f.player, p)
+
+    def test_transfer2(self):
+        f = fleet.Fleet() + ship.Ship()
+        p1 = f.player
+        p2 = reference.Reference(player.Player())
+        f.order.transfer_to = p2
+        f.transfer()
+        self.assertEqual(f.player, p2)
+        self.assertFalse(f in p1.fleets)
+        self.assertTrue(f in p2.fleets)
+
+    def test_transfer3(self):
+        f = fleet.Fleet() + ship.Ship()
+        p = reference.Reference(player.Player())
+        f.order.transfer_to = p
+        f.ships[0].cargo.people = 100
+        f.transfer()
+        self.assertNotEqual(f.player, p)
+
+    def test_merge1(self):
+        f = fleet.Fleet() + ship.Ship()
+        p = f.player
+        #TODO
 
 
+    def test_scan_anticloak1(self):
+        f = fleet.Fleet() + ship.Ship()
+        with patch.object(scan, 'anticloak') as mock:
+            f.scan_anticloak()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_scan_anticloak2(self):
+        f = fleet.Fleet() + ship.Ship(scanner=scanner.Scanner(anti_cloak=1))
+        with patch.object(scan, 'anticloak') as mock:
+            f.scan_anticloak()
+            self.assertEqual(mock.call_count, 1)
+
+    def test_scan_hyperdenial1(self):
+        f = fleet.Fleet() + ship.Ship()
+        with patch.object(scan, 'hyperdenial') as mock:
+            f.scan_hyperdenial()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_scan_hyperdenial2(self):
+        f = fleet.Fleet() + ship.Ship(hyperdenial=hyperdenial.HyperDenial(radius=1))
+        with patch.object(scan, 'hyperdenial') as mock:
+            f.scan_hyperdenial()
+            self.assertEqual(mock.call_count, 1)
+
+    def test_scan_penetrating1(self):
+        f = fleet.Fleet() + ship.Ship()
+        with patch.object(scan, 'penetrating') as mock:
+            f.scan_penetrating()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_scan_penetrating2(self):
+        f = fleet.Fleet() + ship.Ship(scanner=scanner.Scanner(penetrating=1))
+        with patch.object(scan, 'penetrating') as mock:
+            f.scan_penetrating()
+            self.assertEqual(mock.call_count, 1)
+
+    def test_scan_normal1(self):
+        f = fleet.Fleet() + ship.Ship()
+        with patch.object(scan, 'normal') as mock:
+            f.scan_normal()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_scan_normal2(self):
+        f = fleet.Fleet() + ship.Ship(scanner=scanner.Scanner(normal=1))
+        with patch.object(scan, 'normal') as mock:
+            f.scan_normal()
+            self.assertEqual(mock.call_count, 1)
 
     def test_stargate_check1(self):
         pass #TODO method is also todo
@@ -741,7 +810,7 @@ class FleetCase(unittest.TestCase):
         f.ships[1].fuel_max = 200
         stats = f.stats()
         stats.fuel = 151
-        f._fuel_distribution()
+        f.fuel_distribution()
         self.assertEqual(f.ships[0].fuel, 51)
         self.assertEqual(f.ships[1].fuel, 100)
 
@@ -751,9 +820,15 @@ class FleetCase(unittest.TestCase):
         f.ships[1].fuel_max = 200
         stats = f.stats()
         stats.fuel = 311
-        f._fuel_distribution()
+        f.fuel_distribution()
         self.assertEqual(f.ships[0].fuel, 111)
         self.assertEqual(f.ships[1].fuel, 200)
+
+    def test_fuel_distribution3(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        f.fuel_distribution()
+        self.assertEqual(f.ships[0].fuel, 0)
+        self.assertEqual(f.ships[1].fuel, 0)
 
     def test_cargo_distribution1(self):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
@@ -761,7 +836,7 @@ class FleetCase(unittest.TestCase):
         f.ships[1].cargo_max = 400
         stats = f.stats()
         stats.cargo = cargo.Cargo(titanium=151, silicon=151, lithium=149, people=149)
-        f._cargo_distribution()
+        f.cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=51, silicon=50, lithium=50, people=49))
         self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=100, silicon=101, lithium=99, people=100))
 
@@ -771,7 +846,7 @@ class FleetCase(unittest.TestCase):
         f.ships[1].cargo_max = 1000
         stats = f.stats()
         stats.cargo = cargo.Cargo(titanium=276, silicon=276, lithium=274, people=274)
-        f._cargo_distribution()
+        f.cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=26, silicon=25, lithium=25, people=24))
         self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=250, silicon=251, lithium=249, people=250))
 

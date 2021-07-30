@@ -5,7 +5,6 @@ from . import game_engine
 from .defaults import Defaults
 from .location import Location
 from .reference import Reference
-#from .player import Player
 cargo_options = ['_ti', '_li', '_si', '_people']
 depart_options = [
     'immediately',
@@ -85,7 +84,7 @@ __defaults = {
     'sell_li': False,
     'sell_fuel': False,
     'patrol': False,
-    #'transfer_to': Player(),
+    'transfer_to': Reference('Player'),
     'merge': False,
     'hyperdenial': False,
     'lay_mines': False,

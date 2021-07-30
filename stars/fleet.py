@@ -212,7 +212,7 @@ class Fleet(Defaults):
             for engine in ship.engines:
                 stats.fuel += engine.siphon_calc(distance)
                 ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, denials, distance))
-        self._fuel_distribution() # Do now in case of ships dying in battle
+        self.fuel_distribution() # Do now in case of ships dying in battle
 
     """ Post combat, move inside the system """
     def move_in_system(self):
@@ -362,16 +362,11 @@ class Fleet(Defaults):
                 stats.cargo[ctype] += order[ctype]
         # cargo is intentionally not redistributed yet
 
-    """ Redistribute cargo and fuel """
-    def redistribute(self):
-        self._fuel_distribution()
-        self._cargo_distribution()
-
     """ Transfers ownership of the fleet to the specified player """
     def transfer(self):
         if not self.order.transfer_to:
             return
-        if self.cargo.people > 0:
+        if self.stats().cargo.people > 0:
             # TODO message
             return
         self.player.remove_fleet(self)
@@ -392,26 +387,26 @@ class Fleet(Defaults):
     """ Perform anticloak scanning """
     def scan_anticloak(self):
         stats = self.stats()
-        if stats.scanner.anticloak > 0:
-            scan.anticloak(self.player, fleet.location, stats.scanner.anticloak)
+        if stats.scanner.anti_cloak > 0:
+            scan.anticloak(self.player, self.location, stats.scanner.anti_cloak)
 
     """ Perform hyperdenial scanning """
     def scan_hyperdenial(self):
         stats = self.stats()
         if stats.hyperdenial.radius > 0:
-            scan.hyperdenial(self.player, fleet.location, stats.hyperdenial.radius)
+            scan.hyperdenial(self.player, self.location, stats.hyperdenial.radius)
            
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         stats = self.stats()
         if stats.scanner.penetrating > 0:
-            scan.penetrating(self.player, fleet.location, stats.scanner.penetrating)
+            scan.penetrating(self.player, self.location, stats.scanner.penetrating)
 
     """ Perform normal scanning """
     def scan_normal(self):
         stats = self.stats()
         if stats.scanner.normal > 0:
-            scan.normal(self.player, fleet.location, stats.scanner.normal)
+            scan.normal(self.player, self.location, stats.scanner.normal)
 
     """ Update cached values of the fleet """
     def stats(self):
@@ -472,7 +467,7 @@ class Fleet(Defaults):
         return False
     
     """ Evenly distributes the fuel between the ships """
-    def _fuel_distribution(self):
+    def fuel_distribution(self):
         stats = self.stats()
         if stats.fuel_max > 0 and stats.fuel > 0:
             fuel_left = stats.fuel
@@ -489,7 +484,7 @@ class Fleet(Defaults):
                 ship.fuel = 0
     
     """ Evenly distributes the cargo back to the ships """
-    def _cargo_distribution(self):
+    def cargo_distribution(self):
         stats = self.stats()
         cargo_left = copy.copy(stats.cargo)
         for ctype in CARGO_TYPES:

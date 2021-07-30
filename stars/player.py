@@ -144,10 +144,12 @@ class Player(Defaults):
         self.fleets.append(Fleet(**kwargs))
     
     def add_fleet(self, fleet):
-        self.fleets.append(fleet)
+        if fleet not in self.fleets:
+            self.fleets.append(fleet)
     
     def remove_fleet(self, fleet):
-        self.fleets.remove(fleet)
+        if fleet in self.fleets:
+            self.fleets.remove(fleet)
     
     """ Return the id for use as a temporary player token """
     def token(self):
