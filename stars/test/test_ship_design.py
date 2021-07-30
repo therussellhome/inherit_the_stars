@@ -110,11 +110,3 @@ class ShipDesignTestCase(unittest.TestCase):
         s2.compute_stats(tech_level.TechLevel())
         self.assertEqual(s2.armor, 444)
         self.assertNotEqual(s1.ID, s2.ID)
-
-    def test_max_armor1(self):
-        s = ship_design.ShipDesign()
-        s.add_component(tech.Tech(ID='a123', armor=123))
-        s.add_component(tech.Tech(ID='a321', armor=321))
-        s.compute_stats(tech_level.TechLevel())
-        s.armor = 1
-        self.assertEqual(s.max_armor(), 444)

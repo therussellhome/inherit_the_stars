@@ -76,7 +76,10 @@
     "shipyard": 0,
     "repair": 0,
     "fuel_generation": 0,
-    "hyperdenial": 0,
+    "hyperdenial": {
+        "radius": 0,
+        "__class__": "HyperDenial"
+    },
     "colonizer": false,
     "facility_output": 0.0,
     "mineral_depletion_rate": 0,

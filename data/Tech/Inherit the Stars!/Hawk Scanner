@@ -1,4 +1,4 @@
-
+{
     "ID": "Hawk Scanner",
     "category": "Scanner",
     "description": "The lowest-tech scanner.  It detects ships at a distance based on their kinetic energy (mass times speed squared) which is also affected by cloaking). This scanner can detect a 100kT ship traveling hyper 6 at 50 light years, a 100kT ship traveling hyper 10 at 150 light years, and a 25kT ship traveling hyper 6 at 25 light years.  It cannot see stopped ships or inside solar systems.",

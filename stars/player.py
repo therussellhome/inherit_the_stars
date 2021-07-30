@@ -14,14 +14,13 @@ from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
 from .ship import Ship
 from .cargo import Cargo
-from .waypoint import Waypoint
 from .message import Message
 # for testing
 from .planet import Planet
 from .facility import Facility
 from .ship_design import ShipDesign
 from .cost import Cost
-
+from .order import Order
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -105,53 +104,6 @@ class Player(Defaults):
             self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
-        self.__cache__ = {}
-        #'''Test line
-        if len(self.fleets) < 3:
-            fleet_3 = Fleet(
-                name = 'Fleet 3', 
-                ships = [
-                    Ship(
-                        ID = 'Test Ship3', 
-                        fuel = 400, 
-                        fuel_max = 400, 
-                        cargo = Cargo(
-                            people = 200,
-                            silicon = 200,
-                            lithium = 200,
-                            titanium = 200, 
-                            cargo_max = 1000
-                        ))])
-            self.add_fleet(fleet_3)
-            self.create_fleet(
-                name = 'Fleet 1', 
-                ships = [
-                    Ship(
-                        ID = 'Test Ship1', 
-                        fuel = 100, 
-                        fuel_max = 400, 
-                        cargo = Cargo(
-                            people = 100, 
-                            titanium = 900, 
-                            cargo_max = 1000
-                        )), 
-                    Ship(
-                        ID = 'Test Ship2', 
-                        fuel = 100, 
-                        fuel_max = 400, 
-                        cargo = Cargo(
-                            people = 100, 
-                            titanium = 100, 
-                            cargo_max = 1000
-                        ))],
-                waypoints = [
-                    Waypoint(),
-                    Waypoint(
-                        actions = ['load', 'split', 'merge'],
-                        transfers = {'load': [['silicon', 200], ['lithium', 200], ['people', 200], ['titanium', 200], ['fuel', 400]]},
-                        splits = [[Reference('Ship/Test Ship2')], [Reference('Ship/Test Ship2')]],
-                        recipiants = {'merge': Reference(self.fleets[0]), 'load': Reference(fleet_3)}
-                    )])#'''
 
     """ Player filename """
     def filename(self):
@@ -299,7 +251,13 @@ class Player(Defaults):
         if player == self:
             return 'me'
         return self.get_treaty(player).relation
-    
+
+    """ Get max terraform """
+    def max_terraform(self):
+        if self.race.lrt_Bioengineer:
+            return min(40, self.tech_level.biotechnology)
+        return min(40, self.tech_level.biotechnology) / 2
+
     """ predict the next years budget """
     def predict_budget(self):
         return 10000

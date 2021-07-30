@@ -1,6 +1,7 @@
 import sys
 from random import randint
 from . import game_engine
+from . import multi_fleet
 from . import scan
 from . import stars_math
 from .defaults import Defaults
@@ -20,7 +21,7 @@ __defaults = {
     'blackholes': [], # all blackholes
     'nebulae': [], # all nebulae
     'asteroids': [], # all comets/mineral packets/salvage
-    'mystery_traders': [], # myster trader ships
+    'mystery_traders': [], # mystery trader ships
     'public_player_scores': (30, 0, 200), # years till public player scores
     'victory_after': (50, 10, 200), # minimum years till game can be won
     'victory_conditions': (1, 1, 10), # minimum number of conditions to win
@@ -64,7 +65,7 @@ class Game(Defaults):
             y = max(y, 2)
             z = max(z, 2)
             while len(self.systems) < num_systems:
-                l = Location(random_in=(x / 2, y / 2, z / 2))
+                l = Location(new_random=(x / 2, y / 2, z / 2), is_system=True)
                 for s in self.systems:
                     if s.location - l < min_distance:
                         break
@@ -145,6 +146,7 @@ class Game(Defaults):
     def generate_hundreth(self):
         # players in lowest to highest score
         players = list(self.players)
+        self._call(players, 'next_hundreth')
         players.sort(key=lambda x: x.score.rank, reverse=False)
         # planets in lowest to highest population
         planets = self.get_planets()
@@ -154,52 +156,61 @@ class Game(Defaults):
         for player in players:
             for fleet in player.fleets:
                 fleets.append(fleet)
-        fleets.sort(key=lambda x: x.initiative, reverse=False)
+        self._call(fleets, 'next_hundreth')
+        fleets.sort(key=lambda x: x.initiative(), reverse=False)
+        multi_fleet.reset()
         #
         # actions only done at the beginning of a year
         if self.hundreth % 100 == 0:
             self._call(players, 'treaty_negotiations')
             self._call(players, 'treaty_finalization')
             self._call(players, 'cleanup_messages')
-        self.hundreth += 1
+            self._scan(fleets) # scanning is needed to support fleet patroling
+            hyperdenial.reset(True)
+            self._call(self.blackholes, 'create_hyperdenials')
+        else:
+            hyperdenial.reset()
         #
         # actions in order
-        self._call(players, 'next_hundreth')
         self._call(planets, 'have_babies')
         self._call(planets, 'generate_energy')
-        self._call(planets, 'mine_minerals')
+        self._call(planets, 'extract_minerals')
         self._call(planets, 'operate_factories')
         self._call(players, 'allocate_budget')
         self._call(players, 'build_from_queue')
         self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)
+        self._call(fleets, 'read_orders')
+        self._call(fleets, 'colonize') # occurs before move because the fleet does not need to wait around for the colonizer but does not occur in the same hundreth as the colonizer moved
+        self._call(fleets, 'hyperdenial')
         self._call(self.wormholes, 'move')
         self._call(self.asteroids, 'move')
         self._call(self.mystery_traders, 'move')
         self._call(fleets, 'move')
         self._scan(fleets)
-        self._combat()
+        self._call(multi_fleet.get(), 'round1_fight')
         self._call(fleets, 'move_in_system')
-        self._call(fleets, 'generate_fuel')
-        self._call(fleets, 'merge')
-        self._call(fleets, 'self_repair')
         self._call(fleets, 'repair')
-        self._call(fleets, 'orbital_mining')
+        self._call(fleets, 'orbital_extraction')
         self._call(fleets, 'lay_mines')
+        self._call(planets, 'raise_shields')
         self._call(fleets, 'bomb')
-        self._call(fleets, 'colonize')
+        self._call(planets, 'bomb_impact')
         self._call(fleets, 'piracy')
-        self._call(fleets, 'sell')
         self._call(fleets, 'unload')
-        self._call(fleets, 'scrap')
         self._call(fleets, 'buy')
+        self._call(fleets, 'scrap')
         self._call(fleets, 'load')
+        # redistribute cached values then process fleet changes
+        self._call(multi_fleet.get(), 'share_fuel')
+        self._call(fleets, 'redistribute')
         self._call(fleets, 'transfer')
-        self._call(fleets, 'patrol')
+        self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
         #
         # actions only done at the end of a year
+        self.hundreth += 1
         if self.hundreth % 100 == 0:
             self._scan(fleets)
             self._call(players, 'calc_score')
@@ -227,18 +238,18 @@ class Game(Defaults):
     def _scan(self, fleets):
         scan.reset(self.players)
         for p in self.__cache__.get('planets', []):
-            scan.add(p, p.location, 1, 1, False, True)
+            scan.add(p, p.location, 1, 1, False, False, True)
         for a in self.asteroids:
-            scan.add(a, a.location, a.calc_apparent_mass(), a.ke, False, a.location.in_system)
+            scan.add(a, a.location, a.calc_apparent_mass(), a.ke, False, False, a.location.in_system)
         for f in fleets:
             for s in f.ships:
-                scan.add(s, s.location, s.calc_apparent_mass(), s.calc_apparent_ke(), s.has_cloak(), a.location.in_system)
+                scan.add(s, s.location, s.calc_apparent_mass(), s.calc_apparent_ke(), True, s.has_cloak(), a.location.in_system)
         for w in self.wormholes:
-            scan.add(w, w.location, 1, 10000000, False, False)
+            scan.add(w, w.location, 1, 10000000, False, False, False)
         for n in self.nebulae:
-            scan.add(n, n.location, 0, True, False)
+            scan.add(n, n.location, 0, False, True, False)
         for m in self.mystery_traders:
-            scan.add(m, m.location, m.calc_apparent_mass(), m.calc_apparent_ke(), False, False)
+            scan.add(m, m.location, m.calc_apparent_mass(), m.calc_apparent_ke(), False, False, False)
         self._call(fleets, 'scan_anticloak')
         self._call(self.get_planets(), 'scan_penetrating')
         self._call(self.asteroids, 'scan_penetrating')

@@ -1,4 +1,5 @@
-from .defaults import Defaults, apply_defaults
+import sys
+from .defaults import Defaults
 from .reference import Reference
 from .tech import Tech
 
@@ -10,6 +11,7 @@ __defaults = {
     'category': 'Ship Design',
     'description': '',
     'components': {}, # map of tech names to count of components
+    'slots_general': 0,
 }
 
 
@@ -42,37 +44,11 @@ class ShipDesign(Tech):
 
     """ Recompute self from components """
     def compute_stats(self, tech_level):
-        # Start by setting each field in the hull then add from the components
-        for (k, v) in self.__dict__.items():
-            # Skip certain fields and all strings
-            if k in ['hull', 'components', 'player', '__cache__'] or isinstance(v, str):
-                pass
-            # Minaturization
-            elif k in ['cost', 'mass']:
-                self[k] = self.hull.miniaturize(tech_level, k)
-                for tech in self.components:
-                    self[k] += tech.miniaturize(tech_level, k)
-            # Lists
-            elif isinstance(v, list):
-                self[k] = []
-                self[k].extend(self.hull[k])
-                for tech in self.components:
-                    for i in range(0, self.components[tech]):
-                        self[k].extend(tech[k])
-            # If not a list assume it can be added
-            else:
-                self[k] = self.hull[k]
-                for tech in self.components:
-                    for i in range(0, self.components[tech]):
-                        self[k] += tech[k]
-    
-    """ Recompute self from components """
-    def max_armor(self):
-        # Start by setting each field in the hull then add from the components
-        armor = self.hull['armor']
-        for tech in self.components:
-            armor += tech['armor']
-        return armor
+        tech = [self.hull]
+        for c in self.components:
+            for i in range(0, self.components[c]):
+                tech.append(c)
+        self.init_from(tech, tech_level)
     
     """ Check if design is valid """
     def is_valid(self, level=None, race=None):

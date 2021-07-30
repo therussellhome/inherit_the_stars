@@ -15,7 +15,7 @@
         "__class__": "TechLevel"
     },
     "mass": 100,
-    "mining_rate": 1.25,
+    "extraction_rate": 1.25,
     "mineral_depletion_factor": 1.33,
     "slots_depot": -1,
     "slots_general": 0,

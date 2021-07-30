@@ -1,3 +1,4 @@
+import sys
 from random import random, randint
 from . import game_engine
 from .defaults import Defaults
@@ -12,10 +13,12 @@ __defaults = {
     'ID': '@UUID',
     'planets': [],
     'location': Location(),
+    'minefield': (0, 0, sys.maxsize),
+    'minefield_owner': Reference('Player'),
 }
 
 
-_roman = ["I", "II", "III", "IV", "V"]
+_roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 
 
 """ Star System with its planets """
@@ -26,12 +29,15 @@ class StarSystem(Defaults):
         game_engine.register(self)
 
     """ create planets """
-    def create_system(self, player=None):
+    def create_system(self, player=None, num_planets=-1):
         planet_args = {
             'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
+            'radiation': randint(0, 100),
         }
-        num_planets = round(random() * 5)
+        if num_planets < 0:
+            num_planets = round(random() * 5)
+        home = -1
         if player:
             planet_args['radiation'] = (player.race.hab_radiation_stop + player.race.hab_radiation) / 2
             if player.race.primary_race_trait == 'Pa\'anuri':
@@ -45,13 +51,15 @@ class StarSystem(Defaults):
             segment = 100.0 / num_planets
             planet_args['ID'] = self.ID + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
-            self.planets.append(Planet(**planet_args))
-        if player:
-            self.planets[home].homeworld = True
-            self.planets[home].gravity = (player.race.hab_gravity_stop + player.race.hab_gravity) / 2
-            self.planets[home].temperature = (player.race.hab_temperature_stop + player.race.hab_temperature) / 2
-            self.planets[home].colonize(player)
-            self.planets[home].on_surface.people = player.race.starting_colonists
+            if i != home:
+                self.planets.append(Planet(**planet_args))
+            else:
+                self.planets.append(Planet(**planet_args, 
+                    homeworld=True, 
+                    gravity=(player.race.hab_gravity_stop + player.race.hab_gravity) / 2,
+                    temperature=(player.race.hab_temperature_stop + player.race.hab_temperature) / 2))
+                self.planets[home].colonize(player)
+                self.planets[home].on_surface.people = player.race.starting_colonists
 
     """ get the sun for the system """
     def sun(self):
@@ -61,6 +69,7 @@ class StarSystem(Defaults):
 
     """ returns the outer system coorenets """
     def get_outer_system(self, location):
+        #TODO is anyone actually using this?
         x = (location.x-self.location.x)
         y = (location.y-self.location.y)
         z = (location.z-self.location.z)
@@ -70,7 +79,14 @@ class StarSystem(Defaults):
         y = self.y + (y/dis)*stars_math.TERAMETER_2_LIGHTYEAR
         z = self.z + (z/dis)*stars_math.TERAMETER_2_LIGHTYEAR
         return Location(x=x, y=y, z=z)
-    
+
+    """ Lay mines """
+    def lay_mines(self, quantity, player):
+        #TODO check treaty as non-teammate mines should function as mine sweeping
+        if not self.minefield_owner:
+            self.minefield_owner = Reference(player)
+        self.minefield += quantity
+
     """ sweeps mines """
     def sweep_mines(self, power, shot_factor, wep_range, field):
         return round(power * shot_factor * (wep_range * 10) ** 3 * self.mines[field] / 65000000000000000 * 100 * 20000000)
@@ -81,7 +97,7 @@ class StarSystem(Defaults):
         for planet in self.planets:
             g += planet.gravity ** 2
         for key in self.mines:
-            p_cap = self.mines[key] / 65000000000000000
+            p_cap = self.mines[key] / 65000000000000000 # TODO this number seem like it should move to a constant
             print(self.mines[key])
             self.mines[key] -= round(g * (p_cap ** 3) * 10000000000 + p_cap * 0.015 * 65000000000000000)
             print(self.mines[key])
