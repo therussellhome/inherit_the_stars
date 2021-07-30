@@ -21,7 +21,7 @@ class FleetCase(unittest.TestCase):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
         fleet_one = fleet.Fleet() + ship_1
-        fleet_one._stats()
+        fleet_one.stats()
         fleet_one += ship_2
         self.assertTrue(ship_1 in fleet_one.ships)
         self.assertTrue(ship_2 in fleet_one.ships)
@@ -45,7 +45,7 @@ class FleetCase(unittest.TestCase):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
         fleet_one = fleet.Fleet() + [ship_1, ship_2]
-        fleet_one._stats()
+        fleet_one.stats()
         fleet_one -= ship_2
         self.assertTrue(ship_1 in fleet_one.ships)
         self.assertFalse(ship_2 in fleet_one.ships)
@@ -89,7 +89,7 @@ class FleetCase(unittest.TestCase):
 
     def test_next_hundreth(self):
         f = fleet.Fleet()
-        f._stats()
+        f.stats()
         f.next_hundreth()
         self.assertTrue('stats' not in f.__cache__)
 
@@ -242,7 +242,7 @@ class FleetCase(unittest.TestCase):
 
     def test_hyperdenial2(self):
         f = fleet.Fleet() + ship.Ship()
-        stats = f._stats()
+        stats = f.stats()
         stats.hyperdenial.radius = 1
         with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
             f.hyperdenial()
@@ -250,7 +250,7 @@ class FleetCase(unittest.TestCase):
 
     def test_hyperdenial3(self):
         f = fleet.Fleet() + ship.Ship()
-        stats = f._stats()
+        stats = f.stats()
         stats.hyperdenial.range = 1
         f.__cache__['move'] = location.Location()
         with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
@@ -283,7 +283,7 @@ class FleetCase(unittest.TestCase):
 
     def test_move4(self):
         f = fleet.Fleet()
-        stats = f._stats()
+        stats = f.stats()
         f.location = location.Location(1, 2, 3)
         f.__cache__['move'] = location.Location(1.5, 2 , 3)
         stats.fuel = 100
@@ -296,7 +296,7 @@ class FleetCase(unittest.TestCase):
 
     def test_move5(self):
         f = fleet.Fleet() + ship.Ship()
-        stats = f._stats()
+        stats = f.stats()
         f.ships[0].engines.append(engine.Engine())
         f.location = location.Location(1, 2, 3)
         f.__cache__['move'] = location.Location(3, 2 , 3)
@@ -310,7 +310,7 @@ class FleetCase(unittest.TestCase):
 
     def test_move6(self):
         f = fleet.Fleet()
-        stats = f._stats()
+        stats = f.stats()
         f.location = location.Location(1, 2, 3)
         f.__cache__['move'] = location.Location(3, 2 , 3)
         stats.fuel = 100
@@ -323,7 +323,7 @@ class FleetCase(unittest.TestCase):
 
     def test_move7(self):
         f = fleet.Fleet()
-        stats = f._stats()
+        stats = f.stats()
         f.location = location.Location(1, 2, 3)
         f.__cache__['move'] = location.Location(3, 2 , 3)
         stats.fuel = 100
@@ -413,7 +413,7 @@ class FleetCase(unittest.TestCase):
         m = minerals.Minerals(titanium=10, lithium=10, silicon=10)
         with patch.object(planet.Planet, 'extract_minerals', return_value=m) as mock:
             f.orbital_extraction()
-            self.assertEqual(f._stats().cargo.sum(), 30)
+            self.assertEqual(f.stats().cargo.sum(), 30)
 
     def test_lay_mines1(self):
         f = fleet.Fleet() + ship.Ship()
@@ -501,8 +501,8 @@ class FleetCase(unittest.TestCase):
         multi_fleet.add(f1)
         multi_fleet.add(f2)
         f1.piracy()
-        self.assertEqual(f1._stats().fuel, 0)
-        self.assertEqual(f2._stats().fuel, 200)
+        self.assertEqual(f1.stats().fuel, 0)
+        self.assertEqual(f2.stats().fuel, 200)
 
     def test_piracy2(self):
         multi_fleet.reset()
@@ -511,8 +511,8 @@ class FleetCase(unittest.TestCase):
         multi_fleet.add(f1)
         multi_fleet.add(f2)
         f1.piracy()
-        self.assertEqual(f1._stats().fuel, 100)
-        self.assertEqual(f2._stats().fuel, 100)
+        self.assertEqual(f1.stats().fuel, 100)
+        self.assertEqual(f2.stats().fuel, 100)
 
     def test_piracy3(self):
         multi_fleet.reset()
@@ -521,8 +521,8 @@ class FleetCase(unittest.TestCase):
         multi_fleet.add(f1)
         multi_fleet.add(f2)
         f1.piracy()
-        self.assertEqual(f1._stats().fuel, 50)
-        self.assertEqual(f2._stats().fuel, 0)
+        self.assertEqual(f1.stats().fuel, 50)
+        self.assertEqual(f2.stats().fuel, 0)
 
     def test_piracy4(self):
         multi_fleet.reset()
@@ -531,8 +531,8 @@ class FleetCase(unittest.TestCase):
         multi_fleet.add(f1)
         multi_fleet.add(f2)
         f1.piracy()
-        self.assertEqual(f1._stats().fuel, 0)
-        self.assertEqual(f2._stats().fuel, 0)
+        self.assertEqual(f1.stats().fuel, 0)
+        self.assertEqual(f2.stats().fuel, 0)
 
     def test_piracy5(self):
         multi_fleet.reset()
@@ -543,9 +543,8 @@ class FleetCase(unittest.TestCase):
         multi_fleet.add(f2)
         multi_fleet.add(f3)
         f1.piracy()
-        self.assertEqual(f1._stats().fuel, 100)
-        self.assertEqual(f2._stats().fuel, 0)
-        self.assertEqual(f3._stats().fuel, 50)
+        self.assertEqual(f1.stats().fuel, 100)
+        self.assertEqual(f2.stats().fuel + f3.stats().fuel, 50)
 
     def test_piracy6(self):
         multi_fleet.reset()
@@ -555,8 +554,8 @@ class FleetCase(unittest.TestCase):
         multi_fleet.add(f1)
         multi_fleet.add(f2)
         f1.piracy()
-        self.assertEqual(f1._stats().cargo.titanium, 100)
-        self.assertEqual(f2._stats().cargo.titanium, 100)
+        self.assertEqual(f1.stats().cargo.titanium, 100)
+        self.assertEqual(f2.stats().cargo.titanium, 100)
 
     def test_unload1(self):
         f = fleet.Fleet() + ship.Ship()
@@ -574,8 +573,8 @@ class FleetCase(unittest.TestCase):
         f.order.unload_li = 0
         f.order.unload_si = -1
         f.unload()
-        self.assertEqual(f._stats().cargo.sum(), 6)
-        self.assertEqual(f2._stats().cargo.sum(), 0)
+        self.assertEqual(f.stats().cargo.sum(), 6)
+        self.assertEqual(f2.stats().cargo.sum(), 0)
 
     def test_unload3(self):
         f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
@@ -586,8 +585,8 @@ class FleetCase(unittest.TestCase):
         f.order.unload_li = 0
         f.order.unload_si = -1
         f.unload()
-        self.assertEqual(f._stats().cargo.sum(), 6)
-        self.assertEqual(f2._stats().cargo.sum(), 0)
+        self.assertEqual(f.stats().cargo.sum(), 6)
+        self.assertEqual(f2.stats().cargo.sum(), 0)
 
     def test_unload4(self):
         f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
@@ -598,8 +597,8 @@ class FleetCase(unittest.TestCase):
         f.order.unload_li = 0
         f.order.unload_si = -1
         f.unload()
-        self.assertEqual(f._stats().cargo.sum(), 3)
-        self.assertEqual(f2._stats().cargo.sum(), 3)
+        self.assertEqual(f.stats().cargo.sum(), 3)
+        self.assertEqual(f2.stats().cargo.sum(), 3)
 
     def test_unload5(self):
         f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
@@ -610,14 +609,46 @@ class FleetCase(unittest.TestCase):
         f.order.unload_li = 0
         f.order.unload_si = -1
         f.unload()
-        self.assertEqual(f._stats().cargo.sum(), 3)
+        self.assertEqual(f.stats().cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
 
     def test_buy1(self):
         pass #TODO
 
     def test_scrap1(self):
-        pass #TODO
+        f = fleet.Fleet() + ship.Ship()
+        f.__cache__['moved'] = True
+        with patch.object(ship.Ship, 'scrap') as mock:
+            f.scrap()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_scrap2(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.order.scrap = True
+        with patch.object(ship.Ship, 'scrap') as mock:
+            f.scrap()
+            self.assertEqual(mock.call_count, 1)
+
+    def test_scrap3(self):
+        f = fleet.Fleet() + ship.Ship()
+        p = planet.Planet()
+        f.location = location.Location(reference=p)
+        f.ships[0].cargo.people = 1
+        f.order.scrap = True
+        with patch.object(ship.Ship, 'scrap') as mock:
+            f.scrap()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_scrap4(self):
+        f = fleet.Fleet() + ship.Ship()
+        p = planet.Planet()
+        f.location = location.Location(reference=p)
+        f.ships[0].cargo.people = 1
+        p.player = f.player
+        f.order.scrap = True
+        with patch.object(ship.Ship, 'scrap') as mock:
+            f.scrap()
+            self.assertEqual(mock.call_count, 1)
 
     def test_load1(self):
         f = fleet.Fleet() + ship.Ship()
@@ -635,8 +666,8 @@ class FleetCase(unittest.TestCase):
         f.order.load_li = 0
         f.order.load_si = -1
         f.load()
-        self.assertEqual(f._stats().cargo.sum(), 0)
-        self.assertEqual(f2._stats().cargo.sum(), 6)
+        self.assertEqual(f.stats().cargo.sum(), 0)
+        self.assertEqual(f2.stats().cargo.sum(), 6)
 
     def test_load3(self):
         f = fleet.Fleet() + ship.Ship(cargo_max=0)
@@ -647,8 +678,8 @@ class FleetCase(unittest.TestCase):
         f.order.load_li = 0
         f.order.load_si = -1
         f.load()
-        self.assertEqual(f._stats().cargo.sum(), 0)
-        self.assertEqual(f2._stats().cargo.sum(), 6)
+        self.assertEqual(f.stats().cargo.sum(), 0)
+        self.assertEqual(f2.stats().cargo.sum(), 6)
 
     def test_load4(self):
         f = fleet.Fleet() + ship.Ship(cargo_max=10)
@@ -659,8 +690,8 @@ class FleetCase(unittest.TestCase):
         f.order.load_li = 0
         f.order.load_si = -1
         f.load()
-        self.assertEqual(f._stats().cargo.sum(), 3)
-        self.assertEqual(f2._stats().cargo.sum(), 3)
+        self.assertEqual(f.stats().cargo.sum(), 3)
+        self.assertEqual(f2.stats().cargo.sum(), 3)
 
     def test_load5(self):
         f = fleet.Fleet() + ship.Ship(cargo_max=10)
@@ -671,7 +702,7 @@ class FleetCase(unittest.TestCase):
         f.order.load_li = 0
         f.order.load_si = -1
         f.load()
-        self.assertEqual(f._stats().cargo.sum(), 3)
+        self.assertEqual(f.stats().cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
 
 
@@ -708,7 +739,7 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].fuel_max = 100
         f.ships[1].fuel_max = 200
-        stats = f._stats()
+        stats = f.stats()
         stats.fuel = 151
         f._fuel_distribution()
         self.assertEqual(f.ships[0].fuel, 51)
@@ -718,7 +749,7 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].fuel_max = 111
         f.ships[1].fuel_max = 200
-        stats = f._stats()
+        stats = f.stats()
         stats.fuel = 311
         f._fuel_distribution()
         self.assertEqual(f.ships[0].fuel, 111)
@@ -728,7 +759,7 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].cargo_max = 200
         f.ships[1].cargo_max = 400
-        stats = f._stats()
+        stats = f.stats()
         stats.cargo = cargo.Cargo(titanium=151, silicon=151, lithium=149, people=149)
         f._cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=51, silicon=50, lithium=50, people=49))
@@ -738,7 +769,7 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         f.ships[0].cargo_max = 100
         f.ships[1].cargo_max = 1000
-        stats = f._stats()
+        stats = f.stats()
         stats.cargo = cargo.Cargo(titanium=276, silicon=276, lithium=274, people=274)
         f._cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=26, silicon=25, lithium=25, people=24))

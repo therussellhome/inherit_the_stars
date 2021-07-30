@@ -26,6 +26,7 @@ from .order import Order
 __defaults = {
     'ID': '@UUID', # player ID defaulted to a UUID if not provided from the race ID
     'validation_key': '', # used to verify this file against the game file
+    'game': Reference('Game'),
     'game_ID': '', # name of game for when generating
     'ready_to_generate': False,
     'date': '0.00',

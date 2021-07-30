@@ -3,14 +3,16 @@ import sys
 from random import randint
 from . import stars_math
 from . import game_engine
+from .asteroid import Asteroid
 from .cargo import Cargo
 from .defaults import get_default
 from .engine import Engine
-from .scanner import Scanner
-from .location import Location
-from .reference import Reference
-from .ship_design import ShipDesign
 from .hyperdenial import HyperDenial
+from .location import Location
+from .minerals import Minerals
+from .reference import Reference
+from .scanner import Scanner
+from .ship_design import ShipDesign
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -37,15 +39,13 @@ class Ship(ShipDesign):
         self.__cache__['initiative'] = 0
         self.__cache__['apparent_mass'] = 0
         self.__cache__['apparent_ke'] = 0
-        game_engine.register(self)
-
-    """ Build a 'fictional' ship representing an entire fleet, used by fleet """
-    def init_from(self, ships):
-        super().init_from(ships)
-        for key in ['fuel', 'cargo', 'armor_damage']:
-            self[key] = get_default(self, key)
-            for s in ships:
-                self[key] += s[key]
+        if 'from_ships' in kwargs:
+            for s in kwargs['from_ships']:
+                self.merge(s)
+                for key in ['fuel', 'cargo', 'armor_damage']:
+                    self[key] += s[key]
+        else:
+            game_engine.register(self)
 
     """ Precompute a number of values """
     def update_cache(self, player):
@@ -55,12 +55,12 @@ class Ship(ShipDesign):
             self.__cache__['mass'] += self.cargo.sum()
         if len(self.engines) > 0:
             self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
-        self.__cache__['initiative'] = 0 #TODO age, battles, mass_per_engine, scanners, stealth, ecm
         self.__cache__['apparent_mass'] = self.__cache__['mass'] * (1 - self.cloak.percent / 100)
         if self.crew.primary_race_trait == 'Kender':
             self.__cache__['apparent_mass'] -= 25
         self.__cache__['apparent_ke'] = 0
-        self.__cache__['experience'] = float(self.__cache__['player'].date) - self.__cache__['player'].race.start_date + self.battle_experience + self.navigation_experience
+        self.__cache__['experience'] = 1 + float(self.__cache__['player'].date) - self.__cache__['player'].race.start_date + self.battle_experience + self.navigation_experience
+        self.__cache__['initiative'] = self.__cache__['experience'] #TODO add mass_per_engine, scanners, stealth, ecm
 
     """ This is a space station if it has orbital slots """
     def is_space_station(self):
@@ -70,15 +70,29 @@ class Ship(ShipDesign):
     def take_damage(self, shield, armor):
         self.__cache__['shield_damage'] += shield
         self.armor_damage += armor
-        #TODO blow-up
+        if self.armor_damage >= self.armor:
+            self.scrap(True)
+            # TODO remove from fleet
 
-    """ Creates a salvage at a location """
-    def create_salvage(self, location, cargo):
-        return #TODO
-    
-    """ Executes the on_destruction sequence """
-    def blow_up(self):
-        return#TODO self.scrap(self.location, self.location)
+    """ Scrap/blow-up the ship """
+    def scrap(self, destroyed=False):
+        if destroyed:
+            if randint(0, 1) == 0:
+                return
+            scrap_value = Minerals() + self.cargo + self.cost * 0.5
+        else:
+            scrap_value = Minerals() + self.cargo + self.cost * (self.__cache__['player'].race.scrap_rate() / 100)
+            scrap_value += self.cargo
+        if self.location.reference ^ 'Planet':
+            self.location.reference.on_surface += scrap_value
+        else:
+            self.__cache__['player'].game.asteroids.append(Asteroid(minerals=scrap_value, location=Location(self.location.xyz)))
+
+    """ Calculate the scrap value """
+    def scrap_value(self):
+        # Force scrap to be just minerals, cost already accounts for miniaturization
+        m = Minerals() + self.cost
+        return m * (self.__cache__['player'].race.scrap_rate() / 100)
 
     """ Return the apparent kinetic energy """
     def calc_apparent_ke(self):
@@ -101,11 +115,5 @@ class Ship(ShipDesign):
             if self in f.ships:
                 return f
         return Fleet()
-
-    """ Recompute self from components """
-    def compute_stats(self, tech_level):
-        if tech_level > self.level:
-            self.level = tech_level
-        super().compute_stats(self.level)
 
 Ship.set_defaults(Ship, __defaults)

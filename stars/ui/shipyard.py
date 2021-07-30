@@ -90,7 +90,7 @@ class Shipyard(PlayerUI):
             tech = Reference('Tech/' + action[4:])
             design.remove_component(tech)
         # Recompute stats
-        design.compute_stats(self.player().tech_level)
+        design.update(self.player().tech_level)
 
         # Check validity of design
         # valid designs are stored in the player's ship_designs

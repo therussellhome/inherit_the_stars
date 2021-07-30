@@ -2,6 +2,7 @@ from .build_queue import BuildQueue
 from .cost import Cost
 from .ship_design import ShipDesign
 from .reference import Reference
+from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -9,6 +10,7 @@ __defaults = {
     'ship': Reference('Ship'),
     'in_progress': Cost(),
     'component': Reference('Tech'),
+    'level': TechLevel(),
 }
 
 
@@ -26,9 +28,9 @@ class BuildShip(BuildQueue):
             self.component = self.ship_design.hull
             self.in_progress = self.component.miniaturize(self.planet.player.tech_level, 'cost')
         elif 'cost' not in kwargs:
-            self.cost = self.ship.hull.reminiaturize(self.ship.tech_level, self.player.planet.tech_level)
+            self.cost = self.ship.hull.reminiaturize(self.ship.level, self.player.planet.tech_level)
             for (tech, cnt) in self.ship.components.items():
-                self.cost = tech.reminiaturize(self.ship.tech_level, self.player.planet.tech_level) * cnt
+                self.cost = tech.reminiaturize(self.ship.level, self.player.planet.tech_level) * cnt
             for (tech, cnt) in self.ship_design.components.items():
                 if tech in self.ship.components:
                     cnt = max(0, cnt - self.ship.components[tech])
@@ -51,9 +53,10 @@ class BuildShip(BuildQueue):
                     self.remove_component(tech, cnt)
                 elif self.ship_design.components[tech] > cnt:
                     self.remove_component(tech, cnt - self.ship_design.components[tech])
-            self.in_progress = self.ship.hull.miniturize(self.player.planet.tech_level)
+            self.in_progress = self.ship.hull.reminiturize(self.ship.level, self.player.planet.tech_level)
             for (tech, cnt) in self.ship.components.items():
-                self.in_progress = tech.miniturize(self.player.planet.tech_level) * cnt
+                self.in_progress += tech.reminiturize(self.ship.level, self.player.planet.tech_level) * cnt
+            self.level = self.player.planet.tech_level
         super().build(spend)
         self.in_progress -= spend
         if self.in_progress.is_zero():
@@ -62,6 +65,7 @@ class BuildShip(BuildQueue):
                 if self.component == self.ship_design.hull:
                     ship.hull = self.component
                     ship.commissioning = float(self.planet.player.date) - self.race.start_date
+                    self.level = self.player.planet.tech_level
                 else:
                     self.ship.add_component(self.component)
             # miniaturize returns the minerals
@@ -80,9 +84,9 @@ class BuildShip(BuildQueue):
                     self.component = tech
                     break
             if self.component:
-                self.in_progress = self.component.miniaturize(self.planet.player.tech_level, 'cost')
+                self.in_progress = self.component.miniaturize(self.level, 'cost')
             # Recompute stats and apply any miniaturize
-            self.ship.compute_stats(self.planet.player.tech_level)
+            self.ship.update(self.ship.level)
         return self.in_progress
 
     """ Called when being removed from the build queue """

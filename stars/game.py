@@ -53,6 +53,8 @@ class Game(Defaults):
         super().__init__(**kwargs)
         game_engine.register(self)
         if 'systems' not in kwargs:
+            for p in self.players:
+                p.game = Reference(self)
             num_systems = max(len(self.players), num_systems)
             if not system_names:
                 system_names = []
@@ -157,7 +159,7 @@ class Game(Defaults):
             for fleet in player.fleets:
                 fleets.append(fleet)
         self._call(fleets, 'next_hundreth')
-        fleets.sort(key=lambda x: x.initiative(), reverse=False)
+        fleets.sort(key=lambda x: x.stats().initiative, reverse=False)
         multi_fleet.reset()
         #
         # actions only done at the beginning of a year

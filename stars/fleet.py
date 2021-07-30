@@ -108,7 +108,7 @@ class Fleet(Defaults):
 
     """ Colonize planets per the order """
     def colonize(self):
-        stats = self._stats()
+        stats = self.stats()
         if not stats.is_colonizer or stats.cargo.people == 0:
             return
         # Check for planets meeting the criteria
@@ -141,13 +141,13 @@ class Fleet(Defaults):
                 return
             if p.colonize(self.player):
                 p.on_surface += colonizers[-1].cargo
-                p.on_surface += colonizers[-1].scrap_value(self.player.race, colonizers[-1].level)
+                p.on_surface += colonizers[-1].scrap_value()
                 self -= colonizers.pop()
 
     """ Deploy hyperdenial """
     def hyperdenial(self):
         # Not scheduled to move
-        if self._stats().hyperdenial.radius > 0 and self.__cache__['move'] == None:
+        if self.stats().hyperdenial.radius > 0 and self.__cache__['move'] == None:
             for ship in self.ships:
                 ship.hyperdenial.activate(self.player)
 
@@ -160,7 +160,7 @@ class Fleet(Defaults):
             multi_fleet.add(self)
             return
         # Determine speed
-        stats = self._stats()
+        stats = self.stats()
         speed = self.order.speed
         # Manual stargate or auto stargate
         if speed == -2 or (speed == -1 and self._stargate_check()):
@@ -223,17 +223,17 @@ class Fleet(Defaults):
     """ Repair only self if moving, else repair most damaged fleet here """
     def repair(self):
         if self.__cache__['moved']:
-            self.apply_repair(self._stats().repair_moving)
+            self.apply_repair(self.stats().repair_moving)
         else:
             # TODO apply to the most damaged friendly fleet at this location
-            self.apply_repair(self._stats().repair)
+            self.apply_repair(self.stats().repair)
 
     """ How damaged is the fleet """
     def damage_level(self):
         damage = 0
         for ship in self.ships:
             damage += ship.armor_damage
-        return damage / self._stats().armor
+        return damage / self.stats().armor
 
     """ Apply repair to this fleet """
     def apply_repair(self, repair_points):
@@ -244,7 +244,7 @@ class Fleet(Defaults):
 
     """ Orbital mineral extraction """
     def orbital_extraction(self):
-        stats = self._stats()
+        stats = self.stats()
         if self.__cache__['moved'] or stats.extraction_rate == 0 or not self.location.reference ^ 'Planet' or self.location.reference.is_colonized():
             return
         for ship in self.ships:
@@ -256,14 +256,14 @@ class Fleet(Defaults):
 
     """ Lay mines """
     def lay_mines(self):
-        stats = self._stats()
+        stats = self.stats()
         if self.__cache__['moved'] or stats.mines_laid == 0 or not self.location.in_system:
             return
         self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.player)
 
     """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
     def bomb(self):
-        stats = self._stats()
+        stats = self.stats()
         if self.__cache__['moved'] or len(stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
             return
         planet = self.location.reference
@@ -274,7 +274,7 @@ class Fleet(Defaults):
 
     """ Steal from other players """
     def piracy(self):
-        stats = self._stats()
+        stats = self.stats()
         if self.__cache__['moved'] or not (stats.is_piracy_cargo or stats.is_piracy_fuel):
             return
         marks = []
@@ -283,7 +283,7 @@ class Fleet(Defaults):
                 marks.append(f)
         random.shuffle(marks)
         for mark in marks:
-            mstats = mark._stats()
+            mstats = mark.stats()
             cargo_space = stats.cargo_max - stats.cargo.sum()
             if stats.is_piracy_cargo and cargo_space > 0:
                 for m in MINERAL_TYPES:
@@ -301,11 +301,12 @@ class Fleet(Defaults):
     def unload(self):
         if self.__cache__['moved']:
             return
-        stats = self._stats()
+        stats = self.stats()
         (cargo, cargo_max) = self._other_cargo()
         if not cargo or cargo.sum() >= cargo_max:
             return
         order = {'titanium': self.order.unload_ti, 'lithium': self.order.unload_li, 'silicon': self.order.unload_si, 'people': self.order.unload_people} # cannot use cargo type because of 0 min
+        # TODO check unloading people on non-owned planet
         for ctype in CARGO_TYPES:
             if order[ctype] > 0:
                 order[ctype] = min(cargo_max - cargo.sum(), order[ctype], stats.cargo[ctype])
@@ -328,27 +329,27 @@ class Fleet(Defaults):
     def scrap(self):
         if self.__cache__['moved'] or not self.order.scrap:
             return
-        if self._stats().cargo.people > 0:
-            #TODO error message
-            # Cancel scrap order
-            self.order.scrap = False
-            return
-        if self.location.reference ^ 'Planet':
-            scrap = self.location.reference.on_surface
-        else:
-            pass # TODO create asteroid
-        for ship in self.ships:
-            scrap += ship.scrap()
+        stats = self.stats()
+        if self.location.reference ^ 'Planet' and stats.cargo.people > 0:
+            if self.location.reference.player == self.player:
+                self.location.reference.on_surface.people += stats.cargo.people
+            else:
+                #TODO error message
+                # Cancel scrap order
+                self.order.scrap = False
+                return
+        stats.scrap()
 
     """ Load cargo """
     def load(self):
         if self.__cache__['moved']:
             return
-        stats = self._stats()
+        stats = self.stats()
         (cargo, cargo_max) = self._other_cargo()
         if not cargo or stats.cargo.sum() >= stats.cargo_max:
             return
         order = {'titanium': self.order.load_ti, 'lithium': self.order.load_li, 'silicon': self.order.load_si, 'people': self.order.load_people} # cannot use cargo type because of 0 min
+        # TODO check loading people on non-owned planet
         for ctype in CARGO_TYPES:
             if order[ctype] > 0:
                 order[ctype] = min(stats.cargo_max - stats.cargo.sum(), order[ctype], cargo[ctype])
@@ -390,40 +391,40 @@ class Fleet(Defaults):
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):
-        stats = self._stats()
+        stats = self.stats()
         if stats.scanner.anticloak > 0:
             scan.anticloak(self.player, fleet.location, stats.scanner.anticloak)
 
     """ Perform hyperdenial scanning """
     def scan_hyperdenial(self):
-        stats = self._stats()
+        stats = self.stats()
         if stats.hyperdenial.radius > 0:
             scan.hyperdenial(self.player, fleet.location, stats.hyperdenial.radius)
            
     """ Perform penetrating scanning """
     def scan_penetrating(self):
-        stats = self._stats()
+        stats = self.stats()
         if stats.scanner.penetrating > 0:
             scan.penetrating(self.player, fleet.location, stats.scanner.penetrating)
 
     """ Perform normal scanning """
     def scan_normal(self):
-        stats = self._stats()
+        stats = self.stats()
         if stats.scanner.normal > 0:
             scan.normal(self.player, fleet.location, stats.scanner.normal)
 
     """ Update cached values of the fleet """
-    def _stats(self):
+    def stats(self):
         if 'stats' not in self.__cache__:
-            stats = Ship()
+            stats = Ship(from_ships=self.ships)
             self.__cache__['stats'] = stats
-            stats.init_from(self.ships)
             stats.__dict__['repair_moving'] = 0
             stats.scanner.anti_cloak = 0
             stats.hyperdenial.radius = 0
             stats.scanner.penetrating = 0
             stats.scanner.normal = 0
             stats.initiative = 0
+            stats.location = self.location
             for ship in self.ships:
                 ship.update_cache(self.player)
                 stats['repair_moving'] += ship.hull.repair
@@ -438,11 +439,11 @@ class Fleet(Defaults):
 
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
-        stats = self._stats()
+        stats = self.stats()
         if self.location.reference ^ 'Fleet':
             if self.location.reference.player == self.player:
-                other_stats = self.location.reference._stats()
-                return (other_stats.cargo, other_stats.cargo_max)
+                otherstats = self.location.reference.stats()
+                return (otherstats.cargo, otherstats.cargo_max)
         elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
             if self.location.reference.player == self.player:
                 return (self.location.reference.on_surface, sys.maxsize)
@@ -472,7 +473,7 @@ class Fleet(Defaults):
     
     """ Evenly distributes the fuel between the ships """
     def _fuel_distribution(self):
-        stats = self._stats()
+        stats = self.stats()
         if stats.fuel_max > 0 and stats.fuel > 0:
             fuel_left = stats.fuel
             for ship in self.ships:
@@ -489,7 +490,7 @@ class Fleet(Defaults):
     
     """ Evenly distributes the cargo back to the ships """
     def _cargo_distribution(self):
-        stats = self._stats()
+        stats = self.stats()
         cargo_left = copy.copy(stats.cargo)
         for ctype in CARGO_TYPES:
             for ship in self.ships:
