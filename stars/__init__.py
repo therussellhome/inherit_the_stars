@@ -10,7 +10,6 @@ __all__ = [
     'cost',
     'defaults', 
     'engine',
-    'expirence',
     'facility',
     'fleet',
     'game', 

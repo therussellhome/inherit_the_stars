@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from .. import *
 
@@ -158,6 +159,16 @@ class GameEngineTestCase(unittest.TestCase):
         t1 = _TestGameEngine(ID='test_save1')
         game_engine.set_root_obj(t1)
         self.assertEqual(game_engine.get_root_obj(), t1)
+
+    def test_userfile1(self):
+        self.assertEqual(game_engine.user_file('abc').name, 'data')
+
+    def test_userfile2(self):
+        self.assertEqual(game_engine.user_file('abc', True).name, 'www')
+
+    def test_userfile3(self):
+        with patch.object(Path, 'exists', return_value=True) as mock:
+            self.assertEqual(game_engine.user_file('abc').name, 'Inherit!')
 
     def test_json1(self):
         t1 = _TestGameEngine(ID='test_json')

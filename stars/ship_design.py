@@ -1,5 +1,6 @@
 import sys
-from .defaults import Defaults
+from .cost import Cost
+from .defaults import Defaults, get_default
 from .reference import Reference
 from .tech import Tech
 
@@ -43,13 +44,34 @@ class ShipDesign(Tech):
                 self.components[tech] -= cnt
 
     """ Recompute self from components """
-    def compute_stats(self, tech_level):
-        tech = [self.hull]
-        for c in self.components:
-            for i in range(0, self.components[c]):
-                tech.append(c)
-        self.init_from(tech, tech_level)
-    
+    def update(self, miniaturize_level=None):
+        if not miniaturize_level:
+            miniaturize_level = self.level
+        # Reset to default
+        for key in Tech.defaults:
+            if not isinstance(self[key], str):
+                self[key] = get_default(self, key)
+        self.merge(self.hull)
+        for (t,cnt) in self.components.items():
+            for i in range(0, cnt):
+                self.merge(t)
+        self.level = miniaturize_level
+        (self.mass, self.cost) = self._miniaturize()
+
+    """ Get the miniatuarized value """
+    def reminiaturize_cost(self, level):
+        return self._miniaturize()[1]
+
+    """ How much past the base is the miniaturization """
+    def _miniaturize(self):
+        mass = 0
+        cost = Cost()
+        for (t,cnt) in ({self.hull:1} | self.components).items():
+            modifier = t.miniaturization(self.level)
+            mass += t.mass * modifier
+            cost += t.cost * modifier
+        return (mass, cost)
+
     """ Check if design is valid """
     def is_valid(self, level=None, race=None):
         if self.slots_general < 0 or self.slots_depot < 0 or self.slots_orbital < 0:

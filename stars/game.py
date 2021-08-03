@@ -49,10 +49,12 @@ __defaults = {
 """ Class defining a game and everything in it """
 class Game(Defaults):
     """ Initialize defaults and register self """
-    def __init__(self, x=500, y=500, z=500, num_systems=1000, system_names=None, **kwargs):
+    def __init__(self, x=50, y=50, z=50, num_systems=10, system_names=None, **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
         if 'systems' not in kwargs:
+            for p in self.players:
+                p.game = Reference(self)
             num_systems = max(len(self.players), num_systems)
             if not system_names:
                 system_names = []
@@ -157,7 +159,7 @@ class Game(Defaults):
             for fleet in player.fleets:
                 fleets.append(fleet)
         self._call(fleets, 'next_hundreth')
-        fleets.sort(key=lambda x: x.initiative(), reverse=False)
+        fleets.sort(key=lambda x: x.stats().initiative, reverse=False)
         multi_fleet.reset()
         #
         # actions only done at the beginning of a year
@@ -201,9 +203,10 @@ class Game(Defaults):
         self._call(fleets, 'buy')
         self._call(fleets, 'scrap')
         self._call(fleets, 'load')
-        # redistribute cached values then process fleet changes
         self._call(multi_fleet.get(), 'share_fuel')
-        self._call(fleets, 'redistribute')
+        # redistribute cached values then process fleet changes
+        self._call(fleets, 'fuel_distribution')
+        self._call(fleets, 'cargo_distribution')
         self._call(fleets, 'transfer')
         self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
