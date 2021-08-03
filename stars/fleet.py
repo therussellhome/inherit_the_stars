@@ -500,6 +500,34 @@ class Fleet(Defaults):
             return (False, None)
         return (start, end)
         
+    """ find the stargates to use """
+    def _stargate_find(self, move_to, no_damage=True):
+        distance = move_to - self.location
+        gate_needed = max(self.ships, key=lambda x: x.total_mass) + distance
+        start_gates = []
+        end_gates = []
+        for fleet in multi_fleet.get(self.location):
+            if fleet.stats().stargate.strength > 0:
+                cost = self.player.get_treaty(fleet.player).buy_gate:
+                if cost > 0:
+                    start_gates.append((min(0, gate_needed - fleet.stats().stargate.strength), cost, fleet))
+        for fleet in multi_fleet.get(self.location):
+            if fleet.stats().stargate.strength > 0:
+                cost = self.player.get_treaty(fleet.player).buy_gate:
+                if cost > 0:
+                    end_gates.append((cost, fleet))
+        if len(start_gates) == 0 or len(end_gates) == 0:
+            return (None, None)
+        start_gates.sort()
+        end_gates.sort()
+        if start_gates[0][0] > 0 and no_damage:
+            return (None, None)
+        # Don't gate if a ship will definitely die
+        for ship in self.ships:
+            if ship.armor <= start_gates[0][2].stargate.overgate(ship.total_mass, distance, survival_test=True):
+                return (None, None)
+        return (start_gates[0][2], end_gates[0][1])
+
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
         stats = self.stats()
