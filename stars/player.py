@@ -288,6 +288,26 @@ class Player(Defaults):
             
     """ Get the treaty """
     def get_treaty(self, other_player, draft=False):
+        if other_player == self:
+            if draft:
+                return None
+            return Treaty(other_player = self,
+                            relation = 'me',
+                            status = 'active',
+                            buy_ti = 0,
+                            sell_ti = 0,
+                            buy_si = 0,
+                            sell_si = 0,
+                            buy_li = 0,
+                            sell_li = 0,
+                            buy_fuel = 0,
+                            sell_fuel = 0,
+                            buy_gate = 0,
+                            sell_gate = 0,
+                            buy_hyper_denial = 0,
+                            sell_hyper_denial = 0,
+                            buy_intel = 0,
+                            sell_intel = 0)
         other_player = Reference(other_player)
         for t in self.treaties:
             if (t.other_player == other_player) and ((not draft and t.is_active()) or (draft and t.is_draft())):

@@ -14,6 +14,7 @@ from .order import Order
 from .location import Location
 from .reference import Reference
 from .ship import Ship
+from random import random
 
 
 """ Offset of ships from fleet center """
@@ -158,7 +159,7 @@ class Fleet(Defaults):
         speed = self.order.speed
         # Manual stargate or auto stargate
         start, end = self._stargate_find(move, False)
-        print(start, end)
+        #print(start, end)
         if speed == -2 or (speed == -1 and self._stargate_find(move, True)[0]):
             self.__cache__['moved'] = False
             # stargate use allows fleet actions this hundredth
@@ -166,7 +167,13 @@ class Fleet(Defaults):
             # TODO pay for stargateing
             # TODO asses damage
             if start and end:
-                self.location = self.location.move(move, self.location - move)
+                self.location = self.location.move(move, self.location - move) # TODO test
+                for ship in self.ships: # TODO test
+                    overgate = ship.mass + (self.location - move) - start.stargate.strength # TODO test
+                    if overgate > 0: # TODO test
+                        overgateP = overgate / start.stargate.strength # TODO test
+                        luck = random() * 5 / ship.expirience.calc_xp()
+                        ship.armor_damage += (overgateP+(overgate)/1000)*512*(luck+1) #TODO IT # TODO test
             multi_fleet.add(self)
             return
         # Auto speed
@@ -368,23 +375,49 @@ class Fleet(Defaults):
                 if ship.stargate.strength > 0 and (ship.player.get_treaty(ship.player).buy_gate >= 0 or ship.player == self.ships[0].player):
                     start_gates.append(ship)
         for fleet in multi_fleet.get(moveto):
+            #print(fleet)
             for ship in fleet.ships:
                 if ship.stargate.strength > 0 and (ship.player.get_treaty(ship.player).buy_gate >= 0 or ship.player == self.ships[0].player):
                     end_gates.append(ship)
         start = None
         end = None
         if len(start_gates) > 0:
+            #print('list exists')
             start_gates.sort(key=lambda x: x.stargate.strength, reverse=True)
-            start = start_gates[0]
+            options = []
+            most_mass = 0
+            for ship in self.ships:
+                if ship.mass > most_mass:
+                    #print('are you not running thiS?')
+                    most_mass = ship.mass
+            for gate in start_gates:
+                if gate.stargate.strength == start_gates[0].stargate.strength or gate.stargate.strength >= most_mass + (self.location - moveto):
+                    options.append(gate)
+                    #print('options =', options)
+            if start_gates[0].stargate.strength <= most_mass + (self.location - moveto): # TODO test
+                for ship in self.ships: # TODO test
+                    overgate = ship.mass + (self.location - moveto) - options[0].stargate.strength # TODO test
+                    print('thiS Shoul,d be running.')
+                    if overgate > 0: # TODO test
+                        print('THEN WHY ARE YOU NOT ERRORING|.|.|.')
+                        overgateP = overgate / options[0].stargate.strength # TODO test
+                        if ship.armor <= (overgateP+overgate/1000)**1.3*512: #TODO IT # TODO test
+                            options = [] # TODO test
+                            break
+            if len(options) > 0:
+                options.sort(key=lambda x: x.player.get_treaty(ship.player).buy_gate, reverse=True)
+                start = options[0]
+        #print('end_gates =', end_gates)
         if len(end_gates) > 0:
             end_gates.sort(key=lambda x: x.player.get_treaty(ship.player).buy_gate, reverse=True)
             end = end_gates[0]
+        #print('end =', end)
         if be_picky:
             self.ships.sort(key=lambda x: x.mass, reverse=True)
             if start and end:
                 self.ships.sort(key=lambda x: x.mass, reverse=True)
-                if self.ships[0].mass + (moveto-self.location) <= start.stargate.strength: # and minimal damage
-                    return (True, None) # test
+                if self.ships[0].mass + (moveto-self.location) <= start.stargate.strength:
+                    return (True, None)
             return (False, None)
         return (start, end)
         

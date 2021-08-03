@@ -342,11 +342,11 @@ class FleetCase(unittest.TestCase):
         for s in e.ships:
             s.player = reference.Reference(p)
         multi_fleet.add(e)
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         f.order.speed = -2
         f.__cache__['move'] = location.Location(55, 55, 5)
         f.move()
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         self.assertEqual(f.location.xyz, (55, 55, 5))
     
     def test_move9(self):
@@ -365,12 +365,12 @@ class FleetCase(unittest.TestCase):
         e.location = location.Location(55, 55, 5)
         e.ships[3].stargate.strength = 0
         multi_fleet.add(e)
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         f.order.speed = -2
         f.__cache__['move'] = location.Location(55, 55, 5)
         with patch.object(player.Player, 'get_treaty', return_value=treaty.Treaty(buy_gate = 1)):
             f.move()
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         self.assertEqual(f.location.xyz, (55, 55, 5))
     
     def test_move10(self):
@@ -389,12 +389,12 @@ class FleetCase(unittest.TestCase):
         e.location = location.Location(55, 55, 5)
         e.ships[3].stargate.strength = 0
         multi_fleet.add(e)
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         f.order.speed = -1
         f.__cache__['move'] = location.Location(55, 55, 5)
         with patch.object(player.Player, 'get_treaty', return_value=treaty.Treaty(buy_gate = 1)):
             f.move()
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         self.assertEqual(f.location.xyz, (55, 55, 5))
     
     def test_move11(self):
@@ -414,13 +414,13 @@ class FleetCase(unittest.TestCase):
         e.location = location.Location(55, 55, 5)
         e.ships[3].stargate.strength = 0
         multi_fleet.add(e)
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         f.order.speed = -1
         f.__cache__['move'] = location.Location(55, 55, 5)
         with patch.object(player.Player, 'get_treaty', return_value=treaty.Treaty(buy_gate = 1)):
             with patch.object(fleet.Fleet, '_damage_check', return_value=10000):
                 f.move()
-        print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
+        #print(multi_fleet.get(location.Location(5, 5, 5)), multi_fleet.get(location.Location(55, 55, 5)))
         self.assertEqual(f.location.xyz, (5, 5, 5))
     
     def test_move_in_system1(self):
@@ -577,9 +577,12 @@ class FleetCase(unittest.TestCase):
         f.ships[0].stargate.strength = 150
         f.ships[0].ID = 'ship1'
         f.ships[1].stargate.strength = 50
+        f.ships[1].mass = 150
+        f.ships[1].ID = 'ship2'
         f.ships[2].stargate.strength = 210
         f.ships[2].ID = 'ship3'
         f.ships[3].stargate.strength = 0
+        f.ships[3].ID = 'ship4'
         for s in f.ships:
             s.player = p
         multi_fleet.add(f)
@@ -597,6 +600,68 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(f._stargate_find(f.location, False)[0], None)
         self.assertEqual(f._stargate_find(f.location, False)[1], None)
         self.assertEqual(f._stargate_find(f.location, True)[0], False)
+    
+    def test_stargate_find3(self):
+        multi_fleet.reset()
+        p = reference.Reference(player.Player())
+        f = fleet.Fleet() + ship.Ship() + ship.Ship() + ship.Ship() + ship.Ship()
+        f.location = location.Location(5, 5, 5)
+        f.ships[0].stargate.strength = 150
+        f.ships[1].stargate.strength = 50
+        f.ships[1].mass = 150
+        f.ships[1].armor = 14
+        f.ships[1].ID = 'ship2'
+        f.ships[2].stargate.strength = 190
+        f.ships[2].ID = 'ship3'
+        f.ships[3].stargate.strength = 0
+        f.ships[3].ID = 'ship4'
+        c = fleet.Fleet() + ship.Ship() + ship.Ship() + ship.Ship() + ship.Ship()
+        c.location = location.Location(55, 5, 5)
+        c.ships[0].stargate.strength = 150
+        c.ships[0].ID = 'ship1'
+        c.ships[0].player = p
+        c.ships[1].stargate.strength = 50
+        c.ships[2].stargate.strength = 210
+        c.ships[3].stargate.strength = 0
+        for s in f.ships:
+            s.player = p
+        multi_fleet.add(f)
+        multi_fleet.add(c)
+        #print(f.ships[1].armor)
+        self.assertEqual(f._stargate_find(c.location, False)[0].ID, 'ship3')
+        self.assertEqual(f._stargate_find(c.location, False)[1].ID, 'ship1')
+        self.assertEqual(f._stargate_find(c.location, True)[0], False)
+    
+    def test_stargate_find4(self):
+        multi_fleet.reset()
+        p = reference.Reference(player.Player())
+        f = fleet.Fleet() + ship.Ship() + ship.Ship() + ship.Ship() + ship.Ship()
+        f.location = location.Location(5, 5, 5)
+        f.ships[0].stargate.strength = 150
+        f.ships[1].stargate.strength = 50
+        f.ships[1].mass = 150
+        f.ships[1].armor = 10
+        f.ships[1].ID = 'ship2'
+        f.ships[2].stargate.strength = 190
+        f.ships[2].ID = 'ship3'
+        f.ships[3].stargate.strength = 0
+        f.ships[3].ID = 'ship4'
+        c = fleet.Fleet() + ship.Ship() + ship.Ship() + ship.Ship() + ship.Ship()
+        c.location = location.Location(55, 5, 5)
+        c.ships[0].stargate.strength = 150
+        c.ships[0].ID = 'ship1'
+        c.ships[0].player = p
+        c.ships[1].stargate.strength = 50
+        c.ships[2].stargate.strength = 210
+        c.ships[3].stargate.strength = 0
+        for s in f.ships:
+            s.player = p
+        multi_fleet.add(f)
+        multi_fleet.add(c)
+        #print(f.ships[1].armor)
+        self.assertEqual(f._stargate_find(c.location, False)[0], None)
+        self.assertEqual(f._stargate_find(c.location, False)[1].ID, 'ship1')
+        self.assertEqual(f._stargate_find(c.location, True)[0], False)
     
     def test_fuel_calc1(self):
         f = fleet.Fleet() + ship.Ship()
