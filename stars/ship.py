@@ -33,7 +33,7 @@ class Ship(ShipDesign):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.__cache__['player'] = Reference('Player')
-        self.__cache__['mass'] = 0
+        self.__cache__['total_mass'] = 0
         self.__cache__['mass_per_engine'] = 0
         self.__cache__['shield_damage'] = 0
         self.__cache__['initiative'] = 0
@@ -50,12 +50,14 @@ class Ship(ShipDesign):
     """ Precompute a number of values """
     def update_cache(self, player):
         self.__cache__['player'] = player
-        self.__cache__['mass'] = self.mass
+        self.__cache__['total_mass'] = self.mass
         if not self.crew.lrt_Trader:
-            self.__cache__['mass'] += self.cargo.sum()
+            self.__cache__['total_mass'] += self.cargo.sum()
+        else:
+            self.__cache__['total_mass'] += self.cargo.people
         if len(self.engines) > 0:
-            self.__cache__['mass_per_engine'] = self.__cache__['mass'] / len(self.engines)
-        self.__cache__['apparent_mass'] = self.__cache__['mass'] * (1 - self.cloak.percent / 100)
+            self.__cache__['mass_per_engine'] = self.__cache__['total_mass'] / len(self.engines)
+        self.__cache__['apparent_mass'] = self.__cache__['total_mass'] * (1 - self.cloak.percent / 100)
         if self.crew.primary_race_trait == 'Kender':
             self.__cache__['apparent_mass'] -= 25
         self.__cache__['apparent_ke'] = 0
@@ -104,7 +106,7 @@ class Ship(ShipDesign):
             'location': self.location,
         }
         if scan_type == 'anticloak':
-            report['Mass'] = self.__cache__['mass']
+            report['Mass'] = self.__cache__['total_mass']
         if scan_type != 'hyperdenial':
             report['Apparent Mass'] = self.__cache__['apparent_mass']
         return report

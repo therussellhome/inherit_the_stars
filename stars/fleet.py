@@ -164,22 +164,20 @@ class Fleet(Defaults):
         stats = self.stats()
         speed = self.order.speed
         # Manual stargate or auto stargate
-        start, end = self._stargate_find(move, False)
+        start, end = self._stargate_find(move, speed == -1)
         #print(start, end)
-        if speed == -2 or (speed == -1 and self._stargate_find(move, True)[0]):
+        if (speed == -2 or speed == -1) and (start and end):
             self.__cache__['moved'] = False
             # stargate use allows fleet actions this hundredth
             self.__cache__['move_in_system'] = move
             # TODO pay for stargateing
-            # TODO asses damage
-            if start and end:
-                self.location = self.location.move(move, self.location - move) # TODO test
-                for ship in self.ships: # TODO test
-                    overgate = ship.mass + (self.location - move) - start.stargate.strength # TODO test
-                    if overgate > 0: # TODO test
-                        overgateP = overgate / start.stargate.strength # TODO test
-                        luck = random() * 5 / ship.expirience.calc_xp()
-                        ship.armor_damage += (overgateP+(overgate)/1000)*512*(luck+1) #TODO IT # TODO test
+            self.location = self.location.move(move, self.location - move)
+            for ship in self.ships:
+                ship.armor_damage += start.stats().stargate.overgate(ship['total_mass'], self.location - move, ship['experience'])
+            multi_fleet.add(self)
+            return
+        elif speed == -2:
+            self.__cache__['moved'] = False
             multi_fleet.add(self)
             return
         # Auto speed
@@ -343,8 +341,8 @@ class Fleet(Defaults):
             return
         stats = self.stats()
         if self.location.reference ^ 'Planet' and stats.cargo.people > 0:
-            if self.location.reference.player == self.player:
-                self.location.reference.on_surface.people += stats.cargo.people
+            if self.location.reference.player == self.player: # TODO Test
+                self.location.reference.on_surface.people += stats.cargo.people # TODO Test # TODO other cargo
             else:
                 #TODO error message
                 # Cancel scrap order
@@ -388,13 +386,13 @@ class Fleet(Defaults):
         self.orders_repeat = False
 
     """ Merges the fleet with the target fleet """
-    def merge(self):
-        f = self.location.reference
-        if not f ^ 'Fleet' or f.player != self.player:
-            return
-        for ship in self.ships:
-            f += ship
-        self.player.remove_fleet(self)
+    def merge(self): # TODO Test
+        f = self.location.reference # TODO Test
+        if not f ^ 'Fleet' or f.player != self.player: # TODO Test
+            return # TODO Test
+        for ship in self.ships: # TODO Test
+            f += ship # TODO Test
+        self.player.remove_fleet(self) # TODO Test
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):
@@ -445,88 +443,40 @@ class Fleet(Defaults):
         return self.__cache__['stats']
     
     """ find the stargates to use """
-    def _stargate_find(self, moveto, be_picky):
-        start_gates = []
-        end_gates = []
-        for fleet in multi_fleet.get(self.location):
-            for ship in fleet.ships:
-                #print(ship.ID, ship.stargate.strength, ship, ship.player)
-                if ship.stargate.strength > 0 and (ship.player.get_treaty(ship.player).buy_gate >= 0 or ship.player == self.ships[0].player):
-                    start_gates.append(ship)
-        for fleet in multi_fleet.get(moveto):
-            #print(fleet)
-            for ship in fleet.ships:
-                if ship.stargate.strength > 0 and (ship.player.get_treaty(ship.player).buy_gate >= 0 or ship.player == self.ships[0].player):
-                    end_gates.append(ship)
-        start = None
-        end = None
-        if len(start_gates) > 0:
-            #print('list exists')
-            start_gates.sort(key=lambda x: x.stargate.strength, reverse=True)
-            options = []
-            most_mass = 0
-            for ship in self.ships:
-                if ship.mass > most_mass:
-                    #print('are you not running thiS?')
-                    most_mass = ship.mass
-            for gate in start_gates:
-                if gate.stargate.strength == start_gates[0].stargate.strength or gate.stargate.strength >= most_mass + (self.location - moveto):
-                    options.append(gate)
-                    #print('options =', options)
-            if start_gates[0].stargate.strength <= most_mass + (self.location - moveto):
-                for ship in self.ships:
-                    overgate = ship.mass + (self.location - moveto) - options[0].stargate.strength
-                    #print('thiS Shoul,d be running.')
-                    if overgate > 0:
-                        #print('THEN WHY ARE YOU NOT ERRORING|.|.|.')
-                        overgateP = overgate / options[0].stargate.strength
-                        if ship.armor <= (overgateP+overgate/1000)**1.3*512: #TODO IT
-                            options = []
-                            break
-            if len(options) > 0:
-                options.sort(key=lambda x: x.player.get_treaty(ship.player).buy_gate, reverse=True)
-                start = options[0]
-        #print('end_gates =', end_gates)
-        if len(end_gates) > 0:
-            end_gates.sort(key=lambda x: x.player.get_treaty(ship.player).buy_gate, reverse=True)
-            end = end_gates[0]
-        #print('end =', end)
-        if be_picky:
-            self.ships.sort(key=lambda x: x.mass, reverse=True)
-            if start and end:
-                self.ships.sort(key=lambda x: x.mass, reverse=True)
-                if self.ships[0].mass + (moveto-self.location) <= start.stargate.strength:
-                    return (True, None)
-            return (False, None)
-        return (start, end)
-        
-    """ find the stargates to use """
     def _stargate_find(self, move_to, no_damage=True):
         distance = move_to - self.location
-        gate_needed = max(self.ships, key=lambda x: x.total_mass) + distance
+        gate_needed = max(self.ships, key=lambda x: x['total_mass'])['total_mass'] + distance
+        print(gate_needed, distance)
         start_gates = []
         end_gates = []
+        sort_num = 0
         for fleet in multi_fleet.get(self.location):
             if fleet.stats().stargate.strength > 0:
-                cost = self.player.get_treaty(fleet.player).buy_gate:
-                if cost > 0:
-                    start_gates.append((min(0, gate_needed - fleet.stats().stargate.strength), cost, fleet))
-        for fleet in multi_fleet.get(self.location):
+                cost = self.player.get_treaty(fleet.player).buy_gate
+                if cost >= 0:
+                    start_gates.append((max(0, gate_needed - fleet.stats().stargate.strength), cost, sort_num, fleet))
+                    sort_num +=1
+        for fleet in multi_fleet.get(move_to):
             if fleet.stats().stargate.strength > 0:
-                cost = self.player.get_treaty(fleet.player).buy_gate:
-                if cost > 0:
-                    end_gates.append((cost, fleet))
+                cost = self.player.get_treaty(fleet.player).buy_gate
+                if cost >= 0:
+                    end_gates.append((cost, sort_num, fleet))
+                    sort_num +=1
+        print(start_gates, end_gates)
         if len(start_gates) == 0 or len(end_gates) == 0:
+            print('somethin is absalut won')
             return (None, None)
         start_gates.sort()
         end_gates.sort()
         if start_gates[0][0] > 0 and no_damage:
+            print('error 1')
             return (None, None)
         # Don't gate if a ship will definitely die
         for ship in self.ships:
-            if ship.armor <= start_gates[0][2].stargate.overgate(ship.total_mass, distance, survival_test=True):
+            if ship.armor <= start_gates[0][3].stats().stargate.overgate(ship['total_mass'], distance, survival_test=True):
+                print('error 2')
                 return (None, None)
-        return (start_gates[0][2], end_gates[0][1])
+        return (start_gates[0][3], end_gates[0][2])
 
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
@@ -539,10 +489,6 @@ class Fleet(Defaults):
             if self.location.reference.player == self.player:
                 return (self.location.reference.on_surface, sys.maxsize)
         return (None, 0)
-
-    """ Check if fleet can safely gate to waypoint """
-    def _stargate_check(self):
-        return False #TODO
 
     """ Calculates fuel usage for fleet """
     def _fuel_calc(self, speed, denials, distance):
