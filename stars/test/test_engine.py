@@ -57,8 +57,8 @@ class EngineTestCase(unittest.TestCase):
     def test_damage(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
         self.assertEqual(e.damage_calc(4, 100, 0, 100), 0)
-        self.assertEqual(e.damage_calc(8, 500, 0, 100), 5300)
-        self.assertEqual(e.damage_calc(10, 100, 1, 100), 79400)
+        self.assertEqual(e.damage_calc(8, 500, 0, 100), 20)
+        self.assertEqual(e.damage_calc(10, 100, 1, 100), 294)
 
     def test_siphon(self):
         e = engine.Engine(antimatter_siphon=123)
