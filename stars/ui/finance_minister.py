@@ -28,7 +28,6 @@ class FinanceMinister(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         if not self.player():
-            print('0 error no player"!')
             return
         values = ['finance_construction_percent', 'finance_mattrans_percent', 'finance_research_percent', 'finance_mattrans_use_surplus', 'finance_research_use_surplus']
         #for value in values:

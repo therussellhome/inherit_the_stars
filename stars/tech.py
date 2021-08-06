@@ -240,13 +240,13 @@ class Tech(Defaults):
         #Does built-in Kender cloaking or another cloaking category need to be included here?
         self._html_filter(html, self.scanner.normal, 'Scanner', 'Normal', '{0} KE/100ly')
         self._html_filter(html, self.scanner.penetrating, 'Scanner', 'Penetrating Range', '{0}ly')
-        self._html_filter(html, self.scanner.anti-cloak, 'Scanner', 'Anti-cloak', '{0}ly')
+        self._html_filter(html, self.scanner.anti_cloak, 'Scanner', 'Anti-cloak', '{0}ly')
         # Engine group
         for engine in self.engines:
-            self._html_filter(html, engine.kt_exponent, category, 'kT exponent', '{0}')
-            self._html_filter(html, engine.speed_divisor, category, 'Speed divisor', '{0}')
-            self._html_filter(html, engine.speed_exponent, category, 'Speed exponent', '{0}')
-            self._html_filter(html, engine.antimatter_siphon, category, 'Forages', '<i class="fa-free-code-camp">{0}/ly</i>')
+            self._html_filter(html, engine.kt_exponent, 'Engine', 'kT exponent', '{0}')
+            self._html_filter(html, engine.speed_divisor, 'Engine', 'Speed divisor', '{0}')
+            self._html_filter(html, engine.speed_exponent, 'Engine', 'Speed exponent', '{0}')
+            self._html_filter(html, engine.antimatter_siphon, 'Engine', 'Forages', '<i class="fa-free-code-camp">{0}/ly</i>')
         # Hulls & Mechanicals group
         self._html_filter(html, self.repair, 'Repair', 'Damage points', '{0}/y')
         self._html_filter(html, self.is_colonizer, 'Special', 'Colonizer')
@@ -256,7 +256,7 @@ class Tech(Defaults):
         self._html_filter(html, self.shipyard, 'Heavy Equipment', 'Shipyard capacity', '{0} kT/y')
         self._html_filter(html, self.mines_laid, 'Heavy Equipment', 'Mines laid', '{0}/y')
         self._html_filter(html, self.hyperdenial, 'Heavy Equipment', 'Hyper denial', '{0}ly')
-        self._html_filter(html, self.mining_rate, 'Heavy Equipment', 'Mining rate', '{0}/y')
+        self._html_filter(html, self.extraction_rate, 'Heavy Equipment', 'Mineral extraction rate', '{0}/y')
         self._html_filter(html, self.mineral_depletion_factor, 'Heavy Equipment', 'Mineral depletion', '{0}/kT mined')
         self._html_filter(html, self.mat_trans_energy, 'Heavy Equipment', 'Mat-trans energy', '{0}/kT')
         # Slots

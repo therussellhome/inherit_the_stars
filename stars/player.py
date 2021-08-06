@@ -189,7 +189,7 @@ class Player(Defaults):
     """ Store historical values - accumulates across the year """
     def add_historical(self, category, value):
         history = self.historical.get(category, [])
-        for i in range(self.race.start_date + len(history), int(self.date) + 1):
+        for i in range(self.race.start_date + len(history), int(self.date.split('.')[0]) + 1):
             history.append(0)
         history[-1] += value
         self.historical[category] = history

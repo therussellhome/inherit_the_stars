@@ -1,6 +1,7 @@
 import sys
 from random import randint
 from . import game_engine
+from . import hyperdenial
 from . import multi_fleet
 from . import scan
 from . import stars_math
