@@ -15,7 +15,7 @@
     },
     "mass": 200,
     "extraction_rate": 1.6,
-    "mineral_depletion_rate": 1.4,
+    "mineral_depletion_factor": 1.4,
     "slots_depot": -1,
     "slots_general": 0,
     "__class__": "Tech"
