@@ -799,9 +799,45 @@ class FleetCase(unittest.TestCase):
         self.assertNotEqual(f.player, p)
 
     def test_merge1(self):
-        f = fleet.Fleet() + ship.Ship()
-        p = f.player
-        #TODO
+        f1 = fleet.Fleet() + ship.Ship()
+        f2 = fleet.Fleet() + ship.Ship()
+        f1.merge()
+        self.assertEqual(len(f2.ships), 1)
+
+    def test_merge2(self):
+        f1 = fleet.Fleet() + ship.Ship()
+        f2 = fleet.Fleet() + ship.Ship()
+        f1.order.merge = True
+        f1.merge()
+        self.assertEqual(len(f2.ships), 1)
+
+    def test_merge3(self):
+        f1 = fleet.Fleet() + ship.Ship()
+        f2 = fleet.Fleet() + ship.Ship()
+        f1.location = location.Location(reference=f2)
+        f1.order.merge = True
+        f1.merge()
+        self.assertEqual(len(f2.ships), 1)
+
+    def test_merge4(self):
+        f1 = fleet.Fleet() + ship.Ship()
+        f2 = fleet.Fleet() + ship.Ship()
+        f2.player = reference.Reference(player.Player())
+        f1.order.location = location.Location(reference=f2)
+        f1.location = f1.order.location
+        f1.order.merge = True
+        f1.merge()
+        self.assertEqual(len(f2.ships), 1)
+
+    def test_merge5(self):
+        f1 = fleet.Fleet() + ship.Ship()
+        f2 = fleet.Fleet() + ship.Ship()
+        f2.player = f1.player
+        f1.order.location = location.Location(reference=f2)
+        f1.location = f1.order.location
+        f1.order.merge = True
+        f1.merge()
+        self.assertEqual(len(f2.ships), 2)
 
     def test_stargate_find1(self):
         multi_fleet.reset()

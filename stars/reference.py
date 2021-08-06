@@ -48,6 +48,10 @@ class Reference(game_engine.BaseClass):
         obj = object.__getattribute__(self, '__get_obj__')(name)
         obj.__setattr__(name, value)
 
+    """ Dereference the object """
+    def __invert__(self):
+        return object.__getattribute__(self, '__get_obj__')('~')
+
     """ Get/cache the object """
     def __get_obj__(self, name):
         cache = object.__getattribute__(self, '__cache__')

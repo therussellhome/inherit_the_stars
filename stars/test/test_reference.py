@@ -78,6 +78,12 @@ class ReferenceTestCase(unittest.TestCase):
         r = reference.Reference('_TestReference/get')
         self.assertEqual(r['abc'], 0)
 
+    def test_invert1(self):
+        game_engine.unregister()
+        t = _TestReference(ID='invert')
+        r = reference.Reference(t)
+        self.assertEqual(~r, t)
+
     def test_set1(self):
         game_engine.unregister()
         r = reference.Reference()

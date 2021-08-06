@@ -386,12 +386,11 @@ class Fleet(Defaults):
 
     """ Merges the fleet with the target fleet """
     def merge(self): # TODO Test
-        f = self.location.reference # TODO Test
-        if not f ^ 'Fleet' or f.player != self.player: # TODO Test
-            return # TODO Test
-        for ship in self.ships: # TODO Test
-            f += ship # TODO Test
-        self.player.remove_fleet(self) # TODO Test
+        f = self.location.reference
+        if not self.order.merge or not f ^ 'Fleet' or f != self.order.location.reference or f.player != self.player:
+            return
+        f = ~f + self.ships
+        self.player.remove_fleet(self)
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):
