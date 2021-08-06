@@ -67,7 +67,7 @@ class FinanceMinister(PlayerUI):
         queue = self.player().build_queue
         for i in range(len(queue)):
             item = queue[i]
-            self.finance_queue.append('<td rowspan="2">' + item.calc_type() + '</td><td rowspan="2">' + str(1 - item.cost.percent(item.origonal_cost)) + '</td>'
+            self.finance_queue.append('<td rowspan="2">' + item.to_html() + '</td><td rowspan="2">' + str(1 - item.cost.percent(item.spent + item.cost)) + '</td>'
                 + '<td rowspan="2"><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + str(i) + '\')"></i></td>')
             self.finance_queue.append('<td></td>')
             #TODO <td>' + item.planet.time_til_html(item.cost.to_html(), queue, i)[0] + '</td><td rowspan="2">' + item.planet.ID + '</td>  ' + item.planet.time_til_html(item.cost.to_html(), queue, i)[1] + '
