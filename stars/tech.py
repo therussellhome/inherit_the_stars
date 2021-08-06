@@ -7,9 +7,11 @@ from .cloak import Cloak
 from .cost import Cost
 from .defaults import Defaults, get_default
 from .hyperdenial import HyperDenial
+from .stargate import Stargate
+from .minerals import Minerals
 from .race import Race
 from .scanner import Scanner
-from .tech_level import TechLevel
+from .tech_level import TechLevel, TECH_FIELDS
 
 
 """ Default values (default, min, max)  """
@@ -36,6 +38,7 @@ __defaults = {
     'mines_laid': (0, 0, sys.maxsize),
     'fuel_generation': (0, 0, sys.maxsize),
     'hyperdenial': HyperDenial(),
+    'stargate': Stargate(),
     'is_colonizer': False,
     'is_trading_post': False,
     'is_piracy_cargo': False,
@@ -55,10 +58,6 @@ __defaults = {
 TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Other']
 
 
-""" Items that can be miniaturized """
-TECH_MINIATURIZATION = ['cost', 'mass']
-
-
 """ Represent a tech component """
 class Tech(Defaults):
     """ Register with game engine """
@@ -66,23 +65,16 @@ class Tech(Defaults):
         super().__init__(**kwargs)
         game_engine.register(self)
 
-    """ Reset by merging a list of tech items """
-    def init_from(self, tech, miniaturize_level=None):
-        global TECH_MINIATURIZATION
+    """ Add a tech to self using the current miniaturization_level """
+    def merge(self, other):
         for key in Tech.defaults:
             # Skip strings
             if isinstance(self[key], str):
-                continue
-            # Reset to default
-            self[key] = get_default(self, key)
-            for t in tech:
-                # Merge
-                if miniaturize_level and key in TECH_MINIATURIZATION:
-                    self[key] += t.miniaturize(miniaturize_level, key)
-                elif isinstance(self[key], list):
-                    self[key].extend(t[key])
-                else:
-                    self[key] += t[key]
+                pass
+            elif isinstance(self[key], list):
+                self[key].extend(other[key])
+            else:
+                self[key] += other[key]
 
     """ Get tech group """
     def tech_group(self):
@@ -115,24 +107,24 @@ class Tech(Defaults):
                     return False
         return True
 
-    """ Get the minituarized value """
-    def miniaturize(self, tech_level, field=None):
-        if field == 'cost':
-            return self.cost # TODO
-        else:
-            return self.mass # TODO
-
-    """ Get the cost to reminituarize """
-    def reminiaturize(self, current_level, new_level):
-        if new_level > current_level:
-            return self.cost * 0.1 #TODO
-        return Cost()
-
     """ Calculate the scrap value """
-    def scrap_value(self, race, tech_level):
-        c = self.miniaturize(tech_level, 'cost')
-        c.energy = 0
-        return c * (race.scrap_rate() / 100)
+    def scrap_value(self, race, miniaturization_level=None):
+        # Force scrap to be just minerals
+        m = Minerals() + self.cost * self.miniaturization(tech_level)
+        return m * (race.scrap_rate() / 100)
+
+    """ How much past the base is the miniaturization """
+    def miniaturization(self, miniaturization_level=None):
+        if not miniaturization_level:
+            return 1
+        base = self.level.total_levels()
+        levels_over = 0
+        if base == 0:
+            levels_over = miniaturization_level.total_levels()
+        else:
+            for f in TECH_FIELDS:
+                levels_over += (miniaturization_level[f] - self.level[f]) * self.level[f] / base
+        return 1 / (0.1 * levels_over ** 0.5 + 1)
 
     """ Build the overview table """
     def html_overview(self, player_race=Race(), player_level=TechLevel(), player_partial=TechLevel()):

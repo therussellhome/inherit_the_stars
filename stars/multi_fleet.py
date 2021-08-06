@@ -12,8 +12,8 @@ def get(location=None):
     global __fleets
     if not location:
         return __fleets.values()
-    elif location in __fleets:
-        return __fleets[location].fleets
+    elif location.root_location in __fleets:
+        return __fleets[location.root_location].fleets
     return []
 
 """ Add fleet a fleet """

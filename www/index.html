@@ -468,8 +468,8 @@ void main() {
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
         <tr>
-            <td>starting mines</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_mines" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
+            <td>starting mineral extractors</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_mineral_extractors" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mineral_extractors')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting factories</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' factories')"/></td>
@@ -771,22 +771,10 @@ void main() {
         <td class="hfill" style="font-size: 200%">Planetary Ministers</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <table class="hfill"><tr><td>
-        <select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"></select>
-    </td></tr></table>
-    <table id="planetary_planets" class="hfill">
-    </table>    
-</div>
-
-
-<div class="screen hide onload" id="screen_planetary_ministers" style="width: 600px" onload="post('planetary_minister')">
-    <table class="topbar hfill"><tr>
-        <td><img title="Planetary Ministers" src="/ministers.png"/></td>
-        <td class="hfill" style="font-size: 200%">Planetary Ministers</td> 
-        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
-    </tr></table>
-    <table class="hfill"><tr><td>
-        new colony minister<select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"/>
+    <table class="hfill"><tr><td style="width: 12em">
+        new colony minister
+    </td><td>
+        <select id="planetary_new_col_minister" style="width: 100%" onchange="post('planetary_minister')"/>
     </td></tr></table>
     <table id="planetary_planets" class="hfill">
     </table>    
@@ -818,7 +806,9 @@ void main() {
         </tr><tr>
             <td colspan="4"><input id="planetary_allow_baryogenesis" type="checkbox" onchange="post('planetary_minister')" style="width: 1em"/> allow baryogenesis</td>
         </tr><tr>
-            <td colspan="4">color<input id="planetary_color" onchange="post('planetary_minister')"/></td>
+            <td colspan="4" class="onload" onload="planetary_color_picker(this)"></td>
+        </tr><tr hidden="false">
+            <td colspan="4"><input disabled="true" id="planetary_color" onchange="post('planetary_minister')"/></td>
         </tr>
     </table>    
 </div>
