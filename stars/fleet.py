@@ -15,7 +15,6 @@ from .order import Order
 from .location import Location
 from .reference import Reference
 from .ship import Ship
-from random import random
 
 
 """ Offset of ships from fleet center """
