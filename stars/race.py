@@ -5,7 +5,7 @@ from .defaults import Defaults
 """ Default values [default, min, max]  """
 __defaults = {
     'ID': '@UUID',
-    'icon': '<i class="fas fa-pastafarianism">',
+    'icon': '<i style="color: #FFFFFF; padding-right: 0" class="fas fa-pastafarianism">',
     'start_date': (3000, 0, sys.maxsize),
     'primary_race_trait': 'Melconians',
     'lrt_Trader': False,
