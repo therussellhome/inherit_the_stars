@@ -245,6 +245,8 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertEqual(len(t), 2)
 
     def test_load3(self):
+        dir_name = game_engine.user_file('test/_empty') / 'test' / '_empty'
+        dir_name.mkdir(parents=True, exist_ok=True)
         game_engine.unregister()
         # Testing list has to be done after save
         t = game_engine.load('test', '_empty')
