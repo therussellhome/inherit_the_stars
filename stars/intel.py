@@ -18,7 +18,7 @@ class Intel(Defaults):
             # Special handling for locations to remove relative and reduce memory size
             if key == 'location':
                 self[key] = kwargs[key].xyz
-                self[location_root] = str(kwargs[key].root_location.xyz)
+                self['location_root'] = str(kwargs[key].root_location.xyz)
             else:
                 self[key] = copy.copy(kwargs[key])
 

@@ -10,18 +10,19 @@ const TERAMETER = 0.0001057;
 // -- these are hidden unless the system is selected
 // intersteller objects are added directly to the scene
 
-var scene, renderer, camera // Rendering variables
-var selected_position, camera_lookat, camera_flyto // Camera manipulation variables
-var top_level, in_system // Selection groups of points
-var details, location_roots, selection_ids // Data for creating in_system when selection changes
-var system_points, wormhole_points, astroid_points, deep_space_points // References for changing colors
-var selected_id, capture_selected // Data for interaction with other windows
+var scene, renderer, camera; // Rendering variables
+var selected_position, camera_lookat, camera_flyto; // Camera manipulation variables
+var top_level, in_system; // Selection groups of points
+var details, location_roots, selection_ids; // Data for creating in_system when selection changes
+var system_points, wormhole_points, asteroid_points, deep_space_points; // References for changing colors
+var selected_id, capture_selected; // Data for interaction with other windows
 
 init();
 
 function init() {
     // define global vars
     top_level = new THREE.Group();
+    top_level.name = 'top level';
     location_roots = [];
     var div = document.getElementById('play_mode');
     // create the scene and renderer
@@ -54,19 +55,73 @@ function onSubmit() {
                 // load materials
                 details = json_map['render_stars']['details'];
                 // colors
-                var deep_space_color = new THREE.Color(json_map['render_stars']['deep_space_color'])
-                var systems_color = new THREE.Color(json_map['render_stars']['systems_color'])
-                var wormholes_color = new THREE.Color(json_map['render_stars']['wormholes_color'])
-                var asteroids_color = new THREE.Color(json_map['render_stars']['asteroids_color'])
+                var deep_space_color = new THREE.Color(json_map['render_stars']['deep_space_color']);
+                var systems_color = new THREE.Color(json_map['render_stars']['systems_color']);
+                var wormholes_color = new THREE.Color(json_map['render_stars']['wormholes_color']);
+                var asteroids_color = new THREE.Color(json_map['render_stars']['asteroids_color']);
                 // Add systems, deep space ships, wormholes, and asteroids
                 system_points = add_top_level(json_map['render_stars'], 'systems', systems_color);
                 deep_space_points = add_top_level(json_map['render_stars'], 'deep_space', deep_space_color);
                 wormhole_points = add_top_level(json_map['render_stars'], 'wormholes', wormholes_color);
                 asteroid_points = add_top_level(json_map['render_stars'], 'asteroids', asteroids_color);
                 // Zoom to home world
-                scene.add(top_level)
-                console.log('system points:', system_points, 'deep_space points:', deep_space_points, 'wormhole points:', wormhole_points, 'asteroid points:', asteroid_points);
-                select_object(top_level, 0, true); // TODO Replace with with the home system's sun
+                /*
+                var geometry = new THREE.BufferGeometry();
+                var positions = new Float32Array( 21 * 3 );
+                var positionss = {}
+                for(var i = 0; i < 21; i++) {
+                    positionss[ i * 3 ] = (i - 10) * 0.1 * TERAMETER;
+                    positions[ i * 3 ] = (i - 10) * 0.1 * TERAMETER;
+                    positions[ i * 3 + 1 ] = 0;
+                    positions[ i * 3 + 2 ] = 0;
+                }
+                console.log('positions:', positions, 'ought to be:', positionss);
+                positions.name = 'blue positions';
+                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+                var material = new THREE.PointsMaterial( {
+            	    color: new THREE.Color( 0, 0, 1 ),
+                    size: 1,
+                    sizeAttenuation: false
+                } );
+                var bule_points = new THREE.Points( geometry, material );
+                bule_points.name = 'blue test';
+                top_level.add(bule_points);
+                var geometry = new THREE.BufferGeometry();
+                var positions = new Float32Array( 21 * 3 );
+                var positionss = {}
+                for(var i = 0; i < 21; i++) {
+                    positionss[ i * 3 + 1 ] = ((i - 10) * 0.1 + 1/16) * TERAMETER;
+                    positions[ i * 3 ] = 0;
+                    positions[ i * 3 + 1 ] = ((i - 10) * 0.1 + 1/16) * TERAMETER;
+                    positions[ i * 3 + 2 ] = 0;
+                }
+                console.log('positions:', positions, 'ought to be:', positionss);
+                positions.name = 'red positions';
+                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+                var material = new THREE.PointsMaterial( {
+            	    color: new THREE.Color( 1, 0, 0 ),
+                    size: 1,
+                    sizeAttenuation: false
+                } );
+                var red_points = new THREE.Points( geometry, material );
+                red_points.name = 'red test';
+                top_level.add(red_points);//*/
+                var geometry = new THREE.BufferGeometry();
+                /*var positions = new Float32Array( 0, 0, TERAMETER );
+                positions.name = 'in_system positions';
+                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+                var material = new THREE.PointsMaterial( {
+                    color: new THREE.Color( 0, 1, 0 ),
+                    size: 1,
+                    sizeAttenuation: false
+                } );//*/
+                var material = new THREE.PointsMaterial();                
+                var in_system = new THREE.Points( geometry, material );
+                //in_system.name = 'in_system start';
+                top_level.add(in_system);
+                scene.add(top_level);
+                console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
+                select_object(top_level, 0, true, 0); // TODO Replace with with the home system's sun
                 console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
@@ -81,12 +136,16 @@ function add_top_level(render_stars, name, color) {
     var positions = new Float32Array( group.length * 3 );
     var ids = new Int32Array( group.length );
     for(var i = 0; i < group.length; i++) {
-        ids[i] = location_roots.push(group[i].location_root) - 1;
+        ids[i] = location_roots.push(group[i].location[0].toString() + ', ' + group[i].location[1].toString() + ', ' + group[i].location[2].toString()) -1;
         //selection_ids.push(group[i].ID);
         positions[ i * 3 ] = group[i].location[0];
         positions[ i * 3 + 1 ] = group[i].location[1];
         positions[ i * 3 + 2 ] = group[i].location[2];
     }
+    console.log('positions:', positions);
+    console.log(render_stars[name]);
+    ids.name = name.toString() + ' ids';
+    positions.name = name.toString() + ' positions';
     geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
     geometry.setAttribute( 'selection_id', new THREE.BufferAttribute( ids, 1 ) );
     var material = new THREE.PointsMaterial( {
@@ -103,7 +162,7 @@ function add_top_level(render_stars, name, color) {
 // Zoom
 function onWheel(event) {
     event.preventDefault();
-    var pos =  new THREE.Vector3( selected_position[0], selected_position[1], selected_position[2] )
+    var pos =  new THREE.Vector3( selected_position.x, selected_position.y, selected_position.z );
     var offset = camera_flyto.clone().sub(pos);
     var distance = camera_flyto.distanceTo(pos);
     // zoom out
@@ -119,7 +178,7 @@ function onWheel(event) {
 
 // Key controls
 function onKeyPress(event) {
-    var pos = selected_position.clone().sub(camera.position)
+    var pos = selected_position.clone().sub(camera.position);
     console.log('key:', event.keyCode, 'camera(', 'up:', camera.up, 'position:', camera.position, ') selected_position:', selected_position, 'pos:', pos);//, camera);
     var rotateDirection;
     // up
@@ -144,7 +203,7 @@ function onKeyPress(event) {
     }
     // reset
     else if(event.key == "r") {
-        select_object(true, true, true);
+        select_object(true, true, true, 0);
     }
     window.requestAnimationFrame(render);
 }
@@ -190,7 +249,7 @@ function onClick(event) {
     raycaster.near = 0;
     raycaster.far = 10;
     var intersects = raycaster.intersectObject( in_system );
-    console.log('number of intersects:', intersects.length);
+    console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
         select_object(intersects[0].object, intersects[0].index, true, );
@@ -209,32 +268,36 @@ function onClick(event) {
 }
 
 // Refocus on the clicked object
-function select_object(obj, index=true, flyto=true) {
+function select_object(obj, index=true, flyto=true, top_level_index=true) {
+    console.log('selecting object:', obj)
+    var intersected = obj;
     if(index !== true){
-        var intersected = obj;
-        var intersect = index;
-        selected_position = new THREE.Vector3( obj.geometry.attributes.position.array[ index * 3 ], obj.geometry.attributes.position.array[ index * 3 + 1 ], obj.geometry.attributes.position.array[ index * 3 + 2 ] )
+        if(top_level_index !== true) {
+            var intersected = obj.children[top_level_index];
+            }
+            console.log(intersected);
+        selected_position = new THREE.Vector3( intersected.geometry.attributes.position.array[ index * 3 ], intersected.geometry.attributes.position.array[ index * 3 + 1 ], intersected.geometry.attributes.position.array[ index * 3 + 2 ] );
     }
-    get_system();
+    get_system(intersected, index);
     if(flyto && intersected) {
-        var pos = selected_position
+        var pos = selected_position;
         var z_offset = TERAMETER;
         if(camera.position.z < selected_position.z) {
             z_offset = - TERAMETER;
         }
         camera_flyto.set(selected_position.x, selected_position.y, selected_position.z + z_offset);
-        camera.up = new THREE.Vector3(0, 1, 0)
+        camera.up = new THREE.Vector3(0, 1, 0);
     }
 }
 
 // Gets all the objects in a system or at a point
-function get_system() {
-    /* if( is_in_system !== true && system_name === "The "+systems[system_intersect].name.replaceAll(/\'.*//*g, "")+" system" ) {
+function get_system(intersected, index) {
+    /* if( is_in_system !== true && system_name === "The "+systems[[str(i.location[0]) + ', ' + str(i.location[1]) + ', ' + str(i.location[2])] = []].name.replaceAll(/\'.*//*g, "")+" system" ) {
         return
     }
     //console.log('system_intersect: ', system_intersect);
     //system_name = "The "+systems[system_intersect].name.replaceAll(/\'.*//*g, "")+" system";
-    console.log('system_name:', system_name); */
+    console.log('system_name:', system_name); 
     var geometry = new THREE.BufferGeometry();
     var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
     var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
@@ -250,7 +313,7 @@ function get_system() {
     colors[0] = color.r;
     colors[1] = color.g;
     colors[2] = color.b;
-    /*/// Make dummy planets
+    /*//*/ Make dummy planets
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
     var planet_colors = ["#990000", "#009900", "#000099", "#999999"];
     var positions = new Float32Array( (planet_colors.length + 1) * 3 );
@@ -278,10 +341,17 @@ function get_system() {
     console.log('colors:', colors);
     /**/
     var inner_system = new THREE.Group();
-    var system_data = details[str(selected_position.x)+str(selected_position.y)+str(selected_position.z)];
+    console.log('get_system(intersected):', intersected)
+    if(intersected !== true){
+        var id = intersected.geometry.attributes.selection_id.array[index];
+        selected_id = location_roots[id];
+    }
+    console.log(selected_id)
+    console.log(details);
+    var system_data = details[selected_id.toString()];
     for(var i = 0; i < system_data.length; i++) {
         var positions = new Float32Array( 1 * 3 );
-        positions[0] = system_date[i].location[0];
+        positions[0] = system_data[i].location[0];
         positions[1] = system_data[i].location[1];
         positions[2] = system_data[i].location[2];
         geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
@@ -333,7 +403,7 @@ function onWindowResize() {
 
 function render() {
     var timer = false;
-    var pos =  new THREE.Vector3( selected_position[0], selected_position[1], selected_position[2] )
+    var pos =  new THREE.Vector3( selected_position.x, selected_position.y, selected_position.z )
     if(!camera_lookat.equals(pos)) {
         var camera_distance = camera.position.distanceTo(pos);
         // distance adjusted lookat

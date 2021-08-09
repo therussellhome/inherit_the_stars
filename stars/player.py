@@ -21,6 +21,7 @@ from .facility import Facility
 from .ship_design import ShipDesign
 from .cost import Cost
 from .order import Order
+from .location import Location
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -107,9 +108,12 @@ class Player(Defaults):
         '''Test line
         if len(self.fleets) < 3:
             fleet_3 = Fleet(
+                location = Location(0.00001057, 0, 0),
                 name = 'Fleet 3', 
                 ships = [
                     Ship(
+                        location = Location(0.00001057, 0, 0.00001057),
+                        race = self.race,
                         ID = 'Test Ship3', 
                         fuel = 400, 
                         fuel_max = 400, 
@@ -121,25 +125,39 @@ class Player(Defaults):
                             cargo_max = 1000
                         ))])
             self.add_fleet(fleet_3)
+            self.add_intel(fleet_3.ships[0], **(fleet_3.ships[0].scan_report()))#' ''
+            #index = 1
+            system = game_engine.get('System/')
+            #if index == 1:
+                #index = 0
+                #system = s
+            print('player file printing system:', system)
+            fleet_location = Location(0.0001057, 0.00001057, 0)
             self.create_fleet(
+                location = fleet_location,
                 name = 'Fleet 1', 
                 ships = [
                     Ship(
-                        ID = 'Test Ship1', 
-                        fuel = 100, 
-                        fuel_max = 400, 
+                        location = Location(0.0001057, 0.00001057, 0.00001057),
+                        race = self.race,
+                        ID = 'Test Ship1',
+                        fuel = 100,
+                        fuel_max = 400,
                         cargo = Cargo(
-                            people = 100, 
-                            titanium = 900, 
+                            people = 100,
+                            titanium = 900,
                             cargo_max = 1000
                         )), 
                     Ship(
-                        ID = 'Test Ship2', 
-                        fuel = 100, 
-                        fuel_max = 400, 
+                        location = Location(0.0001057, 0.00001057, 0.0001057),
+                        race = self.race,
+                        #location = Location(0, 0.000001057, 0, reference = fleet_location),
+                        ID = 'Test Ship2',
+                        fuel = 100,
+                        fuel_max = 400,
                         cargo = Cargo(
-                            people = 100, 
-                            titanium = 100, 
+                            people = 100,
+                            titanium = 100,
                             cargo_max = 1000
                         ))],
                 orders = [
@@ -152,7 +170,10 @@ class Player(Defaults):
                         load_people = 200,
                         load_ti = 200,
                         merge = True
-                    )])#'''
+                    )])
+            self.add_intel(self.fleets[-1].ships[0], **(self.fleets[-1].ships[0].scan_report()))
+            self.add_intel(self.fleets[-1].ships[1], **(self.fleets[-1].ships[1].scan_report()))
+            #'''
 
     """ Player filename """
     def filename(self):
@@ -190,6 +211,7 @@ class Player(Defaults):
 
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
+        return self.fleets[-1]#test code for rendering in_system
     
     def add_fleet(self, fleet):
         self.fleets.append(fleet)
