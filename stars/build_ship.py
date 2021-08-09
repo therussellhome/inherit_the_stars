@@ -22,13 +22,13 @@ class BuildShip(BuildQueue):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'ship' not in kwargs:
-            ship = Ship(location=Location(reference = self.planet), player=Reference(player), in_queue=True)
+            ship = Ship(location=Location(reference = self.planet), race=Reference(self.planet.player.race), in_queue=True)
             self.ship = Reference(ship)
-            self.planet.player.add_fleet(location=Location(reference = self.planet), ships=[ship])
-            self.ship_design.compute_stats(self.planet.player.tech_level)
+            self.planet.player.create_fleet(location=Location(reference = self.planet), ships=[ship])
+            self.ship_design.update(self.planet.player.tech_level)
             self.cost = self.ship_design.cost
             self.component = self.ship_design.hull
-            self.in_progress = self.component.miniaturize(self.planet.player.tech_level, 'cost')
+            self.in_progress = self.component.cost * self.component.miniaturization(self.planet.player.tech_level)
         elif 'cost' not in kwargs:
             self.cost = self.ship.hull.reminiaturize(self.ship.level, self.player.planet.tech_level)
             for (tech, cnt) in self.ship.components.items():
