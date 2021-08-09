@@ -406,26 +406,8 @@ function planetary_color_picker(element) {
     pickerFixed.openHandler();
 }
 
-
-function race_color_picker(element) {
-    parentFixed = element,
-    pickerFixed = new Picker({
-        parent: parentFixed,
-        popup: false,
-        alpha: false,
-//        editor: false,
-        onChange: function(color) {
-            document.getElementById('race_editor_icon_color').value = color.rgbaString;
-            post('race_editor')
-            get_race_color()
-            //parentFixed.style.backgroundColor = color.rgbaString;
-        },
-    });
-    pickerFixed.openHandler();
-}
-
-function get_race_color() {
-//    console.log('called ...........................................');
+// Update the color of race icons
+function update_race_icon_color() {
     var all = document.getElementsByClassName('race_icon');
     for (var i = 0; i < all.length; i++) {
         all[i].style.color = document.getElementById('race_editor_icon_color').value;
