@@ -45,7 +45,7 @@ class TechLevel(Defaults):
     def cost_for_next_level(self, field, race, increase=1):
         cost = 0
         for i in range(self[field] + 1, self[field] + 1 + increase):
-            cost += race['research_mod_' + field] * (10 + i ** 3)
+            cost += race['research_modifier_' + field] * (10 + i ** 3)
         return cost
 
     """

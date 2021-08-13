@@ -23,27 +23,27 @@ __defaults = {
     'lrt_Forager': False,
     'lrt_2ndSight': False,
     'lrt_JuryRigged': False,
-    'research_mod_energy': (500, 250, 1000),
-    'research_mod_weapons': (500, 250, 1000),
-    'research_mod_propulsion': (500, 250, 1000),
-    'research_mod_construction': (500, 250, 1000),
-    'research_mod_electronics': (500, 250, 1000),
-    'research_mod_biotechnology': (500, 250, 1000),
-    'start_tech_energy': (0, 0, 25),
-    'start_tech_weapons': (0, 0, 25),
-    'start_tech_propulsion': (0, 0, 25),
-    'start_tech_construction': (0, 0, 25),
-    'start_tech_electronics': (0, 0, 25),
-    'start_tech_biotechnology': (0, 0, 25),
-    'hab_grav': (0, 0, 100),
-    'hab_grav_stop': (100, 0, 100),
-    'hab_grav_immune': False,
-    'hab_temp': (0, 0, 100),
-    'hab_temp_stop': (100, 0, 100),
-    'hab_temp_immune': False,
-    'hab_rad': (0, 0, 100),
-    'hab_rad_stop': (100, 0, 100),
-    'hab_rad_immune': False,
+    'research_modifier_energy': (500, 250, 1000),
+    'research_modifier_weapons': (500, 250, 1000),
+    'research_modifier_propulsion': (500, 250, 1000),
+    'research_modifier_construction': (500, 250, 1000),
+    'research_modifier_electronics': (500, 250, 1000),
+    'research_modifier_biotechnology': (500, 250, 1000),
+    'starting_tech_energy': (0, 0, 25),
+    'starting_tech_weapons': (0, 0, 25),
+    'starting_tech_propulsion': (0, 0, 25),
+    'starting_tech_construction': (0, 0, 25),
+    'starting_tech_electronics': (0, 0, 25),
+    'starting_tech_biotechnology': (0, 0, 25),
+    'hab_gravity': (0, 0, 100),
+    'hab_gravity_stop': (100, 0, 100),
+    'hab_gravity_immune': False,
+    'hab_temperature': (0, 0, 100),
+    'hab_temperature_stop': (100, 0, 100),
+    'hab_temperature_immune': False,
+    'hab_radiation': (0, 0, 100),
+    'hab_radiation_stop': (100, 0, 100),
+    'hab_radiation_immune': False,
     'growth_rate': (15, 5, 20),
     'body_mass': (80, 10, 160),
     'starting_colonists': (250000, 175000, 350000),
@@ -59,9 +59,9 @@ __defaults = {
     'starting_power_plants': (10, 5, 20),
     'starting_defenses': (10, 5, 20),
     'starting_energy': (50000, 25000, 100000),
-    'starting_li': (500, 250, 1000),
-    'starting_si': (500, 250, 1000),
-    'starting_ti': (500, 250, 1000),
+    'starting_lithium': (500, 250, 1000),
+    'starting_silicon': (500, 250, 1000),
+    'starting_titanium': (500, 250, 1000),
     'message_file': '',
 }
 
@@ -110,9 +110,9 @@ start_cost = {
     'power_plants': 6,
     'defenses': 2,
     'energy': 3/1000,
-    'ti': .2,
-    'li': .2,
-    'si': .2,
+    'titanium': .2,
+    'lithium': .2,
+    'silicon': .2,
 }
 
 
@@ -202,29 +202,29 @@ class Race(Defaults):
         # Cost of body mass
         p -= (160 - self.body_mass) * hab_cost['body_mass_cost']
         immunities = 0
-        if self.hab_grav_immune:
+        if self.hab_gravity_immune:
             immunities += 1
             p -= hab_cost['grav_immunity_cost']
         else:
         # Cost of gravity range
-            grav_range = self.hab_grav_stop - self.hab_grav + 1
-            grav_dis = abs((self.hab_grav + self.hab_grav_stop) / 2 - 50)
+            grav_range = self.hab_gravity_stop - self.hab_gravity + 1
+            grav_dis = abs((self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
             p -= grav_range * hab_cost['range_cost_per_click'] - grav_dis * hab_cost['grav_dis_slope']
-        if self.hab_temp_immune:
+        if self.hab_temperature_immune:
             immunities += 1
             p -= hab_cost['temp_immunity_cost']
         else:
         # Cost of temperature range
-            temp_range = self.hab_temp_stop - self.hab_temp + 1
-            temp_dis = abs((self.hab_temp + self.hab_temp_stop) / 2 - 50)
+            temp_range = self.hab_temperature_stop - self.hab_temperature + 1
+            temp_dis = abs((self.hab_temperature + self.hab_temperature_stop) / 2 - 50)
             p -= temp_range * hab_cost['range_cost_per_click'] - temp_dis * hab_cost['temp_dis_slope']
-        if self.hab_rad_immune:
+        if self.hab_radiation_immune:
             immunities += 1
             p -= hab_cost['rad_immunity_cost']
         else:
         # Cost of radiation range
-            rad_range = self.hab_rad_stop - self.hab_rad + 1
-            rad_dis = abs((self.hab_rad + self.hab_rad_stop) / 2 - 50)
+            rad_range = self.hab_radiation_stop - self.hab_radiation + 1
+            rad_dis = abs((self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
             p -= rad_range * hab_cost['range_cost_per_click'] - rad_dis * hab_cost['rad_dis_slope']
         p -= (immunities ** 2) * hab_cost['immunity_fee'] + immunities * hab_cost['immunity_fee'] / 10
         return p
@@ -250,13 +250,13 @@ class Race(Defaults):
         p = 0
         tech_feilds = ['energy', 'weapons', 'propulsion', 'construction', 'electronics', 'biotechnology']
         for f in tech_feilds:
-            if self['start_tech_' + f] > 5:
-                p -= 2 ** (self['start_tech_' + f]/2 + 6)
+            if self['starting_tech_' + f] > 5:
+                p -= 2 ** (self['starting_tech_' + f]/2 + 6)
                 print('1')
-            elif self['start_tech_' + f] > 0:
-                p -= 2 ** (self['start_tech_' + f] + 3)
+            elif self['starting_tech_' + f] > 0:
+                p -= 2 ** (self['starting_tech_' + f] + 3)
                 print('2')
-            p -= log((self['research_mod_' + f]/1000)**-1, 2)*econ_cost['cost_of_standard_research_mod']
+            p -= log((self['research_modifier_' + f]/1000)**-1, 2)*econ_cost['cost_of_standard_research_mod']
         return p
     
     def _calc_points_start(self):

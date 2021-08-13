@@ -74,51 +74,51 @@ class RaceTestCase(unittest.TestCase):
     
     
     def test_calc_points_research00(self):
-        r = race.Race(research_mod_energy = 1000)
+        r = race.Race(research_modifier_energy = 1000)
         self.assertEqual(r._calc_points_research(), -1250)
     
     def test_calc_points_research01(self):
-        r = race.Race(research_mod_weapons = 750)
+        r = race.Race(research_modifier_weapons = 750)
         self.assertEqual(round(r._calc_points_research(), 2), -1353.76)
     
     def test_calc_points_research02(self):
-        r = race.Race(research_mod_propulsion = 250)
+        r = race.Race(research_modifier_propulsion = 250)
         self.assertEqual(round(r._calc_points_research(), 2), -1750)
     
     def test_calc_points_research03(self):
-        r = race.Race(research_mod_construction = 550)
+        r = race.Race(research_modifier_construction = 550)
         self.assertEqual(round(r._calc_points_research(), 3), -1465.624)
     
     def test_calc_points_research04(self):
-        r = race.Race(research_mod_electronics = 950)
+        r = race.Race(research_modifier_electronics = 950)
         self.assertEqual(round(r._calc_points_research(), 2), -1268.5)
     
     def test_calc_points_research05(self):
-        r = race.Race(research_mod_biotechnology = 450)
+        r = race.Race(research_modifier_biotechnology = 450)
         self.assertEqual(round(r._calc_points_research(), 2), -1538)
     
     def test_calc_points_research06(self):
-        r = race.Race(start_tech_energy = 2)
+        r = race.Race(starting_tech_energy = 2)
         self.assertEqual(r._calc_points_research(), -1532)
     
     def test_calc_points_research07(self):
-        r = race.Race(start_tech_weapons = 4)
+        r = race.Race(starting_tech_weapons = 4)
         self.assertEqual(r._calc_points_research(), -1628)
     
     def test_calc_points_research08(self):
-        r = race.Race(start_tech_propulsion = 1)
+        r = race.Race(starting_tech_propulsion = 1)
         self.assertEqual(r._calc_points_research(), -1516)
     
     def test_calc_points_research09(self):
-        r = race.Race(start_tech_construction = 3)
+        r = race.Race(starting_tech_construction = 3)
         self.assertEqual(r._calc_points_research(), -1564)
     
     def test_calc_points_research10(self):
-        r = race.Race(start_tech_electronics = 11)
+        r = race.Race(starting_tech_electronics = 11)
         self.assertEqual(round(r._calc_points_research(), 2), -4396.31)
     
     def test_calc_points_research11(self):
-        r = race.Race(start_tech_biotechnology = 8)
+        r = race.Race(starting_tech_biotechnology = 8)
         self.assertEqual(r._calc_points_research(), -2524)
     
     
@@ -176,7 +176,7 @@ class RaceTestCase(unittest.TestCase):
         self.assertEqual(r._calc_points_start(), -960)
         
     def test_calc_points_start06(self):
-        r = race.Race(starting_li = 250)
+        r = race.Race(starting_lithium = 250)
         self.assertEqual(r._calc_points_start(), -760)
     
 

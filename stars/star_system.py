@@ -39,7 +39,7 @@ class StarSystem(Defaults):
             num_planets = round(random() * 5)
         home = -1
         if player:
-            planet_args['radiation'] = (player.race.hab_rad_stop + player.race.hab_rad) / 2
+            planet_args['radiation'] = (player.race.hab_radiation_stop + player.race.hab_radiation) / 2
             if player.race.primary_race_trait == 'Pa\'anuri':
                 num_planets = max(1, num_planets)
                 home = 0
@@ -56,8 +56,8 @@ class StarSystem(Defaults):
             else:
                 self.planets.append(Planet(**planet_args, 
                     homeworld=True, 
-                    gravity=(player.race.hab_grav_stop + player.race.hab_grav) / 2,
-                    temperature=(player.race.hab_temp_stop + player.race.hab_temp) / 2))
+                    gravity=(player.race.hab_gravity_stop + player.race.hab_gravity) / 2,
+                    temperature=(player.race.hab_temperature_stop + player.race.hab_temperature) / 2))
                 self.planets[home].colonize(player)
                 self.planets[home].on_surface.people = player.race.starting_colonists
 
