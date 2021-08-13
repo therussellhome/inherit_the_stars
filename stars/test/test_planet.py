@@ -71,121 +71,121 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_habitability1(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), 100)
 
     def test_habitability2(self):
         p = planet.Planet(gravity=0, temperature=50, radiation=50)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), 41)
 
     def test_habitability3(self):
         p = planet.Planet(gravity=0, temperature=-15, radiation=50)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -9)
 
     def test_habitability4(self):
         p = planet.Planet(gravity=4, temperature=114, radiation=12)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -8)
 
     def test_habitability5(self):
         p = planet.Planet(gravity=100, temperature=-12, radiation=0)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=110, hab_temperature_stop=114,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=110, hab_temp_stop=114,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -59)
 
     def test_habitability6(self):
         p = planet.Planet(gravity=0, temperature=115, radiation=100)
-        r = race.Race(hab_gravity=99, hab_gravity_stop=100,
-            hab_temperature=-1, hab_temperature_stop=-15,
-            hab_radiation=0, hab_radiation_stop=12)
+        r = race.Race(hab_grav=99, hab_grav_stop=100,
+            hab_temp=-1, hab_temp_stop=-15,
+            hab_rad=0, hab_rad_stop=12)
         self.assertEqual(p.habitability(r), -100)
 
     def test_habitability7(self):
         p = planet.Planet(gravity=99, temperature=1, radiation=6)
-        r = race.Race(hab_gravity=98, hab_gravity_stop=100,
-            hab_temperature=-1, hab_temperature_stop=-15,
-            hab_radiation=0, hab_radiation_stop=12)
+        r = race.Race(hab_grav=98, hab_grav_stop=100,
+            hab_temp=-1, hab_temp_stop=-15,
+            hab_rad=0, hab_rad_stop=12)
         self.assertEqual(p.habitability(r), -59)
 
     def test_habitability8(self):
         p = planet.Planet(gravity=30, temperature=30, radiation=30)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_gravity_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), 60)
 
     def test_habitability9(self):
         p = planet.Planet(gravity=30, temperature=90, radiation=60)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), 41)
 
     def test_habitability10(self):
         p = planet.Planet(gravity=18, temperature=1, radiation=40)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), 23)
 
     def test_habitability11(self):
         p = planet.Planet(gravity=300, temperature=2000, radiation='me')
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=100,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=100,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -86)
 
     def test_habitability12(self):
         p = planet.Planet(gravity=150, temperature=304, radiation=30)
-        r = race.Race(hab_gravity=-900, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=-8000,
-            hab_radiation=0, hab_radiation_stop=100)
+        r = race.Race(hab_grav=-900, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=-8000,
+            hab_rad=0, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -86)
 
     def test_habitability13(self):
         p = planet.Planet(gravity=-30, temperature=30, radiation=-0)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=10,
-            hab_temperature=0, hab_temperature_stop=00,
-            hab_radiation=0, hab_radiation_stop=360)
+        r = race.Race(hab_grav=0, hab_grav_stop=10,
+            hab_temp=0, hab_temp_stop=00,
+            hab_rad=0, hab_rad_stop=360)
         self.assertEqual(p.habitability(r), -86)
 
     def test_habitability14(self):
         p = planet.Planet(gravity=950, temperature=3300, radiation=-430)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=1010,
-            hab_radiation='break', hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=1010,
+            hab_rad='break', hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -100)
 
     def test_habitability15(self):
         p = planet.Planet(gravity=70, temperature=33, radiation=-430)
-        r = race.Race(hab_gravity=0, hab_gravity_stop=100,
-            hab_temperature=0, hab_temperature_stop=68,
-            hab_radiation=90, hab_radiation_stop=100)
+        r = race.Race(hab_grav=0, hab_grav_stop=100,
+            hab_temp=0, hab_temp_stop=68,
+            hab_rad=90, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -59)
 
     def test_habitability16(self):
         p = planet.Planet(gravity=950, temperature=60, radiation=70)
-        r = race.Race(hab_gravity=70, hab_gravity_stop=100,
-            hab_temperature=70, hab_temperature_stop=100,
-            hab_radiation=70, hab_radiation_stop=100)
+        r = race.Race(hab_gra=70, hab_grav_stop=100,
+            hab_temp=70, hab_temp_stop=100,
+            hab_rad=70, hab_rad_stop=100)
         self.assertEqual(p.habitability(r), -75)
 
     def test_habitability17(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
-        r = race.Race(hab_gravity=50, hab_gravity_stop=50,
-            hab_temperature=50, hab_temperature_stop=50,
-            hab_radiation=50, hab_radiation_stop=50)
+        r = race.Race(hab_grav=50, hab_grav_stop=50,
+            hab_temp=50, hab_temp_stop=50,
+            hab_rad=50, hab_rad_stop=50)
         self.assertEqual(p.habitability(r), 100)
 
 
@@ -201,7 +201,7 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_growth_rate3(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
-        r = race.Race(hab_radiation=0, hab_radiation_stop=2, hab_gravity=0, hab_gravity_stop=2, hab_temperature=0, hab_temperature_stop=2)
+        r = race.Race(hab_rad=0, hab_rad_stop=2, hab_grav=0, hab_grav_stop=2, hab_temp=0, hab_temp_stop=2)
         self.assertEqual(p.growth_rate(r), -15)
 
 
@@ -270,7 +270,7 @@ class PlanetTestCase(unittest.TestCase):
 
     def test_have_babies4(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
-        p.player.race = race.Race(hab_radiation=0, hab_radiation_stop=2, hab_gravity=0, hab_gravity_stop=2, hab_temperature=0, hab_temperature_stop=2)
+        p.player.race = race.Race(hab_rad=0, hab_rad_stop=2, hab_grav=0, hab_grav_stop=2, hab_temp=0, hab_temp_stop=2)
         p.on_surface.people = 250
         for pop in [249.634, 249.269, 248.904, 248.540, 248.176, 247.813, 247.450, 247.088, 246.727, 246.366, 246.006, 245.646, 245.287, 244.928, 244.570, 244.212, 243.855, 243.498, 243.142, 242.786, 242.431, 242.076, 241.722, 241.368, 241.015, 240.662, 240.310, 239.958, 239.607, 239.256, 238.906, 238.556, 238.207, 237.858, 237.510, 237.162, 236.815, 236.468, 236.122, 235.776, 235.431, 235.086, 234.742, 234.398, 234.055, 233.712, 233.370, 233.028, 232.687, 232.346, 232.006, 231.666, 231.327, 230.988, 230.650, 230.312, 229.974, 229.637, 229.300, 228.964, 228.628, 228.293, 227.958, 227.624, 227.290, 226.957, 226.624, 226.292, 225.960, 225.629, 225.298, 224.968, 224.638, 224.309, 223.980, 223.652, 223.324, 222.996, 222.669, 222.342, 222.016, 221.690, 221.365, 221.040, 220.716, 220.392, 220.069, 219.746, 219.424, 219.102, 218.781, 218.460, 218.139, 217.819, 217.499, 217.180, 216.861, 216.543, 216.225, 215.908]:
             self.assertEqual(p.have_babies(), pop)

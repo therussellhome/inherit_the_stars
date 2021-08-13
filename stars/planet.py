@@ -154,9 +154,9 @@ class Planet(Defaults):
             return -100
         elif self.__class__.__name__ == 'Sun' and race.primary_race_trait != 'Pa\'anuri':
             return -100
-        g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop, terraform[0])
-        t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop, terraform[1])
-        r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop, terraform[2])
+        g = self._calc_range_from_center(self.gravity, race.hab_grav, race.hab_grav_stop, terraform[0])
+        t = self._calc_range_from_center(self.temperature, race.hab_temp, race.hab_temp_stop, terraform[1])
+        r = self._calc_range_from_center(self.radiation, race.hab_rad, race.hab_rad_stop, terraform[2])
         negative_offset = 0
         if t > 1.0 or r > 1.0 or g > 1.0:
             negative_offset = -100.0

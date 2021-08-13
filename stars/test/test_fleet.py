@@ -191,9 +191,9 @@ class FleetCase(unittest.TestCase):
         f.ships[0].cargo.people = 500
         f.location = location.Location(reference=s)
         s.create_system(num_planets=1)
-        s.planets[1].temperature = (f.player.race.hab_temperature_stop + f.player.race.hab_temperature) / 2
-        s.planets[1].gravity = (f.player.race.hab_gravity_stop + f.player.race.hab_gravity) / 2
-        s.planets[1].radiation = (f.player.race.hab_radiation_stop + f.player.race.hab_radiation) / 2
+        s.planets[1].temperature = (f.player.race.hab_temp_stop + f.player.race.hab_temp) / 2
+        s.planets[1].gravity = (f.player.race.hab_grav_stop + f.player.race.hab_grav) / 2
+        s.planets[1].radiation = (f.player.race.hab_rad_stop + f.player.race.hab_rad) / 2
         f.colonize()
         self.assertEqual(len(f.ships), 0)
         self.assertTrue(s.planets[1].is_colonized())
@@ -206,12 +206,12 @@ class FleetCase(unittest.TestCase):
         f.location = location.Location(reference=s)
         s.create_system(num_planets=2)
         # Planet 1 is less ideal
-        s.planets[1].temperature = (f.player.race.hab_temperature_stop + f.player.race.hab_temperature) / 2 - 1
-        s.planets[1].gravity = (f.player.race.hab_gravity_stop + f.player.race.hab_gravity) / 2 - 1
-        s.planets[1].radiation = (f.player.race.hab_radiation_stop + f.player.race.hab_radiation) / 2 - 1
-        s.planets[2].temperature = (f.player.race.hab_temperature_stop + f.player.race.hab_temperature) / 2
-        s.planets[2].gravity = (f.player.race.hab_gravity_stop + f.player.race.hab_gravity) / 2
-        s.planets[2].radiation = (f.player.race.hab_radiation_stop + f.player.race.hab_radiation) / 2
+        s.planets[1].temperature = (f.player.race.hab_temp_stop + f.player.race.hab_temp) / 2 - 1
+        s.planets[1].gravity = (f.player.race.hab_grav_stop + f.player.race.hab_grav) / 2 - 1
+        s.planets[1].radiation = (f.player.race.hab_rad_stop + f.player.race.hab_rad) / 2 - 1
+        s.planets[2].temperature = (f.player.race.hab_temp_stop + f.player.race.hab_temp) / 2
+        s.planets[2].gravity = (f.player.race.hab_grav_stop + f.player.race.hab_grav) / 2
+        s.planets[2].radiation = (f.player.race.hab_rad_stop + f.player.race.hab_rad) / 2
         f.colonize()
         self.assertEqual(len(f.ships), 0)
         self.assertTrue(s.planets[2].is_colonized())
@@ -224,9 +224,9 @@ class FleetCase(unittest.TestCase):
         f.ships[1].cargo.people = 500
         f.location = location.Location(reference=s)
         s.create_system(num_planets=1)
-        s.planets[1].temperature = (f.player.race.hab_temperature_stop + f.player.race.hab_temperature) / 2
-        s.planets[1].gravity = (f.player.race.hab_gravity_stop + f.player.race.hab_gravity) / 2
-        s.planets[1].radiation = (f.player.race.hab_radiation_stop + f.player.race.hab_radiation) / 2
+        s.planets[1].temperature = (f.player.race.hab_temp_stop + f.player.race.hab_temp) / 2
+        s.planets[1].gravity = (f.player.race.hab_grav_stop + f.player.race.hab_grav) / 2
+        s.planets[1].radiation = (f.player.race.hab_rad_stop + f.player.race.hab_rad) / 2
         f.colonize()
         self.assertEqual(len(f.ships), 1)
         self.assertEqual(f.ships[0].commissioning, 101)
