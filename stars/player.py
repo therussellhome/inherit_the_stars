@@ -106,7 +106,7 @@ class Player(Defaults):
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
         self.__cache__ = {}
-        #'''Test line
+        '''Test line
         if len(self.fleets) < 3:
             fleet_3 = Fleet(
                 name = 'Fleet 3', 
