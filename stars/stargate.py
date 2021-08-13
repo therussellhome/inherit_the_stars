@@ -20,12 +20,12 @@ class Stargate(Defaults):
     
     def overgate(self, mass, distance, experience=1, survival_test=False):
         amt = max(mass + distance - self.strength, 0)
-        print(amt)
+        #print(amt)
         per = amt / self.strength
         min_dam = (per + amt/1000.0)**1.3 * 512 #TODO IT.
-        print(min_dam)
+        #print(min_dam)
         if survival_test:
-            return min_dam * (1 + 5 / 2**20)
+            return min_dam
         luck = random() * 5/experience
         return min_dam * (1 + luck)
 
