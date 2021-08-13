@@ -66,9 +66,11 @@ function show_screen(show) {
         toggle(button, 'selected', false);
     }
     // Show selected screen
+    //console.log('step three ................................. hidden ,,, showing ' + show)
     if(show) {
         toggle(document.getElementById('button_' + show), 'selected', true);
         toggle(document.getElementById('screen_' + show), 'hide', false);
+        //cosole.log('step four ................................. shown')
     }
 }
 
@@ -118,7 +120,6 @@ function show_tech(name) {
 //show the planetary sidebar and have it populated
 function show_planetary() {
     if(current_sidebar != 'planetary') {
-        //toggle(document.getElementById('sidebar_play'), 'hide', true);
         toggle(document.getElementById('sidebar_planetary'), 'hide', false);
         post('planetary_minister');
         show_screen('planetary_ministers');
@@ -131,8 +132,10 @@ function show_planetary() {
 }
 
 function show_minister(name) {
+    //console.log('step one ............................... called')
     if(current_screen  != 'planetary_minister') {
-        show_planetary()
+        //console.log('step two ............................... showing')
+        show_screen('planetary_minister');
     }
     post('planetary_minister', '?' + name);
 }
@@ -181,7 +184,7 @@ function post(form = '', action = '') {
                 if(Array.isArray(value)) {
                     if(value.length > 2) {
                         json_post[key] = [];
-                        console.log(value);
+                        //console.log(value);
                         for(v in value) {
                             json_post[key].push(parseFloat(value[v]));
                         }
@@ -206,7 +209,7 @@ function post(form = '', action = '') {
             }
         }
     }
-    console.log('posting: ', json_post);
+    //console.log('posting: ', json_post);
     // Fetch and process the response
     fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_post) }).then(response => 
         response.json().then(json => ({
@@ -222,7 +225,7 @@ function post(form = '', action = '') {
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
     try {
-        console.log('recived: ', json);
+        //console.log('recived: ', json);
         // Store the entire response to the cache
         json_map[form] = json;
         for(key in json) {
@@ -386,7 +389,7 @@ function shutdown() {
     }
 }
 
-function race_color_picker(element) {
+function planetary_color_picker(element) {
     parentFixed = element,
     pickerFixed = new Picker({
         parent: parentFixed,
@@ -394,17 +397,17 @@ function race_color_picker(element) {
         alpha: false,
 //        editor: false,
         onChange: function(color) {
-            document.getElementById('race_editor_icon_color').value = color.rgbaString;
-            post('race_editor')
-            get_race_color()
+            document.getElementById('planetary_color').value = color.rgbaString;
+            post('planetary_minister')
             //parentFixed.style.backgroundColor = color.rgbaString;
+            //console.log(document.getElementById('planetary_color').value)
         },
     });
     pickerFixed.openHandler();
 }
 
-function get_race_color() {
-    console.log('called ...........................................');
+// Update the color of race icons
+function update_race_icon_color() {
     var all = document.getElementsByClassName('race_icon');
     for (var i = 0; i < all.length; i++) {
         all[i].style.color = document.getElementById('race_editor_icon_color').value;

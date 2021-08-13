@@ -34,8 +34,8 @@ class Engine(Defaults):
         return (self.tachometer(speed, mass, denials) * mass * ly) + self.siphon_calc(ly)
     
     """ Calculate how much damage is taken for a given speed, mass, and distance """
-    def damage_calc(self, speed, mass, ly, num_denials):
-        return max(0.0, round((self.tachometer(speed, mass, num_denials) - 100.0) / 2.7) * min(1, ly))
+    def damage_calc(self, speed, mass, denials, ly):
+        return max(0.0, round((self.tachometer(speed, mass, denials) - 100.0) / 2.7) * min(1, ly))
     
     """ How much antimatter is captured for the distance traveled """
     def siphon_calc(self, ly):

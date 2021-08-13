@@ -5,7 +5,7 @@ from .defaults import Defaults
 """ Default values [default, min, max]  """
 __defaults = {
     'ID': '@UUID',
-    'icon': '<i class="fas fa-pastafarianism">',
+    'icon': '<i style="color: #FFFFFF; padding-right: 0" class="fas fa-pastafarianism">',
     'start_date': (3000, 0, sys.maxsize),
     'primary_race_trait': 'Melconians',
     'lrt_Trader': False,
@@ -46,12 +46,12 @@ __defaults = {
     'starting_colonists': (250000, 175000, 350000),
     'power_plants_per_10k_colonists': (10, 2, 50),
     'factories_per_10k_colonists': (10, 2, 50),
-    'mines_per_10k_colonists': (10, 2, 50),
+    'mineral_extractors_per_10k_colonists': (10, 2, 50),
     'defenses_per_10k_colonists': (10, 2, 50),
     'energy_per_10k_colonists': (500, 100, 2000),
     'cost_of_baryogenesis': (1000, 200, 1200), # YJ / kT
     'starting_factories': (10, 5, 20),
-    'starting_mines': (10, 5, 20),
+    'starting_mineral_extractors': (10, 5, 20),
     'starting_power_plants': (10, 5, 20),
     'starting_defenses': (10, 5, 20),
     'starting_energy': (50000, 25000, 100000),
@@ -96,13 +96,13 @@ economy_cost = {
     'research_modifier_slope': 12.5/25,
     'power_plant_cost_per_click': 45,
     'factory_cost_per_click': 35, 
-    'mine_cost_per_click': 20,
+    'mineral_extractor_cost_per_click': 20,
     'defense_cost_per_click': 20,
     'energy_cost_per_click': 60,
     'population_slope': .8,
     'baryogenesis_invert_slope': 7/100,
     'per_start_factory': 5,
-    'per_start_mine': 3,
+    'per_start_mineral_extractor': 3,
     'per_start_power_plant': 5,
     'per_start_defense': 2,
     'per_1000_start_energy': 3,
@@ -203,7 +203,7 @@ class Race(Defaults):
         ap = 0
         ap -= economy_cost['power_plant_cost_per_click'] * (self.power_plants_per_10k_colonists - 2) / 2
         ap -= economy_cost['factory_cost_per_click'] * (self.factories_per_10k_colonists - 2) / 2
-        ap -= economy_cost['mine_cost_per_click'] * (self.mines_per_10k_colonists - 2) / 2
+        ap -= economy_cost['mineral_extractor_cost_per_click'] * (self.mineral_extractors_per_10k_colonists - 2) / 2
         ap -= economy_cost['defense_cost_per_click'] * (self.defenses_per_10k_colonists - 2) / 2
         #print(ap)
         ap -= economy_cost['energy_cost_per_click'] * (self.energy_per_10k_colonists - 100) / 100
@@ -211,7 +211,7 @@ class Race(Defaults):
         ap -= economy_cost['population_slope'] * (self.starting_colonists - 175000) / 1000
         ap -= (12000 - self.cost_of_baryogenesis) * economy_cost['baryogenesis_invert_slope']
         ap -= self.starting_factories * economy_cost['per_start_factory']
-        ap -= self.starting_mines * economy_cost['per_start_mine']
+        ap -= self.starting_mineral_extractors * economy_cost['per_start_mineral_extractor']
         ap -= self.starting_power_plants * economy_cost['per_start_power_plant']
         ap -= self.starting_defenses * economy_cost['per_start_defense']
         ap -= self.starting_energy / 1000 * economy_cost['per_1000_start_energy']

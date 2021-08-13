@@ -1,3 +1,4 @@
+import re
 import sys
 from .playerui import PlayerUI
 from ..race import Race, PRIMARY_RACE_TRAITS
@@ -11,7 +12,7 @@ __defaults = {
     'options_race_editor_file_to_load': [],
     'race_editor_advantage_points_left': (0, -2000000, 2000000),
     'race_editor_screen_title': 'Race Editor',
-    'race_editor_icon_color': ''
+    'race_editor_icon_color': '#FFFFFF'
 }
 
 
@@ -23,23 +24,25 @@ class RaceEditor(PlayerUI):
         self.options_race_editor_file_to_load.insert(0, '')
         race = Race()
         self.race_editor_screen_title = 'Race Editor'
-        if action[:7] in ['fab fa-', 'fas fa-', 'far fa-']:
-            race.icon = '<i style="color: ' + self.race_editor_icon_color + '" class="' + action + '"></i>'
-            self.race_editor_icon = race.icon
         if self.player():
             race = self.player().race
             for key in Race.defaults:
                 self['race_editor_' + key] = race[key]
             self.race_editor_screen_title = 'Race Viewer'
+            self.race_editor_icon_color = self.race_editor_icon.replace('.*#', '#').replace(';.*', '')
         elif self.race_editor_file_to_load != '':
             race = game_engine.load('Race', self.race_editor_file_to_load)
             for key in Race.defaults:
                 self['race_editor_' + key] = race[key]
             self.race_editor_file_to_load = ''
+            self.race_editor_icon_color = re.sub(r'.*(#......).*', r'\1', self.race_editor_icon)
         else:
+            if action[:7] in ['fab fa-', 'fas fa-', 'far fa-']:
+                self.race_editor_icon = '<i style="color: ' + self.race_editor_icon_color + '; padding-right: 0" class="' + action + '"></i>'
+            else:
+                self.race_editor_icon = re.sub(r'#......', self.race_editor_icon_color, self.race_editor_icon)
             for key in Race.defaults:
                 race[key] = self['race_editor_' + key]
-            race_editor_icon_color = race.icon[17:24]
         """ calculate and aply the cost of habitablility """
         self.race_editor_habitability_message = str(round(race.percent_planets_habitable(), 2)) \
             + '% of planets should be habitable for you'

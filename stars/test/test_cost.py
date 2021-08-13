@@ -30,6 +30,9 @@ class CostTestCase(unittest.TestCase):
         self.assertEqual(c3.energy, 369)
         self.assertEqual(c3.silicon, 6)
 
+    def test_percent(self):
+        pass # TODO Pam
+
     def test_is_zero1(self):
         c1 = cost.Cost()
         self.assertTrue(c1.is_zero())

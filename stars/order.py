@@ -5,7 +5,6 @@ from . import game_engine
 from .defaults import Defaults
 from .location import Location
 from .reference import Reference
-#from .player import Player
 cargo_options = ['_ti', '_li', '_si', '_people']
 depart_options = [
     'immediately',
@@ -67,25 +66,25 @@ __defaults = {
     'depart': depart_options[0],
     'depart_after_x': (0.01, 0.0, sys.maxsize),
     'repair_to_x': (0, 0, sys.maxsize),
-    'load_si': (0, -1, sys.maxsize),
-    'load_ti': (0, -1, sys.maxsize),
-    'load_li': (0, -1, sys.maxsize),
-    'load_people': (0, -1, sys.maxsize),
-    'load_dunnage': False,
-    'unload_si': (0, -1, sys.maxsize),
-    'unload_ti': (0, -1, sys.maxsize),
-    'unload_li': (0, -1, sys.maxsize),
-    'unload_people': (0, -1, sys.maxsize),
-    'buy_si': (0, -1, sys.maxsize),
-    'buy_ti': (0, -1, sys.maxsize),
-    'buy_li': (0, -1, sys.maxsize),
-    'buy_fuel': (0, -1, sys.maxsize),
+    'load_si': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
+    'load_ti': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
+    'load_li': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
+    'load_people': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
+    'load_all available': False,
+    'unload_si': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
+    'unload_ti': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
+    'unload_li': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
+    'unload_people': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
+    'buy_si': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
+    'buy_ti': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
+    'buy_li': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
+    'buy_fuel': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
     'sell_si': False,
     'sell_ti': False,
     'sell_li': False,
     'sell_fuel': False,
     'patrol': False,
-    #'transfer_to': Player(),
+    'transfer_to': Reference('Player'),
     'merge': False,
     'hyperdenial': False,
     'lay_mines': False,

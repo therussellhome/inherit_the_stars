@@ -7,9 +7,11 @@ from .cloak import Cloak
 from .cost import Cost
 from .defaults import Defaults, get_default
 from .hyperdenial import HyperDenial
+from .stargate import Stargate
+from .minerals import Minerals
 from .race import Race
 from .scanner import Scanner
-from .tech_level import TechLevel
+from .tech_level import TechLevel, TECH_FIELDS
 
 
 """ Default values (default, min, max)  """
@@ -36,6 +38,7 @@ __defaults = {
     'mines_laid': (0, 0, sys.maxsize),
     'fuel_generation': (0, 0, sys.maxsize),
     'hyperdenial': HyperDenial(),
+    'stargate': Stargate(),
     'is_colonizer': False,
     'is_trading_post': False,
     'is_piracy_cargo': False,
@@ -55,10 +58,6 @@ __defaults = {
 TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanicals', 'Heavy Equipment', 'Other']
 
 
-""" Items that can be miniaturized """
-TECH_MINIATURIZATION = ['cost', 'mass']
-
-
 """ Represent a tech component """
 class Tech(Defaults):
     """ Register with game engine """
@@ -66,23 +65,16 @@ class Tech(Defaults):
         super().__init__(**kwargs)
         game_engine.register(self)
 
-    """ Reset by merging a list of tech items """
-    def init_from(self, tech, miniaturize_level=None):
-        global TECH_MINIATURIZATION
+    """ Add a tech to self using the current miniaturization_level """
+    def merge(self, other):
         for key in Tech.defaults:
             # Skip strings
             if isinstance(self[key], str):
-                continue
-            # Reset to default
-            self[key] = get_default(self, key)
-            for t in tech:
-                # Merge
-                if miniaturize_level and key in TECH_MINIATURIZATION:
-                    self[key] += t.miniaturize(miniaturize_level, key)
-                elif isinstance(self[key], list):
-                    self[key].extend(t[key])
-                else:
-                    self[key] += t[key]
+                pass
+            elif isinstance(self[key], list):
+                self[key].extend(other[key])
+            else:
+                self[key] += other[key]
 
     """ Get tech group """
     def tech_group(self):
@@ -115,24 +107,24 @@ class Tech(Defaults):
                     return False
         return True
 
-    """ Get the minituarized value """
-    def miniaturize(self, tech_level, field=None):
-        if field == 'cost':
-            return self.cost # TODO
-        else:
-            return self.mass # TODO
-
-    """ Get the cost to reminituarize """
-    def reminiaturize(self, current_level, new_level):
-        if new_level > current_level:
-            return self.cost * 0.1 #TODO
-        return Cost()
-
     """ Calculate the scrap value """
-    def scrap_value(self, race, tech_level):
-        c = self.miniaturize(tech_level, 'cost')
-        c.energy = 0
-        return c * (race.scrap_rate() / 100)
+    def scrap_value(self, race, miniaturization_level=None):
+        # Force scrap to be just minerals
+        m = Minerals() + self.cost * self.miniaturization(tech_level)
+        return m * (race.scrap_rate() / 100)
+
+    """ How much past the base is the miniaturization """
+    def miniaturization(self, miniaturization_level=None):
+        if not miniaturization_level:
+            return 1
+        base = self.level.total_levels()
+        levels_over = 0
+        if base == 0:
+            levels_over = miniaturization_level.total_levels()
+        else:
+            for f in TECH_FIELDS:
+                levels_over += (miniaturization_level[f] - self.level[f]) * self.level[f] / base
+        return 1 / (0.1 * levels_over ** 0.5 + 1)
 
     """ Build the overview table """
     def html_overview(self, player_race=Race(), player_level=TechLevel(), player_partial=TechLevel()):
@@ -227,8 +219,8 @@ class Tech(Defaults):
         html = []
         # Weapon group
         for bomb in self.bombs:
-            self._html_filter(html, bomb.percent_pop_kill + bomb.minimum_pop_kill, 'Bomb', 'Population killed', '{0} + {1}% / y'.format(bomb.minimum_pop_kill, bomb.percent_pop_kill))
-            self._html_filter(html, bomb.shield_kill, 'Bomb', 'Shield generators destroyed', '{0} / y')
+            self._html_filter(html, bomb.percent_pop_kill + bomb.minimum_pop_kill, 'Bomb', 'Population killed', '{0} + {1}%/y'.format(bomb.minimum_pop_kill, bomb.percent_pop_kill))
+            self._html_filter(html, bomb.shield_kill, 'Bomb', 'Shield generators destroyed', '{0}/y')
             self._html_filter(html, True, 'Bomb', 'Minimum shield penetration', '{0}%'.format(max(0, 100 - bomb.max_defense)))
         for weapon in self.weapons:
             category = 'Missile'
@@ -243,16 +235,30 @@ class Tech(Defaults):
         self._html_filter(html, self.shield, 'Shield', 'Strength', '{0}GJ/m<sup>2</sup>')
         self._html_filter(html, self.armor, 'Armor', 'Strength', '{0}GJ/m<sup>2</sup>')
         # Electronics group
-        #TODO
+        self._html_filter(html, self.ecm, 'ECM', 'Effectiveness', '{0}%')
+        self._html_filter(html, self.cloak.percent, 'Cloak', 'Percent of KE', '{0}%')
+        #Does built-in Kender cloaking or another cloaking category need to be included here?
+        self._html_filter(html, self.scanner.normal, 'Scanner', 'Normal', '{0} KE/100ly')
+        self._html_filter(html, self.scanner.penetrating, 'Scanner', 'Penetrating Range', '{0}ly')
+        self._html_filter(html, self.scanner.anti_cloak, 'Scanner', 'Anti-cloak', '{0}ly')
         # Engine group
-        #TODO
+        for engine in self.engines:
+            self._html_filter(html, engine.kt_exponent, 'Engine', 'kT exponent', '{0}')
+            self._html_filter(html, engine.speed_divisor, 'Engine', 'Speed divisor', '{0}')
+            self._html_filter(html, engine.speed_exponent, 'Engine', 'Speed exponent', '{0}')
+            self._html_filter(html, engine.antimatter_siphon, 'Engine', 'Forages', '<i class="fa-free-code-camp">{0}/ly</i>')
         # Hulls & Mechanicals group
+        self._html_filter(html, self.repair, 'Repair', 'Damage points', '{0}/y')
         self._html_filter(html, self.is_colonizer, 'Special', 'Colonizer')
         self._html_filter(html, self.is_trading_post, 'Special', 'Trading post')
-        #TODO
         # Heavy Equipment group
-        self._html_filter(html, self.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0} / y</i>')
-        #TODO
+        self._html_filter(html, self.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0}/y</i>')
+        self._html_filter(html, self.shipyard, 'Heavy Equipment', 'Shipyard capacity', '{0} kT/y')
+        self._html_filter(html, self.mines_laid, 'Heavy Equipment', 'Mines laid', '{0}/y')
+        self._html_filter(html, self.hyperdenial, 'Heavy Equipment', 'Hyper denial', '{0}ly')
+        self._html_filter(html, self.extraction_rate, 'Heavy Equipment', 'Mineral extraction rate', '{0}/y')
+        self._html_filter(html, self.mineral_depletion_factor, 'Heavy Equipment', 'Mineral depletion', '{0}/kT mined')
+        self._html_filter(html, self.mat_trans_energy, 'Heavy Equipment', 'Mat-trans energy', '{0}/kT')
         # Slots
         if type(self) == Tech:
             self._html_filter(html, self.slots_general, 'Slots', 'General')

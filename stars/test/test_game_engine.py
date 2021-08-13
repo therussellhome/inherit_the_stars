@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from .. import *
 
@@ -159,6 +160,16 @@ class GameEngineTestCase(unittest.TestCase):
         game_engine.set_root_obj(t1)
         self.assertEqual(game_engine.get_root_obj(), t1)
 
+    def test_userfile1(self):
+        self.assertEqual(game_engine.user_file('abc').name, 'data')
+
+    def test_userfile2(self):
+        self.assertEqual(game_engine.user_file('abc', True).name, 'www')
+
+    def test_userfile3(self):
+        with patch.object(Path, 'exists', return_value=True) as mock:
+            self.assertEqual(game_engine.user_file('abc').name, 'Inherit!')
+
     def test_json1(self):
         t1 = _TestGameEngine(ID='test_json')
         json = game_engine.to_json(t1)
@@ -234,6 +245,8 @@ class GameEngineTestCase(unittest.TestCase):
         self.assertEqual(len(t), 2)
 
     def test_load3(self):
+        dir_name = game_engine.user_file('test/_empty') / 'test' / '_empty'
+        dir_name.mkdir(parents=True, exist_ok=True)
         game_engine.unregister()
         # Testing list has to be done after save
         t = game_engine.load('test', '_empty')

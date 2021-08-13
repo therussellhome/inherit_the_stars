@@ -15,7 +15,7 @@ from .fleet import Fleet
 from .ship import Ship
 from .cargo import Cargo
 from .message import Message
-# for testing
+# for testing TODO remove these extra imports
 from .planet import Planet
 from .facility import Facility
 from .ship_design import ShipDesign
@@ -27,6 +27,7 @@ from .location import Location
 __defaults = {
     'ID': '@UUID', # player ID defaulted to a UUID if not provided from the race ID
     'validation_key': '', # used to verify this file against the game file
+    'game': Reference('Game'),
     'game_ID': '', # name of game for when generating
     'ready_to_generate': False,
     'date': '0.00',
@@ -105,75 +106,7 @@ class Player(Defaults):
             self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
-        '''Test line
-        if len(self.fleets) < 3:
-            fleet_3 = Fleet(
-                location = Location(0.00001057, 0, 0),
-                name = 'Fleet 3', 
-                ships = [
-                    Ship(
-                        location = Location(0.00001057, 0, 0.00001057),
-                        race = self.race,
-                        ID = 'Test Ship3', 
-                        fuel = 400, 
-                        fuel_max = 400, 
-                        cargo = Cargo(
-                            people = 200,
-                            silicon = 200,
-                            lithium = 200,
-                            titanium = 200, 
-                            cargo_max = 1000
-                        ))])
-            self.add_fleet(fleet_3)
-            self.add_intel(fleet_3.ships[0], **(fleet_3.ships[0].scan_report()))#' ''
-            #index = 1
-            system = game_engine.get('System/')
-            #if index == 1:
-                #index = 0
-                #system = s
-            print('player file printing system:', system)
-            fleet_location = Location(0.0001057, 0.00001057, 0)
-            self.create_fleet(
-                location = fleet_location,
-                name = 'Fleet 1', 
-                ships = [
-                    Ship(
-                        location = Location(0.0001057, 0.00001057, 0.00001057),
-                        race = self.race,
-                        ID = 'Test Ship1',
-                        fuel = 100,
-                        fuel_max = 400,
-                        cargo = Cargo(
-                            people = 100,
-                            titanium = 900,
-                            cargo_max = 1000
-                        )), 
-                    Ship(
-                        location = Location(0.0001057, 0.00001057, 0.0001057),
-                        race = self.race,
-                        #location = Location(0, 0.000001057, 0, reference = fleet_location),
-                        ID = 'Test Ship2',
-                        fuel = 100,
-                        fuel_max = 400,
-                        cargo = Cargo(
-                            people = 100,
-                            titanium = 100,
-                            cargo_max = 1000
-                        ))],
-                orders = [
-                    Order(),
-                    Order(
-                        description = 'We are going to crash!!',
-                        location = Reference(self.fleets[0]),
-                        load_si = 200,
-                        load_li = 200,
-                        load_people = 200,
-                        load_ti = 200,
-                        merge = True
-                    )])
-            self.add_intel(self.fleets[-1].ships[0], **(self.fleets[-1].ships[0].scan_report()))
-            self.add_intel(self.fleets[-1].ships[1], **(self.fleets[-1].ships[1].scan_report()))
-            #'''
+
 
     """ Player filename """
     def filename(self):
@@ -196,14 +129,17 @@ class Player(Defaults):
         if self.validation_key == p.validation_key:
             for field in _player_fields:
                 self[field] = p[field]
-    
-    def get_planetary_minister(self, Id, name=False):
-        for minister in self.planetary_ministers:
-            if minister.name == Id and name:
-                return minister
-            elif minister.ID == Id and not name:
-                return minister
-        return self.planetary_ministers[0]
+      
+    """ Get the minister for a given planet """
+    def get_minister(self, planet):
+        try:
+            return self.planetary_minister_map[Reference(planet)]
+        except:
+            for minister in self.ministers:
+                if hasattr(minister, 'new_colony_minister'):
+                    if minister.new_colony_minister:
+                        return minister
+        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
     
     """ Update the date """
     def next_hundreth(self):
@@ -214,10 +150,12 @@ class Player(Defaults):
         return self.fleets[-1]#test code for rendering in_system
     
     def add_fleet(self, fleet):
-        self.fleets.append(fleet)
+        if fleet not in self.fleets:
+            self.fleets.append(fleet)
     
     def remove_fleet(self, fleet):
-        self.fleets.remove(fleet)
+        if fleet in self.fleets:
+            self.fleets.remove(fleet)
     
     """ Return the id for use as a temporary player token """
     def token(self):
@@ -254,7 +192,7 @@ class Player(Defaults):
     """ Store historical values - accumulates across the year """
     def add_historical(self, category, value):
         history = self.historical.get(category, [])
-        for i in range(self.race.start_date + len(history), int(self.date) + 1):
+        for i in range(self.race.start_date + len(history), int(self.date.split('.')[0]) + 1):
             history.append(0)
         history[-1] += value
         self.historical[category] = history
@@ -274,9 +212,6 @@ class Player(Defaults):
         #TODO
         pass
     
-    """ Get the minister for a given planet """
-    def get_minister(self, planet):
-        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
     
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
@@ -309,6 +244,26 @@ class Player(Defaults):
             
     """ Get the treaty """
     def get_treaty(self, other_player, draft=False):
+        if other_player == self:
+            if draft:
+                return None
+            return Treaty(other_player = self,
+                            relation = 'me',
+                            status = 'active',
+                            buy_ti = 0,
+                            sell_ti = 0,
+                            buy_si = 0,
+                            sell_si = 0,
+                            buy_li = 0,
+                            sell_li = 0,
+                            buy_fuel = 0,
+                            sell_fuel = 0,
+                            buy_gate = 0,
+                            sell_gate = 0,
+                            buy_hyper_denial = 0,
+                            sell_hyper_denial = 0,
+                            buy_intel = 0,
+                            sell_intel = 0)
         other_player = Reference(other_player)
         for t in self.treaties:
             if (t.other_player == other_player) and ((not draft and t.is_active()) or (draft and t.is_draft())):
@@ -331,7 +286,7 @@ class Player(Defaults):
 
     """ predict the next years budget """
     def predict_budget(self):
-        return 10000
+        return 10000 # TODO 
     
     """ Allocate the available energy into budget categories """
     def allocate_budget(self):

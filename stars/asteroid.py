@@ -15,6 +15,12 @@ __defaults = {
     'player': Reference('Player'),
     'decay_factor': (0.01, 0.0, 1.0),
 }
+
+""" Represent 'asteroid' """
+class Asteroid(Defaults):
+    pass
+
+Asteroid.set_defaults(Asteroid, __defaults)
 #decay = mass * hyper**2 * decay_factor, mass -= decay"""
 
 
