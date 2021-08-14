@@ -24,9 +24,7 @@ class Engine(Defaults):
     def tachometer(self, speed, mass, denials):
         speed = max(1, int(speed))
         mass = max(0, int(mass))
-        denials = max(0, int(denials))
-        if denials > 0:
-            mass *= speed * (1 - 0.5 ** denials) * 2
+        mass *= max(1, min(speed, 1 + denials / (10 * (11 - speed))))
         return round((mass ** self.kt_exponent) * (((speed - 1) / self.speed_divisor) ** self.speed_exponent))
     
     """ Calculate how much fuel would be used for a given speed, mass, and distance """

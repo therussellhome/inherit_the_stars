@@ -4,7 +4,7 @@ from .. import *
 class EngineTestCase(unittest.TestCase):
     def test_tach100_1(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
-        self.assertEqual(e.speed_at_tach_100(100, 5), 5)
+        self.assertEqual(e.speed_at_tach_100(100, 5), 9)
 
     def test_tach100_2(self):
         e = engine.Engine(kt_exponent=4.0, speed_divisor=11.0, speed_exponent=4.0)
@@ -36,8 +36,8 @@ class EngineTestCase(unittest.TestCase):
         self.assertEqual(e.tachometer(10, 0, 0), 0)
         self.assertEqual(e.tachometer(-10, -100, 0), 0)
         # Hyper Denial
-        self.assertEqual(e.tachometer(10, 100, 1), 894)
-        self.assertEqual(e.tachometer(10, 100, 2), 1397)
+        self.assertEqual(e.tachometer(10, 100, 30), 326)
+        self.assertEqual(e.tachometer(10, 100, 60), 604)
 
     def test_fuel(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
@@ -52,13 +52,13 @@ class EngineTestCase(unittest.TestCase):
         self.assertEqual(e.fuel_calc(9, 100, 0, 100), 440000)
         self.assertEqual(e.fuel_calc(10, 100, 0, 100), 710000)
         # Hyper Denial
-        self.assertEqual(e.fuel_calc(10, 100, 1, 100), 8940000)
+        self.assertEqual(e.fuel_calc(10, 100, 50, 100), 5100000)
 
     def test_damage(self):
         e = engine.Engine(kt_exponent=1.1, speed_divisor=11.0, speed_exponent=4.0)
         self.assertEqual(e.damage_calc(4, 100, 0, 100), 0)
         self.assertEqual(e.damage_calc(8, 500, 0, 100), 20)
-        self.assertEqual(e.damage_calc(10, 100, 1, 100), 294)
+        self.assertEqual(e.damage_calc(10, 100, 50, 100), 152)
 
     def test_siphon(self):
         e = engine.Engine(antimatter_siphon=123)
