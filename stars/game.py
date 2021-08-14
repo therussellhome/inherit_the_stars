@@ -169,10 +169,6 @@ class Game(Defaults):
             self._call(players, 'treaty_finalization')
             self._call(players, 'cleanup_messages')
             self._scan(fleets) # scanning is needed to support fleet patroling
-            hyperdenial.reset(True)
-            self._call(self.blackholes, 'create_hyperdenials')
-        else:
-            hyperdenial.reset()
         #
         # actions in order
         self._call(planets, 'have_babies')
@@ -185,7 +181,10 @@ class Game(Defaults):
         self._call(planets, 'baryogenesis', reverse=True)
         self._call(fleets, 'read_orders')
         self._call(fleets, 'colonize') # occurs before move because the fleet does not need to wait around for the colonizer but does not occur in the same hundreth as the colonizer moved
-        self._call(fleets, 'hyperdenial')
+        hyperdenial.reset()
+        self._call(self.blackholes, 'activate')
+        self._call(fleets, 'activate_hyperdenial')
+        hyperdenial.calc(fleets)
         self._call(self.wormholes, 'move')
         self._call(self.asteroids, 'move')
         self._call(self.mystery_traders, 'move')
@@ -260,7 +259,6 @@ class Game(Defaults):
         self._call(fleets, 'scan_penetrating')
         self._call(self.get_planets(), 'scan_normal')
         self._call(fleets, 'scan_normal')
-        self._call(fleets, 'scan_hyperdenial')
 
     """ Execute combat after determining where combat will occur """
     def _combat(self):

@@ -38,10 +38,7 @@ class Fleet(Defaults):
     """ Initialize the cache """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.__cache__['order_complete'] = True
-        self.__cache__['move'] = None
-        self.__cache__['move_in_system'] = None
-        self.__cache__['moved'] = False
+        self.next_hundreth()
         game_engine.register(self)
 
     """ Adds ships to the fleet and correct location """
@@ -92,10 +89,15 @@ class Fleet(Defaults):
     def next_hundreth(self):
         if 'stats' in self.__cache__:
             del self.__cache__['stats']
+        self.__cache__['move'] = None
+        self.__cache__['move'] = None
+        self.__cache__['move_in_system'] = None
+        self.__cache__['order_complete'] = True
+        self.__cache__['hyperdenial_effect'] = 0.0
+        self.__cache__['hyperdenial_players'] = []
 
     """ Check if the fleet can/ordered to move """
     def read_orders(self):
-        self.__cache__['move'] = None
         # Set move in system in case combat displaces
         self.__cache__['move_in_system'] = self.location
         # Space stations cannot move, ships with no engines cannot move
@@ -105,6 +107,10 @@ class Fleet(Defaults):
             elif len(ship.engines) == 0:
                 return
         (self.__cache__['move'], self.__cache__['move_in_system']) = self.order.move_calc(self.location)
+
+    """ Check if fleet will/did move """
+    def is_stationary(self):
+        return (self.__cache__['move'] == None)
 
     """ Colonize planets per the order """
     def colonize(self):
@@ -145,23 +151,29 @@ class Fleet(Defaults):
                 self -= colonizers.pop()
 
     """ Deploy hyperdenial """
-    def hyperdenial(self):
+    def activate_hyperdenial(self):
         # Not scheduled to move
-        if self.stats().hyperdenial.radius > 0 and self.__cache__['move'] == None:
-            for ship in self.ships:
-                ship.hyperdenial.activate(self.player)
+        if self.is_stationary():
+            self.stats().hyperdenial.activate(self.player, self.location)
+
+    """ Hyperdenials effecting me """
+    def in_hyperdenial(self, effect, player):
+        self.__cache__['hyperdenial_effect'] += effect
+        # Players that will have visibility of fleet if fleet moves
+        if player and player not in self.__cache__['hyperdenial_players']:
+            self.__cache__['hyperdenial_players'].append(player)
 
     """ Does all the moving calculations and then moves the ships """
     def move(self):
         # Calculate destination (patrol, standoff, etc)
         move = self.__cache__['move']
         if move == None:
-            self.__cache__['moved'] = False
             multi_fleet.add(self)
             return
         # Determine speed
         stats = self.stats()
         speed = self.order.speed
+        hyperdenial = self.__cache__['hyperdenial_effect']
         # Manual stargate or auto stargate
         start, end = self._stargate_find(move, speed == -1)
         #print(start, end)
@@ -191,9 +203,7 @@ class Fleet(Defaults):
             # reduce speed until safe
             while speed > 0:
                 stop_at = self.location.move(move, distance)
-                denials = hyperdenial.transit(self.location, stop_at)
-                print(speed, distance, stop_at.xyz)
-                if self._fuel_calc(speed, denials, distance) <= stats.fuel and self._damage_check(speed, denials) == 0:
+                if self._fuel_calc(speed, hyperdenial, distance) <= stats.fuel and self._damage_check(speed, hyperdenial) == 0:
                     break
                 speed -= 1
                 distance = (speed ** 2) / 100
@@ -201,26 +211,26 @@ class Fleet(Defaults):
         else:
             distance = min(self.location - move, (speed ** 2) / 100)
             stop_at = self.location.move(move, distance)
-            denials = hyperdenial.transit(self.location, stop_at)
-            if self._fuel_calc(speed, distance, denials) > stats.fuel:
+            if self._fuel_calc(speed, distance, hyperdenial) > stats.fuel:
                 speed = 1
                 distance = min(self.location - move, (speed ** 2) / 100)
                 stop_at = self.location.move(move, distance)
-                denials = hyperdenial.transit(self.location, stop_at)
         # Move the fleet
         self.location = self.location.move(move, distance)
         if self.location != self.__cache__['move']:
             self.__cache__['order_complete'] = False
-        self.__cache__['moved'] = True
         multi_fleet.add(self)
         # Use fuel
-        stats.fuel -= self._fuel_calc(speed, denials, distance)
+        stats.fuel -= self._fuel_calc(speed, hyperdenial, distance)
+        # Moved in a hyperdenial field
+        if hyperdenial > 0.0:
+            scan.hyperdenial(fleet, self.__cache__['hyperdenial_players'])
         # Apply any over-drive damage and siphon antimatter
         for ship in self.ships:
             mass_per_engine = ship['mass_per_engine']
             for engine in ship.engines:
                 stats.fuel += engine.siphon_calc(distance)
-                ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, denials, distance))
+                ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, hyperdenial, distance))
         self.fuel_distribution() # Do now in case of ships dying in battle
 
     """ Post combat, move inside the system """
@@ -231,7 +241,7 @@ class Fleet(Defaults):
 
     """ Repair only self if moving, else repair most damaged fleet here """
     def repair(self):
-        if self.__cache__['moved']:
+        if not self.is_stationary():
             self.apply_repair(self.stats().repair_moving)
         else:
             # TODO apply to the most damaged friendly fleet at this location
@@ -254,7 +264,7 @@ class Fleet(Defaults):
     """ Orbital mineral extraction """
     def orbital_extraction(self):
         stats = self.stats()
-        if self.__cache__['moved'] or stats.extraction_rate == 0 or not self.location.reference ^ 'Planet' or self.location.reference.is_colonized():
+        if not self.is_stationary() or stats.extraction_rate == 0 or not self.location.reference ^ 'Planet' or self.location.reference.is_colonized():
             return
         for ship in self.ships:
             for (component, qty) in ship.components.items():
@@ -266,14 +276,14 @@ class Fleet(Defaults):
     """ Lay mines """
     def lay_mines(self):
         stats = self.stats()
-        if self.__cache__['moved'] or stats.mines_laid == 0 or not self.location.in_system:
+        if not self.is_stationary() or stats.mines_laid == 0 or not self.location.in_system:
             return
         self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.player)
 
     """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
     def bomb(self):
         stats = self.stats()
-        if self.__cache__['moved'] or len(stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
+        if not self.is_stationary() or len(stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
             return
         planet = self.location.reference
         if self.player.get_relation(planet.player) != 'enemy':
@@ -284,7 +294,7 @@ class Fleet(Defaults):
     """ Steal from other players """
     def piracy(self):
         stats = self.stats()
-        if self.__cache__['moved'] or not (stats.is_piracy_cargo or stats.is_piracy_fuel):
+        if not self.is_stationary() or not (stats.is_piracy_cargo or stats.is_piracy_fuel):
             return
         marks = []
         for f in multi_fleet.get(self.location):
@@ -308,7 +318,7 @@ class Fleet(Defaults):
 
     """ Unload cargo """
     def unload(self):
-        if self.__cache__['moved']:
+        if not self.is_stationary():
             return
         stats = self.stats()
         (cargo, cargo_max) = self._other_cargo()
@@ -330,13 +340,13 @@ class Fleet(Defaults):
 
     """ Conduct trade """
     def buy(self):
-        if self.__cache__['moved']:
+        if not self.is_stationary():
             return
         #TODO
 
     """ Scrap """
     def scrap(self):
-        if self.__cache__['moved'] or not self.order.scrap:
+        if not self.is_stationary() or not self.order.scrap:
             return
         stats = self.stats()
         if self.location.reference ^ 'Planet' and stats.cargo.people > 0:
@@ -351,7 +361,7 @@ class Fleet(Defaults):
 
     """ Load cargo """
     def load(self):
-        if self.__cache__['moved']:
+        if not self.is_stationary():
             return
         stats = self.stats()
         (cargo, cargo_max) = self._other_cargo()

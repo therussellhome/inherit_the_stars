@@ -93,4 +93,8 @@ class Treaty(Defaults):
     def is_rejected(self):
         return (self.status == 'rejected')
 
+    """ Hyperdenial transit allowed """
+    def hyperdenial_transit(self):
+        return (self.buy_hyper_denial >= 0)
+
 Treaty.set_defaults(Treaty, __defaults)
