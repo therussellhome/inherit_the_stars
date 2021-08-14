@@ -176,9 +176,7 @@ class Fleet(Defaults):
         hyperdenial = self.__cache__['hyperdenial_effect']
         # Manual stargate or auto stargate
         start, end = self._stargate_find(move, speed == -1)
-        #print(start, end)
         if (speed == -2 or speed == -1) and (start and end):
-            self.__cache__['moved'] = False
             # stargate use allows fleet actions this hundredth
             self.__cache__['move_in_system'] = move
             # TODO pay for stargateing
@@ -187,8 +185,9 @@ class Fleet(Defaults):
                 ship.armor_damage += start.stats().stargate.overgate(ship['total_mass'], self.location - move, ship['experience'])
             multi_fleet.add(self)
             return
+        # Manual stargate but no gate or ship would be destroyed
         elif speed == -2:
-            self.__cache__['moved'] = False
+            self.__cache__['move'] = None
             multi_fleet.add(self)
             return
         # Auto speed
