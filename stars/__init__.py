@@ -1,6 +1,7 @@
 __all__ = [
     'asteroid',
     'battle_plan',
+    'binning',
     'blackhole',
     'bomb',
     'build_queue',
