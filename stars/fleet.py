@@ -90,7 +90,6 @@ class Fleet(Defaults):
         if 'stats' in self.__cache__:
             del self.__cache__['stats']
         self.__cache__['move'] = None
-        self.__cache__['move'] = None
         self.__cache__['move_in_system'] = None
         self.__cache__['order_complete'] = True
         self.__cache__['hyperdenial_effect'] = 0.0
