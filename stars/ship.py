@@ -93,7 +93,7 @@ class Ship(ShipDesign):
     def scrap_value(self):
         # Force scrap to be just minerals, cost already accounts for miniaturization
         m = Minerals() + self.cost
-        return m * (self.__cache__['player'].race.scrap_rate() / 100)
+        return m * (self.__cache__['player'].race.scrap_rate / 100)
 
     """ Return the apparent kinetic energy """
     def calc_apparent_ke(self):
