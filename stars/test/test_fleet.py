@@ -237,15 +237,15 @@ class FleetCase(unittest.TestCase):
     def test_hyperdenial1(self):
         f = fleet.Fleet() + ship.Ship()
         with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
-            f.hyperdenial()
-            self.assertEqual(mock.call_count, 0)
+            f.activate_hyperdenial()
+            self.assertEqual(mock.call_count, 1)
 
     def test_hyperdenial2(self):
         f = fleet.Fleet() + ship.Ship()
         stats = f.stats()
         stats.hyperdenial.radius = 1
         with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
-            f.hyperdenial()
+            f.activate_hyperdenial()
             self.assertEqual(mock.call_count, 1)
 
     def test_hyperdenial3(self):
@@ -254,7 +254,7 @@ class FleetCase(unittest.TestCase):
         stats.hyperdenial.range = 1
         f.__cache__['move'] = location.Location()
         with patch.object(hyperdenial.HyperDenial, 'activate') as mock:
-            f.hyperdenial()
+            f.activate_hyperdenial()
             self.assertEqual(mock.call_count, 0)
 
     def test_move1(self):
@@ -437,7 +437,7 @@ class FleetCase(unittest.TestCase):
         f.ships[0].armor = 100
         f.ships[0].repair = 10
         f.ships[0].hull.repair = 5
-        f.__cache__['moved'] = True
+        f.__cache__['move'] = True
         f.repair()
         self.assertEqual(f.ships[0].armor_damage, 10)
 
@@ -501,7 +501,7 @@ class FleetCase(unittest.TestCase):
     def test_lay_mines3(self):
         f = fleet.Fleet() + ship.Ship()
         f.ships[0].mines_laid = 100
-        f.__cache__['moved'] = True
+        f.__cache__['move'] = True
         s = star_system.StarSystem(location=location.Location(is_system=True))
         f.location = location.Location(reference=s)
         f.lay_mines()
@@ -628,8 +628,8 @@ class FleetCase(unittest.TestCase):
 
     def test_unload1(self):
         f = fleet.Fleet() + ship.Ship()
-        f.__cache__['moved'] = True
-        with patch.object(fleet.Fleet, '_other_cargo') as mock:
+        f.__cache__['move'] = True
+        with patch.object(fleet.Fleet, '_other_cargo', return_value=(None,0)) as mock:
             f.unload()
             self.assertEqual(mock.call_count, 0)
 
@@ -686,7 +686,7 @@ class FleetCase(unittest.TestCase):
 
     def test_scrap1(self):
         f = fleet.Fleet() + ship.Ship()
-        f.__cache__['moved'] = True
+        f.__cache__['move'] = True
         with patch.object(ship.Ship, 'scrap') as mock:
             f.scrap()
             self.assertEqual(mock.call_count, 0)
@@ -721,8 +721,8 @@ class FleetCase(unittest.TestCase):
 
     def test_load1(self):
         f = fleet.Fleet() + ship.Ship()
-        f.__cache__['moved'] = True
-        with patch.object(fleet.Fleet, '_other_cargo') as mock:
+        f.__cache__['move'] = True
+        with patch.object(fleet.Fleet, '_other_cargo', return_value=(None,0)) as mock:
             f.load()
             self.assertEqual(mock.call_count, 0)
 
