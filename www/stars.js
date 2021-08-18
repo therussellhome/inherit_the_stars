@@ -209,7 +209,7 @@ function post(form = '', action = '') {
             }
         }
     }
-    //console.log('posting: ', json_post);
+    console.log('posting: ', json_post);
     // Fetch and process the response
     fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_post) }).then(response => 
         response.json().then(json => ({
@@ -225,7 +225,7 @@ function post(form = '', action = '') {
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
     try {
-        //console.log('recived: ', json);
+        console.log('recived: ', json);
         // Store the entire response to the cache
         json_map[form] = json;
         for(key in json) {
@@ -453,7 +453,7 @@ function planetary_slider(element, form, min, max, step) {
 }
 
 // Create a slider
-function slider(element, form, min, max, step, formatter, units) {
+function slider(element, form, min, max, step, fractiondigits, units) {
     var tooltips = true;
     if(units == null) {
         tooltips = false;
@@ -465,15 +465,16 @@ function slider(element, form, min, max, step, formatter, units) {
         tooltips: [tooltips],
         format: {
             to: function(value) {
-                if(formatter == null) {
+                if(fractiondigits == null) {
                     return value;
                 } else if(units == null) {
-                    return formatter.format(value);
+                    return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value);
                 }
-                return formatter.format(value) + units;
+                return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value) + units;
             },
             from: function(value) {
-                return Number(value);
+                return Number(Number(value).toFixed(fractiondigits));
+                
             }
         },
         range: {

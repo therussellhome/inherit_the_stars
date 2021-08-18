@@ -40,7 +40,7 @@ class FinanceMinister(PlayerUI):
                     #TODO , player=self.player(), planet=Reference('Sun')
                     break
             else:
-                self.user_alerts.append(self.finance_planet + ' is on invaled ID')
+                self.user_alerts.append(self.finance_planet + ' is an invaled ID')
         if action[:4] == 'del=':
             del self.player().build_queue[int(action[4:])]
         if action == 'show_screen':
