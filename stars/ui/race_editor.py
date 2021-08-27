@@ -10,7 +10,7 @@ __defaults = {
     'race_editor_habitability_message': '',
     'race_editor_file_to_load': '',
     'options_race_editor_file_to_load': [],
-    'race_editor_advantage_points_left': (0, -2000000, 2000000),
+    'race_editor_advantage_points_left': (0, -20000000, 2000000),
     'race_editor_screen_title': 'Race Editor',
     'race_editor_icon_color': '#FFFFFF'
 }
@@ -48,6 +48,7 @@ class RaceEditor(PlayerUI):
             + '% of planets should be habitable for you'
         """validate that race has non-negative advantage points left"""
         self.race_editor_advantage_points_left = int(race.calc_points())
+        self.race_editor_starting_energy = race.starting_energy
         if self.race_editor_advantage_points_left < 0:
             self.user_alerts.append(self.race_editor_ID + ' has negative advantage points')
         elif action == 'save':
