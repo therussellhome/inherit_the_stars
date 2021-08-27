@@ -107,7 +107,6 @@ class Player(Defaults):
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
 
-
     """ Player filename """
     def filename(self):
         return self.game_ID + ' - ' + self.ID

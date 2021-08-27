@@ -13,7 +13,7 @@ const TERAMETER = 0.0001057;
 var scene, renderer, camera; // Rendering variables
 var selected_position, camera_lookat, camera_flyto; // Camera manipulation variables
 var top_level, in_system; // Selection groups of points
-var details, location_roots, selection_ids; // Data for creating in_system when selection changes
+var details, system_keys, selection_ids; // Data for creating in_system when selection changes
 var system_points, wormhole_points, asteroid_points, deep_space_points; // References for changing colors
 var selected_id, capture_selected; // Data for interaction with other windows
 
@@ -23,7 +23,7 @@ function init() {
     // define global vars
     top_level = new THREE.Group();
     top_level.name = 'top level';
-    location_roots = [];
+    system_keys = [];
     var div = document.getElementById('play_mode');
     // create the scene and renderer
     scene = new THREE.Scene();
@@ -64,64 +64,23 @@ function onSubmit() {
                 deep_space_points = add_top_level(json_map['render_stars'], 'deep_space', deep_space_color);
                 wormhole_points = add_top_level(json_map['render_stars'], 'wormholes', wormholes_color);
                 asteroid_points = add_top_level(json_map['render_stars'], 'asteroids', asteroids_color);
-                // Zoom to home world
-                /*
+                // Create an in_system object so there will not be errors
                 var geometry = new THREE.BufferGeometry();
-                var positions = new Float32Array( 21 * 3 );
-                var positionss = {}
-                for(var i = 0; i < 21; i++) {
-                    positionss[ i * 3 ] = (i - 10) * 0.1 * TERAMETER;
-                    positions[ i * 3 ] = (i - 10) * 0.1 * TERAMETER;
-                    positions[ i * 3 + 1 ] = 0;
-                    positions[ i * 3 + 2 ] = 0;
-                }
-                console.log('positions:', positions, 'ought to be:', positionss);
-                positions.name = 'blue positions';
-                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-                var material = new THREE.PointsMaterial( {
-            	    color: new THREE.Color( 0, 0, 1 ),
-                    size: 1,
-                    sizeAttenuation: false
-                } );
-                var bule_points = new THREE.Points( geometry, material );
-                bule_points.name = 'blue test';
-                top_level.add(bule_points);
-                var geometry = new THREE.BufferGeometry();
-                var positions = new Float32Array( 21 * 3 );
-                var positionss = {}
-                for(var i = 0; i < 21; i++) {
-                    positionss[ i * 3 + 1 ] = ((i - 10) * 0.1 + 1/16) * TERAMETER;
-                    positions[ i * 3 ] = 0;
-                    positions[ i * 3 + 1 ] = ((i - 10) * 0.1 + 1/16) * TERAMETER;
-                    positions[ i * 3 + 2 ] = 0;
-                }
-                console.log('positions:', positions, 'ought to be:', positionss);
-                positions.name = 'red positions';
-                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-                var material = new THREE.PointsMaterial( {
-            	    color: new THREE.Color( 1, 0, 0 ),
-                    size: 1,
-                    sizeAttenuation: false
-                } );
-                var red_points = new THREE.Points( geometry, material );
-                red_points.name = 'red test';
-                top_level.add(red_points);//*/
-                var geometry = new THREE.BufferGeometry();
-                /*var positions = new Float32Array( 0, 0, TERAMETER );
+                var positions = new Float32Array( 0, 0, 0 );
                 positions.name = 'in_system positions';
                 geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
                 var material = new THREE.PointsMaterial( {
                     color: new THREE.Color( 0, 1, 0 ),
                     size: 1,
                     sizeAttenuation: false
-                } );//*/
-                var material = new THREE.PointsMaterial();                
-                var in_system = new THREE.Points( geometry, material );
-                //in_system.name = 'in_system start';
+                } );
+                in_system = new THREE.Points( geometry, material );
+                in_system.name = 'in_system';
                 top_level.add(in_system);
                 scene.add(top_level);
                 console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
-                select_object(top_level, 0, true, 0); // TODO Replace with with the home system's sun
+                // Zoom to home world
+                select_object(top_level.children[4], 0, true); // TODO Replace with with the home system's sun
                 console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
@@ -136,7 +95,7 @@ function add_top_level(render_stars, name, color) {
     var positions = new Float32Array( group.length * 3 );
     var ids = new Int32Array( group.length );
     for(var i = 0; i < group.length; i++) {
-        ids[i] = location_roots.push(group[i].location[0].toString() + ', ' + group[i].location[1].toString() + ', ' + group[i].location[2].toString()) -1;
+        ids[i] = system_keys.push(group[i].system_key) -1;
         //selection_ids.push(group[i].ID);
         positions[ i * 3 ] = group[i].location[0];
         positions[ i * 3 + 1 ] = group[i].location[1];
@@ -203,7 +162,7 @@ function onKeyPress(event) {
     }
     // reset
     else if(event.key == "r") {
-        select_object(true, true, true, 0);
+        select_object(true, true, true);
     }
     window.requestAnimationFrame(render);
 }
@@ -252,35 +211,39 @@ function onClick(event) {
     console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
-        select_object(intersects[0].object, intersects[0].index, true, );
+        select_object(intersects[0].object, intersects[0].index, true);
     } else {
-        raycaster.params.Points.threshold = 10;
-        raycaster.near = 10;
-        raycaster.far = 10000;
+        raycaster.params.Points.threshold = TERAMETER / 10;
+        raycaster.near = 0;
+        raycaster.far = 10;
         var intersects = raycaster.intersectObject( top_level, true );
-        console.log('number of intersects:', intersects.length);
+        console.log('number of intersects less than 10 lys away:', intersects.length);
         if(intersects.length > 0) {
             console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
             select_object(intersects[0].object, intersects[0].index, event.shiftKey);
+        } else {
+            raycaster.params.Points.threshold = 10;
+            raycaster.near = 10;
+            raycaster.far = 10000;
+            var intersects = raycaster.intersectObject( top_level, true );
+            console.log('number of intersects greater than 10 lys away:', intersects.length);
+            if(intersects.length > 0) {
+                console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
+                select_object(intersects[0].object, intersects[0].index, event.shiftKey);
+            }
         }
     }
     window.requestAnimationFrame(render);
 }
 
 // Refocus on the clicked object
-function select_object(obj, index=true, flyto=true, top_level_index=true) {
+function select_object(obj, index=true, flyto=true) {
     console.log('selecting object:', obj)
-    var intersected = obj;
     if(index !== true){
-        if(top_level_index !== true) {
-            var intersected = obj.children[top_level_index];
-            }
-            console.log(intersected);
-        selected_position = new THREE.Vector3( intersected.geometry.attributes.position.array[ index * 3 ], intersected.geometry.attributes.position.array[ index * 3 + 1 ], intersected.geometry.attributes.position.array[ index * 3 + 2 ] );
+        selected_position = new THREE.Vector3( obj.geometry.attributes.position.array[ index * 3 ], obj.geometry.attributes.position.array[ index * 3 + 1 ], obj.geometry.attributes.position.array[ index * 3 + 2 ] );
     }
-    get_system(intersected, index);
-    if(flyto && intersected) {
-        var pos = selected_position;
+    get_system(obj, index);
+    if(flyto && selected_position) {
         var z_offset = TERAMETER;
         if(camera.position.z < selected_position.z) {
             z_offset = - TERAMETER;
@@ -292,94 +255,59 @@ function select_object(obj, index=true, flyto=true, top_level_index=true) {
 
 // Gets all the objects in a system or at a point
 function get_system(intersected, index) {
-    /* if( is_in_system !== true && system_name === "The "+systems[[str(i.location[0]) + ', ' + str(i.location[1]) + ', ' + str(i.location[2])] = []].name.replaceAll(/\'.*//*g, "")+" system" ) {
+    if(intersected === true || intersected.name === 'in_system'){
         return
     }
-    //console.log('system_intersect: ', system_intersect);
-    //system_name = "The "+systems[system_intersect].name.replaceAll(/\'.*//*g, "")+" system";
-    console.log('system_name:', system_name); 
-    var geometry = new THREE.BufferGeometry();
-    var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
-    var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
-    var positions = new Float32Array( 1 * 3 );
-	var colors = new Float32Array( 1 * 3 );
-    var sizes = new Float32Array( 1 );
-    var color = new THREE.Color (systems[system_intersect].color);
-    sizes[0] = ((systems[system_intersect].size + 200) * TERAMETER / 1000);
-    positions[0] = systems[system_intersect].location[0];
-    positions[1] = systems[system_intersect].location[1];
-    positions[2] = systems[system_intersect].location[2];
-    colors[0] = color.r;
-    colors[1] = color.g;
-    colors[2] = color.b;
-    /*//*/ Make dummy planets
-    var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
-    var planet_colors = ["#990000", "#009900", "#000099", "#999999"];
-    var positions = new Float32Array( (planet_colors.length + 1) * 3 );
-	var colors = new Float32Array( (planet_colors.length + 1) * 3 );
-    var sizes = new Float32Array( planet_colors.length + 1 );
-    var color = new THREE.Color (suns[intersect].color);
-    sizes[0] = ((suns[intersect].size + 200) * TERAMETER / 1000);
-    positions[0] = suns[intersect].location[0];
-    positions[1] = suns[intersect].location[1];
-    positions[2] = suns[intersect].location[2];
-    colors[0] = color.r;
-    colors[1] = color.g;
-    colors[2] = color.b;
-    for(var i = 1; i < planet_colors.length + 1; i++) {
-        console.log('i:', i)
-        var color = new THREE.Color( planet_colors[ i - 1 ] );
-        sizes[i] = (Math.random() * 100 + 200) * TERAMETER / 10000;
-        positions[ i * 3 ] = suns[intersect].location[0] + TERAMETER * Math.random() * 2 - TERAMETER;
-        positions[ i * 3 + 1 ] = suns[intersect].location[1] + TERAMETER * Math.random() * 2 - TERAMETER;
-        positions[ i * 3 + 2 ] = suns[intersect].location[2];
-        colors[ i * 3 ] = color.r;
-        colors[ i * 3 + 1 ] = color.g;
-        colors[ i * 3 + 2 ] = color.b;
-    }
-    console.log('colors:', colors);
-    /**/
     var inner_system = new THREE.Group();
     console.log('get_system(intersected):', intersected)
-    if(intersected !== true){
-        var id = intersected.geometry.attributes.selection_id.array[index];
-        selected_id = location_roots[id];
-    }
+    var id = intersected.geometry.attributes.selection_id.array[index];
+    selected_id = system_keys[id];
     console.log(selected_id)
     console.log(details);
+    var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
+    var texture_ship = new THREE.TextureLoader().load( "/alphamap-circle.png" );
+    var texture_asteroid = new THREE.TextureLoader().load( "/alphamap-circle.png" );
+    var texture_wormhole = new THREE.TextureLoader().load( "/alphamap-circle.png" );
+    var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
+    var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
+    var geometry = new THREE.BufferGeometry();
     var system_data = details[selected_id.toString()];
     for(var i = 0; i < system_data.length; i++) {
+        if(system_data[i].type === 'Sun') {
+            var texture = texture_sun;
+            var size_mod = 1000;
+        } else if(system_data[i].type === 'Planet') {
+            var texture = texture_planet;
+            var size_mod = 10000;
+        } else if(system_data[i].type === 'Ship') {
+            var texture = texture_ship;
+            var size_mod = 100000;
+        } else if(system_data[i].type === 'Asteroid') {
+            var texture = texture_asteroid;
+            var size_mod = 100000;
+        } else if(system_data[i].type === 'Wormhole') {
+            var texture = texture_wormhole;
+            var size_mod = 100;
+        }
         var positions = new Float32Array( 1 * 3 );
         positions[0] = system_data[i].location[0];
         positions[1] = system_data[i].location[1];
         positions[2] = system_data[i].location[2];
         geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+        console.log('system_data:', system_data[i]);
+        console.log('test', max(system_data[i], 1));
         var material = new THREE.PointsMaterial( {
-		    color: new THREE.Color( system_data[i].color ),
+            color: new THREE.Color( system_data[i].color ),
             transparent: true,
             alphaMap: alpha_map,
             map: texture,
             alphaTest: 0.9,
-            size: ((systems[system_intersect].size + 200) * TERAMETER / 10000)
+            size: ((system_data[i].size + 200) * TERAMETER / size_mod)
         } );
-        if(system_data) {
-            texture = texture_sun
-        }
-        
+        var point = new THREE.Points( geometry, material );
+        point.name = system_data[i].name;
+        inner_system.add(point);
     }
-    /*/
-    var material = new THREE.ShaderMaterial( {
-		uniforms: {
-            color: { value: new THREE.Color( 0xffffff ) },
-            transparent: { value: true },
-            pointTexture: { value: texture_planet }
-        },
-		vertexShader: document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-        alphaTest: 0.9
-    } );
-    /**/
     scene.remove(in_system);
     in_system = inner_system;
     in_system.name = 'in_system';

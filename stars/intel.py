@@ -18,7 +18,9 @@ class Intel(Defaults):
             # Special handling for locations to remove relative and reduce memory size
             if key == 'location':
                 self[key] = kwargs[key].xyz
-                self['location_root'] = str(kwargs[key].root_location.xyz)
+                root = kwargs[key].root_location.xyz
+                self['location_root'] = root
+                self['system_key'] = '({:.20f}, {:.20f}, {:.20f})'.format(root[0], root[1], root[2])
             else:
                 self[key] = copy.copy(kwargs[key])
 
@@ -28,7 +30,6 @@ Intel.set_defaults(Intel, __defaults)
 
 """ Default values (default, min, max)  """
 __defaults_history = {
-    'location_history': {},
     'location_root_history': {},
 }
 
@@ -39,7 +40,6 @@ class IntelHistory(Intel):
     def add_report(self, **kwargs):
         super().add_report(**kwargs)
         if 'location' in kwargs:
-            self.location_history[self.date] = self.location
             self.location_root_history[self.date] = self.location_root
 
 
