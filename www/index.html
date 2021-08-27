@@ -179,70 +179,70 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
-            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Y axis</td>
-            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Z axis</td>
-            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Number of Systems</td>
-            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, 0, ' systems')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
         <tr>
             <td colspan="2">Public Scores After</td>
-            <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, 0, ' years')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2">Delay Victory Until</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_after" onload="slider(this, 'new_game', 10, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_after" onload="slider(this, 'new_game', 10, 200, 10, 0, ' years')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="3" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Select Victory Conditions</td>
         </tr><tr style="height: 1em"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_enemies" onchange="post('new_game')"/></td>
             <td>Enemies Left</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_enemies_left" onload="slider(this, 'new_game', 0, 15, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_enemies_left" onload="slider(this, 'new_game', 0, 15, 1, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_score" onchange="post('new_game')"/></td>
             <td>Score</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_score_number" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_score_number" onload="slider(this, 'new_game', 100, 10000, 100, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_tech" onchange="post('new_game')"/></td>
             <td>Tech levels</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_tech_levels" onload="slider(this, 'new_game', 10, 300, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_tech_levels" onload="slider(this, 'new_game', 10, 300, 10, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_planets" onchange="post('new_game')"/></td>
             <td>Colonize</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_planets_number" onload="slider(this, 'new_game', 50, 1000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' planets')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_planets_number" onload="slider(this, 'new_game', 50, 1000, 50, 0, ' planets')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_energy" onchange="post('new_game')"/></td>
             <td>Energy Budget</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_energy_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_energy_number" onload="slider(this, 'new_game', 1000, 100000, 1000, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_minerals" onchange="post('new_game')"/></td>
             <td>Surface Minerals</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_minerals_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' kT')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_minerals_number" onload="slider(this, 'new_game', 1000, 100000, 1000, 0, ' kT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_production" onchange="post('new_game')"/></td>
             <td>Production</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_production_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_production_number" onload="slider(this, 'new_game', 1000, 100000, 1000, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_ships" onchange="post('new_game')"/></td>
             <td>Total Ships</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_ships_number" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_ships_number" onload="slider(this, 'new_game', 100, 10000, 100, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_shipsofthewall" onchange="post('new_game')"/></td>
             <td>Ships of the Wall</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_shipsofthewall_number" onload="slider(this, 'new_game', 50, 1000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_shipsofthewall_number" onload="slider(this, 'new_game', 50, 1000, 50, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_starbases" onchange="post('new_game')"/></td>
             <td>Starbases</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_starbases_number" onload="slider(this, 'new_game', 10, 100, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_starbases_number" onload="slider(this, 'new_game', 10, 100, 5, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2">Winner Must Meet</td>
-            <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' victory conditions')"/></td>
+            <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, 0, ' victory conditions')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
@@ -345,8 +345,6 @@ void main() {
         </tr><tr>
             <td colspan="2"><input id="race_editor_lrt_SpacedOut" type="checkbox" onchange="post('race_editor')"/> SpacedOut</td>
         </tr><tr>
-            <td colspan="2"><input id="race_editor_lrt_WasteNot" type="checkbox" onchange="post('race_editor')"/> WasteNot</td>
-        </tr><tr>
             <td colspan="2"><input id="race_editor_lrt_Hypermiler" type="checkbox" onchange="post('race_editor')"/> Hypermiler</td>
         </tr><tr>
             <td colspan="2"><input id="race_editor_lrt_McMansion" type="checkbox" onchange="post('race_editor')"/> McMansion</td>
@@ -382,13 +380,13 @@ void main() {
             <td>Immune <input id="race_editor_hab_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Growth Rate</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, 0, ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
             <td>body mass</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 150, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), 'kgs')"/></td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 160, 5, 0, 'kgs')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting colonists</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' people')"/></td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, 0, ' people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse'); 
@@ -407,23 +405,23 @@ void main() {
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
         <tr>
-            <td>Mines per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_mines_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
+            <td>Mineral extractors per 10,000 colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_mineral_extractors_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mines')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Factories per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' facories')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' facories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Power plants per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' power plants')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Defenses per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Energy per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 50, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>cost of baryogenesis</td>
-            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 1200, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ / kT')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 2000, 50, 0, ' YJ / kT')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
@@ -434,55 +432,55 @@ void main() {
         </tr>
         <tr>
             <td>Energy Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Weapons Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Propulsion Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Construction Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Electronics Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 250, 1000, 25, 0, ' ')"/></td>
             <td><input id="race_editor_starting_tech_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Biotechnology Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
         <tr>
             <td>starting mineral extractors</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_mineral_extractors" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mineral_extractors')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_mineral_extractors" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mineral_extractors')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting factories</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' factories')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' factories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting power plants</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr>
             <td>starting defenses</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting energy</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 25000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' YJ')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 50000, 200000, 2500, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting lithium</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting silicon</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>starting titanium</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table>
 </div>
@@ -750,9 +748,9 @@ void main() {
             <td colspan="4"><input type="checkbox" id="finance_research_use_surplus" onchange="post('finance_minister')"/> allow research to use surplus</td>
         </tr>
     </table><table class="hfill" id="finance_queue" style="font-size: 75%">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Build Queue</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')" style="font-size: 133%">+ Build Queue</caption>
     </table><table class="hfill" id="finance_buildable" style="font-size: 75%">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Buildable</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')" style="font-size: 133%">+ Buildable</caption>
     </table>
 </div>
 
@@ -848,71 +846,71 @@ void main() {
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="ti" title="Titanium">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_buy_ti_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_sell_ti_display" style="text-align: center; min-width: 5em"></td>
         <!-- lithium -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="li" title="Lithium">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_buy_li_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_sell_li_display" style="text-align: center; min-width: 5em"></td>
         <!-- silicon -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="si" title="Silicon">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_buy_si_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_sell_si_display" style="text-align: center; min-width: 5em"></td>
         <!-- fuel -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fa-free-code-camp vertical" title="Fuel">100</i></div></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, 0, null)"/></td>
             <td id="foreign_buy_fuel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, 0, null)"/></td>
             <td id="foreign_sell_fuel_display" style="text-align: center; min-width: 5em"></td>
         <!-- gates -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fab fa-galactic-republic" title="Stargate Use"> / transit</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, 0, null)"/></td>
             <td id="foreign_buy_gate_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, 0, null)"/></td>
             <td id="foreign_sell_gate_display" style="text-align: center; min-width: 5em"></td>
         <!-- hyper denial -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-ban" title="Hyper Denial"> / year</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_buy_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_sell_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         <!-- intel -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-user-secret" title="Intel Sharing"> / year</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_buy_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_sell_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr></table></td></tr>
     </table>

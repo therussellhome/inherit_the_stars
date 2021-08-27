@@ -303,6 +303,8 @@ div.fas.fa-random {
 .factory-color { background: goldenrod; }/* factories */
 .mine-color { background: silver; }/* mines */
 .shield-color { background: mediumslateblue; }/* defences */
+.research-color { background: cyan; }/* same as power color */
+.mat-trans-color  { background: white; }/* same as pop color */
 
 i {
     font-style: normal;

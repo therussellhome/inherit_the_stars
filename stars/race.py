@@ -1,6 +1,6 @@
 import sys
 from .defaults import Defaults
-from math import log
+from math import log, exp
 
 """ List of allowed primary race types """
 PRIMARY_RACE_TRAITS = ['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyforms', 'Melconians', 'Pa\'anuri', 'Patryns', 'TANSTAAFL']
@@ -20,8 +20,8 @@ __defaults = {
     'lrt_MadScientist': False,
     'lrt_QuickHeal': False,
     'lrt_BleedingEdge': False,
-    'lrt_Forager': False,
-    'lrt_2ndSight': False,
+    'lrt_Forager': True,
+    'lrt_2ndSight': True,
     'lrt_JuryRigged': False,
     'research_modifier_energy': (500, 250, 1000),
     'research_modifier_weapons': (500, 250, 1000),
@@ -29,36 +29,36 @@ __defaults = {
     'research_modifier_construction': (500, 250, 1000),
     'research_modifier_electronics': (500, 250, 1000),
     'research_modifier_biotechnology': (500, 250, 1000),
-    'starting_tech_energy': (0, 0, 25),
-    'starting_tech_weapons': (0, 0, 25),
-    'starting_tech_propulsion': (0, 0, 25),
-    'starting_tech_construction': (0, 0, 25),
-    'starting_tech_electronics': (0, 0, 25),
-    'starting_tech_biotechnology': (0, 0, 25),
-    'hab_gravity': (0, 0, 100),
-    'hab_gravity_stop': (100, 0, 100),
+    'starting_tech_energy': (3, 0, 25),
+    'starting_tech_weapons': (3, 0, 25),
+    'starting_tech_propulsion': (3, 0, 25),
+    'starting_tech_construction': (3, 0, 25),
+    'starting_tech_electronics': (3, 0, 25),
+    'starting_tech_biotechnology': (3, 0, 25),
+    'hab_gravity': (14, 0, 100),
+    'hab_gravity_stop': (86, 0, 100),
     'hab_gravity_immune': False,
-    'hab_temperature': (0, 0, 100),
-    'hab_temperature_stop': (100, 0, 100),
+    'hab_temperature': (14, 0, 100),
+    'hab_temperature_stop': (86, 0, 100),
     'hab_temperature_immune': False,
-    'hab_radiation': (0, 0, 100),
-    'hab_radiation_stop': (100, 0, 100),
+    'hab_radiation': (14, 0, 100),
+    'hab_radiation_stop': (86, 0, 100),
     'hab_radiation_immune': False,
     'growth_rate': (15, 5, 20),
     'body_mass': (80, 10, 160),
     'starting_colonists': (250000, 175000, 350000),
-    'power_plants_per_10k_colonists': (10, 2, 50),
-    'factories_per_10k_colonists': (10, 2, 50),
-    'mineral_extractors_per_10k_colonists': (10, 2, 50),
-    'defenses_per_10k_colonists': (10, 2, 50),
-    'energy_per_10k_colonists': (500, 100, 2000),
-    'cost_of_baryogenesis': (1000, 200, 1200), # YJ / kT
+    'power_plants_per_10k_colonists': (10, 4, 25),
+    'factories_per_10k_colonists': (10, 4, 25),
+    'mineral_extractors_per_10k_colonists': (10, 4, 25),
+    'defenses_per_10k_colonists': (10, 4, 25),
+    'energy_per_10k_colonists': (1000, 100, 2000),
+    'cost_of_baryogenesis': (1000, 200, 2000), # YJ / kT
     'scrap_rate': (50, 1, 100),
-    'starting_factories': (10, 5, 20),
-    'starting_mineral_extractors': (10, 5, 20),
-    'starting_power_plants': (10, 5, 20),
-    'starting_defenses': (10, 5, 20),
-    'starting_energy': (50000, 25000, 100000),
+    'starting_factories': (10, 4, 25),
+    'starting_mineral_extractors': (10, 4, 25),
+    'starting_power_plants': (10, 4, 25),
+    'starting_defenses': (10, 4, 25),
+    'starting_energy': (165000, 50000, 200000),
     'starting_lithium': (500, 250, 1000),
     'starting_silicon': (500, 250, 1000),
     'starting_titanium': (500, 250, 1000),
@@ -67,15 +67,15 @@ __defaults = {
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 4857, 
-    'Kender': 4964, 
-    'Formics': 4800, 
-    'Gaerhule': 4910, 
-    'Halleyforms': 4778, 
-    'Pa\'anuri': 4860, 
-    'Melconians': 5186, 
-    'TANSTAAFL': 4909, 
-    'Patryns': 4794,
+    'Aku\'Ultani': 6557, 
+    'Kender': 6664, 
+    'Formics': 6500, 
+    'Gaerhule': 6610, 
+    'Halleyforms': 6478, 
+    'Pa\'anuri': 6560, 
+    'Melconians': 6886, 
+    'TANSTAAFL': 6609, 
+    'Patryns': 6494,
     'Trader': -126,
     'Bioengineer': -122,
     '2ndSight': -99,
@@ -93,7 +93,7 @@ trait_cost = {
 econ_cost = {
     'Pa\'anuri_baryogenesis_invert_slope': 25/100.0,
     'Pa\'anuri_energy_cost_per_10k_col': .8,
-    'cost_of_standard_research_mod': 250,
+    'cost_of_standard_research_mod': 133,
     'power_plant_cost_per_10k_col': 22.5,
     'factory_cost_per_10k_col': 17.5,
     'mineral_extractor_cost_per_10k_col': 11,
@@ -109,7 +109,7 @@ start_cost = {
     'mineral_extractors': 3,
     'power_plants': 6,
     'defenses': 2,
-    'energy': 3/1000,
+    'energy': 1/2500,
     'titanium': .2,
     'lithium': .2,
     'silicon': .2,
@@ -119,14 +119,12 @@ start_cost = {
 hab_cost = {
     'growthrate_cost': 128,
     'body_mass_cost': 6.4,
-    'range_cost_per_click': 1,
-    'immunity_fee': 50, #times number of immunities squared
-    'grav_dis_slope': .1,
-    'temp_dis_slope': .3,
-    'rad_dis_slope': .1,
-    'grav_immunity_cost': 350, 
-    'temp_immunity_cost': 400, 
-    'rad_immunity_cost': 350,
+    'range_cost_per_click': 4.5,
+    'grav_dis_slope': .8,
+    'temp_dis_slope': 2,
+    'rad_dis_slope': .8,
+    'immunity_cost': 400,
+    'immune_temp_extra_cost': 50,
 }
 
 
@@ -204,7 +202,6 @@ class Race(Defaults):
         immunities = 0
         if self.hab_gravity_immune:
             immunities += 1
-            p -= hab_cost['grav_immunity_cost']
         else:
         # Cost of gravity range
             grav_range = self.hab_gravity_stop - self.hab_gravity + 1
@@ -212,7 +209,7 @@ class Race(Defaults):
             p -= grav_range * hab_cost['range_cost_per_click'] - grav_dis * hab_cost['grav_dis_slope']
         if self.hab_temperature_immune:
             immunities += 1
-            p -= hab_cost['temp_immunity_cost']
+            p -= hab_cost['immune_temp_extra_cost']
         else:
         # Cost of temperature range
             temp_range = self.hab_temperature_stop - self.hab_temperature + 1
@@ -220,13 +217,12 @@ class Race(Defaults):
             p -= temp_range * hab_cost['range_cost_per_click'] - temp_dis * hab_cost['temp_dis_slope']
         if self.hab_radiation_immune:
             immunities += 1
-            p -= hab_cost['rad_immunity_cost']
         else:
         # Cost of radiation range
             rad_range = self.hab_radiation_stop - self.hab_radiation + 1
             rad_dis = abs((self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
             p -= rad_range * hab_cost['range_cost_per_click'] - rad_dis * hab_cost['rad_dis_slope']
-        p -= (immunities ** 2) * hab_cost['immunity_fee'] + immunities * hab_cost['immunity_fee'] / 10
+        p -= (immunities ** 1.5) * hab_cost['immunity_cost'] * self.growth_rate/10
         return p
     
     """ Advantage points for economy settings """
@@ -252,12 +248,10 @@ class Race(Defaults):
         for f in tech_feilds:
             if self['starting_tech_' + f] > 5:
                 p -= 2 ** (self['starting_tech_' + f]/2 + 6)
-                print('1')
             elif self['starting_tech_' + f] > 0:
                 p -= 2 ** (self['starting_tech_' + f] + 3)
-                print('2')
-            p -= log((self['research_modifier_' + f]/1000)**-1, 2)*econ_cost['cost_of_standard_research_mod']
-        return p
+            p -= log(1000/self['research_modifier_' + f], 2)*econ_cost['cost_of_standard_research_mod']
+        return round(p, 2)
     
     def _calc_points_start(self):
         p = 0
