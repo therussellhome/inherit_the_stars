@@ -492,7 +492,15 @@ void main() {
         <td class="hfill" style="font-size: 200%">Technology Browser</td> 
         <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table>
+        <tr>
+            <td>Technology Tree </td>
+            <td class="hfill"><select id="tech_browser_tree" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr><tr>
+            <td>Technology Group </td>
+            <td class="hfill"><select id="tech_browser_group" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr>
+    </table>
     <table id="tech_browser"></table>
 </div>
 

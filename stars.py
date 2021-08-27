@@ -34,6 +34,7 @@ _handlers = {
     '/settings': settings.Settings,
     '/shipyard': shipyard.Shipyard,
     '/tech': tech.Tech,
+    '/tech_browser': tech_browser.TechBrowser,
 }
 
 
