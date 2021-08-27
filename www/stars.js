@@ -149,6 +149,7 @@ function launch_player(token) {
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
         post('render_stars');
+        document.getElementById('tech_browser_tree').value = '';
     }
 }
 
