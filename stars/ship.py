@@ -7,7 +7,6 @@ from .asteroid import Asteroid
 from .cargo import Cargo
 from .defaults import get_default
 from .engine import Engine
-from .hyperdenial import HyperDenial
 from .location import Location
 from .minerals import Minerals
 from .reference import Reference
@@ -94,7 +93,7 @@ class Ship(ShipDesign):
     def scrap_value(self):
         # Force scrap to be just minerals, cost already accounts for miniaturization
         m = Minerals() + self.cost
-        return m * (self.__cache__['player'].race.scrap_rate() / 100)
+        return m * (self.__cache__['player'].race.scrap_rate / 100)
 
     """ Return the apparent kinetic energy """
     def calc_apparent_ke(self):
@@ -106,7 +105,7 @@ class Ship(ShipDesign):
             'location': self.location,
         }
         if scan_type == 'anticloak':
-            report['Mass'] = self.__cache__['total_mass']
+            report['Mass'] = self.__cache__['total_mass'] #TODO use ke instead of mass?
         if scan_type != 'hyperdenial':
             report['Apparent Mass'] = self.__cache__['apparent_mass']
         return report

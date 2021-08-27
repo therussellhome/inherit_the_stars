@@ -27,3 +27,19 @@ class StargateTestCase(unittest.TestCase):
         o = stargate.Stargate(strength=2)
         self.assertEqual((s+o).strength, 2)
 
+    def test_overgate1(self):
+        s = stargate.Stargate(strength=500)
+        self.assertEqual(round(s.overgate(300, 300, survival_test=True)), 107)
+        self.assertLess(s.overgate(300, 300, 20), 133.8)
+        self.assertGreater(s.overgate(300, 300, 20), 107)
+    def test_overgate2(self):
+        s = stargate.Stargate(strength=1000)
+        self.assertEqual(round(s.overgate(600, 501, survival_test=True)), 64)
+        self.assertLess(s.overgate(600, 501, 1), 384)
+        self.assertGreater(s.overgate(600, 501, 1), 64)
+    def test_overgate3(self):
+        s = stargate.Stargate(strength=1000)
+        self.assertEqual(round(s.overgate(620, 552, survival_test=True)), 128)
+        self.assertLess(s.overgate(620, 552, 10), 192)
+        self.assertGreater(s.overgate(620, 552, 10), 128)
+
