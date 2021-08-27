@@ -58,7 +58,7 @@ __defaults = {
     'starting_mineral_extractors': (10, 4, 25),
     'starting_power_plants': (10, 4, 25),
     'starting_defenses': (10, 4, 25),
-    'starting_energy': (165000, 50000, 200000),
+    'starting_energy': (165000, 50000, sys.maxsize),
     'starting_lithium': (500, 250, 1000),
     'starting_silicon': (500, 250, 1000),
     'starting_titanium': (500, 250, 1000),
@@ -72,7 +72,7 @@ trait_cost = {
     'Formics': 6500, 
     'Gaerhule': 6610, 
     'Halleyforms': 6478, 
-    'Pa\'anuri': 6560, 
+    'Pa\'anuri': 6420, 
     'Melconians': 6886, 
     'TANSTAAFL': 6609, 
     'Patryns': 6494,
@@ -109,7 +109,7 @@ start_cost = {
     'mineral_extractors': 3,
     'power_plants': 6,
     'defenses': 2,
-    'energy': 1/2500,
+#    'energy': 1/2500,
     'titanium': .2,
     'lithium': .2,
     'silicon': .2,
@@ -139,6 +139,7 @@ class Race(Defaults):
         p += self._calc_points_economy()
         p += self._calc_points_habitability()
         p += self._calc_points_start()
+        self._calc_starting_energy(p)
         return round(p)
     
     """ How many colonists per kT """
@@ -190,7 +191,7 @@ class Race(Defaults):
             for i in range(self.hab_radiation, self.hab_radiation_stop + 1):
                 hab += 100.0/101.0
             overall_hab *= hab / 100.0
-        overall_hab = 100.0 * max(overall_hab, 0.001)
+        overall_hab = 100.0 * max(overall_hab, 0.0001)
         return overall_hab
     
     """ Advantage points for habitability settings """
@@ -255,9 +256,16 @@ class Race(Defaults):
     
     def _calc_points_start(self):
         p = 0
+        if self.primary_race_trait == 'Pa\'anuri':
+            for s in ['colonists', 'titanium', 'silicon', 'lithium']:
+                p -= self['starting_' + s] * start_cost[s]
+            return p
         for s in start_cost:
             p -= self['starting_' + s] * start_cost[s]
         return p
-
+    
+    def _calc_starting_energy(self, points):
+        self.starting_energy = points * 2500 + 50000
+    
 
 Race.set_defaults(Race, __defaults, sparse_json=False)

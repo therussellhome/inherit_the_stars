@@ -268,12 +268,14 @@ void main() {
         <tr class="onsubmit_race_editor">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"></select></td>
-            <td rowspan="3" style="min-width: 75px; text-align: right; font-size: 300%" id="race_editor_icon"></td>
+            <td rowspan="4" style="min-width: 75px; text-align: right; font-size: 300%" id="race_editor_icon"></td>
         </tr><tr>
             <td>Race Name</td>
             <td style="padding-right: 9px" class="hfill"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill">Starting Energy: <input disabled="false" id="race_editor_starting_energy" style="width: 75px;"/></td>
         </tr>
     </table><table class="hfill onsubmit" onsubmit="race_viewer(this); update_race_icon_color()">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Icon</caption>
@@ -362,8 +364,7 @@ void main() {
             <td colspan="2"><input id="race_editor_lrt_JuryRigged" type="checkbox" onchange="post('race_editor')"/> JuryRigged</td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">
-            + Habitability
+        <caption onclick="toggle(this.parentElement, 'collapse')"> + Habitability
             <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="race_editor_habitability_message"/>
         </caption>
         <tr>
@@ -382,10 +383,10 @@ void main() {
             <td>Growth Rate</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, 0, ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
-            <td>body mass</td>
+            <td>Body Mass</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 160, 5, 0, 'kgs')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting colonists</td>
+            <td>Starting Colonists</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, 0, ' people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
@@ -405,23 +406,26 @@ void main() {
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
         <tr>
-            <td>Mineral extractors per 10,000 colonists</td>
+            <td>Mineral Extractors per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_mineral_extractors_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mines')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Factories per 10,000 colonists</td>
+            <td>Factories per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' facories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Power plants per 10,000 colonists</td>
+            <td>Power Plants per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Defenses per 10,000 colonists</td>
+            <td>Defenses per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Energy per 10,000 colonists</td>
+            <td>Energy per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 50, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>cost of baryogenesis</td>
+            <td>Cost of Baryogenesis</td>
             <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 2000, 50, 0, ' YJ / kT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Scrap Rate</td>
+            <td class="hfill"><div class="onload" id="race_editor_scrap_rate" onload="slider(this, 'race_editor', 0, 100, 1, 0, '%')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
@@ -458,28 +462,25 @@ void main() {
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
         <tr>
-            <td>starting mineral extractors</td>
+            <td>Starting Mineral Extractors</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_mineral_extractors" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mineral_extractors')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting factories</td>
+            <td>Starting Ractories</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' factories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting power plants</td>
+            <td>Starting Power Plants</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr>
-            <td>starting defenses</td>
+            <td>Starting Defenses</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting energy</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 50000, 200000, 2500, 0, ' YJ')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>starting lithium</td>
+            <td>Starting Lithium</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting silicon</td>
+            <td>Starting Silicon</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting titanium</td>
+            <td>Starting Titanium</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table>
@@ -492,7 +493,15 @@ void main() {
         <td class="hfill" style="font-size: 200%">Technology Browser</td> 
         <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table>
+        <tr>
+            <td>Technology Tree </td>
+            <td class="hfill"><select id="tech_browser_tree" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr><tr>
+            <td>Technology Group </td>
+            <td class="hfill"><select id="tech_browser_group" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr>
+    </table>
     <table id="tech_browser"></table>
 </div>
 
