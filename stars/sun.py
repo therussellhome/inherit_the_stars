@@ -1,5 +1,6 @@
-from .planet import Planet
 from colorsys import hls_to_rgb
+from .minerals import Minerals
+from .planet import Planet
 
 
 """ Default values (default, min, max)  """
@@ -19,5 +20,8 @@ class Sun(Planet):
         color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X') 
         return color_string
 
+    """ Cannot mine a sun """
+    def extract_minerals(self, orbital=False):
+        return Minerals()
 
 Sun.set_defaults(Sun, __defaults)

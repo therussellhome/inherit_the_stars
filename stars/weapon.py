@@ -19,7 +19,9 @@ class Weapon(Defaults):
     """ Get the accuracy of the weapon at a given range """
     def get_accuracy(self, target_ly):
         range_ly = self.range_tm * stars_math.TERAMETER_2_LIGHTYEAR 
-        if not self.is_beam:
+        if target_ly >= range_ly:
+            return 0
+        elif not self.is_beam:
             return self.accuracy * (1 - (target_ly / range_ly) ** 4)
         return self.accuracy
 
@@ -30,14 +32,13 @@ class Weapon(Defaults):
             power = self.power
             power_to_armor = 0
             if self.is_beam:
-                power = self.power * (1 - target_ly / range_ly)
-            if not self.is_beam:
-                difference = int(power/4)
-                power -= difference
-                power_to_armor += difference
-            power_to_shield = min(power, shield)
-            power_to_armor += max((power - shield) * self.armor_multiplier, 0)
-            return (power_to_shield, power_to_armor)
+                # attenuate beam power by range
+                power = round(self.power * (1 - target_ly / range_ly))
+                to_shield = min(power, shield)
+            else:
+                # 25% of missile power is direct to armor
+                to_shield = min(round(power * 0.75), shield)
+            return (to_shield, (power - to_shield) * self.armor_multiplier)
         return (0, 0)
 
     """ Calculate the damage of firing the weapon at a ship """
@@ -45,8 +46,7 @@ class Weapon(Defaults):
         #print(self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5))
         if self.get_accuracy(target_ly) * (1.0 + visible_ly / 2000.0) - ecm * 100 * (target_ly ** 0.5) <= randint(0, 100):
             return (0, 0)
-        damage = self.get_power(target_ly, shield, armor)
-        return (damage[0], damage[1])
+        return self.get_power(target_ly, shield, armor)
 
 
 Weapon.set_defaults(Weapon, __defaults)

@@ -48,6 +48,10 @@ class Reference(game_engine.BaseClass):
         obj = object.__getattribute__(self, '__get_obj__')(name)
         obj.__setattr__(name, value)
 
+    """ Dereference the object """
+    def __invert__(self):
+        return object.__getattribute__(self, '__get_obj__')('~')
+
     """ Get/cache the object """
     def __get_obj__(self, name):
         cache = object.__getattribute__(self, '__cache__')
@@ -83,6 +87,8 @@ class Reference(game_engine.BaseClass):
     """ Equality test """
     def __eq__(self, other):
         if type(self) != type(other):
+            if hasattr(other, 'ID'):
+                return (object.__getattribute__(self, '__reference__') == other.__class__.__name__ + '/' + other.ID)
             return False
         return (object.__getattribute__(self, '__reference__') == object.__getattribute__(other, '__reference__'))
 

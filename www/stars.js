@@ -149,6 +149,7 @@ function launch_player(token) {
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
         post('render_stars');
+        document.getElementById('tech_browser_tree').value = '';
     }
 }
 
@@ -209,7 +210,7 @@ function post(form = '', action = '') {
             }
         }
     }
-    //console.log('posting: ', json_post);
+    console.log('posting: ', json_post);
     // Fetch and process the response
     fetch('/' + form + action, { method: 'post', body: JSON.stringify(json_post) }).then(response => 
         response.json().then(json => ({
@@ -225,7 +226,7 @@ function post(form = '', action = '') {
 function parse_json(url, json) {
     var form = url.replace(/\?.*/, '').replace(/.*\//, '');
     try {
-        //console.log('recived: ', json);
+        console.log('recived: ', json);
         // Store the entire response to the cache
         json_map[form] = json;
         for(key in json) {
@@ -233,6 +234,11 @@ function parse_json(url, json) {
                 element = document.getElementById(key);
                 if(element != null) {
                     if(element.nodeName == 'DIV') {
+                        if(json.hasOwnProperty(key + '_max')) {
+                            options = element.noUiSlider.options;
+                            options['range']['max'] =  json[key + '_max'];
+                            element.noUiSlider.updateOptions(options);
+                        }
                         value = [json[key]];
                         //console.log(value)
                         if(Array.isArray(value[0])) {
@@ -401,26 +407,8 @@ function planetary_color_picker(element) {
     pickerFixed.openHandler();
 }
 
-
-function race_color_picker(element) {
-    parentFixed = element,
-    pickerFixed = new Picker({
-        parent: parentFixed,
-        popup: false,
-        alpha: false,
-//        editor: false,
-        onChange: function(color) {
-            document.getElementById('race_editor_icon_color').value = color.rgbaString;
-            post('race_editor')
-            get_race_color()
-            //parentFixed.style.backgroundColor = color.rgbaString;
-        },
-    });
-    pickerFixed.openHandler();
-}
-
-function get_race_color() {
-//    console.log('called ...........................................');
+// Update the color of race icons
+function update_race_icon_color() {
     var all = document.getElementsByClassName('race_icon');
     for (var i = 0; i < all.length; i++) {
         all[i].style.color = document.getElementById('race_editor_icon_color').value;
@@ -466,7 +454,7 @@ function planetary_slider(element, form, min, max, step) {
 }
 
 // Create a slider
-function slider(element, form, min, max, step, formatter, units) {
+function slider(element, form, min, max, step, fractiondigits, units) {
     var tooltips = true;
     if(units == null) {
         tooltips = false;
@@ -474,6 +462,39 @@ function slider(element, form, min, max, step, formatter, units) {
     noUiSlider.create(element, {
         start: [min],
         connect: true,
+        step: step,
+        tooltips: [tooltips],
+        format: {
+            to: function(value) {
+                if(fractiondigits == null) {
+                    return value;
+                } else if(units == null) {
+                    return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value);
+                }
+                return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value) + units;
+            },
+            from: function(value) {
+                return Number(Number(value).toFixed(fractiondigits));
+                
+            }
+        },
+        range: {
+            'min': min,
+            'max': max
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function slider3(element, form, min, max, step, formatter, units) {
+    var tooltips = true;
+    if(units == null) {
+        tooltips = false;
+    }
+    noUiSlider.create(element, {
+        start: [min],
+        connect: [true, false],
         step: step,
         tooltips: [tooltips],
         format: {
@@ -809,13 +830,13 @@ function tech_expand(div, expand_guts) {
         guts.classList.toggle('hide');
         expand_guts.classList.toggle('fa-angle-double-up');
         expand_guts.classList.toggle('fa-angle-double-down');
-        if(div.style.height != '60px') {
-            div.style.height = '60px'
+        if(div.style.height != '55px') {
+            div.style.height = '55px'
             div.style.height = div.scrollHeight + 'px'
         }
     } else {
-        if((div.style.height != '60px') && (div.style.height != '')) {
-            div.style.height = '60px'
+        if((div.style.height != '55px') && (div.style.height != '')) {
+            div.style.height = '55px'
         } else {
             div.style.height = div.scrollHeight + 'px'
         }

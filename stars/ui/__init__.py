@@ -7,6 +7,7 @@ __all__ = [
     'launch',
     'messages',
     'new_game',
+    'orders',
     'planetaryministers',
     'planets',
     'plans',
@@ -19,5 +20,5 @@ __all__ = [
     'settings',
     'shipyard',
     'tech',
-    'waypoints',
+    'tech_browser',
 ]

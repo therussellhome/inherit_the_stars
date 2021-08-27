@@ -1,6 +1,6 @@
 {
     "ID": "Small Cargo Pod",
-    "category": "Mechcanical",
+    "category": "Mechanical",
     "description": "adds 10kT to your ship's cargo capacity",
     "cost": {
         "titanium": 2,

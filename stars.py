@@ -21,6 +21,7 @@ _handlers = {
     '/launch': launch.Launch,
     '/messages': messages.Messages,
     '/new_game': new_game.NewGame,
+    '/orders': orders.Orders,
     '/planetary_minister': planetaryministers.PlanetaryMinisters,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
@@ -33,7 +34,7 @@ _handlers = {
     '/settings': settings.Settings,
     '/shipyard': shipyard.Shipyard,
     '/tech': tech.Tech,
-    '/waypoints': waypoints.Waypoints,
+    '/tech_browser': tech_browser.TechBrowser,
 }
 
 
@@ -41,6 +42,13 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args):
         super().__init__(*args, directory='./www')
 
+    """ Allow override of tech images """
+    def do_GET(self):
+        if self.path.startswith('/img/'):
+            self.directory = game_engine.user_file(self.path[1:], is_www=True)
+        super().do_GET()
+
+    """ Call the handler """
     def do_POST(self):
         if self.path == '/shutdown':
             self.server._BaseServer__shutdown_request = True

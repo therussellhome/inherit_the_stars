@@ -56,6 +56,13 @@ class DefaultsTestCase(unittest.TestCase):
         t['default_int'] = 321
         self.assertEqual(t['default_int'], 321)
 
+    def test_subscript3(self):
+        t = _TestDefaults()
+        t.__cache__['cache_int'] = 999
+        self.assertEqual(t['cache_int'], 999)
+        t.cache_int = 123
+        self.assertEqual(t['cache_int'], 123)
+
     def test_value(self):
         t = _TestDefaults()
         t.default_int = 2

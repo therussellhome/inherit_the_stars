@@ -1,6 +1,6 @@
 import sys
 from colorsys import hls_to_rgb
-from math import cos, sin
+from math import cos, sin, sqrt
 from random import randint, uniform
 from . import game_engine
 from . import scan
@@ -39,7 +39,7 @@ __defaults = {
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
     'factories': (0, 0, sys.maxsize),
-    'mines': (0, 0, sys.maxsize),
+    'mineral_extractors': (0, 0, sys.maxsize),
     'defenses': (0, 0, sys.maxsize),
 }
 
@@ -57,12 +57,17 @@ class Planet(Defaults):
                     self.temperature = round(self.distance * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
         if 'radiation' not in kwargs:
             self.radiation = randint(0, 100)
+            if 'star_system' in kwargs:
+                sun = self.star_system.sun()
+                if sun:
+                    self.radiation = sun.radiation
         if 'gravity' not in kwargs:
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
         if 'remaining_minerals' not in kwargs:
-            self.remaining_minerals.titanium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
-            self.remaining_minerals.lithium += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
-            self.remaining_minerals.silicon += ((randint(1, 100) - 1) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+            if self.homeworld:
+                self.init_minerals(49)
+            else:
+                self.init_minerals(1)
         if 'location' not in kwargs:
             distance_ly = self.distance / 100 * stars_math.TERAMETER_2_LIGHTYEAR
             self.location = Location(reference=self.star_system, offset=distance_ly, lat=0)
@@ -71,6 +76,16 @@ class Planet(Defaults):
         if 'age' not in kwargs:
             self.age = randint(0, 3000)
         game_engine.register(self)
+        self.__cache__['shields'] = 0
+        self.__cache__['impact_shields'] = 0
+        self.__cache__['impact_people'] = 0
+
+    """ Create remaining minerals with a minimum value 1-99 """
+    def init_minerals(self, minimum):
+        minimum = max(1, min(99, minimum))
+        for mineral in MINERAL_TYPES:
+            self.remaining_minerals[mineral] = (randint(minimum, 99) ** 0.5) * (((self.gravity * 6 / 100) + 1) * 1000)
+
 
     """ Get the planet's color """
     # return it in a hexdecimal string so the webpage can use it
@@ -135,6 +150,10 @@ class Planet(Defaults):
     and 100 subtracted from the result
     """
     def habitability(self, race, terraform=(0, 0, 0)):
+        if self.__class__.__name__ != 'Sun' and race.primary_race_trait == 'Pa\'anuri':
+            return -100
+        elif self.__class__.__name__ == 'Sun' and race.primary_race_trait != 'Pa\'anuri':
+            return -100
         g = self._calc_range_from_center(self.gravity, race.hab_gravity, race.hab_gravity_stop, terraform[0])
         t = self._calc_range_from_center(self.temperature, race.hab_temperature, race.hab_temperature_stop, terraform[1])
         r = self._calc_range_from_center(self.radiation, race.hab_radiation, race.hab_radiation_stop, terraform[2])
@@ -193,11 +212,28 @@ class Planet(Defaults):
 
     """ Incoming! """
     def raise_shields(self):
+        self.__cache__['shields'] = 0
         if self.player.race.primary_race_trait == 'Gaerhule':
-            return self._operate('defenses') * max(480, 240 * self.player.tech_level.energy)
+            self.__cache__['shields'] = self._operate('defenses') * max(480, 240 * self.player.tech_level.energy)
         elif self.player.race.primary_race_trait != 'Aku\'Ultan':
-            return self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
-        return 0
+            self.__cache__['shields'] = self._operate('defenses') * max(200, 200 * self.player.tech_level.energy)
+        return self.__cache__['shields']
+
+    """ Calculate bombing """
+    def bomb(self, bomb):
+        defense = bomb.percent_defense(self.on_surface.people, self.__cache__['shields'])
+        if defense < randint(0, 100):
+            self.__cache__['impact_shields'] += bomb.shield_kill / 100
+            self.__cache__['impact_people'] += max(bomb.minimum_pop_kill / 100, bomb.percent_pop_kill / 100 * self.on_surface.people)
+
+    """ Apply bombing """
+    def bomb_impact(self):
+        self.defenses -= self.__cache__['impact_shields']
+        self.on_surface.people -= self.__cache__['impact_people']
+        self.__cache__['impact_shields'] = 0
+        self.__cache__['impact_people'] = 0
+        if self.on_surface.people == 0:
+            pass #TODO
 
     """ power plants make energy per 1/100th """
     def generate_energy(self):
@@ -206,14 +242,24 @@ class Planet(Defaults):
         self.player.energy += facility_yj + pop_yj
         return facility_yj + pop_yj
 
-    """ mines mine the minerals per 100th """
-    def mine_minerals(self):
-        factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
-        operate = self._operate('mines')
+    """ mineral extractors extract the minerals per 100th """
+    def extract_minerals(self, component=None, qty=0, max_extraction=sys.maxsize):
+        if component:
+            operate = component.extraction_rate * qty
+            factor = component.mineral_depletion_factor
+        else:
+            operate = self._operate('mineral_extractors')
+            factor = 1 + 0.3 * 0.5 ** (self.player.tech_level.weapons / 7)
         availability = self.mineral_availability()
+        extracted = Minerals()
         for mineral in MINERAL_TYPES:
-            self.on_surface[mineral] += operate * availability[mineral] / 100
-            self.remaining_minerals[mineral] -= operate * availability[mineral] * factor / 100
+            extract = min(max_extraction, operate * availability[mineral] / 100)
+            max_extraction -= extract
+            extracted[mineral] = extract
+            self.remaining_minerals[mineral] -= extract * factor
+        if not component:
+            self.on_surface += extracted
+        return extracted
 
     """ Availability of the mineral type """
     def mineral_availability(self):
@@ -248,21 +294,21 @@ class Planet(Defaults):
         pro = ti + li + si
         # calculate the time needed to get what is needed
         try:
-            t_ti = ceil(max((ti - self.on_surface.titanium) / (self.mineral_availability('titanium') * self._operate('mines')), 1))/100
+            t_ti = ceil(max((ti - self.on_surface.titanium) / (self.mineral_availability('titanium') * self._operate('mineral_extractors')), 1))/100
         except ZeroDivisionError:
             if ti - self.on_surface.titanium >= 0:
                 t_ti = 0.01
             else:
                 t_ti = 'never'
         try:
-            t_li = ceil(max((li - self.on_surface.lithium) / (self.mineral_availability('lithium') * self._operate('mines')), 1))/100
+            t_li = ceil(max((li - self.on_surface.lithium) / (self.mineral_availability('lithium') * self._operate('mineral_extractors')), 1))/100
         except ZeroDivisionError:
             if li - self.on_surface.lithium >= 0:
                 t_li = 0.01
             else:
                 t_li = 'never'
         try:
-            t_si = ceil(max((si - self.on_surface.silicon) / (self.mineral_availability('silicon') * self._operate('mines')), 1))/100
+            t_si = ceil(max((si - self.on_surface.silicon) / (self.mineral_availability('silicon') * self._operate('mineral_extractors')), 1))/100
         except ZeroDivisionError:
             if si - self.on_surface.silicon >= 0:
                 t_si = 0.01
@@ -358,9 +404,7 @@ class Planet(Defaults):
             worst_hab_from_center = 0.0
             if minister.min_terraform_only:
                 worst_hab_from_center = 1.0
-            max_offset = min(40, self.player.tech_level.biotechnology)
-            if not self.player.race.lrt_Bioengineer:
-                max_offset = int(max_offset / 2)
+            max_offset = self.player.max_terraform()
             for hab in ['temperature', 'radiation', 'gravity']:
                 hab_from_center = self._calc_range_from_center(self[hab], self.player.race['hab_' + hab], self.player.race['hab_' + hab + '_stop'], self[hab + '_terraform'])
                 if hab_from_center > worst_hab_from_center and self[hab + '_terraform'] < max_offset:

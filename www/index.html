@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="fa-all.css">
 <!-- javascript libraries -->
 <link href="nouislider.css" rel="stylesheet">
-<script src="https://unpkg.com/vanilla-picker@2"></script>
 <script src="nouislider.js"></script>
 <script src="chart.js"></script>
 <!-- 3d UI -->
@@ -172,7 +171,7 @@ void main() {
     <table class="hfill">
         <tr>
             <td>Game Name</td>
-            <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
+            <td class="hfill" style="padding-right: 9px;"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
         </tr>
     </table><table class="hfill" id="new_game_players">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
@@ -180,80 +179,80 @@ void main() {
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
         <tr>
             <td>Diameter: X axis</td>
-            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Y axis</td>
-            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_y" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Diameter: Z axis</td>
-            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ly')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_z" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Number of Systems</td>
-            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' systems')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, 0, ' systems')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
         <tr>
             <td colspan="2">Public Scores After</td>
-            <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, 0, ' years')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2">Delay Victory Until</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_after" onload="slider(this, 'new_game', 10, 200, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' years')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_after" onload="slider(this, 'new_game', 10, 200, 10, 0, ' years')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="3" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Select Victory Conditions</td>
         </tr><tr style="height: 1em"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_enemies" onchange="post('new_game')"/></td>
             <td>Enemies Left</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_enemies_left" onload="slider(this, 'new_game', 0, 15, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_enemies_left" onload="slider(this, 'new_game', 0, 15, 1, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_score" onchange="post('new_game')"/></td>
             <td>Score</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_score_number" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_score_number" onload="slider(this, 'new_game', 100, 10000, 100, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_tech" onchange="post('new_game')"/></td>
             <td>Tech levels</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_tech_levels" onload="slider(this, 'new_game', 10, 300, 10, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_tech_levels" onload="slider(this, 'new_game', 10, 300, 10, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_planets" onchange="post('new_game')"/></td>
             <td>Colonize</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_planets_number" onload="slider(this, 'new_game', 50, 1000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' planets')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_planets_number" onload="slider(this, 'new_game', 50, 1000, 50, 0, ' planets')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_energy" onchange="post('new_game')"/></td>
             <td>Energy Budget</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_energy_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_energy_number" onload="slider(this, 'new_game', 1000, 100000, 1000, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_minerals" onchange="post('new_game')"/></td>
             <td>Surface Minerals</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_minerals_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' kT')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_minerals_number" onload="slider(this, 'new_game', 1000, 100000, 1000, 0, ' kT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_production" onchange="post('new_game')"/></td>
             <td>Production</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_production_number" onload="slider(this, 'new_game', 1000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_production_number" onload="slider(this, 'new_game', 1000, 100000, 1000, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_ships" onchange="post('new_game')"/></td>
             <td>Total Ships</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_ships_number" onload="slider(this, 'new_game', 100, 10000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_ships_number" onload="slider(this, 'new_game', 100, 10000, 100, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_shipsofthewall" onchange="post('new_game')"/></td>
             <td>Ships of the Wall</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_shipsofthewall_number" onload="slider(this, 'new_game', 50, 1000, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_shipsofthewall_number" onload="slider(this, 'new_game', 50, 1000, 50, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td><input type="checkbox" id="new_game_victory_starbases" onchange="post('new_game')"/></td>
             <td>Starbases</td>
-            <td class="hfill"><div class="onload" id="new_game_victory_starbases_number" onload="slider(this, 'new_game', 10, 100, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="new_game_victory_starbases_number" onload="slider(this, 'new_game', 10, 100, 5, 0, '')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2">Winner Must Meet</td>
-            <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' victory conditions')"/></td>
+            <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, 0, ' victory conditions')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
         <tr>
             <td>Technology Tree</td>
-            <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"/></td>
+            <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"></select></td>
         </tr>
         <tr>
             <td>System Names</td>
-            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"/></td>
+            <td class="hfill"><select id="new_game_system_names" class="hfill" onchange="post('new_game')"></select></td>
         </tr>
     </table>
 </div>
@@ -268,82 +267,77 @@ void main() {
     </tr></table><table class="hfill">
         <tr class="onsubmit_race_editor">
             <td>Load Existing</td>
-            <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"/></td>
-            <td rowspan="3" style="font-size: 300%" id="race_editor_icon"></td>
+            <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"></select></td>
+            <td rowspan="4" style="min-width: 75px; text-align: right; font-size: 300%" id="race_editor_icon"></td>
         </tr><tr>
             <td>Race Name</td>
-            <td class="hfill" style="padding-right: 6px"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
+            <td style="padding-right: 9px" class="hfill"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill">Starting Energy: <input disabled="false" id="race_editor_starting_energy" style="width: 75px;"/></td>
         </tr>
-    </table><table class="hfill onsubmit" style="font-size: 300%" onsubmit="race_viewer(this); get_race_color()">
-        <caption style="font-size: 33%" onclick="toggle(this.parentElement, 'collapse')">+ Race Icons</caption>
-        <tr hidden="true"><td colspan="5"><input disabled="true" id="race_editor_icon_color"/></td></tr>
-        <tr>
-            <td style="font-size: 33%" class="onload" colspan="2" rowspan="4" id="race_editor_color_picker" onload="race_color_picker(this)"></td>
-            <td onclick="post('race_editor', '?fas fa-pastafarianism')"><i class="button fas fa-pastafarianism race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-mailchimp')"><i class="button fab fa-mailchimp race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-gitkraken')"><i class="button fab fa-gitkraken race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-phoenix-framework')"><i class="button fab fa-phoenix-framework race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-grunt')"><i class="button fab fa-grunt race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-grav')"><i class="button fab fa-grav race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-jenkins')"><i class="button fab fa-jenkins race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-keybase')"><i class="button fab fa-keybase race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-mandalorian')"><i class="button fab fa-mandalorian race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-octopus-deploy')"><i class="button fab fa-octopus-deploy race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-odnoklassniki')"><i class="button fab fa-odnoklassniki race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-napster')"><i class="button fab fa-napster race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fas fa-cat')"><i class="button fas fa-cat race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-pied-piper-alt')"><i class="button fab fa-pied-piper-alt race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-optin-monster')"><i class="button fab fa-optin-monster race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-snowman')"><i class="button fas fa-snowman race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-bug')"><i class="button fas fa-bug race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-earlybirds')"><i class="button fab fa-earlybirds race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-linux')"><i class="button fab fa-linux race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-crow')"><i class="button fas fa-crow race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-reddit-alien')"><i class="button fab fa-reddit-alien race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-slideshare')"><i class="button fab fa-slideshare race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fas fa-dove')"><i class="button fas fa-dove race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-snapchat-ghost')"><i class="button fab fa-snapchat-ghost race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-dog')"><i class="button fas fa-dog race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-github-alt')"><i class="button fab fa-github-alt race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-github-square')"><i class="button fab fa-github-square race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-evernote')"><i class="button fab fa-evernote race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-deskpro')"><i class="button fab fa-deskpro race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-qq')"><i class="button fab fa-qq race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-dragon')"><i class="button fas fa-dragon race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-swift')"><i class="button fab fa-swift race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-studiovinari')"><i class="button fab fa-studiovinari race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-sticker-mule')"><i class="button fab fa-sticker-mule race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-suse')"><i class="button fab fa-suse race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-themeisle')"><i class="button fab fa-themeisle race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-twitter')"><i class="button fab fa-twitter race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fab fa-tripadvisor')"><i class="button fab fa-tripadvisor race_icon"></i>
-            <td onclick="post('race_editor', '?fab fa-wolf-pack-battalion')"><i class="button fab fa-wolf-pack-battalion race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-otter')"><i class="button fas fa-otter race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-frog')"><i class="button fas fa-frog race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-horse')"><i class="button fas fa-horse race_icon"></i>
-        </tr><tr>
-            <td onclick="post('race_editor', '?fas fa-horse-head')"><i class="button fas fa-horse-head race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-fish')"><i class="button fas fa-fish race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-hippo')"><i class="button fas fa-hippo race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-spider')"><i class="button fas fa-spider race_icon"></i>
-            <td onclick="post('race_editor', '?fas fa-kiwi-bird')"><i class="button fas fa-kiwi-bird race_icon"></i>
+    </table><table class="hfill onsubmit" onsubmit="race_viewer(this); update_race_icon_color()">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Icon</caption>
+        <tr><td colspan="11" style="text-align: center">Color: <input type="color" id="race_editor_icon_color" onchange="update_race_icon_color(); post('race_editor')"/></td></tr>
+        <tr style="text-align: center">
+            <td onclick="post('race_editor', '?fas fa-pastafarianism')"><i class="button fas fa-pastafarianism race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-mailchimp')"><i class="button fab fa-mailchimp race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-gitkraken')"><i class="button fab fa-gitkraken race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-phoenix-framework')"><i class="button fab fa-phoenix-framework race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-grunt')"><i class="button fab fa-grunt race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-grav')"><i class="button fab fa-grav race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-jenkins')"><i class="button fab fa-jenkins race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-keybase')"><i class="button fab fa-keybase race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-mandalorian')"><i class="button fab fa-mandalorian race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-octopus-deploy')"><i class="button fab fa-octopus-deploy race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-odnoklassniki')"><i class="button fab fa-odnoklassniki race_icon"></i></td>
+        </tr><tr style="text-align: center">
+            <td onclick="post('race_editor', '?fab fa-napster')"><i class="button fab fa-napster race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-cat')"><i class="button fas fa-cat race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-pied-piper-alt')"><i class="button fab fa-pied-piper-alt race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-optin-monster')"><i class="button fab fa-optin-monster race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-snowman')"><i class="button fas fa-snowman race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-bug')"><i class="button fas fa-bug race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-earlybirds')"><i class="button fab fa-earlybirds race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-linux')"><i class="button fab fa-linux race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-crow')"><i class="button fas fa-crow race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-reddit-alien')"><i class="button fab fa-reddit-alien race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-slideshare')"><i class="button fab fa-slideshare race_icon"></i></td>
+        </tr><tr style="text-align: center">
+            <td onclick="post('race_editor', '?fas fa-dove')"><i class="button fas fa-dove race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-snapchat-ghost')"><i class="button fab fa-snapchat-ghost race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-dog')"><i class="button fas fa-dog race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-github-alt')"><i class="button fab fa-github-alt race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-github-square')"><i class="button fab fa-github-square race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-evernote')"><i class="button fab fa-evernote race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-deskpro')"><i class="button fab fa-deskpro race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-qq')"><i class="button fab fa-qq race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-dragon')"><i class="button fas fa-dragon race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-swift')"><i class="button fab fa-swift race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-studiovinari')"><i class="button fab fa-studiovinari race_icon"></i></td>
+        </tr><tr style="text-align: center">
+            <td onclick="post('race_editor', '?fab fa-sticker-mule')"><i class="button fab fa-sticker-mule race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-suse')"><i class="button fab fa-suse race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-themeisle')"><i class="button fab fa-themeisle race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-twitter')"><i class="button fab fa-twitter race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-tripadvisor')"><i class="button fab fa-tripadvisor race_icon"></i></td>
+            <td onclick="post('race_editor', '?fab fa-wolf-pack-battalion')"><i class="button fab fa-wolf-pack-battalion race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-otter')"><i class="button fas fa-otter race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-frog')"><i class="button fas fa-frog race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-horse')"><i class="button fas fa-horse race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-horse-head')"><i class="button fas fa-horse-head race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-fish')"><i class="button fas fa-fish race_icon"></i></td>
+        </tr><tr style="text-align: center">
+            <td onclick="post('race_editor', '?fas fa-hippo')"><i class="button fas fa-hippo race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-spider')"><i class="button fas fa-spider race_icon"></i></td>
+            <td onclick="post('race_editor', '?fas fa-kiwi-bird')"><i class="button fas fa-kiwi-bird race_icon"></i></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
         <tr>
             <td>Primary Racial Trait</td>
-            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"/></td>
+            <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td colspan="2" style="border-top: 1px solid silver; border-bottom: 1px solid silver; text-align: center">Lesser Racial Traits</td>
         </tr><tr>
@@ -352,8 +346,6 @@ void main() {
             <td colspan="2"><input id="race_editor_lrt_Bioengineer" type="checkbox" onchange="post('race_editor')"/> Bioengineer</td>
         </tr><tr>
             <td colspan="2"><input id="race_editor_lrt_SpacedOut" type="checkbox" onchange="post('race_editor')"/> SpacedOut</td>
-        </tr><tr>
-            <td colspan="2"><input id="race_editor_lrt_WasteNot" type="checkbox" onchange="post('race_editor')"/> WasteNot</td>
         </tr><tr>
             <td colspan="2"><input id="race_editor_lrt_Hypermiler" type="checkbox" onchange="post('race_editor')"/> Hypermiler</td>
         </tr><tr>
@@ -372,8 +364,7 @@ void main() {
             <td colspan="2"><input id="race_editor_lrt_JuryRigged" type="checkbox" onchange="post('race_editor')"/> JuryRigged</td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">
-            + Habitability
+        <caption onclick="toggle(this.parentElement, 'collapse')"> + Habitability
             <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="race_editor_habitability_message"/>
         </caption>
         <tr>
@@ -390,13 +381,13 @@ void main() {
             <td>Immune <input id="race_editor_hab_radiation_immune" type="checkbox" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Growth Rate</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' %')"/></td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, 0, ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
-            <td>body mass</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 150, 5, Intl.NumberFormat('en', {maximumFractionDigits: 0}), 'kgs')"/></td>
+            <td>Body Mass</td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 160, 5, 0, 'kgs')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting colonists</td>
-            <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' people')"/></td>
+            <td>Starting Colonists</td>
+            <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, 0, ' people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse'); 
@@ -415,23 +406,26 @@ void main() {
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
         <tr>
-            <td>Mines per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_mines_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
+            <td>Mineral Extractors per 10,000 Colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_mineral_extractors_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mines')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Factories per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' facories')"/></td>
+            <td>Factories per 10,000 Colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' facories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Power plants per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' power plants')"/></td>
+            <td>Power Plants per 10,000 Colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Defenses per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 2, 50, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
+            <td>Defenses per 10,000 Colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Energy per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 100, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' YJ')"/></td>
+            <td>Energy per 10,000 Colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 50, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>cost of baryogenesis</td>
-            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 1200, 50, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' YJ / kT')"/></td>
+            <td>Cost of Baryogenesis</td>
+            <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 2000, 50, 0, ' YJ / kT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Scrap Rate</td>
+            <td class="hfill"><div class="onload" id="race_editor_scrap_rate" onload="slider(this, 'race_editor', 0, 100, 1, 0, '%')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
@@ -442,55 +436,52 @@ void main() {
         </tr>
         <tr>
             <td>Energy Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_energy" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_energy" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Weapons Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_weapons" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_weapons" type="number" min="0" max="25" onchange="post('race_editor')"> </input></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Propulsion Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_propulsion" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_propulsion" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Construction Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_construction" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_construction" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Electronics Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), ' ')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_electronics" onload="slider(this, 'race_editor', 250, 1000, 25, 0, ' ')"/></td>
             <td><input id="race_editor_starting_tech_electronics" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Biotechnology Research</td>
-            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 250, 1000, 25, Intl.NumberFormat('en', {maximumFractionDigits: 0}), '')"/></td>
+            <td class="hfill"><div class="onload" id="race_editor_research_modifier_biotechnology" onload="slider(this, 'race_editor', 250, 1000, 25, 0, '')"/></td>
             <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
         <tr>
-            <td>starting mines</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_mines" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' mines')"/></td>
+            <td>Starting Mineral Extractors</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_mineral_extractors" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mineral_extractors')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting factories</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' factories')"/></td>
+            <td>Starting Ractories</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' factories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting power plants</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 2}), ' power plants')"/></td>
+            <td>Starting Power Plants</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr>
-            <td>starting defenses</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 5, 20, 1, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' defenses')"/></td>
+            <td>Starting Defenses</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting energy</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 25000, 100000, 1000, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' YJ')"/></td>
+            <td>Starting Lithium</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting lithium</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+            <td>Starting Silicon</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting silicon</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>starting titanium</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 400, 700, 5, Intl.NumberFormat('en', {maximumFractionDigits: 1}), ' KT')"/></td>
+            <td>Starting Titanium</td>
+            <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table>
 </div>
@@ -502,7 +493,15 @@ void main() {
         <td class="hfill" style="font-size: 200%">Technology Browser</td> 
         <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table>
+        <tr>
+            <td>Technology Tree </td>
+            <td class="hfill"><select id="tech_browser_tree" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr><tr>
+            <td>Technology Group </td>
+            <td class="hfill"><select id="tech_browser_group" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr>
+    </table>
     <table id="tech_browser"></table>
 </div>
 
@@ -557,33 +556,156 @@ void main() {
         <td><i class="button far fa-times-circle" title="Close Planets" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
-        <tr><td>Filter</td><td class="hfill"><select id="planets_filter" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
-        <tr><td>Field</td><td class="hfill"><select id="planets_field" style="width: 100%" onchange="post(\'planets\')"></select></td></tr>
+        <tr><td>Filter</td><td class="hfill"><select id="planets_filter" style="width: 100%" onchange="post('planets')"></select></td></tr>
+        <tr><td>Field</td><td class="hfill"><select id="planets_field" style="width: 100%" onchange="post('planets')"></select></td></tr>
     </table>
-    <table id="planets_report">
+    <table id="planets_report" class="hfill">
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_waypoints" style="width: 600px" onload="post('waypoints')">
+<div class="screen hide onload" id="screen_orders" style="width: 600px" onload="post('orders')">
     <table class="topbar hfill"><tr>
         <td><img title="Waypoints" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
         <td class="hfill" id="topbar"></td>
     </tr></table>
-    <table class="hfill" id="waypoint_data" style="text-align: center">
-        <th><i title="X">X</i></th>
-        <th><i title="Y">Y</i></th>
-        <th><i title="Z">Z</i></th>
-    </table>
-    <table class="hfill" id="edit_waypoint" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Waypoint</caption>
+    <table class="hfill" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Other</caption>
         <tr>
-            <td class="hfill" rowspan="2"><select id="waypoints_load_cargo1" class="hfill" onchange="post(\'waypoints\')"/>
-            <input id="waypoints_load_cargo1" type="number" min="0" max="1000000000000" onchange="post(\'waypoints\')"/></td>
+            <td>Speed</td>
+            <td class="hfill"><div class="onload" id="orders_speed" onload="slider3(this, 'orders', -2, 10, 1, null, null)"/></td>
+            <td id="orders_speed_display" style="text-align: center; min-width: 5em"></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Description</td><td colspan="2"><input class="hfill" id="orders_description" onchange="post('orders')"/></td>
+        </tr><tr>
+            <td>Transfer To</td>
+            <td colspan="2" class="hfill"><select id="orders_transgfer_to" class="hfill" onchange="post('orders')"/></td>
+        </tr><tr>
+            <td>Standoff</td>
+            <td colspan="2" class="hfill"><select id="orders_standoff" class="hfill" onchange="post('orders')"/></td>
+        </tr><tr>
+            <td>Depart</td>
+            <td colspan="2" class="hfill"><select id="orders_depart" class="hfill" onchange="post('orders')"/></td>
+        </tr><tr>
+            <td colspan="3"><input id="orders_upgrade_if_commanded" type="checkbox" onchange="post('orders')"/> Upgrade if commanded</td>
+        </tr><tr>
+            <td colspan="3"><input id="orders_hyperdenial" type="checkbox" onchange="post('orders')"/> Hyperdenial</td>
+        </tr><tr>
+            <td colspan="3"><input id="orders_merge" type="checkbox" onchange="post('orders')"/> Merge</td>
+        </tr><tr>
+            <td colspan="3"><input id="orders_scrap" type="checkbox" onchange="post('orders')"/> Scrap</td>
+        </tr><tr>
+            <td colspan="3"><input id="orders_patrol" type="checkbox" onchange="post('orders')"/> Patrol</td>
+        </tr>
+    </table><table class="hfill" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Load</caption>
+        <tr>
+            <td>Load Titanium:</td>
+            <td><i class="ti" id="orders_load_ti_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_ti" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Load Lithium:</td>
+            <td><i class="li" id="orders_load_li_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_li" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Load Silicon:</td>
+            <td><i class="si" id="orders_load_si_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_si" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Load People:</td>
+            <td><i id="orders_load_people_display" style="text-align: center; min-width: 5em"/>kT</td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_load_people" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="2"><input id="order_load_dunnage" type="checkbox" onchange="post('orders')"/> Load Dunnage</td>
+        </tr>
+    </table><table class="hfill" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Colonization Criteria</caption>
+        <tr>
+            <td>>= <i id="orders_colonize_min_hab_display" style="text-align: center; min-width: 5em"/></td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_hab" onload="slider3(this, 'orders', 0, 101, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>>= <i class="ti" id="orders_colonize_min_ti_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_ti" onload="slider3(this, 'orders', 0, 10, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>>= <i class="li" id="orders_colonize_min_li_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_li" onload="slider3(this, 'orders', 0, 10, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>>= <i class="si" id="orders_colonize_min_si_display" style="text-align: center; min-width: 5em"></i>/<i class="fas fa-random" style="font-size: 85%; transform: rotate(90deg); writing-mode: vertical-rl; padding-right: 0"></i>/y</td>
+            <td class="hfill"><div class="onload" id="orders_colonize_min_si" onload="slider3(this, 'orders', 0, 10, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td colspan="3"><input id="order_colonize_manual" type="checkbox" onchange="post('orders')"/> Ignore Critera, Colonize Waypoint</td>
+        </tr>
+    </table><table class="hfill" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Unload</caption>
+        <tr>
+            <td>Unload Titanium:</td>
+            <td><i class="ti" id="orders_unload_ti_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_ti" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Unload Lithium:</td>
+            <td><i class="li" id="orders_unload_li_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_li" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Unload Silicon:</td>
+            <td><i class="si" id="orders_unload_si_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_si" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Unload People:</td>
+            <td><i id="orders_unload_people_display" style="text-align: center; min-width: 5em"/>kT</td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_unload_people" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Buy</caption>
+        <tr>
+            <td>Buy Titanium:</td>
+            <td><i class="ti" id="orders_buy_ti_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_ti" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Buy Lithium:</td>
+            <td><i class="li" id="orders_buy_li_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_li" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Buy Silicon:</td>
+            <td><i class="si" id="orders_buy_si_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_si" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Buy Fuel:</td>
+            <td><i class="fa-free-code-camp" id="orders_buy_fuel_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill"><div class="onload" id="orders_buy_fuel" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
+        </tr><tr class="slider_padding"></tr>
+    </table><table class="hfill" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Sell</caption>
+        <tr>
+            <td colspan="2"><input id="orders_sell_ti" type="checkbox" onchange="post('orders')"/> Sell Titanium</td>
+        </tr><tr>
+            <td colspan="2"><input id="orders_sell_li" type="checkbox" onchange="post('orders')"/> Sell Lithium</td>
+        </tr><tr>
+            <td colspan="2"><input id="orders_sell_si" type="checkbox" onchange="post('orders')"/> Sell Silicon</td>
+        </tr><tr>
+            <td colspan="2"><input id="orders_sell_fuel" type="checkbox" onchange="post('orders')"/> Sell Fuel</td>
+        </tr>
+    </table><table class="hfill" style="text-align: center" onload="toggle(this.parentElement, 'collapse')">
+        <tr>
+            <td><input disabled="true" id="order_last_screen" class="hfill" onchange="post('orders')"/></td>
+            <td><input disabled="true" id="order_fleet_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
+            <td><input disabled="true" id="order_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
         </tr>
     </table>
 </div>
+
 
 <div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
     <table class="topbar hfill"><tr>
@@ -597,8 +719,8 @@ void main() {
     <table class="hfill" id="ships" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Ships</caption>
     </table>
-    <table class="hfill" id="fleet_waypoints" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Waypoints</caption>
+    <table class="hfill" id="fleet_orders" style="text-align: center">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orders</caption>
     </table>
     <table class="hfill" id="other_ships" style="text-align: center">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Other Player's Ships</caption>
@@ -635,9 +757,9 @@ void main() {
             <td colspan="4"><input type="checkbox" id="finance_research_use_surplus" onchange="post('finance_minister')"/> allow research to use surplus</td>
         </tr>
     </table><table class="hfill" id="finance_queue" style="font-size: 75%">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Build Queue</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')" style="font-size: 133%">+ Build Queue</caption>
     </table><table class="hfill" id="finance_buildable" style="font-size: 75%">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Buildable</caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')" style="font-size: 133%">+ Buildable</caption>
     </table>
 </div>
 
@@ -702,7 +824,7 @@ void main() {
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
         <tr><td colspan="2"><table id="research_queue"></table></td></tr>
-		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"/></td></tr>
+		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"></select></td></tr>
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
@@ -733,71 +855,71 @@ void main() {
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="ti" title="Titanium">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_buy_ti_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_sell_ti_display" style="text-align: center; min-width: 5em"></td>
         <!-- lithium -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="li" title="Lithium">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_buy_li_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_sell_li_display" style="text-align: center; min-width: 5em"></td>
         <!-- silicon -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="si" title="Silicon">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_buy_si_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
             <td id="foreign_sell_si_display" style="text-align: center; min-width: 5em"></td>
         <!-- fuel -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fa-free-code-camp vertical" title="Fuel">100</i></div></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, 0, null)"/></td>
             <td id="foreign_buy_fuel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, 0, null)"/></td>
             <td id="foreign_sell_fuel_display" style="text-align: center; min-width: 5em"></td>
         <!-- gates -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fab fa-galactic-republic" title="Stargate Use"> / transit</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, 0, null)"/></td>
             <td id="foreign_buy_gate_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, 0, null)"/></td>
             <td id="foreign_sell_gate_display" style="text-align: center; min-width: 5em"></td>
         <!-- hyper denial -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-ban" title="Hyper Denial"> / year</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_buy_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_sell_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         <!-- intel -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-user-secret" title="Intel Sharing"> / year</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_buy_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
             <td id="foreign_sell_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr></table></td></tr>
     </table>
@@ -817,7 +939,7 @@ void main() {
         <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
     </tr></table>
     <table class="hfill" id="shipyard_ship_overview">
-    </table><table class="hfill">
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Combat Effectivity</caption>
         <tr>
             <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
@@ -825,13 +947,13 @@ void main() {
         </tr><tr>
             <td style="font-size: 85%; text-align: center">Range (terameters)</td>
         </tr>
-    </table><table class="hfill">
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanning</caption>
         <tr>
             <td style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
             <td><canvas id="shipyard_sensor_chart" style="width: 550px"></canvas></td>
         </tr>
-    </table><table class="hfill">
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Engine</caption>
         <tr>
             <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
@@ -845,8 +967,8 @@ void main() {
     </table>
     <table class="hfill"> 
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
-        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
-        <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td>Design Name </td><td class="hfill" style="padding-right: 9px;"><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
+        <tr><td>Hull </td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
         <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
             <td>General Slots</td><td id="shipyard_slots_general"></td>
             <td>Depot Slots</td><td id="shipyard_slots_depot"></td>
@@ -856,7 +978,7 @@ void main() {
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
-        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
+        <tr><td>Technology Group </td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
         <tr><td colspan="2"><table id="shipyard_tech"></table></td></tr>
     </table>
 </div>
@@ -918,7 +1040,7 @@ void main() {
         </tr>
     </table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"/></caption>
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"></select></caption>
         <tr>
             <td>TODO</td>
         </tr>

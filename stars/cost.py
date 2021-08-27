@@ -37,8 +37,7 @@ class Cost(Minerals):
     
     """ percent of other """
     def percent(self, other):
-        return 4/4
-        
+        return 4/4 # TODO Pam please code and add tests
     
     """ Format the tech level for HTML """
     def to_html(self):

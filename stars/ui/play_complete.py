@@ -30,7 +30,7 @@ class PlayComplete(PlayerUI):
             game_engine.unregister()
             p = game_engine.load('Player', filename)
             # Set the player object to autosave
-            game_engine.set_auto_save(p)
+            game_engine.set_root_obj(p)
             self.player_token = str(id(p))
             self.player_ready = True
 
