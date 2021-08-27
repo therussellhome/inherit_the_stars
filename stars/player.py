@@ -146,7 +146,6 @@ class Player(Defaults):
 
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
-        return self.fleets[-1]#test code for rendering in_system
     
     def add_fleet(self, fleet):
         if fleet not in self.fleets:

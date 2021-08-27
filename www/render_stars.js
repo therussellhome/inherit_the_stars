@@ -80,7 +80,7 @@ function onSubmit() {
                 scene.add(top_level);
                 console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
                 // Zoom to home world
-                select_object(top_level.children[4], 0, true); // TODO Replace with with the home system's sun
+                select_object(top_level.children[1], 0, true); // TODO Replace with with the home system's sun
                 console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
@@ -281,10 +281,10 @@ function get_system(intersected, index) {
             var size_mod = 10000;
         } else if(system_data[i].type === 'Ship') {
             var texture = texture_ship;
-            var size_mod = 100000;
+            var size_mod = 20000;
         } else if(system_data[i].type === 'Asteroid') {
             var texture = texture_asteroid;
-            var size_mod = 100000;
+            var size_mod = 20000;
         } else if(system_data[i].type === 'Wormhole') {
             var texture = texture_wormhole;
             var size_mod = 100;
@@ -295,7 +295,6 @@ function get_system(intersected, index) {
         positions[2] = system_data[i].location[2];
         geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
         console.log('system_data:', system_data[i]);
-        console.log('test', max(system_data[i], 1));
         var material = new THREE.PointsMaterial( {
             color: new THREE.Color( system_data[i].color ),
             transparent: true,
