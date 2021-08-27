@@ -29,7 +29,7 @@ class StarSystem(Defaults):
         game_engine.register(self)
 
     """ create planets """
-    def create_system(self, player=None, num_planets=-1):
+    def create_system(self, race=None, num_planets=-1):
         planet_args = {
             'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
@@ -38,9 +38,9 @@ class StarSystem(Defaults):
         if num_planets < 0:
             num_planets = round(random() * 5)
         home = -1
-        if player:
-            planet_args['radiation'] = (player.race.hab_radiation_stop + player.race.hab_radiation) / 2
-            if player.race.primary_race_trait == 'Pa\'anuri':
+        if race:
+            planet_args['radiation'] = (race.hab_radiation_stop + race.hab_radiation) / 2
+            if race.primary_race_trait == 'Pa\'anuri':
                 num_planets = max(1, num_planets)
                 home = 0
             else:
@@ -56,10 +56,11 @@ class StarSystem(Defaults):
             else:
                 self.planets.append(Planet(**planet_args, 
                     homeworld=True, 
-                    gravity=(player.race.hab_gravity_stop + player.race.hab_gravity) / 2,
-                    temperature=(player.race.hab_temperature_stop + player.race.hab_temperature) / 2))
-                self.planets[home].colonize(player)
-                self.planets[home].on_surface.people = player.race.starting_colonists
+                    gravity=(race.hab_gravity_stop + race.hab_gravity) / 2,
+                    temperature=(race.hab_temperature_stop + race.hab_temperature) / 2))
+        if race:
+            return Reference(self.planets[home])
+        return None
 
     """ get the sun for the system """
     def sun(self):

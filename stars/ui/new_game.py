@@ -74,11 +74,7 @@ class NewGame(UI):
         self.new_game_num_systems = min(self.new_game_num_systems, len(system_names))
         # Create the game
         if action == 'create' and len(player_races) > 0:
-            players = []
-            tech_tree = game_engine.load('Tech', self.new_game_tech_tree)
-            for r in player_races:
-                players.append(Player(race=r, tech=tech_tree, game_ID=self.new_game_name))
-            game = Game(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_num_systems, system_names, ID=self.new_game_name, players=players)
+            game = Game(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_num_systems, system_names, ID=self.new_game_name, races=player_races, tech_file=self.new_game_tech_tree)
             game.save()
 
     def _races(self, key, races):

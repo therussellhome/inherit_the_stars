@@ -30,8 +30,6 @@ class FinanceMinister(PlayerUI):
         if not self.player():
             return
         values = ['finance_construction_percent', 'finance_mattrans_percent', 'finance_research_percent', 'finance_mattrans_use_surplus', 'finance_research_use_surplus']
-        #for value in values:
-        #    print(value + ':', self.player()[value])
         if action[:4] == 'add=':
             i = int(action[4:])
             for p in self.player().planetary_minister_map:
@@ -55,13 +53,12 @@ class FinanceMinister(PlayerUI):
         self.finance_research_percent = self.finance_slider[2] - self.finance_slider[1]
         for value in values:
             self.player()[value] = self[value]
-        #print(self.__dict__)
         """ set display values """
         self.finance_construction = '<i class="fa-bolt">' + str(round(self.player().finance_construction_percent * self.player().predict_budget() / 100)) + '</i>'
         self.finance_mattrans = '<i class="fa-bolt">' + str(round(self.player().finance_mattrans_percent * self.player().predict_budget() / 100)) + '</i>'
         self.finance_research = '<i class="fa-bolt">' + str(round(self.player().finance_research_percent * self.player().predict_budget() / 100)) + '</i>'
         self.finance_other = '<i class="fa-bolt">' + str(round((((100-self.player().finance_construction_percent) - self.player().finance_research_percent) - self.player().finance_mattrans_percent) * self.player().predict_budget() / 100)) + '</i>'
-        for planet in self.player().planetary_minister_map:
+        for planet in self.player().planets:
             self.options_finance_planet.append(planet.ID)
         # build queue
         queue = self.player().build_queue

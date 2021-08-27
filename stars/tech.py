@@ -202,7 +202,7 @@ class Tech(Defaults):
                 fuel_per_ly = 0
                 siphon = 0
                 for engine in self.engines:
-                    fuel_per_ly += engine.tachometer(i + 1, mass_per_engine, 0) * mass_per_engine
+                    fuel_per_ly += engine.tachometer(i + 1, mass_per_engine) * mass_per_engine
                     siphon += engine.antimatter_siphon
                 chart['tachometer'].append(fuel_per_ly / mass_per_engine)
                 if siphon == 0:
