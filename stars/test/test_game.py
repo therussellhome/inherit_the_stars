@@ -16,8 +16,8 @@ class GameTestCase(unittest.TestCase):
         self.assertEqual(len(g.systems), 100)
 
     def test_init03(self):
-        players = []
+        races = []
         for i in range(10):
-            players.append(player.Player())
-        g = game.Game(players=players, num_systems=0)
+            races.append(race.Race())
+        g = game.Game(races=races, num_systems=0)
         self.assertEqual(len(g.systems), 10)
