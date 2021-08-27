@@ -8,6 +8,7 @@ from . import stars_math
 from .defaults import Defaults
 from .fleet import Fleet
 from .location import Location
+from .player import Player
 from .star_system import StarSystem
 from .reference import Reference
 
@@ -50,13 +51,12 @@ __defaults = {
 """ Class defining a game and everything in it """
 class Game(Defaults):
     """ Initialize defaults and register self """
-    def __init__(self, x=50, y=50, z=50, num_systems=10, system_names=None, **kwargs):
+    def __init__(self, x=50, y=50, z=50, num_systems=10, system_names=None, races=[], tech_file='Inherit the Stars!', **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
         if 'systems' not in kwargs:
-            for p in self.players:
-                p.game = Reference(self)
-            num_systems = max(len(self.players), num_systems)
+            tech_tree = game_engine.load('Tech', tech_file)
+            num_systems = max(len(races), num_systems)
             if not system_names:
                 system_names = []
                 for i in range(0, num_systems):
@@ -78,13 +78,17 @@ class Game(Defaults):
             # pick home systems
             min_distance = max(x, y, z) * 0.8
             homes = []
-            while len(homes) < min(len(self.players), len(self.systems)):
+            while len(homes) < min(len(races), len(self.systems)):
                 for s in self.systems:
                     for h in homes:
                         if s.location - h.location < min_distance:
                             break
                     else:
-                        s.create_system(Reference(self.players[len(homes)]))
+                        homeworld = s.create_system(races[len(homes)])
+                        player = Player(race=races[len(homes)], tech=tech_tree, game_ID=self.ID, game=Reference(self), planets=[homeworld])
+                        self.players.append(player)
+                        homeworld.colonize(player)
+                        homeworld.on_surface.people = player.race.starting_colonists
                         homes.append(s)
                         if len(homes) == len(self.players):
                             break
@@ -128,8 +132,11 @@ class Game(Defaults):
     """ Generate and save """
     def new_turn(self):
         self.update_players()
+        print('Turn={:.0f}'.format(self.hundreth / 100), end='')
         for i in range(0, 100):
             self.generate_hundreth()
+            print('.', end='', flush=True)
+        print('{:.0f}'.format(self.hundreth / 100))
         self.save()
 
     """ Get all populated planets """
