@@ -31,14 +31,14 @@ def calc(fleets):
     for (player, xyz, denial) in __denials.items():
         location = Location(xyz)
         for fleet in binning.search(bins, location, denial.radius):
-            if not fleet.player.get_treaty(player).hyperdenial_transit():
+            if player == None or not fleet.player.get_treaty(player).hyperdenial_transit():
                 distance = fleet.location - location
                 if distance < denial.radius:
-                    fleet.in_hyperdenial(denial.effect(distance), player)
+                    fleet.in_hyperdenial(denial.effect(distance), player, blackhole=(player==None))
 
 
 """ Add a hyperdenial zone """
-def _add_denial(location, denial, player=Reference()):
+def _add_denial(location, denial, player=None):
     global __denials
     key = (player, location.xyz)
     if key not in __denials:

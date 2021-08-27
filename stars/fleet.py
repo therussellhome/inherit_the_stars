@@ -92,7 +92,7 @@ class Fleet(Defaults):
         self.__cache__['move'] = None
         self.__cache__['move_in_system'] = None
         self.__cache__['order_complete'] = True
-        self.__cache__['hyperdenial_effect'] = 0.0
+        self.__cache__['hyperdenial_effect'] = [0.0, 0.0]
         self.__cache__['hyperdenial_players'] = []
 
     """ Check if the fleet can/ordered to move """
@@ -155,9 +155,12 @@ class Fleet(Defaults):
         if self.is_stationary():
             self.stats().hyperdenial.activate(self.player, self.location)
 
-    """ Hyperdenials effecting me """
-    def in_hyperdenial(self, effect, player):
-        self.__cache__['hyperdenial_effect'] += effect
+    """ Hyperdenials affecting me """
+    def in_hyperdenial(self, effect, player, blackhole=False):
+        if blackhole:
+            self.__cache__['hyperdenial_effect'][1] += effect
+        else:
+            self.__cache__['hyperdenial_effect'][0] += effect
         # Players that will have visibility of fleet if fleet moves
         if player and player not in self.__cache__['hyperdenial_players']:
             self.__cache__['hyperdenial_players'].append(player)
@@ -201,7 +204,7 @@ class Fleet(Defaults):
             # reduce speed until safe
             while speed > 0:
                 stop_at = self.location.move(move, distance)
-                if self._fuel_calc(speed, hyperdenial, distance) <= stats.fuel and self._damage_check(speed, hyperdenial) == 0:
+                if self._fuel_calc(speed, distance, hyperdenial) <= stats.fuel and self._damage_check(speed, hyperdenial) == 0:
                     break
                 speed -= 1
                 distance = (speed ** 2) / 100
@@ -219,16 +222,18 @@ class Fleet(Defaults):
             self.__cache__['order_complete'] = False
         multi_fleet.add(self)
         # Use fuel
-        stats.fuel -= self._fuel_calc(speed, hyperdenial, distance)
+        stats.fuel -= self._fuel_calc(speed, distance, hyperdenial)
         # Moved in a hyperdenial field
-        if hyperdenial > 0.0:
-            scan.hyperdenial(fleet, self.__cache__['hyperdenial_players'])
+        scan.hyperdenial(self, self.__cache__['hyperdenial_players'])
+        # Blackhole message
+        if hyperdenial[1] > 0.0:
+            pass #TODO blackhole message
         # Apply any over-drive damage and siphon antimatter
         for ship in self.ships:
             mass_per_engine = ship['mass_per_engine']
             for engine in ship.engines:
                 stats.fuel += engine.siphon_calc(distance)
-                ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, hyperdenial, distance))
+                ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, distance, hyperdenial))
         self.fuel_distribution() # Do now in case of ships dying in battle
 
     """ Post combat, move inside the system """
@@ -497,12 +502,12 @@ class Fleet(Defaults):
         return (None, 0)
 
     """ Calculates fuel usage for fleet """
-    def _fuel_calc(self, speed, denials, distance):
+    def _fuel_calc(self, speed, distance, denials):
         fuel = 0
         for ship in self.ships:
             mass_per_engine = ship['mass_per_engine']
             for engine in ship.engines:
-                fuel += engine.fuel_calc(speed, mass_per_engine, denials, distance)
+                fuel += engine.fuel_calc(speed, mass_per_engine, distance, denials)
         return fuel
         
     """ Checks if you can safely move at a certain speed with your entire fleet """

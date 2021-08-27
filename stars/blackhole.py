@@ -10,12 +10,8 @@ __defaults = {
 
 """ Represent a black hole """
 class BlackHole(HyperDenial):
-    """ Calculate the effect """
-    def effect(self, distance):
-        return super().effect(distance) * 100 #TODO game balance
-
     """ Add the black hole to the active hyperdenials """
     def activate(self):
-        super().activate(Reference(''), self.location)
+        super().activate(None, self.location)
 
 BlackHole.set_defaults(BlackHole, __defaults)
