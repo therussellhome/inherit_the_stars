@@ -65,7 +65,13 @@ class Httpd(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             #print('    post = ', post_str)
             if response:
-                response_str = game_engine.to_json(response(action, **json))
+                if action == 'reset':
+                    if 'player_token' in json:
+                        response_str = game_engine.to_json(response(action, player_token=json['player_token']))
+                    else:
+                        response_str = game_engine.to_json(response(action))
+                else:
+                    response_str = game_engine.to_json(response(action, **json))
             else:
                 response_str = '{}'
             #print('    resp = ', response_str)

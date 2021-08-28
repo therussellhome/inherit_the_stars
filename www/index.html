@@ -116,7 +116,7 @@ void main() {
     <img class="button" id="button_help_play" title="Help" src="help.png" onclick="show_screen('help')"/>
 </div>
 
-<div class="sidebarr hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
+<div class="sidebar2 hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
 </table></div>
 
 <div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
@@ -125,7 +125,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch')">
+<div class="screen hide onreset" id="screen_launch" style="width: 600px" onreset="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Launch" src="launch.gif"/></td>
         <td class="hfill" style="font-size: 200%">Launch</td>
@@ -136,7 +136,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host')" onsubmit="host_auto()">
+<div class="screen hide onreset onsubmit_host" id="screen_host" style="width: 600px" onreset="post('host', '?reset')" onsubmit="host_auto()">
     <table class="topbar hfill"><tr>
         <td><img title="Host / Generate" src="generate.png"/></td>
         <td class="hfill" style="font-size: 200%">Host / Generate</td>
@@ -161,7 +161,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game')">
+<div class="screen hide onreset" id="screen_new_game" style="width: 600px" onreset="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="New Game" src="new_game.png"/></td>
         <td class="hfill" style="font-size: 200%">New Game</td>
@@ -244,7 +244,7 @@ void main() {
             <td colspan="2">Winner Must Meet</td>
             <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, 0, ' victory conditions')"/></td>
         </tr><tr class="slider_padding"></tr>
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
+    </table><table class="hfill onreset" onreset="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
         <tr>
             <td>Technology Tree</td>
@@ -258,7 +258,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor')">
+<div class="screen hide onreset" id="screen_race_editor" style="width: 620px" onreset="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Race Editor" src="race.png"/></td>
         <td class="hfill" style="font-size: 200%">Race Editor</td>
@@ -392,19 +392,19 @@ void main() {
             <td>Starting Colonists</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, 0, ' people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
+    </table><table class="hfill onreset" onreset="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse'); 
                 gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
                 temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
                 radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">+ Habitability Charts</caption>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onsubmit_race_editor" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onsubmit_race_editor" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onsubmit_race_editor" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
         </tr>
     </table><table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
@@ -490,14 +490,21 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onload="post('tech_browser')" onsubmit="tech_post()">
+<div class="screen hide onreset onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onreset="post('tech_browser', '?reset')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Technology Browser" src="tech_browser.png"/></td>
         <td class="hfill" style="font-size: 200%">Technology Browser</td> 
         <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
-    <table id="tech_browser"></table>
+    <table>
+        <tr>
+            <td>Technology Tree </td>
+            <td class="hfill"><select id="tech_browser_tree" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr><tr>
+            <td>Technology Group </td>
+            <td class="hfill"><select id="tech_browser_group" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr>
+    </table>
 </div>
 
 
@@ -514,14 +521,14 @@ void main() {
 <!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
 
 
-<div class="hide onsubmit_render_stars onload" id="play_mode" tabindex="0" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black" onload="post('render_stars')">
+<div class="hide onsubmit_render_stars onreset" id="play_mode" tabindex="0" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black" onreset="post('render_stars', '?reset')">
 </div>
 
 
 <!-- PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS -->
 
 
-<div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
+<div class="screen hide onreset" id="screen_messages" style="width: 600px" onreset="post('messages', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Messages" src="/messages.png"/></td>
         <td class="hfill" style="font-size: 200%">Messages</td>
@@ -544,7 +551,7 @@ void main() {
     </table>
 </div>
 
-<div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+<div class="screen hide onreset" id="screen_planets" style="width: 600px" onreset="post('planets', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Planets" src="planets.png"/><td>
         <td class="hfill" style="font-size: 200%">Planets</td>
@@ -559,7 +566,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_orders" style="width: 600px" onload="post('orders')">
+<div class="screen hide onreset" id="screen_orders" style="width: 600px" onreset="post('orders', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Waypoints" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
@@ -692,7 +699,7 @@ void main() {
         </tr><tr>
             <td colspan="2"><input id="orders_sell_fuel" type="checkbox" onchange="post('orders')"/> Sell Fuel</td>
         </tr>
-    </table><table class="hfill" style="text-align: center" onload="toggle(this.parentElement, 'collapse')">
+    </table><table class="hfill onreset" style="text-align: center" onreset="toggle(this.parentElement, 'collapse')">
         <tr>
             <td><input disabled="true" id="order_last_screen" class="hfill" onchange="post('orders')"/></td>
             <td><input disabled="true" id="order_fleet_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
@@ -702,7 +709,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
+<div class="screen hide onreset" id="screen_fleets" style="width: 600px" onreset="post('fleets', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Fleets" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Fleets</td> 
@@ -723,15 +730,15 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_interstellar" style="width: 600px" onload="post('interstellar')">
+<div class="screen hide onreset" id="screen_interstellar" style="width: 600px" onreset="post('interstellar', '?reset')">
 </div>
 
 
-<div class="screen hide onload" id="screen_battles" style="width: 600px" onload="post('battles')">
+<div class="screen hide onreset" id="screen_battles" style="width: 600px" onreset="post('battles', '?reset')">
 </div>
 
 
-<div class="screen hide onload" id="screen_finance_minister" style="width: 600px" onload="post('finance_minister')">
+<div class="screen hide onreset" id="screen_finance_minister" style="width: 600px" onreset="post('finance_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Finance Minister" src="/finance_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Finance Minister</td> 
@@ -759,7 +766,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_planetary_ministers" style="width: 600px" onload="post('planetary_minister')">
+<div class="screen hide onreset" id="screen_planetary_ministers" style="width: 600px" onreset="post('planetary_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Planetary Ministers" src="/ministers.png"/></td>
         <td class="hfill" style="font-size: 200%">Planetary Ministers</td> 
@@ -775,7 +782,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_planetary_minister" style="width: 600px" onload="post('planetary_minister')">
+<div class="screen hide onreset" id="screen_planetary_minister" style="width: 600px" onreset="post('planetary_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Planetary Minister" src="/planetary_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Planetary Minister</td> 
@@ -808,7 +815,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onload="post('research_minister')" onsubmit="tech_post()">
+<div class="screen hide onreset onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onreset="post('research_minister', '?reset')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Research Minister" src="research_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Research Minister</td> 
@@ -828,7 +835,7 @@ void main() {
     </table>
 </div>
 
-<div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
+<div class="screen hide onreset" id="screen_foreign_minister" style="width: 600px" onreset="post('foreign_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Foreign Minister" src="foreign_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Foreign Minister</td>
@@ -921,7 +928,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post(); ship_display()">
+<div class="screen hide onreset onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onreset="post('shipyard', '?reset')" onsubmit="tech_post(); ship_display()">
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
@@ -979,11 +986,11 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
+<div class="screen hide onreset" id="screen_plans" style="width: 600px" onreset="post('plans', '?reset')">
 </div>
 
 
-<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
+<div class="screen hide onreset" id="screen_score" style="width: 600px" onreset="post('score', '?reset')">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Score</td>
     </tr></table>
@@ -999,11 +1006,11 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+<div class="screen hide onreset" id="screen_settings" style="width: 600px" onreset="post('settings', '?reset')">
 </div>
 
 
-<div class="screen overlay_message hide onload onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onload="post('play_complete')" onsubmit="play_complete_auto()">
+<div class="screen overlay_message hide onreset onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onreset="post('play_complete', '?reset')" onsubmit="play_complete_auto()">
     <table class="topbar hfill"><tr>
         <td><img title="Play Complete" src="generate.png"/></td>
         <td class="hfill" style="font-size: 200%">Waiting for new turn</td> 
@@ -1013,7 +1020,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_race_viewer" style="width: 600px" onload="post('race_viewer')">
+<div class="screen hide onreset" id="screen_race_viewer" style="width: 600px" onreset="post('race_viewer', '?reset')">
 </div>
 
 
@@ -1021,7 +1028,7 @@ void main() {
 
 
 <!-- This is for copying -->
-<div class="hide onload onsubmit_tech" id="tech_template" onsubmit="tech_display()" onload="post('tech')">
+<div class="hide onreset onsubmit_tech" id="tech_template" onsubmit="tech_display()" onreset="post('tech', '?reset')">
     <div class="tech_expand" onclick="tech_expand(this.parentElement, null)"></div>
     <table class="hfill tech_overview">
     </table>
