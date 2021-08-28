@@ -494,7 +494,7 @@ function slider(element, form, min, max, step, fractiondigits, units) {
                 return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value) + units;
             },
             from: function(value) {
-                return Number(Number(value).toFixed(fractiondigits));
+                return parseInt(value);
                 
             }
         },
