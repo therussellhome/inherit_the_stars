@@ -86,15 +86,16 @@ class Player(Defaults):
         super().__init__(**kwargs)
         if 'validation_key' not in kwargs:
             self.validation_key = str(uuid.uuid4())
-            self.planets[0].colonize(self)
-            self.planets[0].on_surface.people = self.race.starting_colonists
+            if len(self.planets) > 0:
+                self.planets[0].colonize(self)
+                self.planets[0].on_surface.people = self.race.starting_colonists
+                for mineral in MINERAL_TYPES:
+                    self.planets[0].on_surface[mineral] = self.race['starting_' + mineral]
+                for f in FACILITY_TYPES:
+                    self.planets[0][f] = self.race['starting_' + f]
             self.energy = self.race.starting_energy
-            for field in TECH_FIELDS 
+            for field in TECH_FIELDS: 
                 self.tech_level[field] = self.race['starting_tech_' + field]
-            for mineral in MINERAL_TYPES
-                self.planets[0].on_surface[mineral] = self.race['starting_' + mineral]
-            for f in FACILITY_TYPES
-                self.planets[0][f] = self.race['starting_' + f]
         if 'date' not in kwargs:
             self.date = '{:01.2f}'.format(self.race.start_date)
         if 'ministers' not in kwargs:
