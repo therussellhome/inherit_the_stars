@@ -101,12 +101,12 @@ class Game(Defaults):
             # initial intel
             for s in self.systems:
                 for p in self.players:
-                    p.add_intel(s, location=s.location, color=s.sun().get_color(), size=s.sun().gravity)
+                    p.add_intel(s, {'location': s.location, 'color': s.sun().get_color(), 'size': s.sun().gravity})
             for b in self.blackholes:
                 for p in self.players:
-                    p.add_intel(b, location=b.location, size=b.range)
+                    p.add_intel(b, {'location': b.location, 'size': b.range})
             self._scan([])
-            self._call(self.players, 'calc_score')
+            self._call(self.players, 'update_stats')
                 
     """ Save host and players to file """
     def save(self):
@@ -223,7 +223,7 @@ class Game(Defaults):
         self.hundreth += 1
         if self.hundreth % 100 == 0:
             self._scan(fleets)
-            self._call(players, 'calc_score')
+            self._call(self.players, 'update_stats')
             self._check_for_winner()
 
     """ Call a method on a list of classes """
@@ -273,6 +273,7 @@ class Game(Defaults):
 
     """ Check against the win conditions """
     def _check_for_winner(self):
+        # TODO store score ranking into players
         if self.hundreth >= self.victory_after * 100:
             pass #TODO
 

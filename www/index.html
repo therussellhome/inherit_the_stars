@@ -992,57 +992,13 @@ void main() {
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Score</td>
     </tr></table>
+    <table class="hfill" id="score_table"></table>
     <table class="hfill">
+        <caption onclick="toggle(this.parentElement, 'collapse')">+ Score Chart<caption>
         <tr>
-            <td></td>
-            <td><input id="score_player01" disabled="true" class="vertical"/></td>
-            <td><input id="score_player02" disabled="true" class="vertical"/></td>
-            <td><input id="score_player03" disabled="true" class="vertical"/></td>
-            <td><input id="score_player04" disabled="true" class="vertical"/></td>
-            <td><input id="score_player05" disabled="true" class="vertical"/></td>
-            <td><input id="score_player06" disabled="true" class="vertical"/></td>
-            <td><input id="score_player07" disabled="true" class="vertical"/></td>
-            <td><input id="score_player08" disabled="true" class="vertical"/></td>
-            <td><input id="score_player09" disabled="true" class="vertical"/></td>
-            <td><input id="score_player10" disabled="true" class="vertical"/></td>
-            <td><input id="score_player11" disabled="true" class="vertical"/></td>
-            <td><input id="score_player12" disabled="true" class="vertical"/></td>
-            <td><input id="score_player13" disabled="true" class="vertical"/></td>
-            <td><input id="score_player14" disabled="true" class="vertical"/></td>
-            <td><input id="score_player15" disabled="true" class="vertical"/></td>
-            <td><input id="score_player16" disabled="true" class="vertical"/></td>
-        </tr>
-        <tr>
-            <td>Planets</td>
-            <td><input id="score_planets01" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets02" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets03" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets04" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets05" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets06" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets07" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets08" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets09" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets10" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets11" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets12" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets13" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets14" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets15" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets16" disabled="true" style="width: 5em"/></td>
-        </tr>
-        <tr>
-            <td>Ships</td>
-            <td><input id="score_ships13" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships14" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships15" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships16" disabled="true" style="width: 5em"/></td>
-        </tr>
-    </table>
-    <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"></select></caption>
-        <tr>
-            <td>TODO</td>
+            <td><select class="hfill" id="score_chart_type" onchange="post('score')"></select></td>
+        </tr><tr>
+            <td><canvas class="score_chart"></canvas></td>
         </tr>
     </table>
 </div>

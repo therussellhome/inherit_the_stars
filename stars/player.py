@@ -3,12 +3,11 @@ import uuid
 from math import ceil
 from . import game_engine
 from .defaults import Defaults
-from .intel import Intel, IntelHistory
+from .intel import Intel
 from .minister import Minister
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
-from .score import Score
 from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .fleet import Fleet
@@ -37,7 +36,6 @@ __defaults = {
     'planets': [], # list of colonized planets
     'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
-    'score': Score(),
     'tech_level': TechLevel(), # current tech levels
     'research_partial': TechLevel(), # energy spent toward next level
     'research_queue': [], # queue of tech items to research
@@ -54,7 +52,6 @@ __defaults = {
     'finance_research_percent': (10.0, 0.0, 100.0),
     'finance_research_use_surplus': False,
     'finance_baryogenesis_default': True,
-    'historical': {}, # map of category to value by year (not hundreth)
 }
 
 
@@ -143,6 +140,39 @@ class Player(Defaults):
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
+    """ Update stats """
+    def update_stats(self):
+        minerals = 0
+        unarmed = 0
+        escort = 0
+        wall = 0
+        starbases = 0
+        score = 0
+        for f in self.fleets:
+            for s in f.ships:
+                minerals += s.cargo.titanium + s.cargo.lithium + s.cargo.silicon
+                if s.is_space_station():
+                    starbases += 1
+                elif len(s.weapons) == 0:
+                    unarmed += 1
+                elif len(s.weapons) < 10: #TODO what decides escort vs wall?
+                    escort += 1
+                else:
+                    wall += 1
+        for p in self.planets:
+            minerals += p.on_surface.titanium + p.on_surface.lithium + p.on_surface.silicon
+        self.add_intel(self, 
+                {'planets': len(self.planets),
+                'energy': self.energy,
+                'tech_levels': self.tech_level.total_levels(),
+                'minerals': minerals,
+                'ships_unarmed': unarmed,
+                'ships_escort': escort,
+                'ships_of_the_wall': wall,
+                'starbases': starbases,
+                'score': score,})
+        #TODO calculate score
+
     def create_fleet(self, **kwargs):
         self.fleets.append(Fleet(**kwargs))
     
@@ -159,19 +189,16 @@ class Player(Defaults):
         return str(id(self))
 
     """ Add an intel report """
-    def add_intel(self, obj, **kwargs):
+    def add_intel(self, obj, report):
         reference = Reference(obj)
         if reference not in self.intel:
-            if reference ^ 'Ship' or reference ^ 'Asteroid':
-                self.intel[reference] = IntelHistory()
-            else:
-                self.intel[reference] = Intel()
-            self.intel[reference].name = reference.ID
-        self.intel[reference].add_report(date=self.date, **kwargs)
+            self.intel[reference] = Intel(name=reference.ID)
+        self.intel[reference].add_report(reference, self.date, report)
 
     """ Get intel about an object or objects """
     def get_intel(self, reference=None, by_type=None):
         if reference:
+            reference = Reference(reference)
             if reference in self.intel:
                 return self.intel[reference]
             return None
@@ -184,15 +211,7 @@ class Player(Defaults):
     
     """ Get the local name for something """
     def get_name(self, obj):
-        return self.get_intel(reference=Reference(obj)).name
-
-    """ Store historical values - accumulates across the year """
-    def add_historical(self, category, value):
-        history = self.historical.get(category, [])
-        for i in range(self.race.start_date + len(history), int(self.date.split('.')[0]) + 1):
-            history.append(0)
-        history[-1] += value
-        self.historical[category] = history
+        return self.get_intel(reference=obj).name
 
     """ Add a message """
     def add_message(self, **kwargs):
@@ -203,12 +222,6 @@ class Player(Defaults):
         for msg in self.messages:
             if msg.star == False and msg.read == True:
                 self.messages.remove(msg)
-    
-    """ Compute score based on intel """
-    def calc_score(self):
-        #TODO
-        pass
-    
     
     """ Share treaty updates with other players """
     def treaty_negotiations(self):
@@ -292,18 +305,26 @@ class Player(Defaults):
             allocation = min(round(total * self['finance_' + category + '_percent'] / 100), self.energy)
             self.__cache__['budget_' + category] = allocation
 
+    """ Incoming energy """
+    def add_energy(self, energy):
+        self.add_intel(self, {'Finance Minister: Income': energy})
+        self.energy += energy
+
     """ Request to spend energy for a category """
     def spend(self, sub_category, request=sys.maxsize, spend=True):
         category = sub_category
         # Pull from the correct budget category
-        if sub_category in ['Ship', 'StarBase', 'Facility', 'baryogenesis']:
+        if sub_category in ['Ship', 'StarBase', 'Facility', 'Baryogenesis']:
             category = 'construction'
+            intel_category = 'Finance Minister: ' + sub_category
             budget = self.__cache__['budget_construction']
         elif category == 'mattrans':
+            intel_category = 'Finance Minister: MatTrans'
             budget = self.__cache__['budget_mattrans']
             if self.finance_mattrans_use_surplus:
                 budget += self.__cache__['budget_construction']
         elif category == 'research':
+            intel_category = 'Finance Minister: Research'
             budget = self.__cache__['budget_research']
             if self.finance_research_use_surplus:
                 budget += self.__cache__['budget_construction']
@@ -311,13 +332,14 @@ class Player(Defaults):
         # All other categories pull from the unallocated budget and surplus
         else:
             category = 'other'
+            intel_category = 'Finance Minister: Other'
             budget = self.energy
         budget = min(self.energy, budget)
         # If not enough budget then adjust request
         if request > budget:
             request = budget
         if spend:
-            self.add_historical('spend_' + sub_category, request)
+            self.add_intel(self, {intel_category: request})
             self.energy -= request
             if category != 'other':
                 self.__cache__['budget_' + category] -= request
