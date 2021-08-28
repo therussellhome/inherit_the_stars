@@ -15,12 +15,13 @@ from .fleet import Fleet
 from .ship import Ship
 from .cargo import Cargo
 from .message import Message
-# for testing
+# for testing TODO remove these extra imports
 from .planet import Planet
 from .facility import Facility
 from .ship_design import ShipDesign
 from .cost import Cost
 from .order import Order
+from .location import Location
 
 """ Default values (default, min, max)  """
 __defaults = {
