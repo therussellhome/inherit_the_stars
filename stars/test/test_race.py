@@ -4,7 +4,8 @@ from .. import *
 class RaceTestCase(unittest.TestCase):
     def test_calc_points(self):
         r = race.Race()
-        self.assertEqual(r.calc_points(), 0)
+        self.assertEqual(r.calc_points(), 88)
+        self.assertEqual(r.starting_energy, 270000) 
     
     
     def test_list_traits0(self):
@@ -82,6 +83,76 @@ class RaceTestCase(unittest.TestCase):
         ])
     
     
+    def test_calc_points_hab00(self):
+        r = race.Race()
+        self.assertEqual(r._calc_points_hab(), -3296)
+    
+    def test_calc_points_hab01(self):
+        r = race.Race(hab_gravity_immune=True, hab_temperature_immune=True, hab_radiation_immune=True, growth_rate=20)
+        self.assertEqual(round(r._calc_points_hab(), 2), -7278.92)
+    
+    def test_calc_points_hab02(self):
+        r = race.Race(hab_gravity_immune=True, hab_temperature_immune=True, hab_radiation_immune=True, growth_rate=5)
+        self.assertEqual(round(r._calc_points_hab(), 2), -2241.23)
+    
+    def test_calc_points_hab03(self):
+        r = race.Race(hab_gravity=0, hab_gravity_stop=100)
+        self.assertEqual(r._calc_points_hab(), -3408)
+    
+    def test_calc_points_hab04(self):
+        r = race.Race(growth_rate=5)
+        self.assertEqual(r._calc_points_hab(), -2016)
+    
+    def test_calc_points_hab05(self):
+        r = race.Race(hab_gravity=0, hab_gravity_stop=0, hab_temperature=0, hab_temperature_stop=0, hab_radiation=0, hab_radiation_stop=0)
+        self.assertEqual(r._calc_points_hab(), -2252)
+    
+    def test_calc_points_hab00(self):
+        r = race.Race()
+        self.assertEqual(r._calc_points_hab(), -3296)
+    
+    def test_calc_points_hab00(self):
+        r = race.Race()
+        self.assertEqual(r._calc_points_hab(), -3296)
+    
+    def test_calc_points_hab00(self):
+        r = race.Race()
+        self.assertEqual(r._calc_points_hab(), -3296)
+    
+    def test_calc_points_hab00(self):
+        r = race.Race()
+        self.assertEqual(r._calc_points_hab(), -3296)
+    
+    
+    def test_calc_points_economy00(self):
+        r = race.Race(power_plants_per_10k_colonists = 2)
+        self.assertEqual(r._calc_points_economy(), -1270)
+    
+    def test_calc_points_economy01(self):
+        r = race.Race(factories_per_10k_colonists = 50)
+        self.assertEqual(r._calc_points_economy(), -1667.5)
+    
+    def test_calc_points_economy02(self):
+        r = race.Race(mineral_extractors_per_10k_colonists = 30)
+        self.assertEqual(r._calc_points_economy(), -1570)
+        
+    def test_calc_points_economy03(self):
+        r = race.Race(power_plants_per_10k_colonists = 20)
+        self.assertEqual(r._calc_points_economy(), -1630)
+    
+    def test_calc_points_economy04(self):
+        r = race.Race(energy_per_10k_colonists = 200)
+        self.assertEqual(r._calc_points_economy(), -925)
+    
+    def test_calc_points_economy05(self):
+        r = race.Race(energy_per_10k_colonists = 2000)
+        self.assertEqual(r._calc_points_economy(), -2005)
+        
+    def test_calc_points_economy07(self):
+        r = race.Race(cost_of_baryogenesis = 1200)
+        self.assertEqual(r._calc_points_economy(), -1381)
+    
+    
     def test_calc_points_research00(self):
         r = race.Race()
         self.assertEqual(r._calc_points_research(), -1182)
@@ -143,61 +214,28 @@ class RaceTestCase(unittest.TestCase):
         self.assertEqual(r._calc_points_research(), -2142)
     
     
-    def test_calc_points_economy00(self):
-        r = race.Race(power_plants_per_10k_colonists = 2)
-        self.assertEqual(r._calc_points_economy(), -1270)
-    
-    def test_calc_points_economy01(self):
-        r = race.Race(factories_per_10k_colonists = 50)
-        self.assertEqual(r._calc_points_economy(), -1667.5)
-    
-    def test_calc_points_economy02(self):
-        r = race.Race(mineral_extractors_per_10k_colonists = 30)
-        self.assertEqual(r._calc_points_economy(), -1570)
-        
-    def test_calc_points_economy03(self):
-        r = race.Race(power_plants_per_10k_colonists = 20)
-        self.assertEqual(r._calc_points_economy(), -1630)
-    
-    def test_calc_points_economy04(self):
-        r = race.Race(energy_per_10k_colonists = 200)
-        self.assertEqual(r._calc_points_economy(), -925)
-    
-    def test_calc_points_economy05(self):
-        r = race.Race(energy_per_10k_colonists = 2000)
-        self.assertEqual(r._calc_points_economy(), -2005)
-        
-    def test_calc_points_economy07(self):
-        r = race.Race(cost_of_baryogenesis = 1200)
-        self.assertEqual(r._calc_points_economy(), -1381)
-    
-    
     def test_calc_points_start00(self):
         r = race.Race(starting_colonists = 275000)
-        self.assertEqual(r._calc_points_start(), -746)
+        self.assertEqual(r._calc_points_start(), -680)
     
     def test_calc_points_start01(self):
         r = race.Race(starting_mineral_extractors = 20)
-        self.assertEqual(r._calc_points_start(), -756)
+        self.assertEqual(r._calc_points_start(), -690)
     
     def test_calc_points_start02(self):
         r = race.Race(starting_power_plants = 20)
-        self.assertEqual(r._calc_points_start(), -786)
+        self.assertEqual(r._calc_points_start(), -720)
     
     def test_calc_points_start03(self):
         r = race.Race(starting_factories = 5)
-        self.assertEqual(r._calc_points_start(), -701)
+        self.assertEqual(r._calc_points_start(), -635)
     
     def test_calc_points_start04(self):
         r = race.Race(starting_defenses = 5)
-        self.assertEqual(r._calc_points_start(), -716)
+        self.assertEqual(r._calc_points_start(), -650)
     
-    def test_calc_points_start05(self):
-        r = race.Race(starting_energy = 100000)
-        self.assertEqual(r._calc_points_start(), -700)
-        
     def test_calc_points_start06(self):
         r = race.Race(starting_lithium = 250)
-        self.assertEqual(r._calc_points_start(), -676)
+        self.assertEqual(r._calc_points_start(), -610)
     
 
