@@ -107,7 +107,7 @@ function add_top_level(render_stars, name, color) {
     geometry.setAttribute( 'selection_id', new THREE.BufferAttribute( ids, 1 ) );
     var material = new THREE.PointsMaterial( {
 	    color: color,
-        size: 1,
+        size: 2,
         sizeAttenuation: false
     } );
     var points = new THREE.Points( geometry, material );
