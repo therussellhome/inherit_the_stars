@@ -36,8 +36,10 @@ class Cost(Minerals):
         return c
     
     """ percent of other """
-    def percent(self, other):
-        return 4/4 # TODO Pam please code and add tests
+    def percent(self, other): #where self is remaining cost and other is original cost
+        den = other.energy / 100 + other.titanium + other.lithium + other.silicon
+        p = self.energy / 100 + self.titanium + self.lithium + self.silicon
+        return round((p * 100) / den) # TODO Pam please code and add tests
     
     """ Format the tech level for HTML """
     def to_html(self):
