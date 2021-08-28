@@ -171,7 +171,7 @@ void main() {
     <table class="hfill">
         <tr>
             <td>Game Name</td>
-            <td class="hfill"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
+            <td class="hfill" style="padding-right: 9px;"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
         </tr>
     </table><table class="hfill" id="new_game_players">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
@@ -941,7 +941,7 @@ void main() {
         <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
     </tr></table>
     <table class="hfill" id="shipyard_ship_overview">
-    </table><table class="hfill">
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Combat Effectivity</caption>
         <tr>
             <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
@@ -949,13 +949,13 @@ void main() {
         </tr><tr>
             <td style="font-size: 85%; text-align: center">Range (terameters)</td>
         </tr>
-    </table><table class="hfill">
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanning</caption>
         <tr>
             <td style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
             <td><canvas id="shipyard_sensor_chart" style="width: 550px"></canvas></td>
         </tr>
-    </table><table class="hfill">
+    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Engine</caption>
         <tr>
             <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
@@ -969,8 +969,8 @@ void main() {
     </table>
     <table class="hfill"> 
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
-        <tr><td>Design Name</td><td><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
-        <tr><td>Hull</td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <tr><td>Design Name </td><td class="hfill" style="padding-right: 9px;"><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
+        <tr><td>Hull </td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
         <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
             <td>General Slots</td><td id="shipyard_slots_general"></td>
             <td>Depot Slots</td><td id="shipyard_slots_depot"></td>
@@ -980,7 +980,7 @@ void main() {
     </table>
     <table class="hfill">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
-        <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
+        <tr><td>Technology Group </td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
         <tr><td colspan="2"><table id="shipyard_tech"></table></td></tr>
     </table>
 </div>

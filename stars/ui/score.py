@@ -17,7 +17,7 @@ class Score(PlayerUI):
         super().__init__(**kwargs)
         if not self.player():
             return
-        self.score_table = ['<th></th><th>Energy</th><th>Planets</th><th>Starbases</th>']
+        self.score_table = ['<th></th><th>Energy</th><th>Planets</th><th>Starbases</th>'] #TODO make vertical headers, add more columns
         # Show self first
         self.score_row(self.player().get_intel(reference=self.player()))
         for (player, intel) in self.player().get_intel(by_type='Player').items():
