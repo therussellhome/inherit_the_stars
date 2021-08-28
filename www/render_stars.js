@@ -80,7 +80,7 @@ function onSubmit() {
                 scene.add(top_level);
                 console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
                 // Zoom to home world
-                select_object(top_level.children[1], 0, true); // TODO Replace with with the home system's sun
+                select_object(top_level.children[0], 0, true); // TODO Replace with with the home system's sun
                 console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
@@ -101,8 +101,6 @@ function add_top_level(render_stars, name, color) {
         positions[ i * 3 + 1 ] = group[i].location[1];
         positions[ i * 3 + 2 ] = group[i].location[2];
     }
-    console.log('positions:', positions);
-    console.log(render_stars[name]);
     ids.name = name.toString() + ' ids';
     positions.name = name.toString() + ' positions';
     geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
@@ -259,7 +257,6 @@ function get_system(intersected, index) {
         return
     }
     var inner_system = new THREE.Group();
-    console.log('get_system(intersected):', intersected)
     var id = intersected.geometry.attributes.selection_id.array[index];
     selected_id = system_keys[id];
     console.log(selected_id)
@@ -272,13 +269,15 @@ function get_system(intersected, index) {
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
     var geometry = new THREE.BufferGeometry();
     var system_data = details[selected_id.toString()];
+    console.log('system_data:', system_data);
     for(var i = 0; i < system_data.length; i++) {
+        var texture = alpha_map
+        var size_mod = 10000;
         if(system_data[i].type === 'Sun') {
             var texture = texture_sun;
             var size_mod = 1000;
         } else if(system_data[i].type === 'Planet') {
             var texture = texture_planet;
-            var size_mod = 10000;
         } else if(system_data[i].type === 'Ship') {
             var texture = texture_ship;
             var size_mod = 20000;
@@ -294,7 +293,6 @@ function get_system(intersected, index) {
         positions[1] = system_data[i].location[1];
         positions[2] = system_data[i].location[2];
         geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-        console.log('system_data:', system_data[i]);
         var material = new THREE.PointsMaterial( {
             color: new THREE.Color( system_data[i].color ),
             transparent: true,
