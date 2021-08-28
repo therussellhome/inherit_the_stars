@@ -101,7 +101,8 @@ class Game(Defaults):
             # initial intel
             for s in self.systems:
                 for p in self.players:
-                    p.add_intel(s, {'location': s.location, 'color': s.sun().get_color(), 'size': s.sun().gravity})
+                    p.add_intel(s, {'location': s.location})
+                    p.add_intel(s.sun(), {'location': s.sun().location, 'color': s.sun().get_color(), 'size': s.sun().gravity})
             for b in self.blackholes:
                 for p in self.players:
                     p.add_intel(b, {'location': b.location, 'size': b.range})
