@@ -52,6 +52,14 @@ class Reference(game_engine.BaseClass):
     def __invert__(self):
         return object.__getattribute__(self, '__get_obj__')('~')
 
+    """ Return the class type """
+    def __pos__(self):
+        return object.__getattribute__(self, '__reference__').split('/', 1)[0]
+
+    """ Return the object ID """
+    def __neg__(self):
+        return object.__getattribute__(self, '__reference__').split('/', 1)[1]
+
     """ Get/cache the object """
     def __get_obj__(self, name):
         cache = object.__getattribute__(self, '__cache__')
@@ -91,12 +99,10 @@ class Reference(game_engine.BaseClass):
                 return (object.__getattribute__(self, '__reference__') == other.__class__.__name__ + '/' + other.ID)
             return False
         return (object.__getattribute__(self, '__reference__') == object.__getattribute__(other, '__reference__'))
-
     
     """ Test just the class portion """
     def __xor__(self, classname):
         return (object.__getattribute__(self, '__reference__').split('/', 1)[0] == classname)
-
 
     """ Use the reference as the hash """
     def __hash__(self):

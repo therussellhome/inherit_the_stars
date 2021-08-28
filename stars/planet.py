@@ -239,7 +239,7 @@ class Planet(Defaults):
     def generate_energy(self):
         facility_yj =  round(self._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
         pop_yj = self.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
-        self.player.energy += facility_yj + pop_yj
+        self.player.add_energy(facility_yj + pop_yj)
         return facility_yj + pop_yj
 
     """ mineral extractors extract the minerals per 100th """
@@ -378,7 +378,7 @@ class Planet(Defaults):
                 self.on_surface[m] -= use_p
                 spend[m] -= use_p
                 if spend[m] < in_progress[m] and item.baryogenesis:
-                    spend_e = self.player.spend('baryogenesis', min(production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
+                    spend_e = self.player.spend('Baryogenesis', min(production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
                     baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
                     production -= baryogenesis_minerals * 2
                     spend[m] -= baryogenesis_minerals
@@ -430,7 +430,7 @@ class Planet(Defaults):
     """ Do baryogenesis """
     def baryogenesis(self):
         if self.player.get_minister(self).allow_baryogenesis:
-            spend_e = self.player.spend('baryogenesis', self.__cache__['production'] * self.player.race.cost_of_baryogenesis)
+            spend_e = self.player.spend('Baryogenesis', self.__cache__['production'] * self.player.race.cost_of_baryogenesis)
             minerals = spend_e / self.player.race.cost_of_baryogenesis
             lowest = ''
             lowest_kt = sys.maxsize
@@ -463,11 +463,11 @@ class Planet(Defaults):
                 # use baryogenesis to unblock the queue
                 if self.production > 0 and minister.baryogenesis and allow_baryogenesis:
                     for mineral in ['titanium', 'lithium', 'silicon']:
-                        max_baryogenesis = self.player.energy_minister.check_budget('baryogenesis') / self.player.race.cost_of_baryogenesis
+                        max_baryogenesis = self.player.energy_minister.check_budget('Baryogenesis') / self.player.race.cost_of_baryogenesis
                         spend = min([int(self.production / 2), getattr(item.cost_incomplete, mineral), max_baryogenesis])
                         self.production -= spend * 2
                         setattr(item.cost_incomplete, mineral, getattr(item.cost_incomplete, mineral) - spend)
-                        self.player.energy_minister.spend_budget('baryogenesis', spend * self.player.race.cost_of_baryogenesis)
+                        self.player.energy_minister.spend_budget('Baryogenesis', spend * self.player.race.cost_of_baryogenesis)
             if item.cost_incomplete == zero_cost:
                 self.build_queue.pop(0)
                 #TODO do something with the item

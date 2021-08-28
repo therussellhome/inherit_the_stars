@@ -19,6 +19,16 @@ function init() {
     for(element of document.getElementsByClassName('onload')) {
         element.dispatchEvent(load_event);
     }
+    reset();
+}
+
+function reset() {
+    // Let objects initialize themselves
+    var reset_event = document.createEvent("HTMLEvents");
+    reset_event.initEvent("reset", false, false);
+    for(element of document.getElementsByClassName('onreset')) {
+        element.dispatchEvent(reset_event);
+    }
 }
 
 // Apply/remove a class to all children
@@ -103,6 +113,7 @@ function show_menu(show) {
 function show_home() {
     toggle(document.getElementById('play_mode'), 'hide', true);
     document.getElementById('player_token').value = '';
+    reset();
     game_mode = 'host';
     toggle(document.getElementById('sidebar_play'), 'hide', true);
     toggle(document.getElementById('sidebar_host'), 'hide', false);
@@ -142,14 +153,14 @@ function show_minister(name) {
 
 // Switch to play mode
 function launch_player(token) {
-    if(token.value != '') {
+    if((token.value != '') && (game_mode != 'play')) {
         game_mode = 'play';
+        reset();
         toggle(document.getElementById('sidebar_host'), 'hide', true);
         toggle(document.getElementById('sidebar_play'), 'hide', false);
         show_screen();
         toggle(document.getElementById('play_mode'), 'hide', false);
         post('render_stars');
-        document.getElementById('tech_browser_tree').value = '';
     }
 }
 
@@ -417,6 +428,9 @@ function update_race_icon_color() {
 
 // Create a slider
 function finance_slider(element, form, min, max, step) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     noUiSlider.create(element, {
         start: [min+31/100*(max-min), min+61/100*(max-min), min+91/100*(max-min)],
         connect: [true, true, true, true],
@@ -436,6 +450,9 @@ function finance_slider(element, form, min, max, step) {
 
 // Create a slider
 function planetary_slider(element, form, min, max, step) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     noUiSlider.create(element, {
         start: [min+(max-min)/5, min+37/100*(max-min), min+7/10*(max-min)],
         connect: [true, true, true, true],
@@ -455,6 +472,9 @@ function planetary_slider(element, form, min, max, step) {
 
 // Create a slider
 function slider(element, form, min, max, step, fractiondigits, units) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     var tooltips = true;
     if(units == null) {
         tooltips = false;
@@ -488,6 +508,9 @@ function slider(element, form, min, max, step, fractiondigits, units) {
 
 // Create a slider
 function slider3(element, form, min, max, step, formatter, units) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     var tooltips = true;
     if(units == null) {
         tooltips = false;
@@ -520,6 +543,9 @@ function slider3(element, form, min, max, step, formatter, units) {
 
 // Create a slider
 function slider2(element, form, min, max, step, formatter) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     noUiSlider.create(element, {
         start: [min, max],
         connect: true,
@@ -766,6 +792,9 @@ function tech_post() {
 
 // Render the tech display
 function tech_display() {
+    if(!json_map['tech'].hasOwnProperty('overview')) {
+        return;
+    }
     if(document.getElementById('player_token').value != '') {
         player_tech = true;
     }
