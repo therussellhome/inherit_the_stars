@@ -96,7 +96,7 @@ class Player(Defaults):
             self.add_message(sender=Reference('Minister/Finance'), message='introduction')
             self.ministers.append(Minister(ID='Research'))
             self.add_message(sender=Reference('Minister/Research'), message='introduction')
-            self.ministers.append(PlanetaryMinister(name='Home'))
+            self.ministers.append(PlanetaryMinister(name='Home', color=self.race.color))
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction1')
             for planet in self.planets:
                 self.planetary_minister_map[Reference(planet)] = Reference(self.ministers[-1])
