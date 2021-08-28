@@ -158,7 +158,7 @@ class Game(Defaults):
         # players in lowest to highest score
         players = list(self.players)
         self._call(players, 'next_hundreth')
-        players.sort(key=lambda x: x.score.rank, reverse=False)
+        players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
         # planets in lowest to highest population
         planets = self.get_planets()
         planets.sort(key=lambda x: x.on_surface.people, reverse=False)

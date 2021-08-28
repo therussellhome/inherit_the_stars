@@ -28,7 +28,6 @@ class TechBrowser(PlayerUI):
         if self.tech_browser_tree == '«CURRENT PLAYER»':
             tech_tree = self.player().tech
         else:
-            print(self.tech_browser_tree, '|', self.options_tech_browser_tree)
             tech_tree = game_engine.load('Tech', self.tech_browser_tree)
         # Sort tech
         tech = []

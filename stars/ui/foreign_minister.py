@@ -76,8 +76,8 @@ class ForeignMinister(PlayerUI):
         for other_player in self.player().get_intel(by_type='Player'):
             treaty = self.player().get_treaty(other_player, False)
             self.foreign_treaties.append('<td colspan="10" style="font-size: 150%; text-align: left; border: 1px solid silver; border-right: 0">'
-                + '<i class="' + other_player.race.icon + '"></i>' + other_player.name + '</td>'
-                + '<td style="border: 1px solid silver; border-left: 0"><i class="button fas fa-user-edit" title="Propose Treaty" onclick="post(\'foreign_minister\', \'?propose=' + treaty.other_player.name + '\')"></i></td>')
+                + other_player.race.icon() + ' ' + other_player.ID + '</td>'
+                + '<td style="border: 1px solid silver; border-left: 0"><i class="button fas fa-user-edit" title="Propose Treaty" onclick="post(\'foreign_minister\', \'?propose=' + treaty.other_player.ID + '\')"></i></td>')
             self._display_treaty(treaty)
             treaty = self.player().get_treaty(other_player, True)
             if treaty:
@@ -99,10 +99,10 @@ class ForeignMinister(PlayerUI):
     """ Build rows for a current/proposed treaty """
     def _display_treaty(self, treaty):
         buttons = '<td rowspan="2"></td>' \
-            + '<td rowspan="2"><i class="button far fa-trash-alt" title="Cancel" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>'
+            + '<td rowspan="2"><i class="button far fa-trash-alt" title="Cancel" onclick="post(\'foreign_minister\', \'?reject=' + treaty.treaty_key + '\')"></i></td>'
         if treaty.status == 'pending':
-            buttons = '<td rowspan="2"><i class="button far fa-check-circle" title="Accept" onclick="post(\'foreign_minister\', \'?accept=' + treaty.name + '\')"></i></td>' \
-                + '<td rowspan="2"><i class="button far fa-trash-alt" title="Reject" onclick="post(\'foreign_minister\', \'?reject=' + treaty.name + '\')"></i></td>'
+            buttons = '<td rowspan="2"><i class="button far fa-check-circle" title="Accept" onclick="post(\'foreign_minister\', \'?accept=' + treaty.treaty_key + '\')"></i></td>' \
+                + '<td rowspan="2"><i class="button far fa-trash-alt" title="Reject" onclick="post(\'foreign_minister\', \'?reject=' + treaty.treaty_key + '\')"></i></td>'
         self.foreign_treaties.append('<td rowspan="2" style="color: silver; font-size: 150%">' + self._display_relationship(treaty.relation) + '</td>'
             + '<td>Buy</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_ti) + '</td>'
