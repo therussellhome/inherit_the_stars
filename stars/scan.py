@@ -54,7 +54,7 @@ def anticloak(player, location, rng):
     for o in binning.search(__unscanned[p_ref], location, rng):
         if o['has_cloak'] and location - o['location'] < rng:
             _bin_found(p_ref, o)
-            player.add_intel(o['obj'], **(o['obj'].scan_report(scan_type='anticloak')))
+            player.add_intel(o['obj'], o['obj'].scan_report(scan_type='anticloak'))
 
 
 """ Search the bins and return the ships seen """
@@ -64,7 +64,7 @@ def penetrating(player, location, rng):
     for o in binning.search(__unscanned[p_ref], location, rng):
         if o['apparent_mass'] > 0 and location - o['location'] < rng:
             _bin_found(p_ref, o)
-            player.add_intel(o['obj'], **(o['obj'].scan_report(scan_type='penetrating')))
+            player.add_intel(o['obj'], o['obj'].scan_report(scan_type='penetrating'))
 
 
 """ Search the bins and return the ships seen """
@@ -75,14 +75,14 @@ def normal(player, location, rng):
         distance = location - o['location']
         if not o['in_system'] and o['apparent_mass'] > 0 and distance < rng and o['ke'] > ((-500000 * rng) / (distance - rng) - 500000):
             _bin_found(p_ref, o)
-            player.add_intel(o['obj'], **(o['obj'].scan_report(scan_type='normal')))
+            player.add_intel(o['obj'], o['obj'].scan_report(scan_type='normal'))
 
 
 """ Report on ships seen moving in hyperdenial fields, hyperdenial does its own binning """
 def hyperdenial(fleet, players):
     for player in players:
         for ship in fleet.ships:
-            player.add_intel(ship, **(ship.scan_report(scan_type='hyperdenial')))
+            player.add_intel(ship, ship.scan_report(scan_type='hyperdenial'))
 
 
 """ Search for closest enemy """
