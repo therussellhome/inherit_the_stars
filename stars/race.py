@@ -9,7 +9,8 @@ PRIMARY_RACE_TRAITS = ['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyfo
 """ Default values [default, min, max]  """
 __defaults = {
     'ID': '@UUID',
-    'icon': '<i style="color: #FFFFFF; padding-right: 0" class="fas fa-pastafarianism">',
+    'icon_color': '#FFFFFF',
+    'icon_class': 'fas fa-pastafarianism',
     'start_date': (3000, 0, sys.maxsize),
     'primary_race_trait': 'Melconians',
     'lrt_Trader': False,
@@ -130,6 +131,10 @@ hab_cost = {
 
 """ Storage class for race parameters """
 class Race(Defaults):
+    """ Extract the color """
+    def icon(self): # TODO test
+        return '<i style="color: ' + self.icon_color + '; padding-right: 0" class="' + self.icon_class + '"></i>'
+
     """ Calculate the advantage points for this race (invalid race if <0) """
     def calc_points(self): # TODO test
         p = 0

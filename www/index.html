@@ -260,8 +260,8 @@ void main() {
 
 <div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor')">
     <table class="topbar hfill"><tr>
-        <td><img title="Race Editor / Viewer" src="race.png"/></td>
-        <td class="hfill" style="font-size: 200%" id="race_editor_screen_title"></td>
+        <td><img title="Race Editor" src="race.png"/></td>
+        <td class="hfill" style="font-size: 200%">Race Editor</td>
         <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
         <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
@@ -279,7 +279,10 @@ void main() {
         </tr>
     </table><table class="hfill onsubmit" onsubmit="race_viewer(this); update_race_icon_color()">
         <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Icon</caption>
-        <tr><td colspan="11" style="text-align: center">Color: <input type="color" id="race_editor_icon_color" onchange="update_race_icon_color(); post('race_editor')"/></td></tr>
+        <tr><td colspan="11" style="text-align: center">
+            Color: <input type="color" id="race_editor_icon_color" onchange="update_race_icon_color(); post('race_editor')"/>
+            <input id="race_editor_icon_class" disabled="true" style="display: none"/>
+        </td></tr>
         <tr style="text-align: center">
             <td onclick="post('race_editor', '?fas fa-pastafarianism')"><i class="button fas fa-pastafarianism race_icon"></i></td>
             <td onclick="post('race_editor', '?fab fa-mailchimp')"><i class="button fab fa-mailchimp race_icon"></i></td>
