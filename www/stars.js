@@ -19,6 +19,8 @@ function init() {
     for(element of document.getElementsByClassName('onload')) {
         element.dispatchEvent(load_event);
     }
+    // Special handling for collapse elements
+    folding(document);
     reset();
 }
 
@@ -847,28 +849,35 @@ function tech_display() {
             for(var row of json_map['tech']['guts'][component]) {
                 guts.insertRow(-1).innerHTML = row;
             }
-        }        
+        }
+        folding(div);
+        div.classList.toggle('tech_collapsed', true);
     }
     toggle(document.body, 'tech_template', false);
 }
 
-// Expand the tech display
-function tech_expand(div, expand_guts) {
-    if(expand_guts != null) {
-        var guts = div.getElementsByClassName('tech_guts')[0];
-        guts.classList.toggle('hide');
-        expand_guts.classList.toggle('fa-angle-double-up');
-        expand_guts.classList.toggle('fa-angle-double-down');
-        if(div.style.height != '55px') {
-            div.style.height = '55px'
-            div.style.height = div.scrollHeight + 'px'
-        }
+// Register the table folding
+function folding(element) {
+    for(var div of element.getElementsByClassName('fa-angle-double-up')) {
+        div.addEventListener("click", function(evt){fold(evt.target, true);});
+        fold(div, false);
+    }
+    for(var div of element.getElementsByClassName('fa-angle-double-down')) {
+        div.addEventListener("click", function(evt){fold(evt.target, true);});
+        fold(div, false);
+    }
+}
+
+// Expand the table
+function fold(div, flip) {
+    if(div.classList.contains('fa-angle-double-down') != flip) {
+        div.classList.toggle('fa-angle-double-up', false);
+        div.classList.toggle('fa-angle-double-down', true);
+        toggle(div.parentElement.parentElement, 'collapse', false);
     } else {
-        if((div.style.height != '55px') && (div.style.height != '')) {
-            div.style.height = '55px'
-        } else {
-            div.style.height = div.scrollHeight + 'px'
-        }
+        div.classList.toggle('fa-angle-double-up', true);
+        div.classList.toggle('fa-angle-double-down', false);
+        toggle(div.parentElement.parentElement, 'collapse', true);
     }
 }
 
