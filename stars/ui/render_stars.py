@@ -24,11 +24,11 @@ class RenderStars(PlayerUI):
         super().__init__(**kwargs)
         if not self.player():
             return
-        system_number = {'Star': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10}
-        self.homeworld = system_number[self.player()._Player__colonized_planets[0].ID.split(' ')[-1]]
+        #system_number = {'Star': 0, 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10}
+        #self.homeworld = system_number[self.player()._Player__colonized_planets[0].ID.split(' ')[-1]]
         #print('player.__dict__ from render_stars.py', self.player().__dict__.keys())
-        print(self.homeworld)
-        print(self.player()._Player__colonized_planets[0].ID)
+        #print(self.homeworld)
+        #print(self.player()._Player__colonized_planets[0].ID)
         # Copy all suns
         for (s, i) in self.player().get_intel(by_type='StarSystem').items():
             system = self.set_details('StarSystem', self.systems_color, i)
@@ -38,12 +38,13 @@ class RenderStars(PlayerUI):
             sun = self.set_details('Sun', i.color, i)
             self.details[i.system_key].append(sun)
         for (p, i) in self.player().get_intel(by_type='Planet').items():
-            print(p.ID)
-            print('planet:', i.__dict__.keys())
+            #print(p.ID)
+            #print('planet:', i.__dict__.keys())
             if p.ID == self.player()._Player__colonized_planets[0].ID:
                 self.home_system = i.system_key
             planet = self.set_details('Planet', i.color, i)
             self.details[i.system_key].append(planet)
+            self.homeworld = len(self.details[i.system_key]) - 1
         for (a, i) in self.player().get_intel(by_type='Asteroid').items():
             asteroid = self.set_details('Asteroid', self.asteroids_color, i)
             self.asteroids.append({'location': i.location, 'system_key': i.system_key})

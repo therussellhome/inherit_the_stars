@@ -16,7 +16,7 @@ var top_level, in_system; // Selection groups of points
 var details, system_keys, selection_ids; // Data for creating in_system when selection changes
 var system_points, wormhole_points, asteroid_points, deep_space_points; // References for changing colors
 var selected_id, capture_selected; // Data for interaction with other windows
-var homeworld_index, home_system
+var homeworld_index, home_system, home_system_index;
 
 init();
 
@@ -62,6 +62,7 @@ function onSubmit() {
                 var asteroids_color = new THREE.Color(json_map['render_stars']['asteroids_color']);
                 homeworld_index = json_map['render_stars']['homeworld'];
                 home_system = json_map['render_stars']['home_system'];
+                home_system_index = 0
                 // Add systems, deep space ships, wormholes, and asteroids
                 system_points = add_top_level(json_map['render_stars'], 'systems', systems_color);
                 deep_space_points = add_top_level(json_map['render_stars'], 'deep_space', deep_space_color);
@@ -83,9 +84,10 @@ function onSubmit() {
                 scene.add(top_level);
                 console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
                 // Zoom to home world
-                //for(key, value in 
-                select_object(systems, 0, true); // TODO Replace with with the home system's sun
-                select_object(top_level.children[0], 0, true); // TODO Replace with with the home system's sun
+                select_object(system_points, home_system_index, true);
+                //console.log('in_system:', in_system);
+                //console.log('Home world?:', in_system.children[homeworld_index], 'homeworld_index', homeworld_index);
+                select_object(in_system.children[homeworld_index], 0, true, false);
                 console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
@@ -100,6 +102,10 @@ function add_top_level(render_stars, name, color) {
     var positions = new Float32Array( group.length * 3 );
     var ids = new Int32Array( group.length );
     for(var i = 0; i < group.length; i++) {
+        if(name === 'systems' && home_system === group[i].system_key){
+            home_system_index = i;
+            console.log('home system index set to:', i);
+        }
         ids[i] = system_keys.push(group[i].system_key) -1;
         //selection_ids.push(group[i].ID);
         positions[ i * 3 ] = group[i].location[0];
@@ -167,6 +173,11 @@ function onKeyPress(event) {
     else if(event.key == "r") {
         select_object(true, true, true);
     }
+    //zome to home system
+    else if(event.key == "h") {
+        select_object(system_points, 0, true);
+        select_object(in_system.children[homeworld_index], 0, true, false);
+    }
     window.requestAnimationFrame(render);
 }
 
@@ -214,7 +225,7 @@ function onClick(event) {
     console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
-        select_object(intersects[0].object, intersects[0].index, true, false);
+        select_object(intersects[0].object, intersects[0].index, false, false);
     } else {
         raycaster.params.Points.threshold = TERAMETER / 10;
         raycaster.near = 0;
@@ -269,9 +280,9 @@ function get_system(intersected, index) {
     console.log(selected_id);
     console.log(details);
     var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_ship = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_asteroid = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_wormhole = new THREE.TextureLoader().load( "/alphamap-circle.png" );
+    var texture_ship = new THREE.TextureLoader().load( "/ships.png" );
+    var texture_asteroid = new THREE.TextureLoader().load( "/inderstellar_objects.png" );
+    var texture_wormhole = new THREE.TextureLoader().load( "/generate.png" );
     var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
     var system_data = details[selected_id.toString()];
@@ -285,12 +296,11 @@ function get_system(intersected, index) {
             var size_mod = 1000;
         } else if(system_data[i].type === 'Planet') {
             var texture = texture_planet;
+            var size_mod = 5000;
         } else if(system_data[i].type === 'Ship') {
             var texture = texture_ship;
-            var size_mod = 20000;
         } else if(system_data[i].type === 'Asteroid') {
             var texture = texture_asteroid;
-            var size_mod = 20000;
         } else if(system_data[i].type === 'Wormhole') {
             var texture = texture_wormhole;
             var size_mod = 100;
