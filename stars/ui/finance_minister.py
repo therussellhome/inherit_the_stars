@@ -70,10 +70,10 @@ class FinanceMinister(PlayerUI):
             self.finance_queue.append('<td></td>')
             #TODO <td>' + item.planet.time_til_html(item.cost.to_html(), queue, i)[0] + '</td><td rowspan="2">' + item.planet.ID + '</td>  ' + item.planet.time_til_html(item.cost.to_html(), queue, i)[1] + '
         # buildables
-        queue = self.player().ship_designs
+        buildable = self.player().ship_designs
         self.finance_buildable.append('<td colspan="3"><select id="finance_planet" style="width: 100%" onchange="post(\'finance_minister\')"/></td>')
-        for i in range(len(queue)):
-            item = BuildShip(ship_design = queue[i])
+        for i in range(len(buildable)):
+            item = BuildShip(ship_design = buildable[i])
             self.finance_buildable.append('<td>' + item.to_html() + '</td><td>' + item.cost.to_html() + '</td>'
                 + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'finance_minister\', \'?add=' + str(i) + '\')"></i></td>')
 
