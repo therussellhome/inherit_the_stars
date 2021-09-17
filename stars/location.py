@@ -1,5 +1,5 @@
 import sys
-from math import cos, pi, sin
+from math import cos, pi, sin, 
 from random import random
 from . import stars_math
 from .defaults import Defaults
@@ -48,8 +48,8 @@ class Location(Defaults):
     def orbit(self):
         if self.orbit_speed > 0:
             self.orbit_lon += self.orbit_speed
-            if self.orbit_lon > 180:
-                self.orbit_lon - 180
+            if self.orbit_lon > 360:
+                self.orbit_lon - 360
             # Force recalc of xyz
             self.__dict__['__cache__'] = {}
 
@@ -92,6 +92,37 @@ class Location(Defaults):
             if self - other < stars_math.TERAMETER_2_LIGHTYEAR / 1000:
                 return True
         return False
+
+    """ Returns the cardinal direction of itself reletive to another location object """
+    def get_cardinal_direction(self, other):
+        distance = self - other
+        if distance == 0:
+            return
+        self_xyz = self.xyz
+        other_xyz = other.xyz
+        x = self_xyz[0] - other_xyz[0]
+        y = self_xyz[1] - other_xyz[1]
+        z = self_xyz[2] - other_xyz[2]
+        zcardinal = ['N', 'S']
+        xcardinal = ['E', 'W']
+        ycardinal = ['U', 'D']
+        cardinal = str(distance) + ' '
+        if abs(z) / distance > 0.25:
+            if z < 0:
+                cardinal += zcardinal[1]
+            else:
+                cardinal += zcardinal[0]
+        if abs(x) / distance > 0.25:
+            if x < 0:
+                cardinal += xcardinal[1]
+            else:
+                cardinal += xcardinal[0]
+        if abs(y) / distance > 0.25:
+            if y < 0:
+                cardinal += ycardinal[1]
+            else:
+                cardinal += ycardinal[0]
+        return cardinal
 
     """ Distance between 2 points """
     def __sub__(self, other):
