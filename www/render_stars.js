@@ -16,6 +16,7 @@ var top_level, in_system; // Selection groups of points
 var details, system_keys, selection_ids; // Data for creating in_system when selection changes
 var system_points, wormhole_points, asteroid_points, deep_space_points; // References for changing colors
 var selected_id, capture_selected; // Data for interaction with other windows
+var homeworld_index, home_system, home_system_index;
 
 init();
 
@@ -59,6 +60,9 @@ function onSubmit() {
                 var systems_color = new THREE.Color(json_map['render_stars']['systems_color']);
                 var wormholes_color = new THREE.Color(json_map['render_stars']['wormholes_color']);
                 var asteroids_color = new THREE.Color(json_map['render_stars']['asteroids_color']);
+                homeworld_index = json_map['render_stars']['homeworld'];
+                home_system = json_map['render_stars']['home_system'];
+                home_system_index = 0
                 // Add systems, deep space ships, wormholes, and asteroids
                 system_points = add_top_level(json_map['render_stars'], 'systems', systems_color);
                 deep_space_points = add_top_level(json_map['render_stars'], 'deep_space', deep_space_color);
@@ -80,7 +84,10 @@ function onSubmit() {
                 scene.add(top_level);
                 console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
                 // Zoom to home world
-                select_object(top_level.children[0], 0, true); // TODO Replace with with the home system's sun
+                select_object(system_points, home_system_index, true);
+                //console.log('in_system:', in_system);
+                //console.log('Home world?:', in_system.children[homeworld_index], 'homeworld_index', homeworld_index);
+                select_object(in_system.children[homeworld_index], 0, true, false);
                 console.log('scene:', scene);
                 // Render
                 window.setTimeout(render, 1000);
@@ -95,6 +102,10 @@ function add_top_level(render_stars, name, color) {
     var positions = new Float32Array( group.length * 3 );
     var ids = new Int32Array( group.length );
     for(var i = 0; i < group.length; i++) {
+        if(name === 'systems' && home_system === group[i].system_key){
+            home_system_index = i;
+            console.log('home system index set to:', i);
+        }
         ids[i] = system_keys.push(group[i].system_key) -1;
         //selection_ids.push(group[i].ID);
         positions[ i * 3 ] = group[i].location[0];
@@ -162,6 +173,11 @@ function onKeyPress(event) {
     else if(event.key == "r") {
         select_object(true, true, true);
     }
+    //zome to home system
+    else if(event.key == "h") {
+        select_object(system_points, 0, true);
+        select_object(in_system.children[homeworld_index], 0, true, false);
+    }
     window.requestAnimationFrame(render);
 }
 
@@ -205,11 +221,11 @@ function onClick(event) {
     raycaster.params.Points.threshold = TERAMETER / 10;
     raycaster.near = 0;
     raycaster.far = 10;
-    var intersects = raycaster.intersectObject( in_system );
+    var intersects = raycaster.intersectObject( in_system, true );
     console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
-        select_object(intersects[0].object, intersects[0].index, true);
+        select_object(intersects[0].object, intersects[0].index, false, false);
     } else {
         raycaster.params.Points.threshold = TERAMETER / 10;
         raycaster.near = 0;
@@ -235,12 +251,14 @@ function onClick(event) {
 }
 
 // Refocus on the clicked object
-function select_object(obj, index=true, flyto=true) {
+function select_object(obj, index=true, flyto=true, is_out_system=true) {
     console.log('selecting object:', obj)
     if(index !== true){
         selected_position = new THREE.Vector3( obj.geometry.attributes.position.array[ index * 3 ], obj.geometry.attributes.position.array[ index * 3 + 1 ], obj.geometry.attributes.position.array[ index * 3 + 2 ] );
     }
-    get_system(obj, index);
+    if(is_out_system){
+        get_system(obj, index);
+    }
     if(flyto && selected_position) {
         var z_offset = TERAMETER;
         if(camera.position.z < selected_position.z) {
@@ -259,18 +277,18 @@ function get_system(intersected, index) {
     var inner_system = new THREE.Group();
     var id = intersected.geometry.attributes.selection_id.array[index];
     selected_id = system_keys[id];
-    console.log(selected_id)
+    console.log(selected_id);
     console.log(details);
     var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_ship = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_asteroid = new THREE.TextureLoader().load( "/alphamap-circle.png" );
-    var texture_wormhole = new THREE.TextureLoader().load( "/alphamap-circle.png" );
+    var texture_ship = new THREE.TextureLoader().load( "/ships.png" );
+    var texture_asteroid = new THREE.TextureLoader().load( "/inderstellar_objects.png" );
+    var texture_wormhole = new THREE.TextureLoader().load( "/generate.png" );
     var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
-    var geometry = new THREE.BufferGeometry();
     var system_data = details[selected_id.toString()];
     console.log('system_data:', system_data);
     for(var i = 0; i < system_data.length; i++) {
+        var geometry = new THREE.BufferGeometry();
         var texture = alpha_map
         var size_mod = 10000;
         if(system_data[i].type === 'Sun') {
@@ -278,12 +296,11 @@ function get_system(intersected, index) {
             var size_mod = 1000;
         } else if(system_data[i].type === 'Planet') {
             var texture = texture_planet;
+            var size_mod = 5000;
         } else if(system_data[i].type === 'Ship') {
             var texture = texture_ship;
-            var size_mod = 20000;
         } else if(system_data[i].type === 'Asteroid') {
             var texture = texture_asteroid;
-            var size_mod = 20000;
         } else if(system_data[i].type === 'Wormhole') {
             var texture = texture_wormhole;
             var size_mod = 100;
@@ -292,6 +309,7 @@ function get_system(intersected, index) {
         positions[0] = system_data[i].location[0];
         positions[1] = system_data[i].location[1];
         positions[2] = system_data[i].location[2];
+        console.log('position [', i , ']:', positions, '\nlocation [', i, ']:       ', system_data[i].location);
         geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
         var material = new THREE.PointsMaterial( {
             color: new THREE.Color( system_data[i].color ),
@@ -308,6 +326,7 @@ function get_system(intersected, index) {
     scene.remove(in_system);
     in_system = inner_system;
     in_system.name = 'in_system';
+    console.log(in_system);
     scene.add(in_system);
 }
 

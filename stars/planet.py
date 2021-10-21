@@ -494,6 +494,10 @@ class Planet(Defaults):
             return r
             scan.normal(self.player, self.location, r) #TODO Pam coded this I hope it works :-D
 
+    """ Create a report about itself """
+    def scan_self(self):
+        self.player.add_intel(self, self.scan_report())
+
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):
         report = {

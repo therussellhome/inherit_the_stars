@@ -38,9 +38,9 @@ class Planets(PlayerUI):
                 planet['date'] = p.date
                 if r: 
                     planet['Habitability'] = r.habitability
-                    planet['Population'] = r.population
-                    planet['Capacity'] = r.capacity
-                    planet['Max Population'] = r.max_pop 
+                    planet['Population'] = r.on_surface.people
+                    #planet['Capacity'] = r.capacity TODO
+                    #planet['Max Population'] = r.max_pop TODO
                     planet['Energy Generation'] = '<i class="YJ">' + str(r.generate_energy() * 100) + '</i>'
                     planet['Production Capacity'] = str(r.operate_factories() * 100)
                     planet['Scanner Range'] = str(r.scanning_penetrating()) + '/' + str(r.scanning_normal())
