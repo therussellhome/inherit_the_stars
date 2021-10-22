@@ -1,5 +1,5 @@
 import sys
-from math import cos, pi, sin, 
+from math import cos, pi, sin
 from random import random
 from . import stars_math
 from .defaults import Defaults
