@@ -41,18 +41,18 @@ class Shipyard(PlayerUI):
                 design = existing_design
                 break
         # Actions
-        if action == 'new_design':
+        if action[:6] == 'rename':
             design = ShipDesign()
             self.player().__cache__['ship_designs'].append(design)
             self.shipyard_existing_design = design.ID
             self.shipyard_ID = ''
             self.shipyard_hull = ''
-        elif action == 'copy_design':
+        elif action[:4] == 'copy':
             design = design.clone_design()
             self.player().__cache__['ship_designs'].append(design)
             self.shipyard_existing_design = design.ID
             self.shipyard_ID = ''
-        elif action == 'delete_design':
+        elif action == 'delete':
             if design in self.player().ship_designs:
                 self.player().ship_designs.remove(design)
             self.player().__cache__['ship_designs'].remove(design)
@@ -73,13 +73,6 @@ class Shipyard(PlayerUI):
         for existing_design in self.player().__cache__['ship_designs']:
             self.options_shipyard_existing_design.append(existing_design.ID)
         self.shipyard_existing_design = design.ID
-
-        # Hull selection
-        for t in self.player().tech: 
-            if t.is_available(self.player().tech_level, self.player().race) and t.category.endswith('Hull'):
-                self.options_shipyard_hull.append(t.ID)
-        if self.shipyard_hull != '':
-            design.set_hull('Tech/' + self.shipyard_hull)
 
         # Add to ship design
         if action.startswith('add='):

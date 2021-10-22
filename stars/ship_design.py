@@ -22,14 +22,12 @@ class ShipDesign(Tech):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    """ Set the hull """
-    def set_hull(self, tech):
-        self.hull = Reference(tech)
-
     """ Add a component """
     def add_component(self, tech):
         tech = Reference(tech)
-        if tech in self.components:
+        if tech.category.endswith('Hull'):
+            self.hull = tech
+        elif tech in self.components:
             self.components[tech] += 1
         else:
             self.components[tech] = 1
