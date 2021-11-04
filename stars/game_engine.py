@@ -49,7 +49,7 @@ def unregister(obj=None):
 
 """ Base class for use in creating classes by name """
 class BaseClass:
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         pass
 
 

@@ -7,6 +7,7 @@ from . import stars_math
 from . import scan
 from . import game_engine
 from . import hyperdenial
+from .build_ship import BuildShip
 from .cargo import Cargo, CARGO_TYPES
 from .defaults import Defaults
 from .location import Location
@@ -24,12 +25,12 @@ SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
 """ Default values (default, min, max)  """
 __defaults = {
     'ID': '@UUID',
-    'player': Reference('Player'),
+    'ships': [], # ship references
+    'under_construction': [], # build_ship references
     'order': Order(), # current actions
     'orders': [], # future actions
     'orders_repeat': False,
-    'ships': [],
-    'location': Location(),
+    'location': Location(),  #TODO remove this to prevent players from teleporting their fleets
 }
 
 
@@ -39,21 +40,25 @@ class Fleet(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.next_hundreth()
+        if 'location' not in kwargs and len(self.ships) > 0:
+            self.update_location(self.ships[0].location)
+        else:
+            self.update_location(self.location)
+        self.__cache__['player'] = Reference('Player')
         game_engine.register(self)
 
-    """ Adds ships to the fleet and correct location """
+    """ Adds ships to the fleet """
     def __add__(self, ships):
         if isinstance(ships, Fleet):
             ships = ships.ships
         elif not isinstance(ships, list):
             ships = [ships]
         for ship in ships:
-            if ship not in self.ships:
-                if ship.location.xyz == self.location.xyz or ship.location.root_location == self.location.root_location:
-                    ship.location = Location(reference=self, offset=SHIP_OFFSET)
-                    self.ships.append(ship)
-                else:
-                    print('Cannot add ship to fleet - not at the same location', self.location, ship.location, file=sys.stderr)
+            ship = Reference(ship)
+            if ship ^ 'Ship' and ship not in self.ships:
+                self.ships.append(ship)
+            if ship ^ 'BuildShip' and ship not in self.under_construction:
+                self.under_construction(ship)
         if 'stats' in self.__cache__:
             del self.__cache__['stats']
         return self
@@ -67,10 +72,12 @@ class Fleet(Defaults):
         for ship in ships:
             if ship in self.ships:
                 self.ships.remove(ship)
+            elif ship in self.under_construction:
+                self.under_construction.remove(ship)
         # Remove from player fleets and let die
-        if len(self.ships) == 0:
-            if self in self.player.fleets:
-                self.player.fleets.remove(self)
+        if len(self.ships) == 0 and len(self.under_construction) == 0:
+            if self in self.__cache__['player'].fleets:
+                self.__cache__['player'].fleets.remove(self)
         if 'stats' in self.__cache__:
             del self.__cache__['stats']
         return self
@@ -95,16 +102,33 @@ class Fleet(Defaults):
         self.__cache__['hyperdenial_effect'] = [0.0, 0.0]
         self.__cache__['hyperdenial_players'] = []
 
+    """ Cache the player """
+    def cache_player(self, player):
+        self.__cache__['player'] = player
+
+    """ Update location and apply orbit offset """
+    def update_location(self, location):
+        if location.reference and location.offset == 0.0 and hasattr(~(location.reference), 'size'):
+            self.location = Location(reference=location.reference, offset=location.reference.size() + 2.0)
+        else:
+            self.location = location
+
     """ Check if the fleet can/ordered to move """
     def read_orders(self):
         # Set move in system in case combat displaces
         self.__cache__['move_in_system'] = self.location
+        # Fleets with ships under construction cannot move
+        if len(self.under_construction) > 0:
+            return
         # Space stations cannot move, ships with no engines cannot move
         for ship in self.ships:
             if ship.is_space_station():
                 return
             elif len(ship.engines) == 0:
                 return
+        # Fleets that are not co-located cannot move
+        for ship in self.ships:
+            pass #TODO
         (self.__cache__['move'], self.__cache__['move_in_system']) = self.order.move_calc(self.location)
 
     """ Check if fleet will/did move """
@@ -119,7 +143,7 @@ class Fleet(Defaults):
         # Check for planets meeting the criteria
         planets = []
         if self.location.in_system:
-            max_terraform = self.player.max_terraform()
+            max_terraform = self.__cache__['player'].max_terraform()
             hab_terraform = (max_terraform, max_terraform, max_terraform)
             for planet in self.location.root_reference.planets:
                 if planet.is_colonized():
@@ -127,13 +151,13 @@ class Fleet(Defaults):
                 elif self.order.colonize_manual:
                     if self.order.location.reference and self.order.location.reference == planet:
                         planets.append(planet)
-                elif planet.habitability(self.player.race, hab_terraform) >= self.order.colonize_min_hab:
+                elif planet.habitability(self.__cache__['player'].race, hab_terraform) >= self.order.colonize_min_hab:
                     min_minerals = Minerals(titanium=self.order.colonize_min_ti, lithium=self.order.colonize_min_li, silicon=self.order.colonize_min_si)
                     if planet.mineral_availability() >= min_minerals:
                         planets.append(planet)
         if len(planets) == 0:
             return
-        planets.sort(key=lambda x: x.habitability(self.player.race), reverse=True)
+        planets.sort(key=lambda x: x.habitability(self.__cache__['player'].race), reverse=True)
         # Filter the fleet for colonizers and then sort by age
         colonizers = []
         for ship in self.ships:
@@ -144,7 +168,7 @@ class Fleet(Defaults):
         for p in planets:
             if len(colonizers) == 0:
                 return
-            if p.colonize(self.player):
+            if p.colonize(self.__cache__['player']):
                 p.on_surface += colonizers[-1].cargo
                 p.on_surface += colonizers[-1].scrap_value()
                 self -= colonizers.pop()
@@ -153,17 +177,17 @@ class Fleet(Defaults):
     def activate_hyperdenial(self):
         # Not scheduled to move
         if self.is_stationary():
-            self.stats().hyperdenial.activate(self.player, self.location)
+            self.stats().hyperdenial.activate(self.__cache__['player'], self.location)
 
     """ Hyperdenials affecting me """
-    def in_hyperdenial(self, effect, player, blackhole=False):
+    def in_hyperdenial(self, effect, other_player, blackhole=False):
         if blackhole:
             self.__cache__['hyperdenial_effect'][1] += effect
         else:
             self.__cache__['hyperdenial_effect'][0] += effect
         # Players that will have visibility of fleet if fleet moves
-        if player and player not in self.__cache__['hyperdenial_players']:
-            self.__cache__['hyperdenial_players'].append(player)
+        if other_player and other_player not in self.__cache__['hyperdenial_players']:
+            self.__cache__['hyperdenial_players'].append(other_player)
 
     """ Does all the moving calculations and then moves the ships """
     def move(self):
@@ -281,7 +305,7 @@ class Fleet(Defaults):
         stats = self.stats()
         if not self.is_stationary() or stats.mines_laid == 0 or not self.location.in_system:
             return
-        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.player)
+        self.location.root_reference.lay_mines(int(stats.mines_laid / 100), self.__cache__['player'])
 
     """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
     def bomb(self):
@@ -289,7 +313,7 @@ class Fleet(Defaults):
         if not self.is_stationary() or len(stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
             return
         planet = self.location.reference
-        if self.player.get_relation(planet.player) != 'enemy':
+        if self.__cache__['player'].get_relation(planet.player) != 'enemy':
             return
         for b in stats.bombs:
             planet.bomb(b)
@@ -301,7 +325,7 @@ class Fleet(Defaults):
             return
         marks = []
         for f in multi_fleet.get(self.location):
-            if self.player.get_relation(f.player) not in ['me', 'team']:
+            if self.__cache__['player'].get_relation(f.player) not in ['me', 'team']:
                 marks.append(f)
         random.shuffle(marks)
         for mark in marks:
@@ -353,14 +377,15 @@ class Fleet(Defaults):
             return
         stats = self.stats()
         if self.location.reference ^ 'Planet' and stats.cargo.people > 0:
-            if self.location.reference.player == self.player: # TODO Test
-                self.location.reference.on_surface.people += stats.cargo.people # TODO Test # TODO other cargo
+            if self.location.reference.player == self.__cache__['player']:
+                self.location.reference.on_surface.people += stats.cargo.people
             else:
                 #TODO error message
                 # Cancel scrap order
                 self.order.scrap = False
                 return
         stats.scrap()
+        self - self.ships
 
     """ Load cargo """
     def load(self):
@@ -388,46 +413,46 @@ class Fleet(Defaults):
     def transfer(self):
         if not self.order.transfer_to:
             return
+        if len(self.under_construction):
+            return
         if self.stats().cargo.people > 0:
             # TODO message
             return
-        self.player.remove_fleet(self)
-        self.player = self.order.transfer_to
-        self.player.add_fleet(self)
-        self.orders = []
-        self.orders_repeat = False
+        self.order.transfer_to.add_ships(self.ships)
+        self.__cache__['player'].remove_fleet(self)
 
     """ Merges the fleet with the target fleet """
     def merge(self): # TODO Test
         f = self.location.reference
-        if not self.order.merge or not f ^ 'Fleet' or f != self.order.location.reference or f.player != self.player:
+        if not self.order.merge or not f ^ 'Fleet' or f != self.order.location.reference or f.player != self.__cache__['player']:
             return
-        f = ~f + self.ships
-        self.player.remove_fleet(self)
+        ~f + self.ships
+        ~f + self.under_construction
+        self.__cache__['player'].remove_fleet(self)
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):
         stats = self.stats()
         if stats.scanner.anti_cloak > 0:
-            scan.anticloak(self.player, self.location, stats.scanner.anti_cloak)
+            scan.anticloak(self.__cache__['player'], self.location, stats.scanner.anti_cloak)
 
     """ Perform hyperdenial scanning """
     def scan_hyperdenial(self):
         stats = self.stats()
         if stats.hyperdenial.radius > 0:
-            scan.hyperdenial(self.player, self.location, stats.hyperdenial.radius)
+            scan.hyperdenial(self.__cache__['player'], self.location, stats.hyperdenial.radius)
            
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         stats = self.stats()
         if stats.scanner.penetrating > 0:
-            scan.penetrating(self.player, self.location, stats.scanner.penetrating)
+            scan.penetrating(self.__cache__['player'], self.location, stats.scanner.penetrating)
 
     """ Perform normal scanning """
     def scan_normal(self):
         stats = self.stats()
         if stats.scanner.normal > 0:
-            scan.normal(self.player, self.location, stats.scanner.normal)
+            scan.normal(self.__cache__['player'], self.location, stats.scanner.normal)
 
     """ Update cached values of the fleet """
     def stats(self):
@@ -442,8 +467,8 @@ class Fleet(Defaults):
             stats.initiative = 0
             stats.location = self.location
             for ship in self.ships:
-                ship.update_cache(self.player)
-                stats['repair_moving'] += ship.hull.repair
+                ship.update_cache(self.__cache__['player'], self)
+                stats['repair_moving'] += ship.hull().repair
                 stats.scanner.anti_cloak = max(stats.scanner.anti_cloak, ship.scanner.anti_cloak)
                 stats.hyperdenial.radius = max(stats.hyperdenial.radius, ship.hyperdenial.radius)
                 stats.scanner.penetrating = max(stats.scanner.penetrating, ship.scanner.penetrating)
@@ -463,13 +488,13 @@ class Fleet(Defaults):
         sort_num = 0
         for fleet in multi_fleet.get(self.location):
             if fleet.stats().stargate.strength > 0:
-                cost = self.player.get_treaty(fleet.player).buy_gate
+                cost = self.__cache__['player'].get_treaty(fleet.player).buy_gate
                 if cost >= 0:
                     start_gates.append((max(0, gate_needed - fleet.stats().stargate.strength), cost, sort_num, fleet))
                     sort_num +=1
         for fleet in multi_fleet.get(move_to):
             if fleet.stats().stargate.strength > 0:
-                cost = self.player.get_treaty(fleet.player).buy_gate
+                cost = self.__cache__['player'].get_treaty(fleet.player).buy_gate
                 if cost >= 0:
                     end_gates.append((cost, sort_num, fleet))
                     sort_num +=1
@@ -493,11 +518,11 @@ class Fleet(Defaults):
     def _other_cargo(self):
         stats = self.stats()
         if self.location.reference ^ 'Fleet':
-            if self.location.reference.player == self.player:
+            if self.location.reference.player == self.__cache__['player']:
                 otherstats = self.location.reference.stats()
                 return (otherstats.cargo, otherstats.cargo_max)
         elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
-            if self.location.reference.player == self.player:
+            if self.location.reference.player == self.__cache__['player']:
                 return (self.location.reference.on_surface, sys.maxsize)
         return (None, 0)
 

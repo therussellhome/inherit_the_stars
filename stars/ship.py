@@ -47,8 +47,9 @@ class Ship(ShipDesign):
             game_engine.register(self)
 
     """ Precompute a number of values """
-    def update_cache(self, player):
+    def update_cache(self, player, fleet):
         self.__cache__['player'] = player
+        self.__cache__['fleet'] = fleet
         self.__cache__['total_mass'] = self.mass
         if not self.crew.lrt_Trader:
             self.__cache__['total_mass'] += self.cargo.sum()
@@ -63,17 +64,15 @@ class Ship(ShipDesign):
         self.__cache__['experience'] = 1 + float(self.__cache__['player'].date) - self.__cache__['player'].race.start_date + self.battle_experience + self.navigation_experience
         self.__cache__['initiative'] = self.__cache__['experience'] #TODO add mass_per_engine, scanners, stealth, ecm
 
-    """ This is a space station if it has orbital slots """
-    def is_space_station(self):
-        return self.hull.slots_orbital > 0
-
     """ Take damage """
     def take_damage(self, shield, armor):
         self.__cache__['shield_damage'] += shield
         self.armor_damage += armor
         if self.armor_damage >= self.armor:
             self.scrap(True)
-            # TODO remove from fleet
+            if hasattr(self.__cache__, 'fleet'):
+                self.__cache__['fleet'] - self
+            self.__cache__['player'].remove_ships(self)
 
     """ Scrap/blow-up the ship """
     def scrap(self, destroyed=False):
@@ -109,12 +108,5 @@ class Ship(ShipDesign):
         if scan_type != 'hyperdenial':
             report['Apparent Mass'] = self.__cache__['apparent_mass']
         return report
-
-    """ Find owning fleet """
-    def find_fleet(self):
-        for f in self.__cache__['player'].fleets:
-            if self in f.ships:
-                return f
-        return Fleet()
 
 Ship.set_defaults(Ship, __defaults)

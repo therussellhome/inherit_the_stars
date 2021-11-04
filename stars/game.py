@@ -157,6 +157,13 @@ class Game(Defaults):
     def generate_hundreth(self):
         # players in lowest to highest score
         players = list(self.players)
+        # player actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            self._call(players, 'reconsile_fleets')
+            self._call(players, 'reconsile_buships')
+            self._call(players, 'treaty_negotiations')
+            self._call(players, 'treaty_finalization')
+            self._call(players, 'cleanup_messages')
         self._call(players, 'next_hundreth')
         players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
         # planets in lowest to highest population
@@ -167,16 +174,12 @@ class Game(Defaults):
         for player in players:
             for fleet in player.fleets:
                 fleets.append(fleet)
+        multi_fleet.reset()
+        # fleet actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            self._scan(fleets) # scanning is needed to support fleet patroling
         self._call(fleets, 'next_hundreth')
         fleets.sort(key=lambda x: x.stats().initiative, reverse=False)
-        multi_fleet.reset()
-        #
-        # actions only done at the beginning of a year
-        if self.hundreth % 100 == 0:
-            self._call(players, 'treaty_negotiations')
-            self._call(players, 'treaty_finalization')
-            self._call(players, 'cleanup_messages')
-            self._scan(fleets) # scanning is needed to support fleet patroling
         #
         # actions in order
         self._call(planets, 'have_babies')
@@ -219,6 +222,7 @@ class Game(Defaults):
         self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
+        self._call(players, 'design_miniaturization')
         #
         # actions only done at the end of a year
         self.hundreth += 1

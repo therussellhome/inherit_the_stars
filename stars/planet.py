@@ -79,6 +79,7 @@ class Planet(Defaults):
         self.__cache__['shields'] = 0
         self.__cache__['impact_shields'] = 0
         self.__cache__['impact_people'] = 0
+        self.__cache__['production'] = 0
 
     """ Create remaining minerals with a minimum value 1-99 """
     def init_minerals(self, minimum):
@@ -268,8 +269,9 @@ class Planet(Defaults):
             avail[m] = (((self.remaining_minerals[m] / (((self.gravity * 6 / 100) + 1) * 1000)) ** 2) / 10) + 0.1
         return avail
 
-    """ calculates max production capacity per 100th """ #TODO if doing production in fractions breaks it, then make all production cost 100x as much capacity and get rid of the divide by 100 below and in line 277
+    """ calculates max production capacity per 100th """
     def operate_factories(self):
+        #TODO if doing production in fractions breaks it, then make all production cost 100x as much capacity and get rid of the divide by 100 below and in line 277
         # 1 unit of production free
         self.__cache__['production'] = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
         return self.__cache__['production']

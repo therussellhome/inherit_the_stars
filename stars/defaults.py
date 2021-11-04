@@ -6,9 +6,12 @@ from . import game_engine
 """ Class for handling defaults """
 class Defaults(game_engine.BaseClass):
     """ Load all defaults into the object """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         apply_defaults(self)
+        # override from passed in object
+        if len(args) > 0:
+            copy_from(self, args[0])
         # override with provided kwargs
         for (k, v) in kwargs.items():
             setattr(self, k, v)
@@ -90,9 +93,17 @@ def apply_defaults(obj):
         obj_dict[key] = get_default(obj, key)
 
 
+""" Copy attributes from the other object"""
+def copy_from(obj, other):
+    # copy from other object
+    for key in getattr(object.__getattribute__(obj, '__class__'), 'defaults', {}).keys():
+        if hasattr(other, key):
+            setattr(obj, key, copy.copy(getattr(other, key)))
+
+
 """ Get the default for a field """
 def get_default(obj, field):
     default = getattr(obj.__class__, 'defaults', {}).get(field, None)
     if isinstance(default, str) and default == '@UUID':
         return str(uuid.uuid4())
-    return copy.copy(default)
+    return copy.deepcopy(default)

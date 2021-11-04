@@ -107,11 +107,17 @@ class Tech(Defaults):
                     return False
         return True
 
+    """ Is this a hull tech item """
+    def is_hull(self):
+        if self.slots_general > 0 or self.slots_depot > 0 or self.slots_orbital > 0:
+            return True
+        return False
+
     """ Calculate the scrap value """
     def scrap_value(self, race, miniaturization_level=None):
         # Force scrap to be just minerals
-        m = Minerals() + self.cost * self.miniaturization(tech_level)
-        return m * (race.scrap_rate() / 100)
+        m = Minerals(self.cost * self.miniaturization(miniaturization_level))
+        return m * (race.scrap_rate / 100)
 
     """ How much past the base is the miniaturization """
     def miniaturization(self, miniaturization_level=None):
@@ -123,8 +129,21 @@ class Tech(Defaults):
             levels_over = miniaturization_level.total_levels()
         else:
             for f in TECH_FIELDS:
+                if miniaturization_level[f] < self.level[f]:
+                    return 1
                 levels_over += (miniaturization_level[f] - self.level[f]) * self.level[f] / base
         return 1 / (0.1 * levels_over ** 0.5 + 1)
+
+    """ Compute the miniaturization cost """
+    def build_cost(self, miniaturization_level=None):
+        return self.cost * self.miniaturization(miniaturization_level)
+
+    """ Compute the cost to overhaul this component to a new miniaturization level """
+    def overhaul_cost(self, current_level, overhaul_level, race):
+        current_miniaturization = self.miniaturization(current_level)
+        overhaul_miniaturization = self.miniaturization(overhaul_level)
+        # overhaul efficency is affected by scrap efficency
+        return self.cost * (current_miniaturization - overhaul_miniaturization) * (200 - race.scrap_rate) / 100
 
     """ Build the overview table """
     def html_overview(self, player_race=Race(), player_level=TechLevel(), player_partial=TechLevel()):

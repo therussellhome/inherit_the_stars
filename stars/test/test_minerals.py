@@ -33,6 +33,13 @@ class MineralsTestCase(unittest.TestCase):
         self.assertEqual(m3.lithium, 6)
         self.assertEqual(m3.silicon, 9)
 
+    def test_div(self):
+        m1 = minerals.Minerals(titanium=3, lithium=6, silicon=9)
+        m3 = m1 / 3
+        self.assertEqual(m3.titanium, 1)
+        self.assertEqual(m3.lithium, 2)
+        self.assertEqual(m3.silicon, 3)
+
     def test_is_zero1(self):
         m1 = minerals.Minerals()
         self.assertTrue(m1.is_zero())

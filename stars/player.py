@@ -2,25 +2,18 @@ import sys
 import uuid
 from math import ceil
 from . import game_engine
+from .cargo import Cargo
 from .defaults import Defaults
+from .fleet import Fleet
 from .intel import Intel
+from .message import Message
 from .minister import Minister
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
-from .treaty import Treaty
-from .tech_level import TechLevel, TECH_FIELDS
-from .fleet import Fleet
 from .ship import Ship
-from .cargo import Cargo
-from .message import Message
-# for testing TODO remove these extra imports
-from .planet import Planet
-from .facility import Facility
-from .ship_design import ShipDesign
-from .cost import Cost
-from .order import Order
-from .location import Location
+from .tech_level import TechLevel, TECH_FIELDS
+from .treaty import Treaty
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -40,13 +33,15 @@ __defaults = {
     'tech_level': TechLevel(), # current tech levels
     'research_partial': TechLevel(), # energy spent toward next level
     'research_queue': [], # queue of tech items to research
-    'ship_designs': [ShipDesign(cost = Cost(energy = 2000, titanium = 50, lithium = 13, silicon = 24))], # the existing designs
+    'ship_designs': [], # the existing designs
     'research_field': '<LOWEST>', # next field to research (or 'lowest')
     'energy': (0, 0, sys.maxsize),
     'fleets': [],
+    'ships': [],
     'tech': [], # tech tree
     'treaties': [],
     'build_queue': [], # array of BuildQueue items
+    'buships': [], # user modifable queue of ships to build in priority order
     'finance_construction_percent': (90.0, 0.0, 100.0),
     'finance_mattrans_percent': (0.0, 0.0, 100.0),
     'finance_mattrans_use_surplus': False,
@@ -67,7 +62,7 @@ _player_fields = [
     'ministers',
     'ship_designs',
     'treaties',
-    'build_queue',
+    'buships',
     'finance_construction_percent',
     'finance_mattrans_percent',
     'finance_mattrans_use_surplus',
@@ -76,7 +71,7 @@ _player_fields = [
 ]
 
 
-""" A player in a gaproductionme """
+""" A player in a game """
 class Player(Defaults):
     """ Initialize """
     def __init__(self, **kwargs):
@@ -136,7 +131,23 @@ class Player(Defaults):
                     if minister.new_colony_minister:
                         return minister
         return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
-    
+
+    """ Reconsile fleets """
+    def reconsile_fleets(self):
+        pass #TODO cheating check for multiple fleets pointing to the same ship
+
+    """ Apply the buships plan """
+    def reconsile_buships(self):
+        # link all buships and remove from build queue
+        for build_ship in self.build_queue:
+            if isinstance(build_ship, BuildShip):
+                if build_ship.buships:
+                    build_ship.buships.queue(build_ship)
+                self.build_queue.remove(build_ship)
+        # add all the buships back at the front of the queue
+        for buship in reversed(self.buships):
+            self.build_queue.insert(buship.queue(), 0)
+
     """ Update the date """
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
@@ -174,16 +185,33 @@ class Player(Defaults):
                 'score': score,})
         #TODO calculate score
 
-    def create_fleet(self, **kwargs):
-        self.fleets.append(Fleet(**kwargs))
-    
-    def add_fleet(self, fleet):
-        if fleet not in self.fleets:
+    """ Add ships to the player and put them in a new fleet """
+    def add_ships(self, ships, fleet=None):
+        if not fleet:
+            fleet = Fleet()
             self.fleets.append(fleet)
+        if not isinstance(ships, list):
+            ships = [ships]
+        for s in ships:
+            if isinstance(s, Reference):
+                s = ~s
+            if isinstance(s, Ship): # Don't add unbuilt ships to the ship list
+                self.ships.append(s)
+            fleet + Reference(s)
+        return Reference(fleet)
     
-    def remove_fleet(self, fleet):
-        if fleet in self.fleets:
-            self.fleets.remove(fleet)
+    """ Remove a fleet and any ships it had """
+    def remove_ships(self, ships=[]):
+        if isinstance(ships, Reference) and ships ^ 'Fleet':
+            self.fleets.remove(~ships)
+            ships = ships.ships
+        elif not isinstance(ships, list):
+            ships = [ships]
+        for s in ships:
+            if isinstance(s, Reference):
+                s = ~s
+            if s in self.ships:
+                self.ships.remove(s)
     
     """ Return the id for use as a temporary player token """
     def token(self):
@@ -347,10 +375,13 @@ class Player(Defaults):
         # Return approved or adjusted request
         return request
 
-    """ Attempt to build the items in the build queue """
+    """ Attempt to build the items in the build queues """
     def build_from_queue(self):
         for b in self.build_queue:
-            if b.planet.build(b):
+            if b.planet.player == self:
+                if b.planet.build(b):
+                    self.build_queue.remove(b)
+            else:
                 self.build_queue.remove(b)
 
     """ Research """
@@ -409,6 +440,11 @@ class Player(Defaults):
             for t in self.research_queue:
                 if t.level.is_available(self.tech_level):
                     self.research_queue.remove(t)
+
+    """ Update ship designs to account for miniaturization """
+    def design_miniaturization(self):
+        for d in self.ship_designs:
+            d.update(miniaturize_level=self.tech_level)
 
                     
 Player.set_defaults(Player, __defaults)
