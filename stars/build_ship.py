@@ -9,6 +9,7 @@ from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'ID': '@UUID',
     'buships': Reference('BuShips'), # reference to the BuShips item
     'ship': Reference('Ship'), # ship being built / upgraded
     'in_progress': Cost(), # remaining cost on the in-progress component

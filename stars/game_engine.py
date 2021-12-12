@@ -193,14 +193,17 @@ def __encode(o):
     elif isinstance(o, BaseClass):
         encoded = {}
         defaults = getattr(o.__class__, 'defaults', {})
+        tmp_fields = getattr(o.__class__, 'tmp_fields', {})
         sparse = getattr(o.__class__, 'sparse_json', {})
         for (k, v) in o.__dict__.items():
-            if not sparse.get(k, True):
+            if k in tmp_fields:
+                pass
+            elif not sparse.get(k, True):
                 encoded[k] = v
             elif k in defaults:
                 if v != defaults[k]:
                     encoded[k] = v
-            elif k != '__cache__':
+            else:
                 encoded[k] = v
         # Add class
         encoded['__class__'] = o.__class__.__name__

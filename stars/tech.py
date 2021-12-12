@@ -66,13 +66,19 @@ class Tech(Defaults):
         game_engine.register(self)
 
     """ Add a tech to self using the current miniaturization_level """
-    def merge(self, other):
+    def merge(self, other, max_not_merge=False):
         for key in Tech.defaults:
             # Skip strings
             if isinstance(self[key], str):
                 pass
             elif isinstance(self[key], list):
                 self[key].extend(other[key])
+            elif max_not_merge and key == 'scanner':
+                self[key].anti_cloak = max(self[key].anti_cloak, other[key].anti_cloak)
+                self[key].penetrating = max(self[key].penetrating, other[key].penetrating)
+                self[key].normal = max(self[key].normal, other[key].normal)
+            elif max_not_merge and key == 'hyperdenial':
+                self[key].radius = max(self[key].radius, other[key].radius)
             else:
                 self[key] += other[key]
 

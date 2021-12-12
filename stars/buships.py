@@ -17,6 +17,11 @@ __defaults = {
     'baryogenesis': False,
 }
 
+""" Temporary values (default, min, max)  """
+__tmp_defaults = {
+    'queue_cache': None,
+}
+
 """ Ship building queue """
 class BuShips(Defaults):
     """ Initialize the cost """
@@ -25,14 +30,13 @@ class BuShips(Defaults):
         if 'ship' not in kwargs and self.planet and self.planet.player: 
             # Force the creation of a fleet for the player to interact with
             self.planet.player.add_ships(self)
-        self.__cache__['queue'] = None
 
     """ Cache the associated queue item """
     def queue(self, queue=None):
         if queue:
-            self.__cache__['queue'] = queue
-        if not self.__cache__['queue']:
-            self.__cache__['queue'] = BuildShip(planet=self.planet, baryogenesis=self.baryogenesis, buships=Reference(self), ship=self.ship)
-        return self.__cache__['queue']
+            self.queue_cache = queue
+        if not self.queue_cache:
+            self.queue_cache = BuildShip(planet=self.planet, baryogenesis=self.baryogenesis, buships=Reference(self), ship=self.ship)
+        return self.queue_cache
 
-BuShips.set_defaults(BuShips, __defaults)
+BuShips.set_defaults(BuShips, __defaults, __tmp_defaults)

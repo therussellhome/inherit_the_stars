@@ -134,7 +134,9 @@ class Player(Defaults):
 
     """ Reconsile fleets """
     def reconsile_fleets(self):
-        pass #TODO cheating check for multiple fleets pointing to the same ship
+        for f in self.fleets:
+            f.player = Reference(self)
+        #TODO cheating check for multiple fleets pointing to the same ship
 
     """ Apply the buships plan """
     def reconsile_buships(self):
@@ -188,7 +190,7 @@ class Player(Defaults):
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
         if not fleet:
-            fleet = Fleet()
+            fleet = Fleet(player=Reference(self))
             self.fleets.append(fleet)
         if not isinstance(ships, list):
             ships = [ships]
@@ -202,8 +204,13 @@ class Player(Defaults):
     
     """ Remove a fleet and any ships it had """
     def remove_ships(self, ships=[]):
-        if isinstance(ships, Reference) and ships ^ 'Fleet':
-            self.fleets.remove(~ships)
+        if isinstance(ships, Fleet):
+            if ships in self.fleets:
+                self.fleets.remove(ships)
+            ships = ships.ships
+        elif isinstance(ships, Reference) and ships ^ 'Fleet':
+            if ~ships in self.fleets:
+                self.fleets.remove(~ships)
             ships = ships.ships
         elif not isinstance(ships, list):
             ships = [ships]

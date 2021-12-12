@@ -14,6 +14,29 @@ class TechTestCase(unittest.TestCase):
         self.assertEqual(t1.armor, 7)
         self.assertEqual(t1.weapons, ['w','e','a','p','o','n'])
 
+    def test_merge2(self):
+        t1 = tech.Tech()
+        t2 = tech.Tech()
+        t1.hyperdenial.radius = 10
+        t2.hyperdenial.radius = 20
+        print(t2.hyperdenial)
+        t1.merge(t2, max_not_merge=True)
+        self.assertEqual(t1.hyperdenial.radius, 20)
+
+    def test_merge3(self):
+        t1 = tech.Tech()
+        t2 = tech.Tech()
+        t1.scanner.anti_cloak = 30
+        t1.scanner.penetrating = 40
+        t1.scanner.normal = 50
+        t2.scanner.anti_cloak = 3
+        t2.scanner.penetrating = 4
+        t2.scanner.normal = 5
+        t1.merge(t2, max_not_merge=True)
+        self.assertEqual(t1.scanner.anti_cloak, 30)
+        self.assertEqual(t1.scanner.penetrating, 40)
+        self.assertEqual(t1.scanner.normal, 50)
+
     def test_group1(self):
         t = tech.Tech(category='Space Station Hull')
         self.assertEqual(t.tech_group(), 'Hulls & Mechanicals')
