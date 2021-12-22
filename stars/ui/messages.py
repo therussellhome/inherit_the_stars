@@ -20,17 +20,17 @@ __defaults = {
 class Messages(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
 
         # Use cached messages
-        if 'messages' not in self.player().__cache__:
+        if len(self.player.msg_cache) == 0:
             # Load message conversion files
             msg_text = game_engine.load('Message', 'Inherit the Stars!')
-            if self.player().race.message_file != '':
-                msg_text.update(game_engine.load('Message', self.player().race.message_file))
+            if self.player.race.message_file != '':
+                msg_text.update(game_engine.load('Message', self.player.race.message_file))
             msgs = []
-            for i, m in enumerate(self.player().messages):
+            for i, m in enumerate(self.player.messages):
                 msg = {'index': i, 'date': m.date, 'action': '', 'read': m.read}
                 if m.sender ^ 'Player':
                     msg['link'] = 'show_screen(\'foreign_minister\')'
@@ -47,16 +47,16 @@ class Messages(PlayerUI):
                 if len(msg['short']) > 58:
                     msg['short'] = msg['short'][:55] + '...'
                 msgs.append(msg)
-            self.player().__cache__['messages'] = msgs
+            self.player.msg_cache = msgs
         else:
-            msgs = self.player().__cache__['messages']
+            msgs = self.player.msg_cache
 
         # Update star
         if action.startswith('star'):
-            if self.player().messages[self.messages_index].star:
-                self.player().messages[self.messages_index].star = False
+            if self.player.messages[self.messages_index].star:
+                self.player.messages[self.messages_index].star = False
             else:
-                self.player().messages[self.messages_index].star = True
+                self.player.messages[self.messages_index].star = True
 
         # Makes the previous and next arrows work
         if action.startswith('prev'):
@@ -75,14 +75,14 @@ class Messages(PlayerUI):
                 self.messages_index = len(msgs) - 1
         self.messages_index = min(max(self.messages_index, 0), len(msgs) - 1)
         # Update read
-        self.player().messages[self.messages_index].read = True
+        self.player.messages[self.messages_index].read = True
         msgs[self.messages_index]['read'] = True
         
         # Sets up the inbox
         newest_unread = len(msgs) - 1
         for m in reversed(msgs):
             unbold = ''
-            if self.player().messages[m['index']].read:
+            if self.player.messages[m['index']].read:
                 unbold = 'font-weight: normal;'
             current = ''
             if self.messages_index == m['index']:
@@ -96,7 +96,7 @@ class Messages(PlayerUI):
         self.messages_sender = '<div onclick="' + m['link'] + '">' + m['icon'] + ' ' + m['sender'] + '</div>'
         self.messages_date = m['date']
         self.messages_action = m['action']
-        if self.player().messages[self.messages_index].star:
+        if self.player.messages[self.messages_index].star:
             self.messages_star = '<i class="fas fa-star"></i>'
         else:
             self.messages_star = '<i class="far fa-star"></i>'

@@ -1,6 +1,6 @@
 import copy
 import sys
-from random import randint
+from random import random, randint
 from . import stars_math
 from . import game_engine
 from .asteroid import Asteroid
@@ -97,6 +97,22 @@ class Ship(ShipDesign):
         self.ke = None
         self.apparent_ke = None
 
+    """ Travel through a stargate and incur any overgate damage/experience """
+    def gate(self, distance, gate_strength, survival_test=False):
+        over = self.total_mass + distance - gate_strength
+        if over <= 0:
+            return True
+        modifier = 512
+        if self.crew.primary_race_trait == 'Patryns':
+            modifier = 256 # TODO is this a good number?
+        min_damage = round((over/gate_strength + over/1000.0)**1.3 * modifier)
+        if survival_test:
+            print(min_damage, self.armor, self.armor_damage)
+            return min_damage < (self.armor - self.armor_damage)
+        luck = random() * 5/self.initiative
+        self.navigation_experience += 1
+        return not self.take_damage(0, min_damage * (1 + luck))
+
     """ Take damage """
     def take_damage(self, shield, armor):
         self.shield_damage += shield
@@ -105,6 +121,8 @@ class Ship(ShipDesign):
             self.scrap(randint(0, 100))
             self.fleet.remove_ships(self)
             self.player.remove_ships(self)
+            return True
+        return False
 
     """ Scrap/blow-up the ship """
     def scrap(self, percent_destroyed=None):

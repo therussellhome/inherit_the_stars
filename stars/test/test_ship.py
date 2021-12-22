@@ -48,6 +48,37 @@ class ShipTestCase(unittest.TestCase):
         s.update_cargo()
         self.assertEqual(s.total_mass, 0)
 
+    def test_gate1(self):
+        s = ship.Ship(total_mass=300, armor=107)
+        self.assertTrue(s.gate(100, 500, survival_test=True))
+
+    def test_gate2(self):
+        s = ship.Ship(total_mass=300, armor=107)
+        self.assertFalse(s.gate(300, 500, survival_test=True))
+
+    def test_gate3(self):
+        s = ship.Ship(total_mass=300, armor=108)
+        self.assertTrue(s.gate(300, 500, survival_test=True))
+
+    def test_gate4(self):
+        s = ship.Ship(total_mass=300, armor=500, navigation_experience=19)
+        for i in range(20):
+            s.armor_damage = 0
+            s.gate(300, 500)
+            self.assertLess(s.armor_damage, 134)
+
+    def test_gate5(self):
+        s = ship.Ship(total_mass=300, armor=1000, navigation_experience=0)
+        for i in range(20):
+            s.armor_damage = 0
+            s.gate(300, 500)
+            self.assertLess(s.armor_damage, 642)
+
+    def test_gate5(self):
+        s = ship.Ship(total_mass=300, armor=55)
+        s.crew.primary_race_trait = 'Patryns'
+        self.assertTrue(s.gate(300, 500, survival_test=True))
+
     def test_damage1(self):
         s = ship.Ship(armor=100)
         s.take_damage(25, 75)

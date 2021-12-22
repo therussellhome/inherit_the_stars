@@ -74,9 +74,7 @@ class Fleet(Defaults):
             for s in self.ships:
                 self_dict[name] += s.fuel
         elif name == 'initiative':
-            self_dict[name] = 0
-            for s in self.ships:
-                self_dict[name] = max(self_dict[name], s.initiative)
+            self_dict[name] = max(self.ships, key=lambda x: x.initiative).initiative
         return super().__getattribute__(name)
 
     """ Adds ships to the fleet """
@@ -160,19 +158,22 @@ class Fleet(Defaults):
             if reference == s:
                 s.location = Location(location)
             else:
-                s.location = Location(reference=reference, offset=offset)
+                s.location = Location(reference=reference, offset=offset * stars_math.KILOMETER_2_LIGHTYEAR)
         self.location = location
 
     """ Check if the fleet can/ordered to move """
     def read_orders(self):
         # Fleets with ships under construction cannot move
         if len(self.under_construction) > 0:
+            multi_fleet.add(self)
             return
         # Space stations cannot move, ships with no engines cannot move
         for ship in self.ships:
             if ship.is_space_station():
+                multi_fleet.add(self)
                 return
             elif len(ship.engines) == 0:
+                multi_fleet.add(self)
                 return
         self.move_to = self.order.move_calc(self.location)
         if self.move_to.root_location != self.location.root_location:
@@ -188,8 +189,6 @@ class Fleet(Defaults):
         for ship in self.ships:
             if ship.is_colonizer and ship.cargo.people > 0:
                 colonizers.append(ship)
-        if len(colonizers) == 0:
-            return
         colonizers.sort(key=lambda x: x.commissioning, reverse=True)
         # Check for planets meeting the criteria
         planets = []
@@ -237,7 +236,6 @@ class Fleet(Defaults):
     """ Does all the moving calculations and then moves the ships """
     def move(self):
         if self.is_stationary:
-            multi_fleet.add(self)
             return
         # Determine speed
         speed = self.order.speed
@@ -245,12 +243,13 @@ class Fleet(Defaults):
         stop_at = None
         distance = 0.0
         # Manual stargate or auto stargate
-        start, end = self._stargate_find(self.move_to, speed == -1)
+        start, end = self._stargate_find(allow_damage=(speed == -2))
         if (speed == -2 or speed == -1) and (start and end):
             # TODO pay for stargateing
-            stop_at = end.stats.location
+            stop_at = end.location
+            distance = self.location - stop_at
             for ship in self.ships:
-                ship.armor_damage += start.stats.stargate.overgate(ship.total_mass, self.location - self.move_to, ship.initiative)
+                ship.gate(distance, start.stats.stargate.strength)
         # Manual stargate but no gate or ship would be destroyed
         elif speed == -2:
             pass
@@ -298,7 +297,7 @@ class Fleet(Defaults):
                     self.fuel += engine.siphon_calc(distance)
                     ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, distance, hyperdenial))
             self.fuel_distribution() # Do now in case of ships dying in battle
-        if self.location.root_reference != self.move_to.root_reference:
+        if self.location.root_location != self.move_to.root_location:
             self.order_complete = False
         multi_fleet.add(self)
 
@@ -469,40 +468,36 @@ class Fleet(Defaults):
             scan.normal(self.player, self.location, self.stats.scanner.normal)
 
     """ find the stargates to use """
-    def _stargate_find(self, move_to, no_damage=True):
-        distance = move_to - self.location
-        gate_needed = max(self.ships, key=lambda x: x['total_mass'])['total_mass'] + distance
-        print(gate_needed, distance)
+    def _stargate_find(self, allow_damage):
+        distance = self.move_to - self.location
+        gate_needed = max(self.ships, key=lambda x: x.total_mass).total_mass + distance
         start_gates = []
         end_gates = []
-        sort_num = 0
+        # Find stargates that allow transit
         for fleet in multi_fleet.get(self.location):
             if fleet.stats.stargate.strength > 0:
                 cost = self.player.get_treaty(fleet.player).buy_gate
                 if cost >= 0:
-                    start_gates.append((max(0, gate_needed - fleet.stats.stargate.strength), cost, sort_num, fleet))
-                    sort_num +=1
-        for fleet in multi_fleet.get(move_to):
+                    start_gates.append((max(0, gate_needed - fleet.stats.stargate.strength), cost, len(start_gates), fleet))
+        # Find stargates that allow transit
+        for fleet in multi_fleet.get(self.move_to):
             if fleet.stats.stargate.strength > 0:
                 cost = self.player.get_treaty(fleet.player).buy_gate
-                if cost >= 0:
-                    end_gates.append((cost, sort_num, fleet))
-                    sort_num +=1
-        print(start_gates, end_gates)
+                if cost >= 0 or self.player.race.primary_race_trait == 'Patryns':
+                    end_gates.append((0, cost, len(end_gates), fleet))
         if len(start_gates) == 0 or len(end_gates) == 0:
-            print('somethin is absalut won')
             return (None, None)
         start_gates.sort()
         end_gates.sort()
-        if start_gates[0][0] > 0 and no_damage:
-            print('error 1')
-            return (None, None)
-        # Don't gate if a ship will definitely die
-        for ship in self.ships:
-            if ship.armor <= start_gates[0][3].stats.stargate.overgate(ship['total_mass'], distance, survival_test=True):
-                print('error 2')
+        if start_gates[0][0] > 0:
+            # Don't gate if trying to avoid damage
+            if not allow_damage:
                 return (None, None)
-        return (start_gates[0][3], end_gates[0][2])
+            # Don't gate if a ship will definitely die
+            for ship in self.ships:
+                if not ship.gate(distance, start_gates[0][3].stats.stargate.strength, survival_test=True):
+                    return (None, None)
+        return (start_gates[0][3], end_gates[0][3])
 
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):

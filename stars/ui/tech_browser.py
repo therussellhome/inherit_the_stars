@@ -19,14 +19,14 @@ class TechBrowser(PlayerUI):
         super().__init__(**kwargs)
         # List tech trees for loading
         self.options_tech_browser_tree = game_engine.load_list('Tech')
-        if self.player():
+        if self.player:
             self.options_tech_browser_tree.insert(0, '«CURRENT PLAYER»')
             if self.tech_browser_tree not in self.options_tech_browser_tree:
                 self.tech_browser_tree = '«CURRENT PLAYER»'
         elif self.tech_browser_tree not in self.options_tech_browser_tree:
             self.tech_browser_tree = 'Inherit the Stars!'
         if self.tech_browser_tree == '«CURRENT PLAYER»':
-            tech_tree = self.player().tech
+            tech_tree = self.player.tech
         else:
             tech_tree = game_engine.load('Tech', self.tech_browser_tree)
         # Sort tech

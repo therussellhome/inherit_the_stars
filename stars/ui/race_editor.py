@@ -21,8 +21,8 @@ class RaceEditor(PlayerUI):
         self.options_race_editor_file_to_load = game_engine.load_list('Race')
         self.options_race_editor_file_to_load.insert(0, '')
         race = Race()
-        if self.player():
-            race = self.player().race
+        if self.player:
+            race = self.player.race
             for key in Race.defaults:
                 self['race_editor_' + key] = race[key]
         elif self.race_editor_file_to_load != '':

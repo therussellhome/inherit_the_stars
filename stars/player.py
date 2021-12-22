@@ -50,6 +50,13 @@ __defaults = {
     'finance_baryogenesis_default': True,
 }
 
+""" Temporary values (default, min, max)  """
+__tmp_defaults = {
+    'msg_cache': [],
+    'planet_report': [],
+    'design_cache': [],
+}
+
 
 """ List of fields that are user modifable """
 _player_fields = [
@@ -454,4 +461,4 @@ class Player(Defaults):
             d.update(miniaturize_level=self.tech_level)
 
                     
-Player.set_defaults(Player, __defaults)
+Player.set_defaults(Player, __defaults, __tmp_defaults)
