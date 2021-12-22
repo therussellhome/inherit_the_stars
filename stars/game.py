@@ -87,8 +87,6 @@ class Game(Defaults):
                         homeworld = s.create_system(races[len(homes)])
                         player = Player(race=races[len(homes)], tech=tech_tree, game_ID=self.ID, game=Reference(self), planets=[homeworld])
                         self.players.append(player)
-                        homeworld.colonize(player)
-                        homeworld.on_surface.people = player.race.starting_colonists
                         homes.append(s)
                         if len(homes) == len(self.players):
                             break

@@ -11,9 +11,20 @@ from .minister import Minister
 from .planetary_minister import PlanetaryMinister
 from .race import Race
 from .reference import Reference
-from .ship import Ship
-from .tech_level import TechLevel, TECH_FIELDS
 from .treaty import Treaty
+from .tech_level import TechLevel, TECH_FIELDS
+from .minerals import Minerals, MINERAL_TYPES
+from .facility import Facility, FACILITY_TYPES
+from .fleet import Fleet
+from .ship import Ship
+from .cargo import Cargo
+from .message import Message
+# for testing TODO remove these extra imports
+from .planet import Planet
+from .ship_design import ShipDesign
+from .cost import Cost
+from .order import Order
+from .location import Location
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -87,6 +98,16 @@ class Player(Defaults):
         super().__init__(**kwargs)
         if 'validation_key' not in kwargs:
             self.validation_key = str(uuid.uuid4())
+            if len(self.planets) > 0:
+                self.planets[0].colonize(self)
+                self.planets[0].on_surface.people = self.race.starting_colonists
+                for mineral in MINERAL_TYPES:
+                    self.planets[0].on_surface[mineral] = self.race['starting_' + mineral]
+                for f in FACILITY_TYPES:
+                    self.planets[0][f] = self.race['starting_' + f]
+            self.energy = self.race.starting_energy
+            for field in TECH_FIELDS: 
+                self.tech_level[field] = self.race['starting_tech_' + field]
         if 'date' not in kwargs:
             self.date = '{:01.2f}'.format(self.race.start_date)
         if 'ministers' not in kwargs:
