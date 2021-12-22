@@ -29,12 +29,27 @@ class LocationCase(unittest.TestCase):
         self.assertNotEqual(l.y, 0.0)
         self.assertEqual(l.z, 0.0)
 
+    def test_init4(self):
+        l1 = location.Location(1, 2, 3)
+        l2 = location.Location(l1)
+        self.assertEqual(l2.xyz, (1, 2, 3))
+
     def test_orbit1(self):
         r = _TestLocationReference()
         l = location.Location(orbit_speed=270, offset=1, reference=r)
         self.assertEqual(l.xyz, (1.0, 0.0, 0.0))
         l.orbit()
         self.assertEqual(l.xyz, (0.0, -1.0, 0.0))
+
+    def test_eq1(self):
+        l1 = location.Location(x=0, y=0, z=0)
+        l2 = location.Location(x=0, y=0, z=0)
+        self.assertTrue(l1 == l2)
+
+    def test_eq2(self):
+        l1 = location.Location(x=0, y=0, z=0)
+        l2 = location.Location(x=1, y=0, z=0)
+        self.assertFalse(l1 == l2)
 
     def test_sub1(self):
         l1 = location.Location(x=0, y=0, z=0)

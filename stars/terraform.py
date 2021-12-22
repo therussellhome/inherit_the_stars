@@ -19,14 +19,10 @@ class Terraform(BuildQueue):
 
     """ Check if we are completed """
     def build(self, spend=Cost()):
-        super().build(spend)
-        if self.cost.is_zero():
+        remaining = super().build(spend)
+        if remaining.is_zero():
             self.planet[self.hab + '_terraform'] += 1
-        return self.cost
-
-    """ Build queue display """
-    def to_html(self):
-        return self.hab.capitalize() + ' Terraforming'
+        return remaining
 
 
 Terraform.set_defaults(Terraform, __defaults)

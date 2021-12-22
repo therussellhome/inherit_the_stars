@@ -19,28 +19,28 @@ __defaults = {
 class RenderStars(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
         # Copy all suns
-        for (s, i) in self.player().get_intel(by_type='StarSystem').items():
+        for (s, i) in self.player.get_intel(by_type='StarSystem').items():
             system = self.set_details('StarSystem', self.systems_color, i)
             self.systems.append({'location': i.location, 'system_key': i.system_key})
             self.details[i.system_key] = [system]
-        for (s, i) in self.player().get_intel(by_type='Sun').items():
+        for (s, i) in self.player.get_intel(by_type='Sun').items():
             sun = self.set_details('Sun', i.color, i)
             self.details[i.system_key].append(sun)
-        for (p, i) in self.player().get_intel(by_type='Planet').items():
+        for (p, i) in self.player.get_intel(by_type='Planet').items():
             planet = self.set_details('Planet', i.color, i)
             self.details[i.system_key].append(planet)
-        for (a, i) in self.player().get_intel(by_type='Asteroid').items():
+        for (a, i) in self.player.get_intel(by_type='Asteroid').items():
             asteroid = self.set_details('Asteroid', self.asteroids_color, i)
             self.asteroids.append({'location': i.location, 'system_key': i.system_key})
             self.details[i.system_key] = [asteroid]
-        for (w, i) in self.player().get_intel(by_type='Wormhole').items():
+        for (w, i) in self.player.get_intel(by_type='Wormhole').items():
             wormhole = self.set_details('Wormhole', self.wormholes_color, i)
             self.wormholes.append({'location': i.location, 'system_key': i.system_key})
             self.details[i.system_key] = [wormhole]
-        for (s, i) in self.player().get_intel(by_type='Ship').items():
+        for (s, i) in self.player.get_intel(by_type='Ship').items():
             ship = self.set_details('Ship', self.deep_space_color, i)
             if i.system_key in self.details:
                 self.details[i.system_key].append(ship)

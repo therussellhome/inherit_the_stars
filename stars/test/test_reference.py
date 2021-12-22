@@ -84,6 +84,14 @@ class ReferenceTestCase(unittest.TestCase):
         r = reference.Reference(t)
         self.assertEqual(~r, t)
 
+    def test_pos1(self):
+        r = reference.Reference('_TestReference/pos')
+        self.assertEqual(+r, '_TestReference')
+
+    def test_neg1(self):
+        r = reference.Reference('_TestReference/neg')
+        self.assertEqual(-r, 'neg')
+
     def test_set1(self):
         game_engine.unregister()
         r = reference.Reference()
