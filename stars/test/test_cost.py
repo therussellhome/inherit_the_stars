@@ -31,7 +31,39 @@ class CostTestCase(unittest.TestCase):
         self.assertEqual(c3.silicon, 6)
 
     def test_percent(self):
-        pass # TODO Pam
+        c1 = cost.Cost(energy=100, titanium=3, silicon=1)
+        c2 = cost.Cost(energy=200, titanium=6, silicon=2)
+        self.assertEqual(c1.percent(c2), 50) 
+    
+    def test_percent2(self):
+        c1 = cost.Cost(energy=100, titanium=3, silicon=1)
+        c2 = cost.Cost(energy=2000, titanium=29, silicon=1)
+        self.assertEqual(c1.percent(c2), 90) 
+
+    def test_percent3(self):
+        c1 = cost.Cost(energy=1000, titanium=3, lithium=24, silicon=1)
+        c2 = cost.Cost(energy=2000, lithium=19, silicon=1)
+        self.assertEqual(c1.percent(c2), 5)
+
+    def test_percent4(self):
+        c1 = cost.Cost(energy=1600, titanium=3, lithium=24, silicon=1)
+        c2 = cost.Cost(energy=2000, titanium=60, lithium=19, silicon=1)
+        self.assertEqual(c1.percent(c2), 56)
+
+    def test_percent5(self):
+        c1 = cost.Cost(energy=10, titanium=0, lithium=0, silicon=0)
+        c2 = cost.Cost(energy=2000, titanium=60, lithium=19, silicon=1)
+        self.assertEqual(c1.percent(c2), 99)
+    
+    def test_percent0(self):
+        c1 = cost.Cost(energy=2000, titanium=60, lithium=19, silicon=1)
+        c2 = cost.Cost(energy=2000, titanium=60, lithium=19, silicon=1)
+        self.assertEqual(c1.percent(c2), 0)
+    
+    def test_percent000(self):
+        c1 = cost.Cost(energy=2000, titanium=60, lithium=19, silicon=1)
+        c2 = cost.Cost(energy=0, titanium=0, lithium=0, silicon=0)
+        self.assertEqual(c1.percent(c2), 100)
 
     def test_is_zero1(self):
         c1 = cost.Cost()
