@@ -1,6 +1,6 @@
 import sys
 from colorsys import hls_to_rgb
-from math import cos, sin, sqrt
+from math import cos, sin, sqrt, pi
 from random import randint, uniform
 from . import game_engine
 from . import scan
@@ -63,13 +63,13 @@ class Planet(Defaults):
             self.temperature = randint(0, 100)
             if 'star_system' in kwargs:
                 sun = self.star_system.sun()
-                if sun:
+                if sun is not None:
                     self.temperature = round(self.distance * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
         if 'radiation' not in kwargs:
             self.radiation = randint(0, 100)
             if 'star_system' in kwargs:
                 sun = self.star_system.sun()
-                if sun:
+                if sun is not None:
                     self.radiation = sun.radiation
         if 'gravity' not in kwargs:
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
@@ -103,26 +103,9 @@ class Planet(Defaults):
         color_string = '#' + format(round(color[0] * 255), '02X') + format(round(color[1] * 255), '02X') + format(round(color[2] * 255), '02X')
         return color_string
     
-    """ Code the planet orbiting its star """
-    # t = years it takes planet to orbit, min 1 year, max 30 years
-    # m = the sun's gravity clicks
-    # r = the distance from the sun
-    # angle = the planet's angle
-    #TODO date = year in 1/100
-    #def orbit(self):
-    #    return #TODO orbit not finished
-    """
-        if date < 1:
-            date += 1
-        else:
-            date = 1 + self.age
-        r = self.distance
-        m = max(self.sun_gravity, 1)
-        t = max(1, (((r ** 3)/m) ** .5) * (30/.85))
-        angle = date * (360/(100 * t))
-        self.y = r * sin(angle)
-        self.x = r * cos(angle)
-        #"""
+    """ Planets orbit their star """
+    def orbit(self):
+        self.location.orbit()
 
     """ Check whether the planet is colonized """
     def is_colonized(self):
@@ -277,7 +260,6 @@ class Planet(Defaults):
 
     """ calculates max production capacity per 100th """
     def operate_factories(self):
-        #TODO if doing production in fractions breaks it, then make all production cost 100x as much capacity and get rid of the divide by 100 below and in line 277
         # 1 unit of production free
         self.production = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
         return self.production
@@ -375,21 +357,21 @@ class Planet(Defaults):
     """ Build an item """
     def build(self, item, from_queue=True):
         self.production_blocked = False
-        spend = Cost()
         in_progress = item.build()
         while not in_progress.is_zero():
             spend = Cost()
-            spend.energy -= self.player.spend(item.__class__.__name__, in_progress.energy)
+            spend.energy = self.player.spend(item.__class__.__name__, in_progress.energy)
             for m in MINERAL_TYPES:
                 use_p = min(self.production, in_progress[m], self.on_surface[m])
                 self.production -= use_p
                 self.on_surface[m] -= use_p
-                spend[m] -= use_p
+                spend[m] = use_p
+            for m in MINERAL_TYPES:
                 if spend[m] < in_progress[m] and item.baryogenesis:
                     spend_e = self.player.spend('Baryogenesis', min(self.production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
                     baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
                     self.production -= baryogenesis_minerals * 2
-                    spend[m] -= baryogenesis_minerals
+                    spend[m] += baryogenesis_minerals
             # Apply build effort
             in_progress = item.build(spend)
             # Blocked
@@ -417,7 +399,7 @@ class Planet(Defaults):
                     worst_hab = hab
                     worst_hab_from_center = hab_from_center
             if worst_hab:
-                keep_going = self.build(Terraform(hab=worst_hab, planet=self))
+                keep_going = self.build(Terraform(hab=worst_hab, planet=Reference(self)))
             else:
                 # Build facility
                 worst_facility = None
@@ -429,7 +411,7 @@ class Planet(Defaults):
                         worst_facility = facility
                         worst_facility_percent = operate / ideal
                 if worst_facility:
-                    keep_going = self.build(Facility(facility_type=worst_facility, planet=self, baryogenesis=minister.allow_baryogenesis))
+                    keep_going = self.build(Facility(facility_type=worst_facility, planet=Reference(self), baryogenesis=minister.allow_baryogenesis))
                 else:
                     keep_going = False
 
@@ -447,58 +429,25 @@ class Planet(Defaults):
             self.on_surface[lowest] += minerals
             self.production -= minerals
 
-    """ build stuff in build queue """
-    def do_construction(self, auto_build=False, allow_baryogenesis=False):
-        minister = self.player.get_minister(self)
-        zero_cost = Cost()
-        while len(self.build_queue) > 0:
-            item = self.build_queue[0]
-            # energy
-            item_type = 'planetary'
-            if type(item) == type(Ship()):
-                item_type = 'ship'
-            e = self.player.energy_minister.spend_budget(item_type, item.cost_incomplete.energy)
-            item.cost_incomplete.energy -= e
-            # use on_surface minerals
-            for mineral in ['titanium', 'lithium', 'silicon']:
-                spend = min([self.production, getattr(item.cost_incomplete, mineral), getattr(self.on_surface, mineral)])
-                self.production -= spend
-                setattr(item.cost_incomplete, mineral, getattr(item.cost_incomplete, mineral) - spend)
-                setattr(self.on_surface, mineral, getattr(self.on_surface, mineral) - spend)
-            if item.cost_incomplete != zero_cost:
-                # use baryogenesis to unblock the queue
-                if self.production > 0 and minister.baryogenesis and allow_baryogenesis:
-                    for mineral in ['titanium', 'lithium', 'silicon']:
-                        max_baryogenesis = self.player.energy_minister.check_budget('Baryogenesis') / self.player.race.cost_of_baryogenesis
-                        spend = min([int(self.production / 2), getattr(item.cost_incomplete, mineral), max_baryogenesis])
-                        self.production -= spend * 2
-                        setattr(item.cost_incomplete, mineral, getattr(item.cost_incomplete, mineral) - spend)
-                        self.player.energy_minister.spend_budget('Baryogenesis', spend * self.player.race.cost_of_baryogenesis)
-            if item.cost_incomplete == zero_cost:
-                self.build_queue.pop(0)
-                #TODO do something with the item
-            if len(self.build_queue) == 0 and auto_build:
-                self.build_queue.extend(self.auto_build())
-
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         if self.is_colonized():
-            if self.player.race.lrt_2ndSight:
-                p = round((50 + 10 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
-            else:
-                p = min(100, round((10 + 4 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000)))
-            return p
-            scan.penetrating(self.player, self.location, p) #TODO Pam coded this I hope it works :-D
+            # Formula is loosely based on the volume to radius equasion
+            root = 3.0
+            if not self.player.race.lrt_2ndSight:
+                root = 4.0
+            radius = (3.0 * self.player.race.pop_per_kt() * self.on_surface.people / 4.0 / pi) ** (1.0 / root) * 3.0
+            scan.penetrating(self.player, self.location, radius)
 
     """ Perform normal scanning """
     def scan_normal(self):
         if self.is_colonized():
-            if self.player.race.lrt_2ndSight:
-                r = round((100 + 20 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
-            else:
-                r = round((100 + 40 * self.player.tech_level.electronics) * sqrt(self.on_surface.people / 10000000))
-            return r
-            scan.normal(self.player, self.location, r) #TODO Pam coded this I hope it works :-D
+            # Formula is loosely based on the volume to radius equasion
+            root = 3.0
+            if not self.player.race.lrt_2ndSight:
+                root = 2.7
+            radius = (3.0 * self.player.race.pop_per_kt() * self.on_surface.people / 4.0 / pi) ** (1.0 / root) * 4.0
+            scan.normal(self.player, self.location, radius)
 
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):

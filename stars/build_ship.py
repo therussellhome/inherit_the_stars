@@ -23,15 +23,10 @@ __defaults = {
 
 """ Temporary class to indicate ship in process """
 class BuildShip(BuildQueue):
-    """ Initialize the cost """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.update_cost()
-
     """ Check if the component is done or the entire ship is done """
     def build(self, spend=Cost()):
         # Make sure we have the latest cost
-        self.update_cost()
+        self._update_cost()
         # Select the first/next component to work on
         self._next_component()
         # Spend
@@ -80,42 +75,54 @@ class BuildShip(BuildQueue):
             elif self.ship: # no more components so no longer under construction
                 self.ship.under_construction = False
 
-    """ Update the cost if contruction has not started """
-    def update_cost(self):
-        if self.spent.is_zero():
-            self.level = self.planet.player.tech_level
-            # make sure the design is updated
-            self.buships.ship_design.update()
-            # all components in the design (will be reduced for existing below)
-            self.to_build = []
-            for (tech, cnt) in self.buships.ship_design.components.items():
+    """ Provide calculated values """
+    def __getattribute__(self, name):
+        self_dict = object.__getattribute__(self, '__dict__')
+        # Safety check if inital defaults have not been applied or if has value
+        if '__init_complete__' not in self_dict or name not in self_dict:
+            return super().__getattribute__(name)
+        if name == 'cost' and self_dict['spent'].is_zero():
+            self_dict['cost'] = self._update_cost()
+        return super().__getattribute__(name)
+
+    """ Update the cost """
+    def _update_cost(self):
+        if not self.spent.is_zero():
+            return super().__getattribute__('cost')
+        self.level = self.planet.player.tech_level
+        # make sure the design is updated
+        self.buships.ship_design.update()
+        # all components in the design (will be reduced for existing below)
+        self.to_build = []
+        for (tech, cnt) in self.buships.ship_design.components.items():
+            for i in range(cnt):
+                # make sure the hull is built first
+                if tech.is_hull():
+                    self.to_build.insert(0, tech)
+                else:
+                    self.to_build.append(tech)
+        # find extra components to scrap and overhaul costs
+        self.overhaul = Cost()
+        self.to_scrap = []
+        self.scrap_minerals = Minerals()
+        if self.ship:
+            if not self.buships.overhaul:
+                self.level = self.ship.level
+            for (tech, cnt) in self.ship.components.items():
                 for i in range(cnt):
-                    # make sure the hull is built first
-                    if tech.is_hull():
-                        self.to_build.insert(0, tech)
+                    if tech in self.to_build:
+                        if self.buships.overhaul:
+                            self.overhaul += tech.overhaul_cost(self.ship.level, self.level, self.planet.player.race)
+                        self.to_build.remove(tech)
                     else:
-                        self.to_build.append(tech)
-            # find extra components to scrap and overhaul costs
-            self.overhaul = Cost()
-            self.to_scrap = []
-            self.scrap_minerals = Minerals()
-            if self.ship:
-                if not self.buships.overhaul:
-                    self.level = self.ship.level
-                for (tech, cnt) in self.ship.components.items():
-                    for i in range(cnt):
-                        if tech in self.to_build:
-                            if self.buships.overhaul:
-                                self.overhaul += tech.overhaul_cost(self.ship.level, self.level, self.planet.player.race)
-                            self.to_build.remove(tech)
-                        else:
-                            self.scrap_minerals += tech.scrap_value(self.planet.player.race, self.ship.level)
-                            self.to_scrap.append(tech)
-            # Add up costs
-            self.cost = Cost()
-            for tech in self.to_build:
-                self.cost += tech.build_cost(self.level)
-            self.cost = self.cost - self.scrap_minerals + self.overhaul - Minerals(self.overhaul)
+                        self.scrap_minerals += tech.scrap_value(self.planet.player.race, self.ship.level)
+                        self.to_scrap.append(tech)
+        # Add up costs
+        cost = Cost()
+        for tech in self.to_build:
+            cost += tech.build_cost(self.level)
+        cost = cost - self.scrap_minerals + self.overhaul - Minerals(self.overhaul)
+        return cost
 
 
 BuildShip.set_defaults(BuildShip, __defaults)

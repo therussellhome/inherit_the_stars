@@ -27,3 +27,8 @@ def volume_add(r1, r2):
 """ Volume """
 def volume(r):
     return 4.0 / 3.0 * math.pi * (r ** 3.0)
+
+#Untested, possibly unneeded
+#""" Radius from volume """
+#def radius(v):
+#    return (3.0 * v / (4.0 * math.pi)) ** (1.0 / 3.0)
