@@ -66,6 +66,9 @@ __tmp_defaults = {
     'msg_cache': [],
     'planet_report': [],
     'design_cache': [],
+    'budget_construction': 0,
+    'budget_mattrans': 0,
+    'budget_research': 0,
 }
 
 
@@ -151,14 +154,17 @@ class Player(Defaults):
       
     """ Get the minister for a given planet """
     def get_minister(self, planet):
-        try:
+        planet_ref = Reference(planet)
+        if planet_ref in self.planetary_minister_map:
             return self.planetary_minister_map[Reference(planet)]
-        except:
+        else:
             for minister in self.ministers:
                 if hasattr(minister, 'new_colony_minister'):
                     if minister.new_colony_minister:
                         return minister
-        return self.planetary_minister_map.get(Reference(planet), PlanetaryMinister())
+        minister = PlanetaryMinister(name='Colony', new_colony_minister=True)
+        self.ministers.append(minister)
+        return minister
 
     """ Reconsile fleets """
     def reconsile_fleets(self):
@@ -367,7 +373,7 @@ class Player(Defaults):
         total = self.energy
         for category in ['construction', 'mattrans', 'research']:
             allocation = min(round(total * self['finance_' + category + '_percent'] / 100), self.energy)
-            self.__cache__['budget_' + category] = allocation
+            self['budget_' + category] = allocation
 
     """ Incoming energy """
     def add_energy(self, energy):
@@ -381,18 +387,18 @@ class Player(Defaults):
         if sub_category in ['Ship', 'StarBase', 'Facility', 'Baryogenesis']:
             category = 'construction'
             intel_category = 'Finance Minister: ' + sub_category
-            budget = self.__cache__['budget_construction']
+            budget = self.budget_construction
         elif category == 'mattrans':
             intel_category = 'Finance Minister: MatTrans'
-            budget = self.__cache__['budget_mattrans']
+            budget = self.budget_mattrans
             if self.finance_mattrans_use_surplus:
-                budget += self.__cache__['budget_construction']
+                budget += self.budget_construction
         elif category == 'research':
             intel_category = 'Finance Minister: Research'
-            budget = self.__cache__['budget_research']
+            budget = self.budget_research
             if self.finance_research_use_surplus:
-                budget += self.__cache__['budget_construction']
-                budget += self.__cache__['budget_mattrans']
+                budget += self.budget_construction
+                budget += self.budget_mattrans
         # All other categories pull from the unallocated budget and surplus
         else:
             category = 'other'
@@ -406,7 +412,7 @@ class Player(Defaults):
             self.add_intel(self, {intel_category: request})
             self.energy -= request
             if category != 'other':
-                self.__cache__['budget_' + category] -= request
+                self['budget_' + category] -= request
         # Return approved or adjusted request
         return request
 
