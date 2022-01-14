@@ -66,17 +66,14 @@ class Location(Defaults):
             # Force recalc of xyz
             self.__dict__['xyz'] = None
 
-    #def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
-    #    distance = (self - target) - standoff
-    #    f = max_distance / distance
-    #    x = self.x - (self.x - target.x) * f
-    #    y = self.y - (self.y - target.y) * f
-    #    z = self.z - (self.z - target.z) * f
-    #    return Location(x=x, y=y, z=z)
+    """ Calculate the intercept point """
+    def intercept(self, hyper, target, target_vector):
+        # The intel class should be able to calculate the target vector scaled to change in xyz/year
+        # TODO calculate the intercept point
+        return Location(target + target_vector)
 
     """ returns the location to move to """
-    def move(self, target, max_distance, away=False, standoff=0.0, target_prev=None):
-        #target = self.intercept(target, max_distance, standoff, target_prev)
+    def move(self, target, max_distance=sys.maxsize, away=False, standoff=0.0):
         distance = self - target
         move_distance = max_distance
         if distance - max_distance < standoff:

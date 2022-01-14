@@ -99,28 +99,30 @@ __defaults = {
 """ Class defining waypoints - edited by the player through fleet """
 class Order(Defaults):
     def move_calc(self, fleet_location):
-        """ 
         # Intentionally stopped
-        if self.order.speed == 0:
-            return
-        # Calculate destination (patrol, standoff, etc)
-        move = self.order.calc_fly_to(self.location)
-        # Already there
-        if self.location == move:
-            return
-        self.__cache__['move_in_system'] = move
-        # Move is in system only
-        if self.location.root_location == move.root_location:
-            return
-        # Move is to an in_system point, go to outer system first
-        if move.in_system:
-            self.__cache__['move'] = self.location.move(move, sys.maxsize, standoff=stars_math.TERAMETER_2_LIGHTYEAR)
-        else:
-            self.__cache__['move'] = move
-        """
-        return (self.location, self.location) #TODO
+        if self.speed == 0:
+            return fleet_location
+        if self.patrol:
+            pass # TODO select nearest enemy to pursue and change the location
+        if self.standoff == 'No Standoff':
+            return self.location
+        return fleet_location.move(self.location, standoff=self._standoff(fleet_location))
 
-    """ calculates the standoff distance for the fleet """
+    """ Calculates the standoff distance for the fleet """
+    def _standoff(self, fleet_location):
+        standoff = 0.0
+        if self.standoff == 'Avoid Detection':
+            pass # TODO calculate the standoff distance
+        elif self.standoff == 'Penetrating Minimum':
+            pass # TODO calculate the standoff distance
+        elif self.standoff == 'Anti-Cloak Minimum':
+            pass # TODO calculate the standoff distance
+        elif self.standoff == 'Hyper-Denial Minimum':
+            pass # TODO calculate the standoff distance
+        return standoff
+
+
+    """ calculates the standoff distance for the fleet 
     def move_to(self, fleet):
         self.fly_to = copy.copy(self.location)
         if self.standoff == 'No Standoff':
@@ -165,6 +167,7 @@ class Order(Defaults):
             else:
                 self.standoff = 'No Standoff'
                 self.move_to(fleet)
+    """
     
     """ gets places a ship will be """
     def get_cord(self, location, pre_location, speed, time):

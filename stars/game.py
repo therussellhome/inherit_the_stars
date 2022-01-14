@@ -257,7 +257,7 @@ class Game(Defaults):
         self._call(fleets, 'scan_penetrating')
         self._call(planets, 'scan_normal')
         self._call(fleets, 'scan_normal')
-        self._call(self.get_planets(), 'scan_self')
+        self._call(planets, 'scan_self')
         self._call(fleets, 'scan_self')
 
     """ Execute combat after determining where combat will occur """

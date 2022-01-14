@@ -112,7 +112,7 @@ class FleetCase(unittest.TestCase):
     def test_read_orders1(self):
         f = fleet.Fleet() + build_ship.BuildShip()
         f.read_orders()
-        self.assertEqual(f.move_to, None)
+        self.assertEqual(f.move_to, f.location)
 
     def test_read_orders2(self):
         f = fleet.Fleet() + ship.Ship()
