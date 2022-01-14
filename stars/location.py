@@ -11,34 +11,60 @@ __defaults = {
     'x': 0.0,
     'y': 0.0,
     'z': 0.0,
-    'in_system': False,
+    'is_system': False,
     'reference': Reference(''),
     'offset': 0.0,
+    'orbit_lon': 0.0, #degrees
+    'orbit_speed': 0.0, # degrees
+}
+
+""" Temporary values (default, min, max)  """
+__tmp_defaults = {
+    'xyz': None,
+    'ref_xyz': None,
+    'relative_xyz': None,
+    'root_location': None,
+    'root_reference': None,
 }
 
 
 """ Class defining a location """
 class Location(Defaults):
     """ Initialize the location """
-    def __init__(self, **kwargs):
-        if 'random_in' in kwargs:
+    def __init__(self, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], Location):
+            kwargs['x'] = args[0].x
+            kwargs['y'] = args[0].y
+            kwargs['z'] = args[0].z
+        elif len(args) == 3:
+            kwargs['x'] = args[0]
+            kwargs['y'] = args[1]
+            kwargs['z'] = args[2]
+        elif 'new_random' in kwargs:
             # loop until a point is created inside a radius=1 sphere
             p = (1.0, 1.0, 1.0)
             while stars_math.distance(*p, 0, 0, 0) > 1.0:
                 p = (random() * 2 - 1, random() * 2 - 1, random() * 2 - 1)
-            kwargs['x'] = p[0] * kwargs['random_in'][0]
-            kwargs['y'] = p[1] * kwargs['random_in'][1]
-            kwargs['z'] = p[2] * kwargs['random_in'][2]
-            del kwargs['random_in']
-        super().__init__(**kwargs)
+            kwargs['x'] = p[0] * kwargs['new_random'][0]
+            kwargs['y'] = p[1] * kwargs['new_random'][1]
+            kwargs['z'] = p[2] * kwargs['new_random'][2]
+            del kwargs['new_random']
+        elif 'new_orbit' in kwargs:
+            kwargs['orbit_speed'] = kwargs['new_orbit']
+            kwargs['orbit_lon'] = random() * 360 - 180
+            del kwargs['new_orbit']
         if 'reference' in kwargs:
-            self.reference = Reference(kwargs['reference'])
+            kwargs['reference'] = Reference(kwargs['reference'])
+        super().__init__(**kwargs)
     
-    #def polar_offset(dis, lat, lon):
-    #    x = round(cos(lat*pi/180)*dis*cos(lon*pi/180), 5)
-    #    y = round(sin(lat*pi/180)*dis*cos(lon*pi/180), 5)
-    #    z = round(sin(lon*pi/180)*dis, 5)
-    #    return Location(x = self.x + x, y = self.y + y, z = self.z + z)
+    """ Orbit """
+    def orbit(self):
+        if self.orbit_speed > 0:
+            self.orbit_lon += self.orbit_speed
+            if self.orbit_lon > 180:
+                self.orbit_lon - 180
+            # Force recalc of xyz
+            self.__dict__['xyz'] = None
 
     #def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
     #    distance = (self - target) - standoff
@@ -66,47 +92,72 @@ class Location(Defaults):
             f = min(1, move_distance / distance)
         else:
             f = -1 * move_distance / distance
-        x = self.x - (self.x - target.x) * f
-        y = self.y - (self.y - target.y) * f
-        z = self.z - (self.z - target.z) * f
-        return Location(x=x, y=y, z=z)
-    
+        return Location(
+            x = self.xyz[0] - (self.xyz[0] - target.xyz[0]) * f,
+            y = self.xyz[1] - (self.xyz[1] - target.xyz[1]) * f,
+            z = self.xyz[2] - (self.xyz[2] - target.xyz[2]) * f)
+
+    """ Comparison allowing for close enough """
+    def __eq__(self, other):
+        if isinstance(other, Location):
+            if self - other < stars_math.TERAMETER_2_LIGHTYEAR / 1000:
+                return True
+        return False
+
     """ Distance between 2 points """
     def __sub__(self, other):
-        return stars_math.distance(self.x, self.y, self.z, other.x, other.y, other.z)
+        return stars_math.distance(self.xyz[0], self.xyz[1], self.xyz[2], other.xyz[0], other.xyz[1], other.xyz[2])
     
-    """ If a reference then get the attribute from the referenced class """
+    """ Provide calculated values """
     def __getattribute__(self, name):
         self_dict = object.__getattribute__(self, '__dict__')
-        if '__cache__' not in self_dict:
-            return object.__getattribute__(self, name)
-        if self_dict['__cache__'] == {}:
-            # location is relative but has not been converted to absolute
-            if self_dict['reference']:
-                # location does not have a fixed offset
-                if self_dict['offset'] != 0.0:
-                    lat = random() * 180 - 90
-                    lon = random() * 360 - 180
-                    self_dict['x'] = round(cos(lat * pi / 180) * self_dict['offset'] * cos(lon * pi / 180), 5)
-                    self_dict['y'] = round(sin(lat * pi / 180) * self_dict['offset'] * cos(lon * pi / 180), 5)
-                    self_dict['z'] = round(sin(lon * pi / 180) * self_dict['offset'], 5)
-                self_dict['__cache__'] = (
-                        self_dict['reference'].location.x + self_dict['x'],
-                        self_dict['reference'].location.y + self_dict['y'],
-                        self_dict['reference'].location.z + self_dict['z'])
-            else:
-                self_dict['__cache__'] = (self_dict['x'], self_dict['y'], self_dict['z'])
-        # if relative then get the in_system flag from the referenced location
-        if name == 'in_system' and self_dict['reference']:
-            return self_dict['reference'].locaton.in_system
-        elif name == 'x':
-            return self_dict['__cache__'][0]
-        elif name == 'y':
-            return self_dict['__cache__'][1]
-        elif name == 'z':
-            return self_dict['__cache__'][2]
-        else:
-            return object.__getattribute__(self, name)
+        # Safety check if inital defaults have not been applied
+        if '__init_complete__' not in self_dict:
+            return super().__getattribute__(name)
+        # Check if reference has changed
+        if self_dict['reference']:
+            # convert/reconert to absolute
+            ref_xyz = self_dict['reference'].location.xyz
+            if self_dict['xyz'] is None or self_dict['ref_xyz'] is None or self_dict['ref_xyz'] != ref_xyz:
+                self_dict['ref_xyz'] = ref_xyz
+                self_dict['root_location'] = self_dict['reference'].location.root_location
+                self_dict['root_reference'] = self_dict['reference'].location.root_reference
+                if not self_dict['root_reference']:
+                    self_dict['root_reference'] = self_dict['reference']
+                # location does not have a fixed xyz offset
+                if self_dict['offset'] == 0.0:
+                    self_dict['relative_xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
+                else:
+                    if self_dict['orbit_speed'] > 0.0:
+                        lat = 0
+                        lon = self_dict['orbit_lon']
+                    else:
+                        lat = random() * 180 - 90
+                        lon = random() * 360 - 180
+                    self_dict['relative_xyz'] = (
+                        self_dict['offset'] * round(cos(lat * pi / 180) * cos(lon * pi / 180), 10),
+                        self_dict['offset'] * round(cos(lat * pi / 180) * sin(lon * pi / 180), 10),
+                        self_dict['offset'] * round(sin(lat * pi / 180), 10))
+                self_dict['xyz'] = (ref_xyz[0] + self_dict['relative_xyz'][0], ref_xyz[1] + self_dict['relative_xyz'][1], ref_xyz[2] + self_dict['relative_xyz'][2])
+        # Created cached version
+        elif self_dict['xyz'] is None:
+            self_dict['root_location'] = self
+            self_dict['root_reference'] = None
+            self_dict['xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
+            self_dict['relative_xyz'] = (0.0, 0.0, 0.0)
+        if name == 'x':
+            return self_dict['xyz'][0]
+        if name == 'y':
+            return self_dict['xyz'][1]
+        if name == 'z':
+            return self_dict['xyz'][2]
+        if name == 'in_system':
+            return self_dict['root_location'].is_system
+        return super().__getattribute__(name)
+
+    """ Use the absolute position as the hash """
+    def __hash__(self):
+        return hash(self.xyz)
 
 
-Location.set_defaults(Location, __defaults)
+Location.set_defaults(Location, __defaults, __tmp_defaults)

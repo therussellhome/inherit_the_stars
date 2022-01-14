@@ -1,102 +1,128 @@
 from .build_queue import BuildQueue
 from .cost import Cost
-from .ship_design import ShipDesign
+from .location import Location
+from .minerals import Minerals
 from .reference import Reference
+from .ship import Ship
+from .ship_design import ShipDesign
+from .tech_level import TechLevel
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'ship_design': ShipDesign(), # what is being built
-    'ship': Reference('Ship'),
-    'in_progress': Cost(),
-    'component': Reference('Tech'),
+    'ID': '@UUID',
+    'buships': Reference('BuShips'), # reference to the BuShips item
+    'ship': Reference('Ship'), # ship being built / upgraded
+    'in_progress': Cost(), # remaining cost on the in-progress component
+    'level': TechLevel(), # upgrade/build level of the ship
+    'to_build': [], # components to build
+    'to_scrap': [], # components to scrap
+    'overhaul': Cost(), # cost for doing an upgrade
+    'scrap_mineals': Minerals(), # minerals recooped as part of upgrade
 }
 
 
 """ Temporary class to indicate ship in process """
 class BuildShip(BuildQueue):
-    """ Initialize the cost """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if 'ship' not in kwargs:
-            ship = Ship(location=Location(reference = self.planet), player=Reference(player), in_queue=True)
-            self.ship = Reference(ship)
-            self.planet.player.add_fleet(location=Location(reference = self.planet), ships=[ship])
-            self.ship_design.compute_stats(self.planet.player.tech_level)
-            self.cost = self.ship_design.cost
-            self.component = self.ship_design.hull
-            self.in_progress = self.component.miniaturize(self.planet.player.tech_level, 'cost')
-        elif 'cost' not in kwargs:
-            self.cost = self.ship.hull.reminiaturize(self.ship.tech_level, self.player.planet.tech_level)
-            for (tech, cnt) in self.ship.components.items():
-                self.cost = tech.reminiaturize(self.ship.tech_level, self.player.planet.tech_level) * cnt
-            for (tech, cnt) in self.ship_design.components.items():
-                if tech in self.ship.components:
-                    cnt = max(0, cnt - self.ship.components[tech])
-                self.cost = tech.miniaturize(self.player.planet.tech_level, 'cost') * cnt
-
     """ Check if the component is done or the entire ship is done """
     def build(self, spend=Cost()):
-        # Ensure ship still exists
-        if not self.ship:
-            return Cost()
-        # Trying to build beyond your tech level - cancel build
-        if not self.ship_design.hull.is_available(self.planet.player.tech_level, self.planet.player.race):
-            self.ship.player.add_message(sender=Reference('Minister/Admiralty'), message='invalid_shipdesign', parameters=[self.ship_design.ID])
-            self.ship.find_fleet().remove_ship(ship)
-            return Cost()
-        # Scrap extra parts, upgrade the rest
-        if not self.component:
-            for (tech, cnt) in self.ship.components.items():
-                if tech not in self.ship_design.components:
-                    self.remove_component(tech, cnt)
-                elif self.ship_design.components[tech] > cnt:
-                    self.remove_component(tech, cnt - self.ship_design.components[tech])
-            self.in_progress = self.ship.hull.miniturize(self.player.planet.tech_level)
-            for (tech, cnt) in self.ship.components.items():
-                self.in_progress = tech.miniturize(self.player.planet.tech_level) * cnt
+        # Make sure we have the latest cost
+        self._update_cost()
+        # Select the first/next component to work on
+        self._next_component()
+        # Spend
         super().build(spend)
         self.in_progress -= spend
+        # Recover any scrap
+        if len(self.to_scrap) > 0:
+            for tech in self.to_scrap:
+                self.ship.remove_component(tech)
+            self.planet.on_surface += self.scrap_minerals
+            super().build(self.scrap_minerals * -1)
+            self.to_scrap = []
+            self.scrap_minerals = Minerals()
+        # Completed the overhaul / component
         if self.in_progress.is_zero():
-            # If not doing initial miniaturize, add hull/component
-            if self.component:
-                if self.component == self.ship_design.hull:
-                    ship.hull = self.component
-                else:
-                    self.ship.add_component(self.component)
-            # miniaturize returns the minerals
-            else:
-                self.planet.on_surface += self.spent
-            # Next component
-            self.component = Reference('Tech')
-            for (tech, cnt) in self.ship_design.components.items():
-                if not tech.is_available(self.planet.player.tech_level, self.planet.player.race):
-                    # Skip unbuildable components
-                    pass
-                elif tech not in self.ship.components:
-                    self.component = tech
-                    break
-                elif self.ship.components[tech] < cnt:
-                    self.component = tech
-                    break
-            if self.component:
-                self.in_progress = self.component.miniaturize(self.planet.player.tech_level, 'cost')
-            # Recompute stats and apply any miniaturize
-            self.ship.compute_stats(self.planet.player.tech_level)
+            if not self.overhaul.is_zero():
+                # Recover all the minerals for the overhaul
+                overhaul_minerals = Minerals(self.overhaul)
+                self.planet.on_surface += overhaul_minerals
+                super().build(overhaul_minerals * -1)
+                self.overhaul = Cost()
+            elif len(self.to_build) > 0: # add component
+                if not self.ship:
+                    self.ship = Reference(Ship(location=Location(reference=self.planet), race=Reference(self.planet.player.race)))
+                    for f in self.planet.player.fleets:
+                        if self.buships in f.under_construction:
+                            self.planet.player.add_ships(self.ship, f)
+                            f - self
+                            break
+                    else:
+                        self.planet.player.add_ships(self.ship)
+                self.ship.add_component(self.to_build.pop(0), False)
+            self.ship.update(self.level)
+            self._next_component()
         return self.in_progress
 
-    """ Called when being removed from the build queue """
-    def cancel(self):
-        if not ship.hull:
-            self.ship.find_fleet().remove_ship(ship)
+    """ Next component """
+    def _next_component(self):
+        if self.in_progress.is_zero():
+            if self.ship:
+                self.ship.under_construction = True
+            if not self.overhaul.is_zero():
+                self.in_progress = self.overhaul
+            elif len(self.to_build) > 0:
+                self.in_progress = self.to_build[0].build_cost(self.level)
+            elif self.ship: # no more components so no longer under construction
+                self.ship.under_construction = False
 
-    """ Remove component """
-    def remove_component(self, tech, cnt):
-        self.planet.on_surface += tech.scrap_value(self.planet.player.race, self.ship.level) * cnt
-        self.ship.remove_component(tech, cnt)
+    """ Provide calculated values """
+    def __getattribute__(self, name):
+        self_dict = object.__getattribute__(self, '__dict__')
+        # Safety check if inital defaults have not been applied or if has value
+        if '__init_complete__' not in self_dict or name not in self_dict:
+            return super().__getattribute__(name)
+        if name == 'cost' and self_dict['spent'].is_zero():
+            self_dict['cost'] = self._update_cost()
+        return super().__getattribute__(name)
 
-    """ Build queue display """
-    def to_html(self):
-        return self.ship_design.ID + ' - ' + self.ship.ID #TODO
-    
+    """ Update the cost """
+    def _update_cost(self):
+        if not self.spent.is_zero():
+            return super().__getattribute__('cost')
+        self.level = self.planet.player.tech_level
+        # make sure the design is updated
+        self.buships.ship_design.update()
+        # all components in the design (will be reduced for existing below)
+        self.to_build = []
+        for (tech, cnt) in self.buships.ship_design.components.items():
+            for i in range(cnt):
+                # make sure the hull is built first
+                if tech.is_hull():
+                    self.to_build.insert(0, tech)
+                else:
+                    self.to_build.append(tech)
+        # find extra components to scrap and overhaul costs
+        self.overhaul = Cost()
+        self.to_scrap = []
+        self.scrap_minerals = Minerals()
+        if self.ship:
+            if not self.buships.overhaul:
+                self.level = self.ship.level
+            for (tech, cnt) in self.ship.components.items():
+                for i in range(cnt):
+                    if tech in self.to_build:
+                        if self.buships.overhaul:
+                            self.overhaul += tech.overhaul_cost(self.ship.level, self.level, self.planet.player.race)
+                        self.to_build.remove(tech)
+                    else:
+                        self.scrap_minerals += tech.scrap_value(self.planet.player.race, self.ship.level)
+                        self.to_scrap.append(tech)
+        # Add up costs
+        cost = Cost()
+        for tech in self.to_build:
+            cost += tech.build_cost(self.level)
+        cost = cost - self.scrap_minerals + self.overhaul - Minerals(self.overhaul)
+        return cost
+
 
 BuildShip.set_defaults(BuildShip, __defaults)

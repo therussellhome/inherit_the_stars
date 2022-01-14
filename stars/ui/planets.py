@@ -15,7 +15,7 @@ __defaults = {
 class Planets(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
 
         # Planets filter
@@ -38,9 +38,9 @@ class Planets(PlayerUI):
             for (reference, intel) in self.player().get_intel(by_type='Sun').items():
                 planets.append(self.process_intel(reference, intel))
             # Puts the report in the cache
-            self.player().__cache__['planet_report'] = planets
+            self.player.planet_report = planets
         else:
-            planets = self.player().__cache__['planet_report']
+            planets = self.player.planet_report
             
         for p in planets:
             if p.get(self.planets_filter, False):

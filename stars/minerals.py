@@ -44,5 +44,29 @@ class Minerals(Defaults):
         m.silicon = self.silicon * other
         return m
 
+    """ Divied operator """
+    def __truediv__(self, other):
+        m = Minerals()
+        m.titanium = self.titanium / other
+        m.lithium = self.lithium / other
+        m.silicon = self.silicon / other
+        return m
+
+    """ Comparison """
+    def __lt__(self, other):
+        return self <= other and (self.titanium < other.titanium or self.lithium < other.lithium or self.silicon < other.silicon)
+
+    """ Comparison """
+    def __le__(self, other):
+        return self.titanium <= other.titanium and self.lithium <= other.lithium and self.silicon <= other.silicon
+
+    """ Comparison """
+    def __gt__(self, other):
+        return self >= other and (self.titanium > other.titanium or self.lithium > other.lithium or self.silicon > other.silicon)
+
+    """ Comparison """
+    def __ge__(self, other):
+        return self.titanium >= other.titanium and self.lithium >= other.lithium and self.silicon >= other.silicon
+
 
 Minerals.set_defaults(Minerals, __defaults)

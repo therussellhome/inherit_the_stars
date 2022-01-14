@@ -33,6 +33,13 @@ class MineralsTestCase(unittest.TestCase):
         self.assertEqual(m3.lithium, 6)
         self.assertEqual(m3.silicon, 9)
 
+    def test_div(self):
+        m1 = minerals.Minerals(titanium=3, lithium=6, silicon=9)
+        m3 = m1 / 3
+        self.assertEqual(m3.titanium, 1)
+        self.assertEqual(m3.lithium, 2)
+        self.assertEqual(m3.silicon, 3)
+
     def test_is_zero1(self):
         m1 = minerals.Minerals()
         self.assertTrue(m1.is_zero())
@@ -40,3 +47,53 @@ class MineralsTestCase(unittest.TestCase):
     def test_is_zero2(self):
         m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
         self.assertFalse(m1.is_zero())
+
+    def test_is_lt1(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=2, lithium=2, silicon=3)
+        self.assertTrue(m1 < m2)
+
+    def test_is_lt2(self):
+        m1 = minerals.Minerals(titanium=2, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        self.assertFalse(m1 < m2)
+
+    def test_is_le1(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=2, lithium=2, silicon=3)
+        self.assertTrue(m1 <= m2)
+
+    def test_is_le2(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        self.assertTrue(m1 <= m2)
+
+    def test_is_le3(self):
+        m1 = minerals.Minerals(titanium=2, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        self.assertFalse(m1 <= m2)
+
+    def test_is_gt1(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=4)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        self.assertTrue(m1 > m2)
+
+    def test_is_gt2(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=4)
+        self.assertFalse(m1 > m2)
+
+    def test_is_ge1(self):
+        m1 = minerals.Minerals(titanium=1, lithium=3, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        self.assertTrue(m1 >= m2)
+
+    def test_is_ge2(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        self.assertTrue(m1 >= m2)
+
+    def test_is_ge2(self):
+        m1 = minerals.Minerals(titanium=1, lithium=2, silicon=3)
+        m2 = minerals.Minerals(titanium=1, lithium=3, silicon=3)
+        self.assertFalse(m1 >= m2)

@@ -1,6 +1,5 @@
 import unittest
-from .. import treaty
-from .. import reference
+from .. import *
 
 class TestTreaty(unittest.TestCase):
     def test_merge1(self):
@@ -22,7 +21,7 @@ class TestTreaty(unittest.TestCase):
         self.assertEqual(t0.status, 'rejected')
 
     def test_for_other_player1(self):
-        p = reference.Reference('Player')
+        p = reference.Reference(player.Player())
         t0 = treaty.Treaty(relation='enemy', status='active')
         for f in treaty.TREATY_HALF_FIELDS:
             t0['buy' + f] = 10
@@ -36,13 +35,13 @@ class TestTreaty(unittest.TestCase):
             self.assertEqual(t1['sell' + f], 10)
 
     def test_for_other_player2(self):
-        p = reference.Reference('Player')
+        p = reference.Reference(player.Player())
         t0 = treaty.Treaty(status='pending')
         t1 = t0.for_other_player(p)
         self.assertEqual(t1.status, 'proposed')
 
     def test_for_other_player3(self):
-        p = reference.Reference('Player')
+        p = reference.Reference(player.Player())
         t0 = treaty.Treaty(status='proposed')
         t1 = t0.for_other_player(p)
         self.assertEqual(t1.status, 'pending')
@@ -70,3 +69,11 @@ class TestTreaty(unittest.TestCase):
     def test_is_rejected2(self):
         t0 = treaty.Treaty(status='pending')
         self.assertFalse(t0.is_rejected())
+
+    def test_hyperdenial_transit1(self):
+        t0 = treaty.Treaty(buy_hyper_denial=100)
+        self.assertTrue(t0.hyperdenial_transit())
+
+    def test_hyperdenial_transit2(self):
+        t0 = treaty.Treaty(buy_hyper_denial=-100)
+        self.assertFalse(t0.hyperdenial_transit())

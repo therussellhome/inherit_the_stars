@@ -8,21 +8,19 @@ __defaults = {
     'player_token': '',
 }
 
+""" Temporary values (default, min, max)  """
+__tmp_defaults = {
+    'player': None,
+}
+
 
 """ Get the player object for use by child classes """
 class PlayerUI(UI):
     """ Initialize the cached player object """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if self.player_token == '':
-            self.__cache__['player'] = None
-        else:
-            self.__cache__['player'] = game_engine.get('Player/' + self.player_token)
+        if self.player_token != '':
+            self.player = game_engine.get('Player/' + self.player_token)
 
 
-    """ Return the cached player object """
-    def player(self):
-        return self.__cache__['player']
-
-
-PlayerUI.set_defaults(PlayerUI, __defaults, sparse_json=False)
+PlayerUI.set_defaults(PlayerUI, __defaults, __tmp_defaults, sparse_json=False)

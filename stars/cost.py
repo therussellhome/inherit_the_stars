@@ -16,16 +16,14 @@ class Cost(Minerals):
 
     """ Addition operator """
     def __add__(self, other):
-        m = super().__add__(other)
-        c = Cost(**m.__dict__)
-        c.energy = self.energy + other.energy
+        c = Cost(super().__add__(other))
+        c.energy = self.energy + getattr(other, 'energy', 0)
         return c
 
     """ Subtracton operator """
     def __sub__(self, other):
-        m = super().__sub__(other)
-        c = Cost(**m.__dict__)
-        c.energy = self.energy - other.energy
+        c = Cost(super().__sub__(other))
+        c.energy = self.energy - getattr(other, 'energy', 0)
         return c
 
     """ Mutiply operator """
@@ -35,10 +33,20 @@ class Cost(Minerals):
         c.energy = self.energy * other
         return c
     
-    """ percent of other """
-    def percent(self, other):
-        return 4/4
-        
+    """ Divide operator """
+    def __truediv__(self, other):
+        m = super().__truediv__(other)
+        c = Cost(**m.__dict__)
+        c.energy = self.energy / other
+        return c
+    
+    """ percent done of other """
+    def percent(self, other): #where self is remaining cost and other is original cost
+        if other.is_zero(): 
+            return 100
+        denom = other.energy / 100 + other.titanium + other.lithium + other.silicon
+        p = self.energy / 100 + self.titanium + self.lithium + self.silicon
+        return int(100 * (1 - (p / denom)))
     
     """ Format the tech level for HTML """
     def to_html(self):

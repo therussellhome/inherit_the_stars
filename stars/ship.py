@@ -1,171 +1,139 @@
-import sys
 import copy
+import sys
+from random import random, randint
 from . import stars_math
 from . import game_engine
+from .asteroid import Asteroid
 from .cargo import Cargo
-from random import randint
+from .defaults import get_default
 from .engine import Engine
-from .scanner import Scanner
 from .location import Location
-from .expirence import Expirence
+from .minerals import Minerals
 from .reference import Reference
-from .battle_plan import BattlePlan
+from .scanner import Scanner
 from .ship_design import ShipDesign
-from .hyperdenial import HyperDenial
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'commissioning': 0.0,
+    'crew': Reference('Race'),
+    'battle_experience': 0.0, # From surviving battle
+    'navigation_experience': 0.0, # From survivng overgating
     'location': Location(),
-    'battle_plan': BattlePlan(),
-    'initative': (0, 0, sys.maxsize),
-    'armor': (10, 0, sys.maxsize),
-    'armor_damage': (0, 0, sys.maxsize),
-    'shields': (0, 0, sys.maxsize),
-    'shields_damage': (0, 0, sys.maxsize),
-    'max_distance': (0.0, 0.0, sys.maxsize),
-    'damage_armor': (0, 0, sys.maxsize),
     'fuel': (0, 0, sys.maxsize),
-    'fuel_max': (0, 0, sys.maxsize),
-    'engines': [],
     'cargo': Cargo(),
-    'expirence': Expirence(),
+    'under_construction': False,
+    'armor_damage': (0, 0, sys.maxsize),
+}
+
+""" Temporary values (default, min, max)  """
+__tmp_defaults = {
     'player': Reference('Player'),
-    'fuel_max': (0, 0, sys.maxsize),
-    'fuel': (0, 0, sys.maxsize),
-    'in_queue': False,
+    'fleet': Reference('Fleet'),
+    'hyper': 0,
+    'shield_damage': 0,
+    'initiative': None,
+    'total_mass': None,
+    'apparent_mass': None,
+    'mass_per_engine': None,
+    'ke': None,
+    'apparent_ke': None,
 }
 
 """ All methods of ship are called through fleet, except maybe scan """
 class Ship(ShipDesign):
-    """ Calculates how much fuel it will take to move """
-    """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def fuel_check(self, speed, num_denials, distance):
-        if len(self.engines) == 0:
-            return 0
-        fuel = 0
-        mass_per_engine = self.calc_mass()/len(self.engines)
-        for engine in self.engines:
-            fuel += engine.fuel_calc(speed, mass_per_engine, num_denials, distance)
-        return fuel
-    
-    """ Calculates how much fuel it will take to move """
-    """ If there are no engines it returns 0 because it doesn't use any fuel """
-    def move(self, speed, num_denials, distance):
-        self.__cache__['apparent_ke'] = self.calc_apparent_mass() * pow(speed, 4)
-        damage = 0
-        if len(self.engines) == 0:
-            damage = sys.maxsize
-            return 0
-        mass_per_engine = self.calc_mass()/len(self.engines)
-        for engine in self.engines:
-            damage += engine.damage_calc(speed, mass_per_engine, distance, num_denials)
-            #TODO do something with the damage number
-        return self.fuel_check(speed, num_denials, distance)
-    
-    """ Checks if speed will damage ship, returns True if speed will damage ship """
-    def speed_is_damaging(self, speed, num_denials):
-        if len(self.engines) == 0:
-            return None
-        mass_per_engine = self.calc_mass()/len(self.engines)
-        for engine in self.engines:
-            if engine.tachometer(speed, mass_per_engine, num_denials) >= 100:
-                return True
-        return False
-    
-    """ Tells the planet that it has been colonized and unloads and sraps the ship """
-    def colonize(self, player, planet):
-        planet.colonize(player)
-        planet.on_surface += self.cargo
-        for attr in ['titanium', 'people', 'lithium', 'silicon']:
-            self.cargo[attr] = 0
-        self.scrap(planet, self.location, 0.95)
-    
-    
-    """ Lays mines """
-    def lay_mines(self, player, system):
-        return#TODO system.mines[player.name] += self.mines_laid
-    
-    """ Returns the repair value of the repair bay """
-    def open_repair_bays(self):
-        return self.repair_bay
-    
-    """ Recurns the self repair value """
-    def damage_control(self):
-        return self.repair
-    
-    """ Creates a hyper denial object """
-    def deploy_hyper_denial(self, player):
-        self.hyper_denial.on = True
-    
-    """ Creates a salvage at a location """
-    def create_salvage(self, location, cargo):
-        return#TODO
-    
-    """ Scraps the ship """
-    def scrap(self, planet, location, scrap_factor = 0.9):
-        t = round(self.cost.titanium * scrap_factor)
-        l = round(self.cost.lithium * scrap_factor)
-        s = round(self.cost.silicon * scrap_factor)
-        cargoo = Cargo(titanium = t, lithium = l, silicon = s, cargo_max = (t + l + s))
-        if planet not in game_engine.get('Planet'):
-            self.create_salvage(copy.copy(location), cargoo + self.cargo)
+    """ Initialize, if from ships this is a pseudo-ship combining the stats of other ships """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if 'from_ships' in kwargs:
+            for s in kwargs['from_ships']:
+                self.merge(s, max_not_merge=True)
+                for key in ['fuel', 'cargo', 'armor_damage']:
+                    self[key] += s[key]
         else:
-            planet.on_surface += cargoo + self.cargo
-    
-    """ Mines the planet if the planet is not colonized """
-    def orbital_mining(self, planet):
-        if not planet.is_colonized():
-            avail = planet.mineral_availability()
-            planet.on_surface.titanium += round(self.mining_rate * avail.titanium)
-            planet.on_surface.silicon += round(self.mining_rate * avail.silicon)
-            planet.on_surface.lithium += round(self.mining_rate * avail.lithium)
-            planet.remaining_minerals.titanium -= round(self.mining_rate * avail.titanium * self.percent_wasted)
-            planet.remaining_minerals.silicon -= round(self.mining_rate * avail.silicon * self.percent_wasted)
-            planet.remaining_minerals.lithium -= round(self.mining_rate * avail.lithium * self.percent_wasted)
-    
-    """ Repairs the ship if it needs it """
-    def repair_self(self, amount):
-        max_armor = self.max_armor()
-        if (max_armor - self.armor) > 0:
-            self.armor += min((max_armor - self.armor), amount)
-            return amount - min((max_armor - self.armor), amount)
-    
-    """ Returns the number of facilities and amount of population that is killed """
-    def bomb(self, planet, shields, pop):
-        facility_kill = 0
-        pop_kill = 0
-        for bomb in self.bombs:
-            facility_kill += bomb.kill_shield_facilities(pop, shields)
-            pop_kill += bomb.kill_population(pop, shields)
-        return facility_kill, pop_kill
-    
-    """ Does the ship have any cloak that would show up on anti-cloak scanners """
-    def has_cloaked(self):
-        if self.race.primary_race_trait == 'Kender' or self.cloak.percent > 0:
+            game_engine.register(self)
+
+    """ Provide calculated values """
+    def __getattribute__(self, name):
+        self_dict = object.__getattribute__(self, '__dict__')
+        # Safety check if inital defaults have not been applied or if has value
+        if '__init_complete__' not in self_dict or name not in self_dict or self_dict[name] is not None:
+            return super().__getattribute__(name)
+        # Calculate if not yet calculated
+        if name == 'initiative':
+            self_dict[name] = 1 + float(self.player.date) - self.player.race.start_date + self.battle_experience + self.navigation_experience #TODO add 1/mass_per_engine, scanners, stealth, ecm
+        elif name == 'total_mass':
+            self_dict[name] = self.mass
+            if not self.crew.lrt_Trader:
+                self_dict[name] += self.cargo.sum()
+            else:
+                self_dict[name] += self.cargo.people
+        elif name == 'apparent_mass':
+            self_dict[name] = self.total_mass * (100.0 - self.cloak.percent) / 100.0
+            if self.crew.primary_race_trait == 'Kender':
+                self_dict[name] -= 25
+        elif name == 'mass_per_engine':
+            if len(self.engines) > 0:
+                self_dict[name] = self.total_mass / len(self.engines)
+        elif name == 'ke':
+            self_dict[name] = self.total_mass * self.hyper * self.hyper
+        elif name == 'apparent_ke':
+            self_dict[name] = self.apparent_mass * self.hyper * self.hyper
+        return super().__getattribute__(name)
+
+    """ Reset time based values"""
+    def next_hundreth(self):
+        self.hyper = 0
+        self.shield_damage = 0
+        self.initiative = None
+        self.ke = None
+        self.apparent_ke = None
+
+    """ Force recalc of mass """
+    def update_cargo(self):
+        self.total_mass = None
+        self.apparent_mass = None
+        self.mass_per_engine = None
+        self.ke = None
+        self.apparent_ke = None
+
+    """ Travel through a stargate and incur any overgate damage/experience """
+    def gate(self, distance, gate_strength, survival_test=False):
+        over = self.total_mass + distance - gate_strength
+        if over <= 0:
+            return True
+        modifier = 512
+        if self.crew.primary_race_trait == 'Patryns':
+            modifier = 256 # TODO is this a good number?
+        min_damage = round((over/gate_strength + over/1000.0)**1.3 * modifier)
+        if survival_test:
+            print(min_damage, self.armor, self.armor_damage)
+            return min_damage < (self.armor - self.armor_damage)
+        luck = random() * 5/self.initiative
+        self.navigation_experience += 1
+        return not self.take_damage(0, min_damage * (1 + luck))
+
+    """ Take damage """
+    def take_damage(self, shield, armor):
+        self.shield_damage += shield
+        self.armor_damage += armor
+        if self.armor_damage >= self.armor:
+            self.scrap(randint(0, 100))
+            self.fleet.remove_ships(self)
+            self.player.remove_ships(self)
             return True
         return False
-    
-    """ Adjust the mass for cloaking """
-    def calc_apparent_mass(self):
-        if self.race.primary_race_trait == 'Kender':
-            return self.calc_mass() * (1 - self.cloak.percent / 100) - 25
-        return self.calc_mass() * (1 - self.cloak.percent / 100)
-    
-    """ Returns the actual mass of the ship, excluding cargo if the ship was made by a trader race """
-    def calc_mass(self):
-        mass = self.mass + self.cargo.silicon + self.cargo.titanium + self.cargo.lithium
-        #TODO check if crew is trader
-        #if self.player.is_valid and self.race.lrt_trader:
-        #    mass = self.mass
-        return mass + self.cargo.people
-    
-    """ Executes the on_destruction sequence """
-    def blow_up(self):
-        return#TODO self.scrap(self.location, self.location)
 
-    """ Return the apparent kinetic energy """
-    def calc_apparent_ke(self):
-        return self.__cache__.get('apparent_ke', 0)
+    """ Scrap/blow-up the ship """
+    def scrap(self, percent_destroyed=None):
+        scrap_value = Minerals() + self.cargo + self.cost * self.player.race.scrap_rate / 100.0
+        if percent_destroyed:
+            scrap_value *= 1.0 - percent_destroyed / 100.0
+        if self.location.reference ^ 'Planet':
+            self.location.reference.on_surface += scrap_value
+        elif not scrap_value.is_zero():
+           self.player.game.asteroids.append(Asteroid(minerals=scrap_value, location=Location(self.location.xyz)))
+        return scrap_value
 
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):
@@ -173,22 +141,11 @@ class Ship(ShipDesign):
             'location': self.location,
         }
         if scan_type == 'anticloak':
-            report['Mass'] = obj.calc_mass()
-        if scan_type != 'hyperdenial':
-            report['Apparent Mass'] = self.calc_apparent_mass()
+            report['Mass'] = self.total_mass
+        elif scan_type == 'penetrating':
+            report['Apparent Mass'] = self.apparent_mass
+        elif scan_type == 'normal':
+            report['Apparent KE'] = self.apparent_ke
         return report
 
-    """ Find owning fleet """
-    def find_fleet(self):
-        for f in self.player.fleets:
-            if self in f.ships:
-                return f
-        return Fleet()
-
-    """ Recompute self from components """
-    def compute_stats(self, tech_level):
-        if tech_level > self.level:
-            self.level = tech_level
-        super().compute_stats(self.level)
-
-Ship.set_defaults(Ship, __defaults)
+Ship.set_defaults(Ship, __defaults, __tmp_defaults)

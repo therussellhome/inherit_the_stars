@@ -5,12 +5,13 @@ from pathlib import Path
 
 
 """ Base directory for saved games, races, etc """
+__www_dir = Path(__file__).parent.parent / 'www'
 __game_dir = Path(__file__).parent.parent / 'data'
 __user_dir = Path.home() / 'Inherit!'
 
 
 """ Autosave object """
-__auto_save = None
+__root = None
 
 
 """ Registry of all registered classes and objects """
@@ -35,20 +36,20 @@ def register(obj):
 
 """ Unregister objects to keep them from being part of the save game """
 def unregister(obj=None):
-    global __auto_save
+    global __root
     global __registry
     if obj:
         __registry.remove(obj)
-        if __auto_save == obj:
-            __auto_save = None
+        if __root == obj:
+            __root = None
     else:
         __registry = []
-        __auto_save = None
+        __root = None
 
 
 """ Base class for use in creating classes by name """
 class BaseClass:
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         pass
 
 
@@ -88,16 +89,32 @@ def get(reference, create_new=False):
 
 """ Auto save """
 def auto_save():
-    global __auto_save
-    if __auto_save:
-        __auto_save.save()
+    global __root
+    if __root:
+        __root.save()
 
 
-""" Set auto save object """
-def set_auto_save(obj):
-    global __auto_save
-    __auto_save = obj
+""" Get the root object """
+def get_root_obj():
+    global __root
+    return __root
 
+
+""" Set root object """
+def set_root_obj(obj):
+    global __root
+    __root = obj
+
+
+""" Find the path to a user overridable file """
+def user_file(path, is_www=False):
+    global __www_dir, __game_dir, __user_dir
+    if (__user_dir / path).exists():
+        return __user_dir
+    elif is_www:
+        return __www_dir
+    return __game_dir
+    
 
 """ Decode a string into an object """
 def from_json(raw, name='<Internal>'):
@@ -176,14 +193,17 @@ def __encode(o):
     elif isinstance(o, BaseClass):
         encoded = {}
         defaults = getattr(o.__class__, 'defaults', {})
+        tmp_fields = getattr(o.__class__, 'tmp_fields', {})
         sparse = getattr(o.__class__, 'sparse_json', {})
         for (k, v) in o.__dict__.items():
-            if not sparse.get(k, True):
+            if k in tmp_fields:
+                pass
+            elif not sparse.get(k, True):
                 encoded[k] = v
             elif k in defaults:
                 if v != defaults[k]:
                     encoded[k] = v
-            elif k != '__cache__':
+            else:
                 encoded[k] = v
         # Add class
         encoded['__class__'] = o.__class__.__name__

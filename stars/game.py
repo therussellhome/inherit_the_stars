@@ -1,11 +1,14 @@
 import sys
 from random import randint
 from . import game_engine
+from . import hyperdenial
+from . import multi_fleet
 from . import scan
 from . import stars_math
 from .defaults import Defaults
 from .fleet import Fleet
 from .location import Location
+from .player import Player
 from .star_system import StarSystem
 from .reference import Reference
 
@@ -20,7 +23,7 @@ __defaults = {
     'blackholes': [], # all blackholes
     'nebulae': [], # all nebulae
     'asteroids': [], # all comets/mineral packets/salvage
-    'mystery_traders': [], # myster trader ships
+    'mystery_traders': [], # mystery trader ships
     'public_player_scores': (30, 0, 200), # years till public player scores
     'victory_after': (50, 10, 200), # minimum years till game can be won
     'victory_conditions': (1, 1, 10), # minimum number of conditions to win
@@ -48,11 +51,12 @@ __defaults = {
 """ Class defining a game and everything in it """
 class Game(Defaults):
     """ Initialize defaults and register self """
-    def __init__(self, x=500, y=500, z=500, num_systems=1000, system_names=None, **kwargs):
+    def __init__(self, x=50, y=50, z=50, num_systems=10, system_names=None, races=[], tech_file='Inherit the Stars!', **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
         if 'systems' not in kwargs:
-            num_systems = max(len(self.players), num_systems)
+            tech_tree = game_engine.load('Tech', tech_file)
+            num_systems = max(len(races), num_systems)
             if not system_names:
                 system_names = []
                 for i in range(0, num_systems):
@@ -64,7 +68,7 @@ class Game(Defaults):
             y = max(y, 2)
             z = max(z, 2)
             while len(self.systems) < num_systems:
-                l = Location(random_in=(x / 2, y / 2, z / 2))
+                l = Location(new_random=(x / 2, y / 2, z / 2), is_system=True)
                 for s in self.systems:
                     if s.location - l < min_distance:
                         break
@@ -74,13 +78,15 @@ class Game(Defaults):
             # pick home systems
             min_distance = max(x, y, z) * 0.8
             homes = []
-            while len(homes) < min(len(self.players), len(self.systems)):
+            while len(homes) < min(len(races), len(self.systems)):
                 for s in self.systems:
                     for h in homes:
                         if s.location - h.location < min_distance:
                             break
                     else:
-                        s.create_system(Reference(self.players[len(homes)]))
+                        homeworld = s.create_system(races[len(homes)])
+                        player = Player(race=races[len(homes)], tech=tech_tree, game_ID=self.ID, game=Reference(self), planets=[homeworld])
+                        self.players.append(player)
                         homes.append(s)
                         if len(homes) == len(self.players):
                             break
@@ -93,12 +99,13 @@ class Game(Defaults):
             # initial intel
             for s in self.systems:
                 for p in self.players:
-                    p.add_intel(s, location=s.location, color=s.sun().get_color(), size=s.sun().gravity)
+                    p.add_intel(s, {'location': s.location})
+                    p.add_intel(s.sun(), {'location': s.sun().location, 'color': s.sun().get_color(), 'size': s.sun().gravity})
             for b in self.blackholes:
                 for p in self.players:
-                    p.add_intel(b, location=b.location, size=b.range)
+                    p.add_intel(b, {'location': b.location, 'size': b.range})
             self._scan([])
-            self._call(self.players, 'calc_score')
+            self._call(self.players, 'update_stats')
                 
     """ Save host and players to file """
     def save(self):
@@ -124,85 +131,99 @@ class Game(Defaults):
     """ Generate and save """
     def new_turn(self):
         self.update_players()
+        print('Turn={:.0f}'.format(self.hundreth / 100), end='')
         for i in range(0, 100):
             self.generate_hundreth()
+            print('.', end='', flush=True)
+        print('{:.0f}'.format(self.hundreth / 100))
         self.save()
 
     """ Get all populated planets """
-    def get_planets(self):
+    def populated_planets(self):
         planets = []
-        if 'planets' not in self.__cache__:
-            self.__cache__['planets'] = []
-            for system in self.systems:
-                for planet in system.planets:
-                    self.__cache__['planets'].append(planet)
-        for planet in self.__cache__['planets']:
-            if planet.on_surface.people > 0:
-                planets.append(planet)
+        for system in self.systems:
+            for planet in system.planets:
+                if planet.on_surface.people > 0:
+                    planets.append(planet)
         return planets
 
     """ Generate hundreth """
     def generate_hundreth(self):
         # players in lowest to highest score
         players = list(self.players)
-        players.sort(key=lambda x: x.score.rank, reverse=False)
+        # player actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            self._call(players, 'reconsile_fleets')
+            self._call(players, 'reconsile_buships')
+            self._call(players, 'treaty_negotiations')
+            self._call(players, 'treaty_finalization')
+            self._call(players, 'cleanup_messages')
+        self._call(players, 'next_hundreth')
+        players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
         # planets in lowest to highest population
-        planets = self.get_planets()
+        planets = self.populated_planets()
+        self._call(planets, 'orbit')
         planets.sort(key=lambda x: x.on_surface.people, reverse=False)
         # fleets in lowest to highest initiative
         fleets = []
         for player in players:
             for fleet in player.fleets:
                 fleets.append(fleet)
-        fleets.sort(key=lambda x: x.initiative, reverse=False)
-        #
-        # actions only done at the beginning of a year
+        multi_fleet.reset()
+        # fleet actions only done at the beginning of a year
         if self.hundreth % 100 == 0:
-            self._call(players, 'treaty_negotiations')
-            self._call(players, 'treaty_finalization')
-            self._call(players, 'cleanup_messages')
-        self.hundreth += 1
+            self._scan(fleets) # scanning is needed to support fleet patroling
+        self._call(fleets, 'next_hundreth')
+        fleets.sort(key=lambda x: x.stats().initiative, reverse=False)
         #
         # actions in order
-        self._call(players, 'next_hundreth')
         self._call(planets, 'have_babies')
         self._call(planets, 'generate_energy')
-        self._call(planets, 'mine_minerals')
+        self._call(planets, 'extract_minerals')
         self._call(planets, 'operate_factories')
         self._call(players, 'allocate_budget')
         self._call(players, 'build_from_queue')
         self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)
+        self._call(fleets, 'read_orders')
+        self._call(fleets, 'colonize') # occurs before move because the fleet does not need to wait around for the colonizer but does not occur in the same hundreth as the colonizer moved
+        hyperdenial.reset()
+        self._call(self.blackholes, 'activate')
+        self._call(fleets, 'activate_hyperdenial')
+        hyperdenial.calc(fleets)
         self._call(self.wormholes, 'move')
         self._call(self.asteroids, 'move')
         self._call(self.mystery_traders, 'move')
         self._call(fleets, 'move')
         self._scan(fleets)
-        self._combat()
+        self._call(multi_fleet.get(), 'round1_fight')
         self._call(fleets, 'move_in_system')
-        self._call(fleets, 'generate_fuel')
-        self._call(fleets, 'merge')
-        self._call(fleets, 'self_repair')
-        self._call(fleets, 'repair')
-        self._call(fleets, 'orbital_mining')
+        self._call(multi_fleet.get(), 'share_repair')
+        self._call(fleets, 'orbital_extraction')
         self._call(fleets, 'lay_mines')
+        self._call(planets, 'raise_shields')
         self._call(fleets, 'bomb')
-        self._call(fleets, 'colonize')
+        self._call(planets, 'bomb_impact')
         self._call(fleets, 'piracy')
-        self._call(fleets, 'sell')
         self._call(fleets, 'unload')
-        self._call(fleets, 'scrap')
         self._call(fleets, 'buy')
+        self._call(fleets, 'scrap')
         self._call(fleets, 'load')
+        self._call(multi_fleet.get(), 'share_fuel')
+        # redistribute cached values then process fleet changes
+        self._call(fleets, 'fuel_distribution')
+        self._call(fleets, 'cargo_distribution')
         self._call(fleets, 'transfer')
-        self._call(fleets, 'patrol')
+        self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
+        self._call(players, 'design_miniaturization')
         #
         # actions only done at the end of a year
+        self.hundreth += 1
         if self.hundreth % 100 == 0:
             self._scan(fleets)
-            self._call(players, 'calc_score')
+            self._call(self.players, 'update_stats')
             self._check_for_winner()
 
     """ Call a method on a list of classes """
@@ -225,27 +246,19 @@ class Game(Defaults):
 
     """ Update binning then call scanning """
     def _scan(self, fleets):
-        scan.reset(self.players)
-        for p in self.__cache__.get('planets', []):
-            scan.add(p, p.location, 1, 1, False, True)
-        for a in self.asteroids:
-            scan.add(a, a.location, a.calc_apparent_mass(), a.ke, False, a.location.in_system)
-        for f in fleets:
-            for s in f.ships:
-                scan.add(s, s.location, s.calc_apparent_mass(), s.calc_apparent_ke(), s.has_cloak(), a.location.in_system)
-        for w in self.wormholes:
-            scan.add(w, w.location, 1, 10000000, False, False)
-        for n in self.nebulae:
-            scan.add(n, n.location, 0, True, False)
-        for m in self.mystery_traders:
-            scan.add(m, m.location, m.calc_apparent_mass(), m.calc_apparent_ke(), False, False)
+        all_planets = []
+        for system in self.systems:
+            all_planets.extend(system.planets)
+        scan.reset(self.players, fleets, all_planets, self.asteroids, self.wormholes, self.nebulae, self.mystery_traders)
+        planets = self.populated_planets()
         self._call(fleets, 'scan_anticloak')
-        self._call(self.get_planets(), 'scan_penetrating')
+        self._call(planets, 'scan_penetrating')
         self._call(self.asteroids, 'scan_penetrating')
         self._call(fleets, 'scan_penetrating')
-        self._call(self.get_planets(), 'scan_normal')
+        self._call(planets, 'scan_normal')
         self._call(fleets, 'scan_normal')
-        self._call(fleets, 'scan_hyperdenial')
+        self._call(self.get_planets(), 'scan_self')
+        self._call(fleets, 'scan_self')
 
     """ Execute combat after determining where combat will occur """
     def _combat(self):
@@ -253,6 +266,7 @@ class Game(Defaults):
 
     """ Check against the win conditions """
     def _check_for_winner(self):
+        # TODO store score ranking into players
         if self.hundreth >= self.victory_after * 100:
             pass #TODO
 

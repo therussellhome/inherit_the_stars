@@ -25,45 +25,45 @@ for f in TECH_FIELDS:
 class ResearchMinister(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
         # Default research field
         if self.research_default_field == '':
-            self.research_default_field = self.player().research_field
+            self.research_default_field = self.player.research_field
             if self.research_default_field != '<LOWEST>':
                 self.research_default_field.capitalize()
         elif self.research_default_field != '<LOWEST>':
-            self.player().research_field = self.research_default_field.lower()
+            self.player.research_field = self.research_default_field.lower()
         else:
-            self.player().research_field = self.research_default_field
+            self.player.research_field = self.research_default_field
         # Add to research queue
         if action.startswith('add='):
             tech_add = Reference('Tech', action[4:])
-            self.player().research_queue.append(tech_add)
+            self.player.research_queue.append(tech_add)
         # Remove from research queue
         if action.startswith('del='):
-            for t in self.player().research_queue:
+            for t in self.player.research_queue:
                 if t.ID == action[4:]:
-                    self.player().research_queue.remove(t)
+                    self.player.research_queue.remove(t)
                     break
         # Current tech levels
-        self.research_level.append('<td>' + self.player().tech_level.to_html(True) + '</td>')
+        self.research_level.append('<td>' + self.player.tech_level.to_html(True) + '</td>')
         # Research queue
         research_queue = []
-        for t in self.player().research_queue:
+        for t in self.player.research_queue:
             link = t.ID.replace('\'', '\\\'').replace('\"', '\\\"')
             research_queue.append(t.ID)
             self.research_queue.append('<td class="hfill"><div class="tech tech_template">' + t.ID + '</div></td>'
-                + '<td><i class="button far fa-trash-alt" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
+                + '<td style="vertical-align: top"><i class="button far fa-trash-alt" style="padding-top: 10px" title="Add to queue" onclick="post(\'research_minister\', \'?del=' + link + '\')"></i></td>')
         # Sort tech
         research_tech = []
-        for t in self.player().tech:
-            if t.tech_group() == self.research_tech_group and t.is_available(race=self.player().race) and t.ID not in research_queue:
-                cost = t.level.calc_cost(self.player().race, self.player().tech_level, self.player().research_partial)
+        for t in self.player.tech:
+            if t.tech_group() == self.research_tech_group and t.is_available(race=self.player.race) and t.ID not in research_queue:
+                cost = t.level.calc_cost(self.player.race, self.player.tech_level, self.player.research_partial)
                 if cost > 0: 
                     link = t.ID.replace('\'', '\\\'').replace('\"', '\\\"')
                     row = '<td class="hfill"><div class="tech tech_template">' + t.ID + '</div></td>' \
-                        + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
+                        + '<td style="vertical-align: top"><i class="button fas fa-cart-plus" style="padding-top: 10px" title="Add to queue" onclick="post(\'research_minister\', \'?add=' + link + '\')"></i></td>'
                     research_tech.append((cost, row))
         research_tech.sort(key = lambda x: x[0])
         # Adds the html to the table
