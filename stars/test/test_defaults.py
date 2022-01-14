@@ -10,10 +10,14 @@ _defaults = {
     'default_int2': (987, 0, 999),
 }
 
+_tmp = {
+    'tmp_int': 50,
+}
+
 class _TestDefaults(defaults.Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-_TestDefaults.set_defaults(_TestDefaults, _defaults)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+_TestDefaults.set_defaults(_TestDefaults, _defaults, _tmp)
 
 class _TestDefaultsChild(_TestDefaults):
     pass
@@ -47,6 +51,12 @@ class DefaultsTestCase(unittest.TestCase):
         self.assertEqual(t.default_object[0], 'xyz')
         self.assertEqual(t.other_value, self)
 
+    def test_init_from(self):
+        t0 = _TestDefaults()
+        t0.default_int = 321
+        t1 = _TestDefaults(t0)
+        self.assertEqual(t1.default_int, 321)
+
     def test_subscript1(self):
         t = _TestDefaults()
         self.assertEqual(t['default_int'], 123)
@@ -56,12 +66,11 @@ class DefaultsTestCase(unittest.TestCase):
         t['default_int'] = 321
         self.assertEqual(t['default_int'], 321)
 
-    def test_subscript3(self):
+    def test_tmp1(self):
         t = _TestDefaults()
-        t.__cache__['cache_int'] = 999
-        self.assertEqual(t['cache_int'], 999)
-        t.cache_int = 123
-        self.assertEqual(t['cache_int'], 123)
+        self.assertFalse('default_int' in _TestDefaults.tmp_fields)
+        self.assertTrue('tmp_int' in _TestDefaults.tmp_fields)
+        self.assertEqual(t.tmp_int, 50)
 
     def test_value(self):
         t = _TestDefaults()

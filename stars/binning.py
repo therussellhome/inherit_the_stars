@@ -12,5 +12,7 @@ def search(bins, location, rng):
     for x in range(int((location.x - rng) / __RANGE_BIN_SIZE), int((location.x + rng) / __RANGE_BIN_SIZE) + 1):
         for y in range(int((location.y - rng) / __RANGE_BIN_SIZE), int((location.y + rng) / __RANGE_BIN_SIZE) + 1):
             for z in range(int((location.z - rng) / __RANGE_BIN_SIZE), int((location.z + rng) / __RANGE_BIN_SIZE) + 1):
-                objs.extend(bins.get((x, y, z), []))
+                bin_num = (x, y, z)
+                for obj in bins.get(bin_num, []):
+                    objs.append((obj, bin_num))
     return objs

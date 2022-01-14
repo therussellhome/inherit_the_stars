@@ -6,6 +6,7 @@ Tm * constant = ly
 ly / constant = Tm
 """
 TERAMETER_2_LIGHTYEAR = 0.000105702977392
+KILOMETER_2_LIGHTYEAR = TERAMETER_2_LIGHTYEAR / 1000000000
 
 
 """ Distance between points """

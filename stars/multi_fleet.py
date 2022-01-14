@@ -40,3 +40,19 @@ class MultiFleet:
         # also orbital fuel generation
         # apply fuel caps after sharing
         pass #TODO
+
+    """ TODO """
+    def share_repair(self):
+        share_groups = []
+        for f in self.fleets:
+            if f.is_stationary:
+                pass #TODO
+            # Moving ships can only repair themselves
+            else:
+                for s in f.ships:
+                    s.armor_damage -= s.hull().repair
+        for g in share_groups:
+            pass #TODO
+#            for i in range(repair_points):
+#                ships.sort(key=lambda x: x.armor_damage / x.armor, reverse=True)
+#                ships[0].armor_damage -= 1
