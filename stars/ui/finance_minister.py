@@ -1,5 +1,5 @@
 from .playerui import PlayerUI
-from ..build_ship import BuildShip
+from ..buships import BuShips
 from ..reference import Reference
 
 
@@ -31,22 +31,21 @@ class FinanceMinister(PlayerUI):
             return
         values = ['finance_construction_percent', 'finance_mattrans_percent', 'finance_research_percent', 'finance_mattrans_use_surplus', 'finance_research_use_surplus']
         if action[:4] == 'add=':
-            i = int(action[4:])
-            for p in self.player.planetary_minister_map:
-                if p.ID == self.finance_planet:
-                    self.player.build_queue.append(BuildShip(ship_design=self.player.ship_designs[i]))
-                    #TODO , player=self.player, planet=Reference('Sun')
-                    break
-            else:
-                self.user_alerts.append(self.finance_planet + ' is an invaled ID')
+            design = int(action[4:])
+            self.player.buships.append(BuShips(ship_design=Reference('ShipDesign/' + design), planet=Reference('Planet/' + self.finance_planet)))
         if action[:4] == 'del=':
-            del self.player.build_queue[int(action[4:])]
+            to_del = int(action[4:])
+            for buships in self.player.buships:
+                if buships.ID == to_del:
+                    self.player.buships.remove(buships)
+                    break
         if action == 'show_screen':
             for value in values:
-                self[value] = self.player[value]
-            self.finance_slider[0] = self.player.finance_construction_percent
-            self.finance_slider[1] = self.player.finance_mattrans_percent + self.finance_slider[0]
-            self.finance_slider[2] = self.player.finance_research_percent + self.finance_slider[1]
+                self[value] = self.player()[value]
+            self.finance_planet = self.player().planets[0]
+            self.finance_slider[0] = self.player().finance_construction_percent
+            self.finance_slider[1] = self.player().finance_mattrans_percent + self.finance_slider[0]
+            self.finance_slider[2] = self.player().finance_research_percent + self.finance_slider[1]
         """ save """
         self.finance_construction_percent = self.finance_slider[0]
         self.finance_mattrans_percent = self.finance_slider[1] - self.finance_slider[0]
@@ -71,9 +70,9 @@ class FinanceMinister(PlayerUI):
         # buildables
         queue = self.player.ship_designs
         self.finance_buildable.append('<td colspan="3"><select id="finance_planet" style="width: 100%" onchange="post(\'finance_minister\')"/></td>')
-        for i in range(len(queue)):
-            item = BuildShip(ship_design = queue[i])
-            self.finance_buildable.append('<td>' + item.to_html() + '</td><td>' + item.cost.to_html() + '</td>'
-                + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'finance_minister\', \'?add=' + str(i) + '\')"></i></td>')
+#        for i in range(len(queue)):
+#            item = BuildShip(ship_design = queue[i])
+#            self.finance_buildable.append('<td>' + item.to_html() + '</td><td>' + item.cost.to_html() + '</td>'
+#                + '<td><i class="button fas fa-cart-plus" title="Add to queue" onclick="post(\'finance_minister\', \'?add=' + str(i) + '\')"></i></td>')
 
 FinanceMinister.set_defaults(FinanceMinister, __defaults, sparse_json=False)

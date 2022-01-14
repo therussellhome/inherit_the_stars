@@ -23,7 +23,7 @@ SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
 __defaults = {
     'ID': '@UUID',
     'ships': [], # ship references
-    'under_construction': [], # build_ship references
+    'under_construction': [], # BuShip references
     'order': Order(), # current actions
     'orders': [], # future actions
     'orders_repeat': False,
@@ -91,7 +91,7 @@ class Fleet(Defaults):
             ship = Reference(ship)
             if ship ^ 'Ship' and ship not in self.ships:
                 self.ships.append(ship)
-            if ship ^ 'BuildShip' and ship not in self.under_construction:
+            if ship ^ 'BuShips' and ship not in self.under_construction:
                 self.under_construction.append(ship)
         self.stats = None
         self.cargo = None

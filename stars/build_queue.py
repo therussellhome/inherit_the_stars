@@ -19,9 +19,5 @@ class BuildQueue(Defaults):
         self.spent += spend
         return self.cost - self.spent
 
-    """ Update total cost """
-    def update_cost(self):
-        pass # by default, predicted cost does not change
-
 
 BuildQueue.set_defaults(BuildQueue, __defaults)

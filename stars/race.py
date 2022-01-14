@@ -148,7 +148,7 @@ class Race(Defaults):
         return round(p)
     
     """ How many colonists per kT """
-    def pop_per_kt(self): # TODO test
+    def pop_per_kt(self):
         return 80000 / self.body_mass
     
     """ Make a list of the selected primary/lesser traits for this race """

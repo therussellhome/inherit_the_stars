@@ -162,6 +162,7 @@ class Game(Defaults):
         players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
         # planets in lowest to highest population
         planets = self.populated_planets()
+        self._call(planets, 'orbit')
         planets.sort(key=lambda x: x.on_surface.people, reverse=False)
         # fleets in lowest to highest initiative
         fleets = []

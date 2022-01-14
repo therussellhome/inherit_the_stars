@@ -1,10 +1,15 @@
 import unittest
+from unittest.mock import patch
 import sys
 from .. import *
 from colorsys import hls_to_rgb
 
 class PlanetTestCase(unittest.TestCase):
-
+    def test_init1(self):
+        ss = reference.Reference(star_system.StarSystem())
+        ss.planets.append(sun.Sun())
+        p = planet.Planet(star_system=ss, homeworld=True)
+        self.assertEqual(p.radiation, ss.planets[0].radiation)
 
     def test_get_color1(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
@@ -34,12 +39,11 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet(gravity=50, temperature=75, radiation=100)
         self.assertEqual(p.get_color(), '#009FFF')
 
-
     def test_orbit(self):
-        return #TODO orbit not finished
-        p.age = 2097
-        self.assertEqual(p.orbit(), )
-
+        p = planet.Planet()
+        with patch.object(location.Location, 'orbit') as mock:
+            p.orbit()
+            self.assertEqual(mock.call_count, 1)
 
     def test_is_colonized1(self):
         p = planet.Planet()
@@ -49,7 +53,6 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet()
         p.on_surface.people = 1
         self.assertTrue(p.is_colonized())
-
 
     def test_colonize1(self):
         p = planet.Planet()
@@ -68,6 +71,9 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet()
         self.assertFalse(p.colonize(player.Player(race=race.Race(primary_race_trait='Pa\'anuri'))))
 
+    def test_colonize4(self):
+        s = sun.Sun()
+        self.assertFalse(s.colonize(player.Player()))
 
     def test_habitability1(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
@@ -188,6 +194,13 @@ class PlanetTestCase(unittest.TestCase):
             hab_radiation=50, hab_radiation_stop=50)
         self.assertEqual(p.habitability(r), 100)
 
+    def test_habitability18(self):
+        s = sun.Sun()
+        self.assertEqual(s.habitability(race.Race()), -100)
+
+    def test_habitability19(self):
+        p = planet.Planet()
+        self.assertEqual(p.habitability(race.Race(primary_race_trait='Pa\'anuri')), -100)
 
     def test_growth_rate1(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
@@ -203,7 +216,6 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
         r = race.Race(hab_radiation=0, hab_radiation_stop=2, hab_gravity=0, hab_gravity_stop=2, hab_temperature=0, hab_temperature_stop=2)
         self.assertEqual(p.growth_rate(r), -15)
-
 
     def test_maxpop1(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
@@ -250,7 +262,6 @@ class PlanetTestCase(unittest.TestCase):
         r = race.Race(body_mass=150)
         self.assertEqual(p.maxpop(r), 1333333)
 
-
     def test_have_babies1(self):
         p = planet.Planet(gravity=50, temperature=50, radiation=50)
         p.on_surface.people = 250
@@ -280,7 +291,6 @@ class PlanetTestCase(unittest.TestCase):
         p.on_surface.people = 11000
         for pop in [10998.350, 10996.703, 10995.059, 10993.418, 10991.780, 10990.145, 10988.513, 10986.884, 10985.258, 10983.635, 10982.014, 10980.396, 10978.781, 10977.169, 10975.560, 10973.954, 10972.351, 10970.751, 10969.154, 10967.559, 10965.967, 10964.378, 10962.792, 10961.209, 10959.629, 10958.051, 10956.476, 10954.904, 10953.335, 10951.769, 10950.205, 10948.644, 10947.086, 10945.531, 10943.979, 10942.429, 10940.882, 10939.338, 10937.797, 10936.258, 10934.722, 10933.189, 10931.659, 10930.131, 10928.606, 10927.084, 10925.564, 10924.047, 10922.533, 10921.022, 10919.513, 10918.007, 10916.504, 10915.003, 10913.505, 10912.010, 10910.517, 10909.027, 10907.540, 10906.055, 10904.573, 10903.093, 10901.616, 10900.142, 10898.670, 10897.201, 10895.734, 10894.270, 10892.809, 10891.350, 10889.894, 10888.440, 10886.989, 10885.541, 10884.095, 10882.652, 10881.211, 10879.773, 10878.337, 10876.904, 10875.473, 10874.045, 10872.619, 10871.196, 10869.775, 10868.357, 10866.941, 10865.528, 10864.117, 10862.709, 10861.303, 10859.900, 10858.499, 10857.101, 10855.705, 10854.312, 10852.921, 10851.532, 10850.146, 10848.762]:
             self.assertEqual(p.have_babies(), pop)
-
 
     def test_raise_shields1(self):
         p = planet.Planet()
@@ -367,6 +377,12 @@ class PlanetTestCase(unittest.TestCase):
         p.impact_people = 200000
         p.bomb_impact()
         self.assertEqual(p.on_surface.people, 800000)
+
+    def test_operate1(self):
+        p = planet.Planet()
+        p.on_surface.people = 1000
+        p.power_plants = 100
+        self.assertEqual(p._operate('power_plants', True), 300)
 
     def test_generate_energy1(self):
         p = planet.Planet()
@@ -472,7 +488,6 @@ class PlanetTestCase(unittest.TestCase):
         self.assertAlmostEqual(p.remaining_minerals.lithium, 31956.8925)
         self.assertAlmostEqual(p.remaining_minerals.silicon, 7997.205)
 
-
     def test_operate_factories(self):
         p = planet.Planet()
         p.on_surface.people = 1000
@@ -480,66 +495,76 @@ class PlanetTestCase(unittest.TestCase):
         p.factories = 25
         self.assertEqual(p.operate_factories(), 2.01)
 
-    def test_calc_max_production_capacity(self):
-        return #TODO
-        play = player.Player(
-            name = 'test_colonize',
-            race = race.Race(
-                scrap_rate = 90,
-                colonists_to_operate_factory = 100,
-                ),
-            )
-        self.planet.colonize(reference.Reference(play), 'New Colony Minister')
-        self.planet.on_surface.people = 40
-        self.planet.facilities['Power'].quantity = 100
-        self.planet.facilities['Power'].tech.factory_capacity = 00
-        self.planet.calc_production()
-        self.assertEqual(self.planet.factory_capacity, 100, 'FIX ME')
-        self.planet = planet.Planet(ID='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        self.planet.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
+    def test_build1(self):
+        p = planet.Planet()
+        p.on_surface.people = 100
+        p.on_surface.titanium = 10
+        p.on_surface.silicon = 10
+        p.on_surface.lithium = 10
+        p.production = 10000
+        p.temperature = -1
+        p.radiation = 51
+        p.gravity = 51
+        p.player.get_minister(p).min_terraform_only = True
+        with patch.object(player.Player, 'spend', return_value=10000):
+            p.build_planetary()
+        self.assertEqual(p.power_plants, 30)
+        self.assertEqual(p.factories, 30)
+        self.assertEqual(p.mineral_extractors, 30)
+        self.assertEqual(p.defenses, 10)
 
-    def test_auto_build(self):
-        return #TODO
-        p.on_surface.people = 1000
-        p.mineral_extractors = 25
-        p.power_plants = 50
-        p.factories = 2
-        p.defenses = 4
-        self.assertEqual(p.auto_build(), p.scanner_tech)
-        p.mineral_extractors = 25
-        p.power_plants = 47
-        p.factories = 25
-        p.defenses = 4
-        self.assertEqual(p.auto_build(), p.penetrating_tech)
-        p.mineral_extractors = 25
-        p.power_plants = 3
-        p.factories = 2
-        p.defenses = 4
-        #p.auto_build().debug_display()
-        #p.facilities['Factory'].debug_display()
-        self.assertEqual(p.auto_build() is p.facilities['Factory'], True, 'This error does not seem logical')#'FIX ME'
-        p.mineral_extractors = 2
-        p.power_plants = 5
-        p.factories = 2
-        p.defenses = 1
-        #p.auto_build().debug_display()
-        #p.facilities['Defense'].debug_display()
-        #self.assertEqual(p.auto_build(), p.facilities['Defense'], 'FIX ME')
-        p.mineral_extractors = 5
-        p.power_plants = 3
-        p.factories = 22
-        p.defenses = 4
-        #p.auto_build().debug_display()
-        #p.facilities['Power'].debug_display()
-        #self.assertEqual(p.auto_build(), p.facilities['Power'], 'FIX ME')
-        p.mineral_extractors = 2
-        p.power_plants = 3
-        p.factories = 26
-        p.defenses = 4
-        #p.auto_build().debug_display()
-        #getattr(p, 'Mineral Extractor').debug_display()
-        #self.assertEqual(p.auto_build(), getattr(p, 'Mineral Extractor'), 'FIX ME')
-        ###reset###
-        p = planet.Planet(name='Alpha Centauri', gravity=50, temperature=50, radiation=50)
-        p.colonize(reference.Reference('Player', 'test_planet'), 'New Colony Minister')
+    def test_build2(self):
+        p = planet.Planet()
+        p.player.energy = 0
+        self.assertFalse(p.build(terraform.Terraform(hab='gravity', planet=reference.Reference(p)), False))
 
+    def test_baryogenesis(self):
+        p = planet.Planet()
+        p.production = 10000
+        p.player.get_minister(p).allow_baryogenesis = True
+        with patch.object(player.Player, 'spend', return_value=10000):
+            p.baryogenesis()
+        self.assertGreater(p.on_surface.titanium, 0)
+
+    def test_penscan1(self):
+        p = planet.Planet()
+        p.on_surface.people = 100
+        with patch.object(scan, 'penetrating') as mock:
+            p.scan_penetrating()
+            self.assertEqual(mock.call_count, 1)
+            self.assertEqual(round(mock.call_args.args[2]), 86)
+
+    def test_penscan2(self):
+        p = planet.Planet()
+        p.on_surface.people = 100
+        p.player.race.lrt_2ndSight = False
+        with patch.object(scan, 'penetrating') as mock:
+            p.scan_penetrating()
+            self.assertEqual(mock.call_count, 1)
+            self.assertEqual(round(mock.call_args.args[2]), 37)
+
+    def test_normalscan1(self):
+        p = planet.Planet()
+        p.on_surface.people = 100
+        with patch.object(scan, 'normal') as mock:
+            p.scan_normal()
+            self.assertEqual(mock.call_count, 1)
+            self.assertEqual(round(mock.call_args.args[2]), 115)
+
+    def test_normalscan2(self):
+        p = planet.Planet()
+        p.on_surface.people = 100
+        p.player.race.lrt_2ndSight = False
+        with patch.object(scan, 'normal') as mock:
+            p.scan_normal()
+            self.assertEqual(mock.call_count, 1)
+            self.assertEqual(round(mock.call_args.args[2]), 167)
+
+    def test_report1(self):
+        p = planet.Planet()
+        p.on_surface.people = 100
+        self.assertEqual(p.scan_report()['Population'], 100)
+
+    def test_mattrans1(self):
+        p = planet.Planet()
+        # TODO, method curretly empty

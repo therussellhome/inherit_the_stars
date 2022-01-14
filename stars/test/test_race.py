@@ -6,8 +6,37 @@ class RaceTestCase(unittest.TestCase):
         r = race.Race()
         self.assertEqual(r.calc_points(), 88)
         self.assertEqual(r.starting_energy, 270000) 
+
+    def test_pop_per_kt(self):
+        r = race.Race(
+            body_mass = 40
+        )
+        self.assertEqual(r.pop_per_kt(), 2000)
+
+    def test_pop_per_kt1(self):
+        r = race.Race(
+            body_mass = 32
+        )
+        self.assertEqual(r.pop_per_kt(), 2500)
     
-    
+    def test_pop_per_kt2(self):
+        r = race.Race(
+            body_mass = 160
+        )
+        self.assertEqual(r.pop_per_kt(), 500)
+
+    def test_pop_per_kt3(self):
+        r = race.Race(
+            body_mass = 125
+        )
+        self.assertEqual(r.pop_per_kt(), 640)
+
+    def test_pop_per_kt4(self):
+        r = race.Race(
+            body_mass = 10
+        )
+        self.assertEqual(r.pop_per_kt(), 8000)
+
     def test_list_traits0(self):
         r = race.Race()
         self.assertEqual(r.list_traits(), ['Melconians',
