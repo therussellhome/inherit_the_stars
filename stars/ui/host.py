@@ -52,15 +52,16 @@ class Host(UI):
         else:
             self.host_ID = ''
             self.host_turn = ''
-        # List of games
+        # List of games only if not reset (to speed up the game)
         self.host_game = []
-        for f in sorted(game_engine.load_list('Game')):
-            link = f.replace('\'', '\\\'').replace('\"', '\\\"')
-            g = game_engine.load_inspect('Game', f)
-            if g:
-                self.host_game.append('<td class="hfill rows">' + g.ID
-                    + '</td><td class="rows">Turn ' + str(int(g.hundreth / 100))
-                    + '</td><td class="rows"><i class="button fas fa-external-link-alt" onclick="post(\'host\', \'?host=' + link + '\')"></i></td>')
+        if action != 'reset':
+            for f in sorted(game_engine.load_list('Game')):
+                link = f.replace('\'', '\\\'').replace('\"', '\\\"')
+                g = game_engine.load_inspect('Game', f)
+                if g:
+                    self.host_game.append('<td class="hfill rows">' + g.ID
+                        + '</td><td class="rows">Turn ' + str(int(g.hundreth / 100))
+                        + '</td><td class="rows"><i class="button fas fa-external-link-alt" onclick="post(\'host\', \'?host=' + link + '\')"></i></td>')
 
 
 Host.set_defaults(Host, __defaults, sparse_json=False)

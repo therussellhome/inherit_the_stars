@@ -29,7 +29,3 @@ class TerraformTestCase(unittest.TestCase):
         t = terraform.Terraform(hab='gravity', planet=p)
         t.build(t.cost)
         self.assertEqual(p.gravity_terraform, 1)
-
-    def test_html1(self):
-        t = terraform.Terraform(hab='gravity')
-        self.assertEqual(t.to_html(), 'Gravity Terraforming')

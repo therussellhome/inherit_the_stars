@@ -18,12 +18,25 @@ __defaults = {
     'orbit_speed': 0.0, # degrees
 }
 
+""" Temporary values (default, min, max)  """
+__tmp_defaults = {
+    'xyz': None,
+    'ref_xyz': None,
+    'relative_xyz': None,
+    'root_location': None,
+    'root_reference': None,
+}
+
 
 """ Class defining a location """
 class Location(Defaults):
     """ Initialize the location """
     def __init__(self, *args, **kwargs):
-        if len(args) == 3:
+        if len(args) == 1 and isinstance(args[0], Location):
+            kwargs['x'] = args[0].x
+            kwargs['y'] = args[0].y
+            kwargs['z'] = args[0].z
+        elif len(args) == 3:
             kwargs['x'] = args[0]
             kwargs['y'] = args[1]
             kwargs['z'] = args[2]
@@ -48,10 +61,10 @@ class Location(Defaults):
     def orbit(self):
         if self.orbit_speed > 0:
             self.orbit_lon += self.orbit_speed
-            if self.orbit_lon > 180:
-                self.orbit_lon - 180
+            if self.orbit_lon > 360:
+                self.orbit_lon - 360
             # Force recalc of xyz
-            self.__dict__['__cache__'] = {}
+            self.__dict__['xyz'] = None
 
     #def intercept(self, target, max_distance, standoff=0.0, target_prev=None):
     #    distance = (self - target) - standoff
@@ -79,12 +92,10 @@ class Location(Defaults):
             f = min(1, move_distance / distance)
         else:
             f = -1 * move_distance / distance
-        self_xyz = self.xyz
-        target_xyz = target.xyz
         return Location(
-            x = self_xyz[0] - (self_xyz[0] - target_xyz[0]) * f,
-            y = self_xyz[1] - (self_xyz[1] - target_xyz[1]) * f,
-            z = self_xyz[2] - (self_xyz[2] - target_xyz[2]) * f)
+            x = self.xyz[0] - (self.xyz[0] - target.xyz[0]) * f,
+            y = self.xyz[1] - (self.xyz[1] - target.xyz[1]) * f,
+            z = self.xyz[2] - (self.xyz[2] - target.xyz[2]) * f)
 
     """ Comparison allowing for close enough """
     def __eq__(self, other):
@@ -93,34 +104,60 @@ class Location(Defaults):
                 return True
         return False
 
-    """ Distance between 2 points """
-    def __sub__(self, other):
+    """ Returns the cardinal direction of itself reletive to another location object """
+    def get_cardinal_direction(self, other):
+        distance = self - other
+        if distance == 0:
+            return
         self_xyz = self.xyz
         other_xyz = other.xyz
-        return stars_math.distance(self_xyz[0], self_xyz[1], self_xyz[2], other_xyz[0], other_xyz[1], other_xyz[2])
+        x = self_xyz[0] - other_xyz[0]
+        y = self_xyz[1] - other_xyz[1]
+        z = self_xyz[2] - other_xyz[2]
+        zcardinal = ['N', 'S']
+        xcardinal = ['E', 'W']
+        ycardinal = ['U', 'D']
+        cardinal = str(distance) + ' '
+        if abs(z) / distance > 0.25:
+            if z < 0:
+                cardinal += zcardinal[1]
+            else:
+                cardinal += zcardinal[0]
+        if abs(x) / distance > 0.25:
+            if x < 0:
+                cardinal += xcardinal[1]
+            else:
+                cardinal += xcardinal[0]
+        if abs(y) / distance > 0.25:
+            if y < 0:
+                cardinal += ycardinal[1]
+            else:
+                cardinal += ycardinal[0]
+        return cardinal
+
+    """ Distance between 2 points """
+    def __sub__(self, other):
+        return stars_math.distance(self.xyz[0], self.xyz[1], self.xyz[2], other.xyz[0], other.xyz[1], other.xyz[2])
     
-    """ If a reference then get the attribute from the referenced class """
+    """ Provide calculated values """
     def __getattribute__(self, name):
         self_dict = object.__getattribute__(self, '__dict__')
-        # No cache so passthrough
-        if '__cache__' not in self_dict:
-            return object.__getattribute__(self, name)
-        cache = self_dict['__cache__']
+        # Safety check if inital defaults have not been applied
+        if '__init_complete__' not in self_dict:
+            return super().__getattribute__(name)
         # Check if reference has changed
         if self_dict['reference']:
             # convert/reconert to absolute
             ref_xyz = self_dict['reference'].location.xyz
-            if 'ref_xyz' not in cache or cache['ref_xyz'] != ref_xyz:
-                cache['ref_xyz'] = ref_xyz
-                cache['root_location'] = self_dict['reference'].location.root_location
-                root_ref = self_dict['reference'].location.root_reference
-                if root_ref:
-                    cache['root_reference'] = root_ref
-                else:
-                    cache['root_reference'] = self_dict['reference']
+            if self_dict['xyz'] is None or self_dict['ref_xyz'] is None or self_dict['ref_xyz'] != ref_xyz:
+                self_dict['ref_xyz'] = ref_xyz
+                self_dict['root_location'] = self_dict['reference'].location.root_location
+                self_dict['root_reference'] = self_dict['reference'].location.root_reference
+                if not self_dict['root_reference']:
+                    self_dict['root_reference'] = self_dict['reference']
                 # location does not have a fixed xyz offset
                 if self_dict['offset'] == 0.0:
-                    cache['xyz'] = (ref_xyz[0] + self_dict['x'], ref_xyz[1] + self_dict['y'], ref_xyz[2] + self_dict['z'])
+                    self_dict['relative_xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
                 else:
                     if self_dict['orbit_speed'] > 0.0:
                         lat = 0
@@ -128,34 +165,30 @@ class Location(Defaults):
                     else:
                         lat = random() * 180 - 90
                         lon = random() * 360 - 180
-                    cache['xyz'] = (
-                        ref_xyz[0] + self_dict['offset'] * round(cos(lat * pi / 180) * cos(lon * pi / 180), 10),
-                        ref_xyz[1] + self_dict['offset'] * round(cos(lat * pi / 180) * sin(lon * pi / 180), 10),
-                        ref_xyz[2] + self_dict['offset'] * round(sin(lat * pi / 180), 10))
+                    self_dict['relative_xyz'] = (
+                        self_dict['offset'] * round(cos(lat * pi / 180) * cos(lon * pi / 180), 10),
+                        self_dict['offset'] * round(cos(lat * pi / 180) * sin(lon * pi / 180), 10),
+                        self_dict['offset'] * round(sin(lat * pi / 180), 10))
+                self_dict['xyz'] = (ref_xyz[0] + self_dict['relative_xyz'][0], ref_xyz[1] + self_dict['relative_xyz'][1], ref_xyz[2] + self_dict['relative_xyz'][2])
         # Created cached version
-        elif 'xyz' not in cache:
-            cache['root_location'] = self
-            cache['root_reference'] = None
-            cache['xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
-        if name == 'xyz':
-            return cache['xyz']
+        elif self_dict['xyz'] is None:
+            self_dict['root_location'] = self
+            self_dict['root_reference'] = None
+            self_dict['xyz'] = (self_dict['x'], self_dict['y'], self_dict['z'])
+            self_dict['relative_xyz'] = (0.0, 0.0, 0.0)
         if name == 'x':
-            return cache['xyz'][0]
+            return self_dict['xyz'][0]
         if name == 'y':
-            return cache['xyz'][1]
+            return self_dict['xyz'][1]
         if name == 'z':
-            return cache['xyz'][2]
-        if name == 'root_location':
-            return cache['root_location']
-        if name == 'root_reference':
-            return cache['root_reference']
+            return self_dict['xyz'][2]
         if name == 'in_system':
-            return cache['root_location'].is_system
-        return object.__getattribute__(self, name)
+            return self_dict['root_location'].is_system
+        return super().__getattribute__(name)
 
     """ Use the absolute position as the hash """
     def __hash__(self):
         return hash(self.xyz)
 
 
-Location.set_defaults(Location, __defaults)
+Location.set_defaults(Location, __defaults, __tmp_defaults)

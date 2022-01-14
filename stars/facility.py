@@ -38,15 +38,10 @@ class Facility(BuildQueue):
 
     """ Check if we are completed """
     def build(self, spend=Cost()):
-        super().build(spend)
-        if self.cost.is_zero():
+        remaining = super().build(spend)
+        if remaining.is_zero():
             self.planet[self.facility_type] += 1
-        return self.cost
-
-    """ Build queue display """
-    def to_html(self):
-        global _facility_names
-        return _facility_names[self.facility_type]
+        return remaining
 
 
 Facility.set_defaults(Facility, __defaults)

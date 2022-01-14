@@ -6,6 +6,7 @@ Tm * constant = ly
 ly / constant = Tm
 """
 TERAMETER_2_LIGHTYEAR = 0.000105702977392
+KILOMETER_2_LIGHTYEAR = TERAMETER_2_LIGHTYEAR / 1000000000
 
 
 """ Distance between points """
@@ -26,3 +27,8 @@ def volume_add(r1, r2):
 """ Volume """
 def volume(r):
     return 4.0 / 3.0 * math.pi * (r ** 3.0)
+
+#Untested, possibly unneeded
+#""" Radius from volume """
+#def radius(v):
+#    return (3.0 * v / (4.0 * math.pi)) ** (1.0 / 3.0)

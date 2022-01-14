@@ -182,6 +182,7 @@ class GameEngineTestCase(unittest.TestCase):
 
     def test_json3(self):
         t1 = _TestGameEngine(ID='test_json')
+        _TestGameEngine.tmp_fields = {'__cache__': True}
         t1.__cache__ = 'abc'
         json = game_engine.to_json(t1)
         t2 = game_engine.from_json(json)
