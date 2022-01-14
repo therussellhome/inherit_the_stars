@@ -15,6 +15,9 @@
     color: white;
     padding-right: 150px;
 }
+div.tech_collapsed {
+    height: 55px;
+}
 div.tech_expand {
     position: absolute;
     width: 50%;
@@ -24,15 +27,11 @@ div.tech_expand {
 }
 div.tech {
     width: 550px;
-    height: 55px;
     border: 0;
     border-bottom: 1px solid white;
     overflow-x: hidden; 
     overflow-y: hidden; 
     font-weight: normal;
-}
-table.tech {
-    #margin-left: 1em;
 }
 div.screen {
     z-index: 1;
@@ -320,14 +319,8 @@ i.fas.fa-star {
 /* Expand section */
 div.fa-angle-double-up, div.fa-angle-double-down {
     width: 100%;
-    border-top: 1px dotted silver;
-    border-bottom: 1px dotted silver;
-    padding: 2px;
-    padding-left: 5px;
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    color: black;
-    background-color: silver;
     cursor: pointer;
 }
 

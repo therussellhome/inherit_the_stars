@@ -139,42 +139,42 @@ class Game(Defaults):
         self.save()
 
     """ Get all populated planets """
-    def get_planets(self):
+    def populated_planets(self):
         planets = []
-        if 'planets' not in self.__cache__:
-            self.__cache__['planets'] = []
-            for system in self.systems:
-                for planet in system.planets:
-                    self.__cache__['planets'].append(planet)
-        for planet in self.__cache__['planets']:
-            if planet.on_surface.people > 0:
-                planets.append(planet)
+        for system in self.systems:
+            for planet in system.planets:
+                if planet.on_surface.people > 0:
+                    planets.append(planet)
         return planets
 
     """ Generate hundreth """
     def generate_hundreth(self):
         # players in lowest to highest score
         players = list(self.players)
+        # player actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            self._call(players, 'reconsile_fleets')
+            self._call(players, 'reconsile_buships')
+            self._call(players, 'treaty_negotiations')
+            self._call(players, 'treaty_finalization')
+            self._call(players, 'cleanup_messages')
         self._call(players, 'next_hundreth')
         players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
         # planets in lowest to highest population
-        planets = self.get_planets()
+        planets = self.populated_planets()
+        self._call(planets, 'orbit')
         planets.sort(key=lambda x: x.on_surface.people, reverse=False)
         # fleets in lowest to highest initiative
         fleets = []
         for player in players:
             for fleet in player.fleets:
                 fleets.append(fleet)
+        multi_fleet.reset()
+        # fleet actions only done at the beginning of a year
+        if self.hundreth % 100 == 0:
+            self._scan(fleets) # scanning is needed to support fleet patroling
         self._call(fleets, 'next_hundreth')
         fleets.sort(key=lambda x: x.stats().initiative, reverse=False)
-        multi_fleet.reset()
-        #
-        # actions only done at the beginning of a year
-        if self.hundreth % 100 == 0:
-            self._call(players, 'treaty_negotiations')
-            self._call(players, 'treaty_finalization')
-            self._call(players, 'cleanup_messages')
-            self._scan(fleets) # scanning is needed to support fleet patroling
         #
         # actions in order
         self._call(planets, 'have_babies')
@@ -198,7 +198,7 @@ class Game(Defaults):
         self._scan(fleets)
         self._call(multi_fleet.get(), 'round1_fight')
         self._call(fleets, 'move_in_system')
-        self._call(fleets, 'repair')
+        self._call(multi_fleet.get(), 'share_repair')
         self._call(fleets, 'orbital_extraction')
         self._call(fleets, 'lay_mines')
         self._call(planets, 'raise_shields')
@@ -217,6 +217,7 @@ class Game(Defaults):
         self._call(fleets, 'merge')
         self._call(planets, 'mattrans', reverse=True)
         self._call(players, 'research')
+        self._call(players, 'design_miniaturization')
         #
         # actions only done at the end of a year
         self.hundreth += 1
@@ -245,26 +246,19 @@ class Game(Defaults):
 
     """ Update binning then call scanning """
     def _scan(self, fleets):
-        scan.reset(self.players)
-        for p in self.__cache__.get('planets', []):
-            scan.add(p, p.location, 1, 1, False, False, True)
-        for a in self.asteroids:
-            scan.add(a, a.location, a.calc_apparent_mass(), a.ke, False, False, a.location.in_system)
-        for f in fleets:
-            for s in f.ships:
-                scan.add(s, s.location, s.calc_apparent_mass(), s.calc_apparent_ke(), True, s.has_cloak(), a.location.in_system)
-        for w in self.wormholes:
-            scan.add(w, w.location, 1, 10000000, False, False, False)
-        for n in self.nebulae:
-            scan.add(n, n.location, 0, False, True, False)
-        for m in self.mystery_traders:
-            scan.add(m, m.location, m.calc_apparent_mass(), m.calc_apparent_ke(), False, False, False)
+        all_planets = []
+        for system in self.systems:
+            all_planets.extend(system.planets)
+        scan.reset(self.players, fleets, all_planets, self.asteroids, self.wormholes, self.nebulae, self.mystery_traders)
+        planets = self.populated_planets()
         self._call(fleets, 'scan_anticloak')
-        self._call(self.get_planets(), 'scan_penetrating')
+        self._call(planets, 'scan_penetrating')
         self._call(self.asteroids, 'scan_penetrating')
         self._call(fleets, 'scan_penetrating')
-        self._call(self.get_planets(), 'scan_normal')
+        self._call(planets, 'scan_normal')
         self._call(fleets, 'scan_normal')
+        self._call(self.get_planets(), 'scan_self')
+        self._call(fleets, 'scan_self')
 
     """ Execute combat after determining where combat will occur """
     def _combat(self):

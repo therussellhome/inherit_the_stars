@@ -6,6 +6,7 @@ __all__ = [
     'bomb',
     'build_queue',
     'build_ship',
+    'buships',
     'cargo',
     'cloak',
     'combat',

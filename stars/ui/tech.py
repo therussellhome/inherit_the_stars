@@ -39,11 +39,11 @@ class Tech(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         tech_tree = game_engine.get('Tech')
-        if self.player():
-            player_race = self.player().race
-            player_level = self.player().tech_level
-            player_partial = self.player().research_partial
-            tech_tree = self.player().tech
+        if self.player:
+            player_race = self.player.race
+            player_level = self.player.tech_level
+            player_partial = self.player.research_partial
+            tech_tree = self.player.tech
         else:
             if len(tech_tree) < 10:
                 tech_tree = game_engine.load('Tech', 'Inherit the Stars!')

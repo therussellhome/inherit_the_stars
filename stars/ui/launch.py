@@ -25,8 +25,8 @@ class Launch(Defaults):
             self.player_token = str(id(p))
             # Set the player object to autosave
             game_engine.set_root_obj(p)
-        else:
-            # List of games
+        # List of games only if not reset to speed up ui loading
+        elif action != 'reset':
             for f in sorted(game_engine.load_list('Player')):
                 link = f.replace('\'', '\\\'').replace('\"', '\\\"')
                 p = game_engine.load_inspect('Player', f)

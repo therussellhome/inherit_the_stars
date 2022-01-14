@@ -30,6 +30,12 @@ class CostTestCase(unittest.TestCase):
         self.assertEqual(c3.energy, 369)
         self.assertEqual(c3.silicon, 6)
 
+    def test_div(self):
+        c1 = cost.Cost(energy=369, silicon=6)
+        c3 = c1 / 3
+        self.assertEqual(c3.energy, 123)
+        self.assertEqual(c3.silicon, 2)
+
     def test_percent(self):
         c1 = cost.Cost(energy=100, titanium=3, silicon=1)
         c2 = cost.Cost(energy=200, titanium=6, silicon=2)
