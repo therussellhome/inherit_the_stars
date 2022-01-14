@@ -13,16 +13,16 @@ __defaults = {
 class PlayComplete(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
         if action == 'refresh':
-            self.player_ready = not self.player().ready_to_generate
+            self.player_ready = not self.player.ready_to_generate
         elif action != 'reset':
-            self.player().ready_to_generate = True
-            self.player().save()
-            filename = self.player().filename()
+            self.player.ready_to_generate = True
+            self.player.save()
+            filename = self.player.filename()
             game_engine.unregister()
-            game = game_engine.load('Game', self.player().game_ID)
+            game = game_engine.load('Game', self.player.game_ID)
             game.update_players()
             if game.is_ready_to_generate():
                 game.new_turn()

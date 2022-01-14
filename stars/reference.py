@@ -94,11 +94,14 @@ class Reference(game_engine.BaseClass):
 
     """ Equality test """
     def __eq__(self, other):
+        reference = object.__getattribute__(self, '__reference__')
+        # Test against a non-reference object
         if type(self) != type(other):
             if hasattr(other, 'ID'):
-                return (object.__getattribute__(self, '__reference__') == other.__class__.__name__ + '/' + other.ID)
+                return (reference == other.__class__.__name__ + '/' + other.ID)
             return False
-        return (object.__getattribute__(self, '__reference__') == object.__getattribute__(other, '__reference__'))
+        # Test reference, references with just class (no ID) cannot be equal
+        return (reference == object.__getattribute__(other, '__reference__') and reference.split('/', 1)[1] != '')
     
     """ Test just the class portion """
     def __xor__(self, classname):
@@ -109,3 +112,4 @@ class Reference(game_engine.BaseClass):
         return hash(self.__reference__)
 
 game_engine._reference_class = Reference
+Reference.tmp_fields = {'__cache__': True}

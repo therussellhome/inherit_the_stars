@@ -16,16 +16,14 @@ class Cost(Minerals):
 
     """ Addition operator """
     def __add__(self, other):
-        m = super().__add__(other)
-        c = Cost(**m.__dict__)
-        c.energy = self.energy + other.energy
+        c = Cost(super().__add__(other))
+        c.energy = self.energy + getattr(other, 'energy', 0)
         return c
 
     """ Subtracton operator """
     def __sub__(self, other):
-        m = super().__sub__(other)
-        c = Cost(**m.__dict__)
-        c.energy = self.energy - other.energy
+        c = Cost(super().__sub__(other))
+        c.energy = self.energy - getattr(other, 'energy', 0)
         return c
 
     """ Mutiply operator """
@@ -33,6 +31,13 @@ class Cost(Minerals):
         m = super().__mul__(other)
         c = Cost(**m.__dict__)
         c.energy = self.energy * other
+        return c
+    
+    """ Divide operator """
+    def __truediv__(self, other):
+        m = super().__truediv__(other)
+        c = Cost(**m.__dict__)
+        c.energy = self.energy / other
         return c
     
     """ percent of other """

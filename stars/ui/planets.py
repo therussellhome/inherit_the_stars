@@ -15,7 +15,7 @@ __defaults = {
 class Planets(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
 
         # Planets filter
@@ -31,9 +31,9 @@ class Planets(PlayerUI):
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
-        if 'planet_report' not in self.player().__cache__:
+        if len(self.player.planet_report) == 0:
             planets = [] 
-            for (r, p) in self.player().get_intel(by_type='Planet').items():
+            for (r, p) in self.player.get_intel(by_type='Planet').items():
                 planet = {'name': p.name, 'details': ''}
                 planet['date'] = p.date
                 if r: 
@@ -70,9 +70,9 @@ class Planets(PlayerUI):
                 planet['details'] += '<tr><td>Mineral Availability</td><td>' + planet['Mineral Availability'] + '</td></tr>'
                 planets.append(planet)
             # Puts the report in the cache
-            self.player().__cache__['planet_report'] = planets
+            self.player.planet_report = planets
         else:
-            planets = self.player().__cache__['planet_report']
+            planets = self.player.planet_report
             
         for p in planets:
             if p.get(self.planets_filter, False):
@@ -83,13 +83,13 @@ class Planets(PlayerUI):
         print(self.planets_report)
 
     def sort_planets(self, planet):
-        for (r, p) in self.player().get_intel(by_type='Planet').items():
+        for (r, p) in self.player.get_intel(by_type='Planet').items():
             # Gets and sorts planets
             planet['All Planets'] = True
             if not hasattr(p, 'player'):
                 planet['Uninhabited Planets'] = True
             else:
-                relation = self.player().get_relation(hasattr(p, player))
+                relation = self.player.get_relation(hasattr(p, player))
                 if relation == 'me':
                     planet['My Planets'] = True
                 elif relation == 'team':
@@ -98,14 +98,14 @@ class Planets(PlayerUI):
                     planet['Neutral Planets'] = True
                 elif relation == 'enemy':
                     planet['Enemy Planets'] = True
-        for (r, p) in self.player().get_intel(by_type='Sun').items():
+        for (r, p) in self.player.get_intel(by_type='Sun').items():
             # Gets and sorts planets
             planet = {'name': p.name, 'details': ''}
             planet['All Suns'] = True
             if not hasattr(p, 'player'):
                 planet['Uninhabited Planets'] = True
             else:
-                relation = self.player().get_relation(hasattr(p, player))
+                relation = self.player.get_relation(hasattr(p, player))
                 if relation == 'me':
                     planet['My Planets'] = True
                 elif relation == 'team':

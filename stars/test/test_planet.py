@@ -326,45 +326,45 @@ class PlanetTestCase(unittest.TestCase):
         p = planet.Planet()
         p.on_surface.people = 1000000
         p.bomb(bomb.Bomb(shield_kill=3))
-        self.assertEqual(p.__cache__['impact_shields'], 0.03)
+        self.assertEqual(p.impact_shields, 0.03)
 
     def test_bomb2(self):
         p = planet.Planet()
         p.on_surface.people = 1000000
-        p.__cache__['shields'] = 999999999999
+        p.shields = 999999999999
         p.bomb(bomb.Bomb(shield_kill=3))
-        self.assertEqual(p.__cache__['impact_shields'], 0)
+        self.assertEqual(p.impact_shields, 0)
 
     def test_bomb3(self):
         p = planet.Planet()
         p.on_surface.people = 1000000
         p.bomb(bomb.Bomb(minimum_pop_kill=123))
-        self.assertEqual(p.__cache__['impact_people'], 1.23)
+        self.assertEqual(p.impact_people, 1.23)
 
     def test_bomb4(self):
         p = planet.Planet()
         p.on_surface.people = 1000000
         p.bomb(bomb.Bomb(percent_pop_kill=10))
-        self.assertEqual(p.__cache__['impact_people'], 100000)
+        self.assertEqual(p.impact_people, 100000)
 
     def test_bomb5(self):
         p = planet.Planet()
         p.on_surface.people = 1000000
-        p.__cache__['shields'] = 999999999999
+        p.shields = 999999999999
         p.bomb(bomb.Bomb(percent_pop_kill=10, max_defense=115))
-        self.assertEqual(p.__cache__['impact_people'], 0)
+        self.assertEqual(p.impact_people, 0)
 
     def test_impact1(self):
         p = planet.Planet()
         p.defenses = 20
-        p.__cache__['impact_shields'] = 5
+        p.impact_shields = 5
         p.bomb_impact()
         self.assertEqual(p.defenses, 15)
 
     def test_impact2(self):
         p = planet.Planet()
         p.on_surface.people = 1000000
-        p.__cache__['impact_people'] = 200000
+        p.impact_people = 200000
         p.bomb_impact()
         self.assertEqual(p.on_surface.people, 800000)
 
