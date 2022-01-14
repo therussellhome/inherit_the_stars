@@ -53,6 +53,7 @@ class RenderStars(PlayerUI):
         for (s, i) in self.player().get_intel(by_type='Ship').items():
             ship = self.set_details('Ship', self.deep_space_color, i)
             if i.system_key not in self.details:
+                #expanded_location_root = [0,0,0]
                 self.deep_space.append({'location': i.location, 'system_key': i.system_key})
                 self.details[i.system_key] = []
             self.details[i.system_key].append(ship)
