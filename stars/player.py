@@ -2,6 +2,7 @@ import sys
 import uuid
 from math import ceil
 from . import game_engine
+from .build_ship import BuildShip
 from .cargo import Cargo
 from .defaults import Defaults
 from .fleet import Fleet
@@ -19,12 +20,6 @@ from .fleet import Fleet
 from .ship import Ship
 from .cargo import Cargo
 from .message import Message
-# for testing TODO remove these extra imports ---- All of them?
-from .planet import Planet
-from .ship_design import ShipDesign
-from .cost import Cost
-from .order import Order
-from .location import Location
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -38,7 +33,7 @@ __defaults = {
     'computer_player': False,
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
-    'planets': [], # list of colonized planets
+    'planets': [], # list of colonized planets only updated during save
     'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
     'tech_level': TechLevel(), # current tech levels
@@ -140,7 +135,7 @@ class Player(Defaults):
         for planet in game_engine.get('Planet'):
             if planet.is_colonized() and planet.player.ID == self.ID:
                 colonized_planets.append(planet)
-        self.__colonized_planets = colonized_planets
+        self.planets = colonized_planets
         game_engine.save('Player', self.filename(), self)
             
 
@@ -151,6 +146,7 @@ class Player(Defaults):
         if self.validation_key == p.validation_key:
             for field in _player_fields:
                 self[field] = p[field]
+                print(field, p[field])
       
     """ Get the minister for a given planet """
     def get_minister(self, planet):
@@ -166,14 +162,14 @@ class Player(Defaults):
         self.ministers.append(minister)
         return minister
 
-    """ Reconsile fleets """
-    def reconsile_fleets(self):
+    """ Reconcile fleets """
+    def reconcile_fleets(self):
         for f in self.fleets:
             f.player = Reference(self)
         #TODO cheating check for multiple fleets pointing to the same ship
 
     """ Apply the buships plan """
-    def reconsile_buships(self):
+    def reconcile_buships(self):
         # link all buships and remove from build queue
         for build_ship in self.build_queue:
             if isinstance(build_ship, BuildShip):
@@ -182,7 +178,7 @@ class Player(Defaults):
                 self.build_queue.remove(build_ship)
         # add all the buships back at the front of the queue
         for buship in reversed(self.buships):
-            self.build_queue.insert(buship.queue(), 0)
+            self.build_queue.insert(0, buship.queue())
 
     """ Update the date """
     def next_hundreth(self):
@@ -253,6 +249,9 @@ class Player(Defaults):
                 s = ~s
             if s in self.ships:
                 self.ships.remove(s)
+            for f in self.fleets:
+                if s in f.ships:
+                    f.ships.remove(s)
     
     """ Return the id for use as a temporary player token """
     def token(self):
@@ -281,7 +280,10 @@ class Player(Defaults):
     
     """ Get the local name for something """
     def get_name(self, obj):
-        return self.get_intel(reference=obj).name
+        intel = self.get_intel(reference=obj)
+        if intel:
+            return intel.name
+        return obj.ID
 
     """ Add a message """
     def add_message(self, **kwargs):

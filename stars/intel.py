@@ -42,6 +42,8 @@ TRACK_ACCUMULATING = {
 class Intel(Defaults):
     """ Add a report with specal handling for location to lock to an x, y, z """
     def add_report(self, reference, date, report):
+        if self.name == '':
+            self.name = reference.ID
         # Special handling for locations to remove relative and reduce memory size
         if 'location' in report:
             report['location_root'] = report['location'].root_location.xyz

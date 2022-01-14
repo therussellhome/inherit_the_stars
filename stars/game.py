@@ -153,8 +153,8 @@ class Game(Defaults):
         players = list(self.players)
         # player actions only done at the beginning of a year
         if self.hundreth % 100 == 0:
-            self._call(players, 'reconsile_fleets')
-            self._call(players, 'reconsile_buships')
+            self._call(players, 'reconcile_fleets')
+            self._call(players, 'reconcile_buships')
             self._call(players, 'treaty_negotiations')
             self._call(players, 'treaty_finalization')
             self._call(players, 'cleanup_messages')
