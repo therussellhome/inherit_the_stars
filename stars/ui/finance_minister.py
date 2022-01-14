@@ -41,10 +41,11 @@ class FinanceMinister(PlayerUI):
                     break
         if action == 'show_screen':
             for value in values:
-                self[value] = self.player[value]
-            self.finance_slider[0] = self.player.finance_construction_percent
-            self.finance_slider[1] = self.player.finance_mattrans_percent + self.finance_slider[0]
-            self.finance_slider[2] = self.player.finance_research_percent + self.finance_slider[1]
+                self[value] = self.player()[value]
+            self.finance_planet = self.player().planets[0]
+            self.finance_slider[0] = self.player().finance_construction_percent
+            self.finance_slider[1] = self.player().finance_mattrans_percent + self.finance_slider[0]
+            self.finance_slider[2] = self.player().finance_research_percent + self.finance_slider[1]
         """ save """
         self.finance_construction_percent = self.finance_slider[0]
         self.finance_mattrans_percent = self.finance_slider[1] - self.finance_slider[0]

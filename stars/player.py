@@ -19,7 +19,7 @@ from .fleet import Fleet
 from .ship import Ship
 from .cargo import Cargo
 from .message import Message
-# for testing TODO remove these extra imports
+# for testing TODO remove these extra imports ---- All of them?
 from .planet import Planet
 from .ship_design import ShipDesign
 from .cost import Cost
