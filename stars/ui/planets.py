@@ -31,11 +31,11 @@ class Planets(PlayerUI):
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
-        if 'planet_report' not in self.player().__cache__:
+        if 'planet_report' not in self.player.__dict__:
             planets = [] 
-            for (reference, intel) in self.player().get_intel(by_type='Planet').items():
+            for (reference, intel) in self.player.get_intel(by_type='Planet').items():
                 planets.append(self.process_intel(reference, intel))
-            for (reference, intel) in self.player().get_intel(by_type='Sun').items():
+            for (reference, intel) in self.player.get_intel(by_type='Sun').items():
                 planets.append(self.process_intel(reference, intel))
             # Puts the report in the cache
             self.player.planet_report = planets
@@ -66,7 +66,7 @@ class Planets(PlayerUI):
             planet['Mineral Output'] = str(reference.mine_minerals() * 100)
             planet['Mineral Availability'] = reference.mineral_availability
         else:
-            planet['Inhabitant'] = str(getattr(intel, 'player', 'uninhabited')) + '(' + str(self.player().get_relation(hasattr(intel, 'player'))) + ')' 
+            planet['Inhabitant'] = str(getattr(intel, 'player', 'uninhabited')) + '(' + str(self.player.get_relation(hasattr(intel, 'player'))) + ')' 
             planet['Energy Generation'] = '?'
             planet['Production Capacity'] = '?'
             planet['Scanner Range'] = '?'
@@ -95,7 +95,7 @@ class Planets(PlayerUI):
         if not hasattr(intel, 'player'):
             planet['Uninhabited Planets'] = True
         else:
-            relation = self.player().get_relation(hasattr(intel, 'player'))
+            relation = self.player.get_relation(hasattr(intel, 'player'))
             if relation == 'me':
                 planet['My Planets'] = True
             elif relation == 'team':
