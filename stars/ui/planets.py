@@ -31,7 +31,7 @@ class Planets(PlayerUI):
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
-        if 'planet_report' not in self.player.__dict__:
+        if not hasattr(self.player, 'planet_report'):
             planets = [] 
             for (reference, intel) in self.player.get_intel(by_type='Planet').items():
                 planets.append(self.process_intel(reference, intel))
@@ -41,7 +41,7 @@ class Planets(PlayerUI):
             self.player.planet_report = planets
         else:
             planets = self.player.planet_report
-            
+        print('planets:', planets)
         for p in planets:
             if p.get(self.planets_filter, False):
                 self.planets_report.append('<td>' + p['name'] + '</td><td>' + p[self.planets_field] + '</td><td>' + p['date'] + \
