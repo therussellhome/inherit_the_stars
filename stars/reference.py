@@ -9,6 +9,7 @@ class Reference(game_engine.BaseClass):
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
         reference = ''
+        cache = None
         if '__reference__' in kwargs:
             reference = kwargs['__reference__']
         elif len(args) == 1:
@@ -21,12 +22,13 @@ class Reference(game_engine.BaseClass):
                     reference = args[0] + '/'
             elif hasattr(args[0], 'ID'):
                 reference = args[0].__class__.__name__ + '/' +  args[0].ID
+                cache = args[0]
             else:
                 raise LookupError('Cannot create reference to "' + str(args[0]) + '"')
         elif len(args) == 2:
             reference = args[0] + '/' + args[1]
         object.__setattr__(self, '__reference__', reference)
-        object.__setattr__(self, '__cache__', None)
+        object.__setattr__(self, '__cache__', cache)
 
     """ Override the subscript operator """
     def __getitem__(self, name):

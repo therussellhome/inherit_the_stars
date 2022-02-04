@@ -107,9 +107,6 @@ def _bin_testing(scanned=False):
 def _bin_found(bins, p_ref, reference, bin_num):
     global __scanned
     bins[p_ref][bin_num].remove(reference)
-    if bin_num in __anticloak[p_ref] and reference in __anticloak[p_ref][bin_num]:
-        __anticloak[p_ref][bin_num].remove(reference)
-    __scanned[p_ref][bin_num].append(reference)
     if bin_num not in __scanned[p_ref]:
         __scanned[p_ref][bin_num] = []
     if reference not in __scanned[p_ref][bin_num]:
@@ -122,7 +119,7 @@ def anticloak(player, location, rng):
     p_ref = Reference(player)
     for (reference, bin_num) in binning.search(__anticloak[p_ref], location, rng):
         if location - reference.location < rng:
-            _bin_found(__anticloak, p_ref, reference)
+            _bin_found(__anticloak, p_ref, reference, bin_num)
             player.add_intel(reference, reference.scan_report(scan_type='anticloak'))
 
 
@@ -132,7 +129,7 @@ def penetrating(player, location, rng):
     p_ref = Reference(player)
     for (reference, bin_num) in binning.search(__penetrating[p_ref], location, rng):
         if location - reference.location < rng:
-            _bin_found(__penetrating, p_ref, reference)
+            _bin_found(__penetrating, p_ref, reference, bin_num)
             player.add_intel(reference, reference.scan_report(scan_type='penetrating'))
 
 
@@ -143,7 +140,7 @@ def normal(player, location, rng):
     for (reference, bin_num) in binning.search(__normal[p_ref], location, rng):
         distance = location - reference.location
         if distance < rng and reference['apparent_ke'] > ((-500000 * rng) / (distance - rng) - 500000):
-            _bin_found(__normal, p_ref, reference)
+            _bin_found(__normal, p_ref, reference, bin_num)
             player.add_intel(reference, reference.scan_report(scan_type='normal'))
 
 
