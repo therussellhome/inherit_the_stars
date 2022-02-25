@@ -64,10 +64,11 @@ class PlanetaryMinisters(PlayerUI):
         self.planetary_factories = self.planetary_facility_types[1]-self.planetary_facility_types[0]
         self.planetary_mineral_extractors = self.planetary_facility_types[2]-self.planetary_facility_types[1]
         self.planetary_defenses = 100-self.planetary_facility_types[2]
+        print(self.planetary_facility_types)
         for key in PlanetaryMinister.defaults:
             if not key == 'ID':
                 setattr(self.planetary_curent_minister, key, getattr(self, 'planetary_' + key))
-        #print('7', self.planetary_curent_minister.__dict__)
+        print('7', self.planetary_curent_minister.__dict__)
         for planet in self.player.planets:
             if hasattr(self, 'planetary_' + planet.ID + '_minister'):
                 self.player.planetary_minister_map[Reference(planet)] = Reference('PlanetaryMinister/' + self['planetary_' + planet.ID + '_minister'])
