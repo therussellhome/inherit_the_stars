@@ -58,6 +58,7 @@ class BuildShip(BuildQueue):
                             break
                     else:
                         self.planet.player.add_ships(self.ship)
+                self.ship.description = self.buships.ID
                 self.ship.add_component(self.to_build.pop(0), False)
             self.ship.update(self.level)
             self._next_component()
