@@ -21,7 +21,7 @@ def calc(fleets):
     # Add all fleets into bins if the fleet is planned to move
     bins = {}
     for fleet in fleets:
-        if not fleet.is_stationary():
+        if not fleet.is_stationary:
             b = binning.num(fleet.location)
             if b in __bins:
                 bins[b].append(fleet)

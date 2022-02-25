@@ -174,7 +174,7 @@ class Game(Defaults):
         if self.hundreth % 100 == 0:
             self._scan(fleets) # scanning is needed to support fleet patroling
         self._call(fleets, 'next_hundreth')
-        fleets.sort(key=lambda x: x.stats().initiative, reverse=False)
+        fleets.sort(key=lambda x: x.stats.initiative, reverse=False)
         #
         # actions in order
         self._call(planets, 'have_babies')
