@@ -32,7 +32,7 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     div.appendChild( renderer.domElement );
     // look at center of galaxy
-    camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, TERAMETER / 1000, 2000);
+    camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, TERAMETER / 100000, 2000);
     camera_lookat = new THREE.Vector3();
     selected_position = new THREE.Vector3();
     camera_flyto = new THREE.Vector3(0, 0, 500);
@@ -236,7 +236,7 @@ function onClick(event) {
             console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
             select_object(intersects[0].object, intersects[0].index, event.shiftKey);
         } else {
-            raycaster.params.Points.threshold = 10;
+            raycaster.params.Points.threshold = 1;
             raycaster.near = 10;
             raycaster.far = 10000;
             var intersects = raycaster.intersectObject( top_level, true );
@@ -281,7 +281,7 @@ function get_system(intersected, index) {
     console.log(details);
     var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
     var texture_ship = new THREE.TextureLoader().load( "/ships.png" );
-    var texture_asteroid = new THREE.TextureLoader().load( "/inderstellar_objects.png" );
+    var texture_asteroid = new THREE.TextureLoader().load( "/interstellar_objects.png" );
     var texture_wormhole = new THREE.TextureLoader().load( "/generate.png" );
     var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );
@@ -299,6 +299,7 @@ function get_system(intersected, index) {
             var size_mod = 5000;
         } else if(system_data[i].type === 'Ship') {
             var texture = texture_ship;
+            var size_mod = 20000;
         } else if(system_data[i].type === 'Asteroid') {
             var texture = texture_asteroid;
         } else if(system_data[i].type === 'Wormhole') {
