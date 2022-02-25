@@ -10,7 +10,7 @@ def distance(ship1, ship2):
 # what to engage; most massive, most thretening, closest
 # ships cloaked to zero do not fire until at destonation or fired apoun
 
-__defalts = {
+__defaults = {
     'date': 0.0
 }
 
@@ -202,4 +202,4 @@ class _ship():
         self.to_fire_at = []
     
 
-Combat.set_defaults(__defaults)
+Combat.set_defaults(Combat, __defaults)
