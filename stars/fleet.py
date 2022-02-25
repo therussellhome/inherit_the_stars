@@ -467,6 +467,11 @@ class Fleet(Defaults):
         if self.stats.scanner.normal > 0:
             scan.normal(self.player, self.location, self.stats.scanner.normal)
 
+    """ Create a report about itself """
+    def scan_self(self):
+        for ship in self.ships:
+            self.player.add_intel(self, ship.scan_report('self'))
+
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):
         distance = self.move_to - self.location
@@ -545,6 +550,8 @@ class Fleet(Defaults):
     
     """ Evenly distributes the cargo back to the ships """
     def cargo_distribution(self):
+        if self.stats.cargo_max == 0.0:
+            return
         cargo_left = copy.copy(self.cargo)
         for ctype in CARGO_TYPES:
             for ship in self.ships:
