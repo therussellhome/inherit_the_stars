@@ -28,9 +28,13 @@ class Orders(PlayerUI):
         for action in actions.split(';'):
             # get fleet value
             if action.startswith('fleet_index='):
-                self.order_fleet_index = str(action.split('=')[1])
+                self.order_fleet_index = int(action.split('=')[1])
+            if action.startswith('create_order'):
+                fleet = self.player.fleets[self.order_fleet_index]
+                fleet.orders.append(Order())
+                self.order_index = len(fleet.orders) - 1
             if action.startswith('order='):
-                self.order_index = str(action.split('=')[1])
+                self.order_index = int(action.split('=')[1])
             if action == 'start' and self.order_fleet_index != -1 and self.order_index != -1:
                 order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
                 for key in Order.defaults:
@@ -43,7 +47,7 @@ class Orders(PlayerUI):
                 if self.order_last_screen == 'fleets':
                     self.topbar[-1] += ', post(\'' + str(self.order_last_screen) + '\', \'?select_' + str(self.order_fleet_index) + '\')'
                 self.topbar[-1] += '">Back</i>'
-            self.order_fleet_index != -1
+            #self.order_fleet_index != -1
         if self.order_fleet_index != -1 and self.order_index != -1:
             order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
             for key in Order.defaults:
