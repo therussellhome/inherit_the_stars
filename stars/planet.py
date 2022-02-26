@@ -433,25 +433,26 @@ class Planet(Defaults):
     def scan_penetrating(self):
         if self.is_colonized():
             # Formula is loosely based on the volume to radius equasion
-            root = 3.0
-            if not self.player.race.lrt_2ndSight:
-                root = 4.0
-            radius = (3.0 * self.player.race.pop_per_kt() * self.on_surface.people / 4.0 / pi) ** (1.0 / root) * 3.0
+            radius = (self.player.race.pop_per_kt() * self.on_surface.people * 3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0)
+            if self.player.race.lrt_2ndSight:
+                radius *= 2.5
+            print('penetrating', radius)
             scan.penetrating(self.player, self.location, radius)
 
     """ Perform normal scanning """
     def scan_normal(self):
         if self.is_colonized():
             # Formula is loosely based on the volume to radius equasion
-            root = 3.0
-            if not self.player.race.lrt_2ndSight:
-                root = 2.7
-            radius = (3.0 * self.player.race.pop_per_kt() * self.on_surface.people / 4.0 / pi) ** (1.0 / root) * 4.0
+            radius = (self.player.race.pop_per_kt() * self.on_surface.people * 3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0
+            if self.player.race.lrt_2ndSight:
+                radius /= 2.0
+            print('normal', radius)
             scan.normal(self.player, self.location, radius)
 
     """ Create a report about itself """
     def scan_self(self):
-        self.player.add_intel(self, self.scan_report())
+        if self.is_colonized():
+            self.player.add_intel(self, self.scan_report('self'))
 
     """ Return intel report when scanned """
     def scan_report(self, scan_type=''):
