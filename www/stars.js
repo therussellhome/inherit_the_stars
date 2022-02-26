@@ -145,9 +145,9 @@ function show_planetary() {
 }
 
 function show_minister(name) {
-    //console.log('step one ............................... called')
+    console.log('step one ............................... called')
     if(current_screen  != 'planetary_minister') {
-        //console.log('step two ............................... showing')
+        console.log('step two ............................... showing')
         show_screen('planetary_minister');
     }
     post('planetary_minister', '?' + name);
