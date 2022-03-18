@@ -51,6 +51,7 @@ class RenderStars(PlayerUI):
                 self.details[i.system_key] = []
             self.details[i.system_key].append(wormhole)
         for (s, i) in self.player.get_intel(by_type='Ship').items():
+            print(s)
             ship = self.set_details('Ship', self.deep_space_color, i)
             if i.system_key not in self.details:
                 self.deep_space.append({'location': i.location, 'system_key': i.system_key})

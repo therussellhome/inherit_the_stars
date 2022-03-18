@@ -12,6 +12,7 @@ __defaults = {
     'options_orders_depart': depart_options,
     'options_orders_standoff': standoff_options,
     'topbar': [],
+    'order_sidebar': [],
 }
 
 
@@ -53,6 +54,7 @@ class Orders(PlayerUI):
             for key in Order.defaults:
                 order[key] = self['orders_' + key]
             #print(order.__dict__, '\n')
+        order_sidebar.append('<td><img class="button" title="Select Fleet" src="/ships.png" onclick="post(\'fleets\', ?select_' + str(self.order_fleet_index) + ')"/></td>')
 
     def display(self, item):
         if item == 'speed':

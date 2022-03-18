@@ -233,7 +233,13 @@ function onClick(event) {
     console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
-        console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object)
+        console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object);
+        console.log('type: ', intersects[0].object.name);
+        if(intersects[0].object.name === 'Ship') {
+            post('orders', '?fleet_index='+.toString());
+            show_order_sidebar();
+            console.log('intersected ship');
+        }
         select_object(intersects[0].object, intersects[0].index, false, false);
     } else {
         raycaster.params.Points.threshold = TERAMETER / 10;
@@ -330,7 +336,7 @@ function get_system(intersected, index) {
             size: ((system_data[i].size + 200) * TERAMETER / size_mod)
         } );
         var point = new THREE.Points( geometry, material );
-        point.name = system_data[i].name;
+        point.name = system_data[i].type// = system_data[i].name;
         inner_system.add(point);
     }
     scene.remove(in_system);

@@ -124,9 +124,10 @@ class Player(Defaults):
             self.ministers.append(PlanetaryMinister(name='Colony', new_colony_minister=True))
             self.add_message(sender=Reference(self.ministers[-1]), message='introduction2')
         game_engine.register(self)
-        #for fleet in self.fleets:
-        #    for ship in fleet.ships:
-        #        self.add_intel(ship, ship.scan_report())
+        for fleet in self.fleets:
+            for ship in fleet.ships:
+                if Reference(ship.ID) not in self.get_intel(None, 'ship'):
+                    self.add_intel(ship, ship.scan_report())
 
     """ Player filename """
     def filename(self):
