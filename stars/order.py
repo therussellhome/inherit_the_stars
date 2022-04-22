@@ -70,7 +70,7 @@ __defaults = {
     'load_ti': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
     'load_li': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
     'load_people': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
-    'load_all available': False,
+    'load_all_available': False,
     'unload_si': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
     'unload_ti': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
     'unload_li': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt

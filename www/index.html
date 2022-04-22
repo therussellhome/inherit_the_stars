@@ -573,7 +573,7 @@ void main() {
 
 <div class="screen hide onreset" id="screen_orders" style="width: 600px" onreset="post('orders', '?reset')">
     <table class="topbar hfill"><tr>
-        <td><img title="Waypoints" src="ships.png"/></td>
+        <td><img title="Orders" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
         <td class="hfill" id="topbar"></td>
     </tr></table>
@@ -605,6 +605,8 @@ void main() {
         </tr><tr>
             <td colspan="3"><input id="orders_patrol" type="checkbox" onchange="post('orders')"/> Patrol</td>
         </tr>
+    </table><table class="hfil" id="order_set_deepspace" style="text-align:center">
+        <caption><div class="fa-angle-double-down"> Set Waypoint</div></caption>
     </table><table class="hfill" style="text-align: center">
         <caption><div class="fa-angle-double-down"> Load</div></caption>
         <tr>
