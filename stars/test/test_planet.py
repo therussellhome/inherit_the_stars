@@ -532,7 +532,7 @@ class PlanetTestCase(unittest.TestCase):
         with patch.object(scan, 'penetrating') as mock:
             p.scan_penetrating()
             self.assertEqual(mock.call_count, 1)
-            self.assertEqual(round(mock.call_args.args[2]), 86)
+            self.assertEqual(round(mock.call_args.args[2]), 8)
 
     def test_penscan2(self):
         p = planet.Planet()
@@ -541,7 +541,7 @@ class PlanetTestCase(unittest.TestCase):
         with patch.object(scan, 'penetrating') as mock:
             p.scan_penetrating()
             self.assertEqual(mock.call_count, 1)
-            self.assertEqual(round(mock.call_args.args[2]), 37)
+            self.assertEqual(round(mock.call_args.args[2]), 3)
 
     def test_normalscan1(self):
         p = planet.Planet()
@@ -549,7 +549,7 @@ class PlanetTestCase(unittest.TestCase):
         with patch.object(scan, 'normal') as mock:
             p.scan_normal()
             self.assertEqual(mock.call_count, 1)
-            self.assertEqual(round(mock.call_args.args[2]), 115)
+            self.assertEqual(round(mock.call_args.args[2]), 16)
 
     def test_normalscan2(self):
         p = planet.Planet()
@@ -558,7 +558,7 @@ class PlanetTestCase(unittest.TestCase):
         with patch.object(scan, 'normal') as mock:
             p.scan_normal()
             self.assertEqual(mock.call_count, 1)
-            self.assertEqual(round(mock.call_args.args[2]), 167)
+            self.assertEqual(round(mock.call_args.args[2]), 32)
 
     def test_report1(self):
         p = planet.Planet()
