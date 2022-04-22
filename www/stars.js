@@ -145,9 +145,9 @@ function show_planetary() {
 }
 
 function show_minister(name) {
-    console.log('step one ............................... called')
+    //console.log('step one ............................... called')
     if(current_screen  != 'planetary_minister') {
-        console.log('step two ............................... showing')
+        //console.log('step two ............................... showing')
         show_screen('planetary_minister');
     }
     post('planetary_minister', '?' + name);
@@ -401,23 +401,6 @@ function shutdown() {
         show_screen('shutdown');
         fetch('/shutdown', { method: 'post' });
     }
-}
-
-function planetary_color_picker(element) {
-    parentFixed = element,
-    pickerFixed = new Picker({
-        parent: parentFixed,
-        popup: false,
-        alpha: false,
-//        editor: false,
-        onChange: function(color) {
-            document.getElementById('planetary_color').value = color.rgbaString;
-            post('planetary_minister')
-            //parentFixed.style.backgroundColor = color.rgbaString;
-            //console.log(document.getElementById('planetary_color').value)
-        },
-    });
-    pickerFixed.openHandler();
 }
 
 // Update the color of race icons
