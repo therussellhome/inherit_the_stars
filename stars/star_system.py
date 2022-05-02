@@ -1,6 +1,7 @@
 import sys
 from random import random, randint
 from . import game_engine
+from . import stars_math
 from .defaults import Defaults
 from .reference import Reference
 from .location import Location
@@ -76,14 +77,16 @@ class StarSystem(Defaults):
         z = (location.z-self.location.z)
         dis = (x**2 + y**2 + z**2)**(1/2)
         dis = self.location - location
-        x = self.x + (x/dis)*stars_math.TERAMETER_2_LIGHTYEAR
-        y = self.y + (y/dis)*stars_math.TERAMETER_2_LIGHTYEAR
-        z = self.z + (z/dis)*stars_math.TERAMETER_2_LIGHTYEAR
+        x = self.location.x + (x/dis)*stars_math.TERAMETER_2_LIGHTYEAR
+        y = self.location.y + (y/dis)*stars_math.TERAMETER_2_LIGHTYEAR
+        z = self.location.z + (z/dis)*stars_math.TERAMETER_2_LIGHTYEAR
         return Location(x=x, y=y, z=z)
 
     """ Lay mines """
     def lay_mines(self, quantity, player):
         #TODO check treaty as non-teammate mines should function as mine sweeping
+        #TODO update test to match when you update the function
+        #TODO make this match sweep_mines, mines_decay, and mines_hit
         if not self.minefield_owner:
             self.minefield_owner = Reference(player)
         self.minefield += quantity
