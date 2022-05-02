@@ -35,10 +35,13 @@ class Fleets(PlayerUI):
             + '<th><i class="si" title="Silicon">in </i></th>')
         for i in range(len(self.player.fleets)):
             fleet = self.player.fleets[i]
-            intel = self.player.get_intel(reference=fleet)
+            fleet_name = fleet.ID
+            if hasattr(fleet, 'name'):
+                fleet_name = fleet.name
+            #intel = self.player.get_intel(reference=fleet)
             self.fleet_list.append('<tr>'
                 + '<td><i class="button fas fa-eye" title="Select Fleet" onclick="post(\'fleets\', \'?select_' + str(i) + '\')"></i></td>'
-                + '<td>' + str(intel.name) + '</td>'
+                + '<td>' + str(fleet_name) + '</td>'#intel.name) + '</td>'
                 + '<td>' + str(fleet.location.x) + '</td>'
                 + '<td>' + str(fleet.location.y) + '</td>'
                 + '<td>' + str(fleet.location.z) + '</td>'

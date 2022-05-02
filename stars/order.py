@@ -59,7 +59,7 @@ veriable_maxes = [
 """ Default values (default, min, max)  """
 __defaults = {
     'location': Location(),
-    'speed': (-2, -2, 10), # -2=manual stargate, -1=auto, 0-10=manual
+    'speed': (-2, -2, 10), # -2=auto stargate, -1=auto, 0-10=manual
     'description': '',
     'standoff': standoff_options[0],
     'upgrade_if_commanded': False,#???

@@ -1,11 +1,60 @@
 from .playerui import PlayerUI
 from ..reference import Reference
 from ..location import Location
-from ..order import Order, depart_options, standoff_options, seperate_display, veriable_maxes
+from ..order import Order
 import sys
 import copy
+from ..game import Game#finding Game.x through attribute trees
 
-separate_display = []
+depart_options = [
+    'immediately',
+    'after x years',
+    'repair to x',
+    'remain indef',
+]
+
+standoff_options = [
+    'No Standoff',
+    'Avoid Detection',
+    'Penetrating Minimum',
+    'Anti-Cloak Minimum',
+    'Hyper-Denial Minimum',
+    ]
+
+separate_display = [
+    'speed',
+    'load_si',
+    'load_ti',
+    'load_li',
+    'load_people',
+    'unload_si',
+    'unload_ti',
+    'unload_li',
+    'unload_people',
+    'buy_si',
+    'buy_ti',
+    'buy_li',
+    'buy_fuel',
+    'colonize_min_hab',
+    'colonize_min_ti',
+    'colonize_min_li',
+    'colonize_min_si',
+    ]
+
+variable_maxes = [
+    'load_si',
+    'load_ti',
+    'load_li',
+    'load_people',
+    'unload_si',
+    'unload_ti',
+    'unload_li',
+    'unload_people',
+    'buy_si',
+    'buy_ti',
+    'buy_li',
+    'buy_fuel',
+]
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -41,9 +90,9 @@ class Orders(PlayerUI):
                 fleet = self.player.fleets[self.order_fleet_index]
                 fleet.orders.append(Order())
                 self.order_index = len(fleet.orders) - 1
-            for item in seperate_display:
+            for item in separate_display:
                 self['orders_' + item + '_display'] = self.display(item)
-            for item in veriable_maxes:
+            for item in variable_maxes:
                 self['orders_' + item + '_max'] = self.find_max(item)
             for key in Order.defaults:
                 order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
@@ -56,6 +105,15 @@ class Orders(PlayerUI):
             else:
                 self.orders_location_name = 'Deep Space'
             # Set x/y/z min/max
+            print('orders.py looking for Player.Game in self.player.__dict__:')
+            for key in self.player.__dict__:
+                if 'game' in key.lower():
+                    print('   ****    ', end='')
+                print(' * ', key, ':', self.player.__dict__[key])
+            print('orders.py looking for Game.x in self.player.game:')
+            for key in Game.defalts:
+                print(' * ', self.player.game[key])
+            print('orders.py looking for Game.x:', self.player.get_intel(self.player.game.__reference__))
             self.orders_x_min = self.player.game.x * -1.0
             self.orders_x_max = self.player.game.x
             self.orders_x = order.location.x
@@ -77,10 +135,10 @@ class Orders(PlayerUI):
                         order[key] = Location(self.orders_x, self.orders_y, self.orders_z)
                     continue
                 order[key] = self['orders_' + key]
-        # Set the x/y/z back to what's actually in order
-        self.orders_x = order.location.x
-        self.orders_y = order.location.y
-        self.orders_z = order.location.z
+            # Set the x/y/z back to what's actually in order
+            self.orders_x = order.location.x
+            self.orders_y = order.location.y
+            self.orders_z = order.location.z
         # Topbar
         self.topbar.append('<i class="button far fa-times-circle"')
         if self.order_last_screen != '':
@@ -92,7 +150,8 @@ class Orders(PlayerUI):
             self.topbar[-1] += ' title="Close Orders screen" onclick="show_screen(null)">Close</i>'
         # set waypoint display
         self.order_set_deepspace.append('<td>Set to Deepspace coordinace</td>'+'<td>X</td>'+'<td>Y</td>'+'<td>Z</td>')
-        self.order_set_deepspace.append('<td><input id="orders_set_deepspace" onchange="post(\'orders\')"/></td><td><input id="orders_x" type="number" min="'+str(self.orders_y_min)+'" max="'+str(self.orders_x_max)+'" onchange="post(\'orders\')"/></td>'+'<td><input id="orders_y" type="number" min="'+str(self.orders_y_min)+'" max="'+str(self.orders_y_max)+'" onchange="post(\'orders\')"/></td>'+'<td><input id="orders_z" type="number" min="'+str(self.orders_z_min)+'" max="'+str(self.orders_z_max)+'" onchange="post(\'orders\')"/></td>')
+        if hasattr(self, 'orders_x_min'):
+            self.order_set_deepspace.append('<td><input id="orders_set_deepspace" onchange="post(\'orders\')"/></td><td><input id="orders_x" type="number" min="'+str(self.orders_x_min)+'" max="'+str(self.orders_x_max)+'" onchange="post(\'orders\')"/></td>'+'<td><input id="orders_y" type="number" min="'+str(self.orders_y_min)+'" max="'+str(self.orders_y_max)+'" onchange="post(\'orders\')"/></td>'+'<td><input id="orders_z" type="number" min="'+str(self.orders_z_min)+'" max="'+str(self.orders_z_max)+'" onchange="post(\'orders\')"/></td>')
 
     def display(self, item):
         if item == 'speed':
