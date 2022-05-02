@@ -35,12 +35,10 @@ class Fleets(PlayerUI):
             + '<th><i class="si" title="Silicon">in </i></th>')
         for i in range(len(self.player.fleets)):
             fleet = self.player.fleets[i]
-            fleet_name = fleet.ID
-            if hasattr(fleet, 'name'):
-                fleet_name = fleet.name
+            intel = self.player.get_intel(reference=fleet)
             self.fleet_list.append('<tr>'
                 + '<td><i class="button fas fa-eye" title="Select Fleet" onclick="post(\'fleets\', \'?select_' + str(i) + '\')"></i></td>'
-                + '<td>' + str(fleet_name) + '</td>'
+                + '<td>' + str(intel.name) + '</td>'
                 + '<td>' + str(fleet.location.x) + '</td>'
                 + '<td>' + str(fleet.location.y) + '</td>'
                 + '<td>' + str(fleet.location.z) + '</td>'
@@ -57,8 +55,9 @@ class Fleets(PlayerUI):
             + '<th><i class="si" title="Silicon">in </i></th>')
         if len(self.player.fleets) > 0:
             for ship in self.player.fleets[self.fleet_index].ships:
+                intel = self.player.get_intel(reference=ship)
                 self.ships.append('<tr>'
-                    + '<td>' + str(ship.ID) + '</td>'
+                    + '<td>' + str(ship.description) + '</td>'
                     + '<td>' + str(ship.fuel) + '</td>'
                     + '<td>' + str(ship.cargo.people) + '</td>'
                     + '<td>' + str(ship.cargo.titanium) + '</td>'

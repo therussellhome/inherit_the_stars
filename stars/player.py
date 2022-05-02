@@ -98,7 +98,7 @@ class Player(Defaults):
             self.validation_key = str(uuid.uuid4())
             if len(self.planets) > 0:
                 self.planets[0].colonize(self)
-                self.planets[0].on_surface.people = self.race.starting_colonists
+                self.planets[0].on_surface.people = self.race.starting_colonists / self.race.pop_per_kt()
                 for mineral in MINERAL_TYPES:
                     self.planets[0].on_surface[mineral] = self.race['starting_' + mineral]
                 for f in FACILITY_TYPES:
