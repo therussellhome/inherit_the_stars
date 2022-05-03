@@ -30,7 +30,7 @@ class StarSystemTestCase(unittest.TestCase):
         s = star_system.StarSystem()
         l = location.Location(1, 0, 0)
         pos = s.get_outer_system(l)
-        right_pos = location.location(stars_math.TERAMETER_2_LIGHTYEAR, 0, 0)
+        right_pos = location.Location(stars_math.TERAMETER_2_LIGHTYEAR, 0, 0)
         self.assertEqual(pos, right_pos)
     
     # testing the lay_mines function
