@@ -8,6 +8,13 @@ class BuShipsTestCase(unittest.TestCase):
         # Method does nothing so just verifying that no errors are thrown
         self.assertTrue(True)
 
+    def test_init2(self):
+        c = cost.Cost(energy=72, titanium=4)
+        s = ship_design.ShipDesign(cost=c)
+        b = buships.BuShips(ship_design=s, percent=25)
+        c2 = cost.Cost(energy=54, titanium=3)
+        self.assertEqual(b.cost, c2)
+
     def test_queue1(self):
         b = buships.BuShips()
         bs = b.queue(1)

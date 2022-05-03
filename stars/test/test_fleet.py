@@ -33,6 +33,25 @@ class FleetCase(unittest.TestCase):
         self.assertTrue(ship_1 in fleet_two.ships)
         self.assertTrue(ship_2 in fleet_two.ships)
     
+    #testing adding a ship under construction
+    def test_add_unbuilt_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = buships.BuShips()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertTrue(ship_2 in fleet_one.under_construction)
+
+    #testing adding a ship under construction
+    def test_add_unbuilt_2(self):
+        ship_1 = ship.Ship()
+        ship_2 = buships.BuShips()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_two = fleet.Fleet() + fleet_one
+        self.assertTrue(ship_1 in fleet_two.ships)
+        print(fleet_two.__dict__)
+        print(ship_2)
+        self.assertTrue(ship_2 in fleet_two.under_construction)
+
     def test_sub_1(self):
         ship_1 = ship.Ship()
         ship_2 = ship.Ship()
@@ -77,6 +96,16 @@ class FleetCase(unittest.TestCase):
         self.assertTrue(ship_1 in fleet_one.ships)
         self.assertFalse(ship_2 in fleet_one.ships)
         self.assertEqual(len(fleet_one.ships), 1)
+
+    # I do not know what the difference between BuildShips and BuShips
+    def test_sub_unbuilt_1(self):
+        ship_1 = ship.Ship()
+        ship_2 = buships.BuShips()
+        fleet_one = fleet.Fleet() + [ship_1, ship_2]
+        fleet_one -= ship_2
+        self.assertTrue(ship_1 in fleet_one.ships)
+        self.assertFalse(ship_2 in fleet_one.under_construction)
+        self.assertEqual(len(fleet_one.under_construction), 0)
 
     def test_attribute1(self):
         f = fleet.Fleet() + ship.Ship(initiative=2) + ship.Ship(initiative=10)
@@ -131,6 +160,14 @@ class FleetCase(unittest.TestCase):
         with patch.object(order.Order, 'move_calc', return_value=location.Location()):
             f.read_orders()
         self.assertEqual(f.move_to, location.Location())
+
+    def test_read_orders5(self):
+        s = buships.BuShips()
+        f = fleet.Fleet() + s
+        f.location = location.Location(1, 0, 0)
+        with patch.object(order.Order, 'move_calc', return_value=location.Location()):
+            f.read_orders()
+        self.assertEqual(f.move_to, None)
 
     def test_colonize1(self):
         s = star_system.StarSystem(location=location.Location(is_system=True))
@@ -747,6 +784,14 @@ class FleetCase(unittest.TestCase):
         f.transfer()
         self.assertEqual(f.player, p1)
 
+    def test_transfer5(self):
+        p1 = reference.Reference(player.Player())
+        p2 = reference.Reference(player.Player())
+        f = fleet.Fleet(player=p1) + buships.BuShips()
+        f.order.transfer_to = p2
+        f.transfer()
+        self.assertEqual(f.player, p1)
+
     def test_merge1(self):
         f1 = fleet.Fleet() + ship.Ship()
         f2 = fleet.Fleet() + ship.Ship()
@@ -921,6 +966,30 @@ class FleetCase(unittest.TestCase):
             f.scan_normal()
             self.assertEqual(mock.call_count, 1)
 
+    def test_scan_self1(self):
+        p1 = reference.Reference(player.Player())
+        f = fleet.Fleet(player=p1) + ship.Ship(scanner=scanner.Scanner(normal=1))
+        f.scan_self()
+        print(p1.intel)
+        key = reference.Reference(f)
+        for k in p1.intel:
+            if k.ships[0] == f.ships[0]:
+                key = k
+                break
+        self.assertTrue(key.ships[0] == f.ships[0])
+
+    def test_scan_self2(self):
+        p1 = reference.Reference(player.Player())
+        f = fleet.Fleet(player=p1) + ship.Ship()
+        f.scan_self()
+        print(p1.intel)
+        key = reference.Reference(f)
+        for k in p1.intel:
+            if k.ships[0] == f.ships[0]:
+                key = k
+                break
+        self.assertTrue(key.ships[0] == f.ships[0])
+
     def test_fuel_calc1(self):
         f = fleet.Fleet() + ship.Ship()
         f.ships[0].engines = [engine.Engine(), engine.Engine()]
@@ -980,4 +1049,14 @@ class FleetCase(unittest.TestCase):
         f.cargo_distribution()
         self.assertEqual(f.ships[0].cargo, cargo.Cargo(titanium=26, silicon=25, lithium=25, people=24))
         self.assertEqual(f.ships[1].cargo, cargo.Cargo(titanium=250, silicon=251, lithium=249, people=250))
+
+    #unnesesary test to bring fleet to 100% tested
+    def test_cargo_distribution3(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        f.ships[0].cargo_max = 0
+        f.ships[1].cargo_max = 0
+        f.cargo = cargo.Cargo()
+        f.cargo_distribution()
+        self.assertEqual(f.ships[0].cargo, cargo.Cargo())
+        self.assertEqual(f.ships[1].cargo, cargo.Cargo())
 

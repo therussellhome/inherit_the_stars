@@ -295,9 +295,7 @@ class Player(Defaults):
 
     """ Cleanup messages """
     def cleanup_messages(self):
-        for msg in self.messages:
-            if msg.star == False and msg.read == True:
-                self.messages.remove(msg)
+        self.messages[:] = [msg for msg in self.messages if msg.star == True or msg.read == False]
     
     """ Share treaty updates with other players """
     def treaty_negotiations(self):

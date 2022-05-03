@@ -33,7 +33,7 @@ class BuShips(Defaults):
         if 'cost' not in kwargs and self.ship_design:
             self.cost = self.ship_design.cost
             if self.percent:
-                self.cost *= (1 - percent / 100)
+                self.cost *= (1 - self.percent / 100)
 
 
     """ Cache the associated queue item """
