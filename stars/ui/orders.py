@@ -67,9 +67,15 @@ __defaults = {
     'orders_location_name': '',
     'orders_set_deepspace': False,
     'order_set_deepspace': [],
+    'orders_x_max': (0.0, -sys.maxsize, sys.maxsize),
     'orders_x': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_x_min': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_y_max': (0.0, -sys.maxsize, sys.maxsize),
     'orders_y': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_y_min': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_z_max': (0.0, -sys.maxsize, sys.maxsize),
     'orders_z': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_z_min': (0.0, -sys.maxsize, sys.maxsize),
     #'order_waypoint_display': [],
 }
 
@@ -103,28 +109,27 @@ class Orders(PlayerUI):
             if order.location.reference:
                 self.orders_location_name = 'some place'
             else:
+                self.orders_set_deepspace = True
                 self.orders_location_name = 'Deep Space'
             # Set x/y/z min/max
-            print('orders.py looking for Player.Game in self.player.__dict__:')
-            for key in self.player.__dict__:
-                if 'game' in key.lower():
-                    print('   ****    ', end='')
-                print(' * ', key, ':', self.player.__dict__[key])
-            print('orders.py looking for Game.x in self.player.game:')
-            for key in Game.defalts:
-                print(' * ', self.player.game[key])
-            print('orders.py looking for Game.x:', self.player.get_intel(self.player.game.__reference__))
+            print('orders printing self.player.game.__dict__:')
+            for key in Game.defaults:
+                print(' * ', key, ':', self.player.game[key])
             self.orders_x_min = self.player.game.x * -1.0
-            self.orders_x_max = self.player.game.x
+            self.orders_x_max = self.player.game.x * 1.0
             self.orders_x = order.location.x
             self.orders_y_min = self.player.game.y * -1.0
-            self.orders_y_max = self.player.game.y
+            self.orders_y_max = self.player.game.y * 1.0
             self.orders_y = order.location.y
             self.orders_z_min = self.player.game.z * -1.0
-            self.orders_z_max = self.player.game.z
+            self.orders_z_max = self.player.game.z * 1.0
             self.orders_z = order.location.z
         # Change the location
+        print('orders printing self.__dict__:')
+        for key in self.__dict__:
+            print(' * ', key, ':', self[key])
         if self.orders_set_deepspace == True:
+            print('setting deepspace')
             self.orders_location_name = 'Deep Space'
         # Store updates back to the order
         if self.order_fleet_index != -1 and self.order_index != -1:
@@ -149,9 +154,11 @@ class Orders(PlayerUI):
         else:
             self.topbar[-1] += ' title="Close Orders screen" onclick="show_screen(null)">Close</i>'
         # set waypoint display
-        self.order_set_deepspace.append('<td>Set to Deepspace coordinace</td>'+'<td>X</td>'+'<td>Y</td>'+'<td>Z</td>')
-        if hasattr(self, 'orders_x_min'):
-            self.order_set_deepspace.append('<td><input id="orders_set_deepspace" onchange="post(\'orders\')"/></td><td><input id="orders_x" type="number" min="'+str(self.orders_x_min)+'" max="'+str(self.orders_x_max)+'" onchange="post(\'orders\')"/></td>'+'<td><input id="orders_y" type="number" min="'+str(self.orders_y_min)+'" max="'+str(self.orders_y_max)+'" onchange="post(\'orders\')"/></td>'+'<td><input id="orders_z" type="number" min="'+str(self.orders_z_min)+'" max="'+str(self.orders_z_max)+'" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td colspan="2">Set to Deepspace Coordinate</td>'+'<td><input id="orders_set_deepspace" type="checkbox" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td>X</td>'+'<td colspan="2"><input id="orders_x" type="number" min="'+str(self.orders_x_min)+'" max="'+str(self.orders_x_max)+'" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td>Y</td>'+'<td colspan="2"><input id="orders_y" type="number" min="'+str(self.orders_y_min)+'" max="'+str(self.orders_y_max)+'" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td>Z</td>'+'<td colspan="2"><input id="orders_z" type="number" min="'+str(self.orders_z_min)+'" max="'+str(self.orders_z_max)+'" onchange="post(\'orders\')"/></td>')
+        print('orders printing, self.orders_set_deepspace:', self.orders_set_deepspace)
 
     def display(self, item):
         if item == 'speed':
