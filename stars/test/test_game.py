@@ -21,3 +21,10 @@ class GameTestCase(unittest.TestCase):
             races.append(race.Race())
         g = game.Game(races=races, num_systems=0)
         self.assertEqual(len(g.systems), 10)
+
+    def test_init04(self):
+        blackholes = []
+        for i in range(10):
+            blackholes.append(blackhole.BlackHole())
+        g = game.Game(races=[race.Race()], blackholes=blackholes, num_systems=1)
+        self.assertEqual(len(g.players[0].intel), 11)

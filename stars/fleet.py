@@ -179,6 +179,7 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         self.move_to = self.order.move_calc(self.location)
+        print(self.move_to.__dict__)
         if self.move_to.root_location != self.location.root_location:
             self.is_stationary = False
 

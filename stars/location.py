@@ -8,9 +8,9 @@ from .reference import Reference
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'x': 0.0,
-    'y': 0.0,
-    'z': 0.0,
+    'x': (0.0, -sys.maxsize, sys.maxsize),
+    'y': (0.0, -sys.maxsize, sys.maxsize),
+    'z': (0.0, -sys.maxsize, sys.maxsize),
     'is_system': False,
     'reference': Reference(''),
     'offset': 0.0,
