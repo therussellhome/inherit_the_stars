@@ -52,6 +52,7 @@ def _add_denial(location, denial, player=None):
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'ID': '@UUID', # ID defaulted to a UUID if not provided from the new game screen
     'radius': (0.0, 0.0, sys.maxsize),
 }
 
