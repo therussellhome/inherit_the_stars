@@ -324,7 +324,7 @@ class Player(Defaults):
             
     """ Get the treaty """
     def get_treaty(self, other_player, draft=False):
-        if other_player == self:
+        if other_player is self:
             if draft:
                 return None
             return Treaty(other_player = self,

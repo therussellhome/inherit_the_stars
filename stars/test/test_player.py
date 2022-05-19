@@ -197,7 +197,7 @@ class PlayerTestCase(unittest.TestCase):
         p.cleanup_messages()
         self.assertEqual(len(p.messages), cnt + 3)
 
-    def test_treaty1(self):
+    def test_treaty01(self):
         p1 = player.Player()
         p2 = player.Player()
         msg_cnt = len(p2.messages)
@@ -208,6 +208,114 @@ class PlayerTestCase(unittest.TestCase):
         p1.treaty_negotiations()
         p2.treaty_negotiations()
         self.assertEqual(len(p2.messages), msg_cnt + 1)
+
+    def test_treaty02(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        msg_cnt = len(p2.messages)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'signed'
+        t2.status = 'signed'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        self.assertEqual(len(p2.messages), msg_cnt + 1)
+
+    def test_treaty03(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        treaty_cnt = len(p2.treaties)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'rejected'
+        t2.status = 'rejected'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        self.assertEqual(len(p2.treaties), treaty_cnt)
+
+    def test_treaty04(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        treaty_cnt = len(p2.treaties)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'signed'
+        t2.status = 'signed'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'signed'
+        t2.status = 'signed'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        self.assertEqual(len(p2.treaties), treaty_cnt + 1)
+
+    #'''
+    def test_get_treaty01(self):
+        p = player.Player()
+        t = p.get_treaty(p)
+        self.assertTrue(t.relation == 'me')
+    
+    #'''
+    def test_get_treaty02(self):
+        p = player.Player()
+        t = p.get_treaty(p, True)
+        self.assertTrue(t == None)
+    
+    #'''
+    def test_get_treaty03(self):
+        p = player.Player()
+        p1 = player.Player()
+        t = p.get_treaty(p1)
+        self.assertTrue(t.other_player == reference.Reference(p1))
+    
+    #'''
+    def test_get_treaty11(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t = p1.get_treaty(p2, True)
+        self.assertTrue(t == t1)
+
+    #'''
+    def test_get_treaty12(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        t1.status = 'active'
+        t2.status = 'active'
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t = p1.get_treaty(p2, True)
+        self.assertTrue(t == None)
+
+    #'''
+    def test_get_treaty13(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        t1.status = 'active'
+        t2.status = 'active'
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t = p1.get_treaty(p2)
+        self.assertTrue(t == t1)
+        #'''
+
 
 
     def test_do_research(self):
