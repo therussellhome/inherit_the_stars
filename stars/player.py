@@ -354,13 +354,13 @@ class Player(Defaults):
 
     """ Get the relationship """
     def get_relation(self, player):
-        if player == self:
+        if player is self:
             return 'me'
         return self.get_treaty(player).relation
 
     """ Get max terraform """
     def max_terraform(self):
-        if self.race.lrt_Bioengineer:
+        if self.race.lrt_Bioengineer == True:
             return min(40, self.tech_level.biotechnology)
         return min(40, self.tech_level.biotechnology) / 2
 
@@ -419,7 +419,7 @@ class Player(Defaults):
     """ Attempt to build the items in the build queues """
     def build_from_queue(self):
         for b in self.build_queue:
-            if b.planet.player == self:
+            if b.planet.player == Reference(self):
                 if b.planet.build(b):
                     self.build_queue.remove(b)
             else:
