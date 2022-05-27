@@ -8,4 +8,4 @@ class ScannerTestCase(unittest.TestCase):
         s2 = scanner.Scanner()
         s2.penetrating = 100
         s3 = s1 + s2
-        self.assertEqual(s3.penetrating, 208.01)
+        self.assertAlmostEqual(s3.penetrating, 208.00838230)

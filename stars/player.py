@@ -328,7 +328,7 @@ class Player(Defaults):
             
     """ Get the treaty """
     def get_treaty(self, other_player, draft=False):
-        if other_player == self:
+        if other_player is self:
             if draft:
                 return None
             return Treaty(other_player = self,
@@ -358,13 +358,13 @@ class Player(Defaults):
 
     """ Get the relationship """
     def get_relation(self, player):
-        if player == self:
+        if player is self:
             return 'me'
         return self.get_treaty(player).relation
 
     """ Get max terraform """
     def max_terraform(self):
-        if self.race.lrt_Bioengineer:
+        if self.race.lrt_Bioengineer == True:
             return min(40, self.tech_level.biotechnology)
         return min(40, self.tech_level.biotechnology) / 2
 
@@ -422,12 +422,15 @@ class Player(Defaults):
 
     """ Attempt to build the items in the build queues """
     def build_from_queue(self):
+        remove_from_queue = []
         for b in self.build_queue:
-            if b.planet.player == self:
+            if b.planet.player == Reference(self):
                 if b.planet.build(b):
-                    self.build_queue.remove(b)
+                    remove_from_queue.append(b)
             else:
-                self.build_queue.remove(b)
+                remove_from_queue.append(b)
+        for d in remove_from_queue:
+            self.build_queue.remove(d)
 
     """ Research """
     def research(self):
@@ -437,19 +440,19 @@ class Player(Defaults):
             field = self.research_field
             # Most expensive field for the top item in the queue
             if len(self.research_queue) > 0:
-                field = self.research_queue[0].level.most_expensive_field(self.race, self.tech_level, self.research_partial)
+                #field = self.research_queue[0].level.most_expensive_field(self.race, self.tech_level, self.research_partial)
                 expensive = -1
                 for f in TECH_FIELDS:
-                    increase = max(0, research_queue[0].level[field] - self.tech_level[field])
-                    cost = self.tech_level.cost_for_next_level(f, race, increase) - self.research_partial[f]
+                    increase = max(0, self.research_queue[0].level[f] - self.tech_level[f])
+                    cost = self.tech_level.cost_for_next_level(f, self.race, increase) - self.research_partial[f]
                     if cost > expensive:
                         expensive = cost
                         field = f
             # Lowest field
             elif self.research_field == '<LOWEST>':
-                lowest = -1
+                lowest = sys.maxsize
                 for f in TECH_FIELDS:
-                    if self.tech_level[f] > lowest:
+                    if self.tech_level[f] < lowest:
                         lowest = self.tech_level[f]
                         field = f
             # Cost to get to the next level in the selected field
