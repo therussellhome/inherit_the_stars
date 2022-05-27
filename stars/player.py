@@ -418,12 +418,15 @@ class Player(Defaults):
 
     """ Attempt to build the items in the build queues """
     def build_from_queue(self):
+        remove_from_queue = []
         for b in self.build_queue:
             if b.planet.player == Reference(self):
                 if b.planet.build(b):
-                    self.build_queue.remove(b)
+                    remove_from_queue.append(b)
             else:
-                self.build_queue.remove(b)
+                remove_from_queue.append(b)
+        for d in remove_from_queue:
+            self.build_queue.remove(d)
 
     """ Research """
     def research(self):

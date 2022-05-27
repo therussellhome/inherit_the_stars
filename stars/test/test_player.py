@@ -259,26 +259,22 @@ class PlayerTestCase(unittest.TestCase):
         p2.treaty_finalization()
         self.assertEqual(len(p2.treaties), treaty_cnt + 1)
 
-    #'''
     def test_get_treaty01(self):
         p = player.Player()
         t = p.get_treaty(p)
         self.assertTrue(t.relation == 'me')
     
-    #'''
     def test_get_treaty02(self):
         p = player.Player()
         t = p.get_treaty(p, True)
         self.assertTrue(t == None)
     
-    #'''
     def test_get_treaty03(self):
         p = player.Player()
         p1 = player.Player()
         t = p.get_treaty(p1)
         self.assertTrue(t.other_player == reference.Reference(p1))
     
-    #'''
     def test_get_treaty11(self):
         p1 = player.Player()
         p2 = player.Player()
@@ -289,7 +285,6 @@ class PlayerTestCase(unittest.TestCase):
         t = p1.get_treaty(p2, True)
         self.assertTrue(t == t1)
 
-    #'''
     def test_get_treaty12(self):
         p1 = player.Player()
         p2 = player.Player()
@@ -302,7 +297,6 @@ class PlayerTestCase(unittest.TestCase):
         t = p1.get_treaty(p2, True)
         self.assertTrue(t == None)
 
-    #'''
     def test_get_treaty13(self):
         p1 = player.Player()
         p2 = player.Player()
@@ -314,7 +308,6 @@ class PlayerTestCase(unittest.TestCase):
         p2.treaties.append(t2)
         t = p1.get_treaty(p2)
         self.assertTrue(t == t1)
-        #'''
 
     def test_get_relation01(self):
         p = player.Player()
@@ -489,34 +482,114 @@ class PlayerTestCase(unittest.TestCase):
         self.assertEqual(p.energy, 0)
         self.assertEqual(len(p.intel), len_intel +1)
 
-    '''
     def test_build_from_queue01(self):
         p1 = player.Player()
-        home_planet = planet.Planet(player=reference.Reference(p1), on_surface=cargo.Cargo(titanium=20, silicon=20, lithium=20))
-        p1.energy = 100
-        to_build = build_ships.BuildShips(planet=reference.Reference(home_planet))
-        p1.build_queue.append(to_build)
-        p1.build_from_queue()
-        self.assertEqual(len(p1.build_queue), 0)
-        self.assertEqual(len(p1.fleets), 1)
-
-    def test_build_from_queue02(self):
-        p1 = player.Player()
-        home_planet = planet.Planet(player=p1, on_surface=cargo.Cargo(titanium=20, silicon=20, lithium=20))
-        print(home_planet.player.ID, '\n', p1.ID, sep='')
-        o_planet = planet.Planet()
-        to_build = build_ships.BuildShips(planet=o_planet)
+        p2 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p2))
+        to_build = build_ship.BuildShip(planet=reference.Reference(home_planet))
         p1.build_queue.append(to_build)
         p1.build_from_queue()
         self.assertEqual(len(p1.build_queue), 0)
         self.assertEqual(len(p1.fleets), 0)
+        self.assertEqual(len(p2.build_queue), 0)
+        self.assertEqual(len(p2.fleets), 0)
 
+    def test_build_from_queue02(self):
+        p1 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p1))
+        to_build = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build)
+        with patch.object(planet.Planet, 'build', return_value=True) as mock:
+            p1.build_from_queue()
+        self.assertEqual(len(p1.build_queue), 0)
+        self.assertEqual(mock.call_count, 1)
+
+    def test_build_from_queue03(self):
+        p1 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p1))
+        to_build_1 = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build_1)
+        to_build_2 = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build_2)
+        self.assertEqual(len(p1.build_queue), 2)
+
+        with patch.object(planet.Planet, 'build', side_effect=[True, None], return_value='STICK') as mock:
+            p1.build_from_queue()
+        self.assertEqual(len(p1.build_queue), 1)
+        self.assertEqual(mock.call_count, 2)
+
+    '''
+    def test_build_from_queue12(self):
+        p1 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p1), on_surface=cargo.Cargo(titanium=20, silicon=20, lithium=20))
+        s = ship.Ship()
+        p1.energy = 100
+        to_build = build_ship.BuildShip(ship=reference.Reference(s), planet=reference.Reference(home_planet))
+        h = tech.Tech(slots_general=1)
+        h.cost.energy = 100
+        h.cost.titanium = 100
+        to_build.buships.ship_design.add_component(h)
+        p1.build_queue.append(to_build)
+        p1.build_from_queue()
+        p1.tech_level = tech_level.TechLevel()
+        print('Player.energy:', p1.energy)
+        print('Planet.on_surface', home_planet.on_surface.__dict__)
+        print('BuildShip.in_progress', to_build.in_progress.__dict__)
+        self.assertEqual(len(p1.build_queue), 1)
+        #self.assertEqual(p1.energy, 0)
+        self.assertEqual(home_planet.on_surface.titanium, 0)
+        self.assertEqual(to_build.in_progress.energy, 0)
+        self.assertEqual(to_build.in_progress.tinanium, 80)
+        self.assertEqual(len(p1.fleets), 1)
+        self.assertEqual(True, False)
+
+    def test_build_from_queue13(self):
+        minister = planetary_minister.PlanetaryMinister(name='Govener of Earth', power_plants=0, defenses=0, mineral_extractors=0, factories=100)
+        print('PlanetaryMinister.__dict__:', minister.__dict__)
+        p1 = player.Player()
+        p1.ministers.append(minister)
+        home_planet = planet.Planet(player=reference.Reference(p1), factories=10000, on_surface=cargo.Cargo(titanium=100, silicon=20, lithium=20, people=100000))
+        p1.planetary_minister_map[reference.Reference(home_planet)] = minister
+        print('Player.planetary_minister_map:', p1.planetary_minister_map)
+        home_planet.operate_factories()
+        p1.energy = 100
+        to_build = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        h = tech.Tech(slots_general=1)
+        h.cost.energy = 100
+        h.cost.titanium = 100
+        p1.tech_level = tech_level.TechLevel()
+        to_build.buships.ship_design.add_component(h)
+        p1.build_queue.append(to_build)
+        p1.build_from_queue()
+        print('Player.energy:', p1.energy)
+        print('Planet.on_surface', home_planet.on_surface.__dict__)
+        print('BuildShip.in_progress', to_build.in_progress.__dict__)
+        self.assertEqual(len(p1.build_queue), 0)
+        self.assertEqual(p1.energy, 0)
+        self.assertEqual(home_planet.on_surface.titanium, 0)
+        self.assertEqual(to_build.in_progress.energy, 0)
+        self.assertEqual(to_build.in_progress.titanium, 0)
+        self.assertEqual(len(p1.fleets), 1)
+        self.assertEqual(True, False)
+
+    '' '
     def test_build_from_queue03(self):
         p1 = player.Player()
         home_planet = planet.Planet(player=p1, on_surface=cargo.Cargo(titanium=20, silicon=20, lithium=20))
         print(home_planet.player.ID, '\n', p1.ID, sep='')
         o_planet = planet.Planet()
-        to_build = build_ships.Build_Ships(buships e= planet=home_planet)
+        to_build = build_ship.BuildShip(planet=o_planet)
+        p1.build_queue.append(to_build)
+        p1.build_from_queue()
+        self.assertEqual(len(p1.build_queue), 0)
+        self.assertEqual(len(p1.fleets), 0)
+
+    def test_build_from_queue04(self):
+        p1 = player.Player()
+        home_planet = planet.Planet(player=p1, on_surface=cargo.Cargo(titanium=20, silicon=20, lithium=20))
+        print(home_planet.player.ID, '\n', p1.ID, sep='')
+        o_planet = planet.Planet()
+        to_build = build_ship.BuildShip(buships e= planet=home_planet)
         p1.build_queue.append(to_build)
         p1.build_from_queue()
         self.assertEqual(len(p1.build_queue), 0)

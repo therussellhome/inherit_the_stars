@@ -32,9 +32,7 @@ def calc(fleets):
     for ((player, xyz), denial) in __denials.items():
         location = Location(*xyz)
         for (fleet, bin_num) in binning.search(bins, location, denial.radius):
-            if player == None or not fleet.player.get_treaty(player).hyperdenial_transit():
-                print('location:', location)
-                print('fleet:', fleet)
+            if player != fleet.player and (player == None or not fleet.player.get_treaty(player).hyperdenial_transit()):
                 distance = fleet.location - location
                 if distance < denial.radius:
                     fleet.in_hyperdenial(denial.effect(distance), player, blackhole=(player==None))

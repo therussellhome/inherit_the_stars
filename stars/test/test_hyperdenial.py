@@ -21,7 +21,7 @@ class HyperDenialTestCase(unittest.TestCase):
         h4 = hyperdenial.HyperDenial(radius=30)
         h = h1+h2+h3+h4
         h += h
-        self.assertEqual(h.radius, 60)
+        self.assertAlmostEqual(h.radius, 60)
     
     def test_effect_1(self):
         h = hyperdenial.HyperDenial(radius=0)
@@ -49,7 +49,7 @@ class HyperDenialTestCase(unittest.TestCase):
         for i in range(8):
             h.activate(None, location.Location(0, 1, 0))
         h_denials = getattr(hyperdenial, '__denials')
-        self.assertEqual(h_denials[(None, location.Location(0, 1, 0).xyz)].radius, h.radius * 2, 'Do we need to stop rounding in stars_math.volume_add?')
+        self.assertAlmostEqual(h_denials[(None, location.Location(0, 1, 0).xyz)].radius, h.radius * 2)
     
     def test_activate_3(self):
         hyperdenial.reset()
@@ -67,7 +67,7 @@ class HyperDenialTestCase(unittest.TestCase):
             h.activate(p1, location.Location(0, 1, 0))
         hyperdenial.HyperDenial(radius=10).activate(None, location.Location(0, 1, 0))
         h_denials = getattr(hyperdenial, '__denials')
-        self.assertEqual(h_denials[(p1, location.Location(0, 1, 0).xyz)].radius, h.radius*2, 'Do we need to stop rounding in stars_math.volume_add?')
+        self.assertAlmostEqual(h_denials[(p1, location.Location(0, 1, 0).xyz)].radius, h.radius*2)
     
 
         self.assertEqual(h_denials[(None, location.Location(0, 1, 0).xyz)].radius, 10)
@@ -119,19 +119,13 @@ class HyperDenialTestCase(unittest.TestCase):
     def test_calc_player_1(self):
         hyperdenial.reset()
         p1 = player.Player()
-        hyperdenial.HyperDenial(radius=10).activate(p1, location.Location(0, 1, 0))
+        hyperdenial.HyperDenial(radius=10).activate(reference.Reference(p1), location.Location(0, 1, 0))
         h_denials = getattr(hyperdenial, '__denials')
-        print(h_denials)
         p2 = player.Player()
-        fleet_1 = fleet.Fleet(location=location.Location(1, 1, 1), player=p1, ships=[ship.Ship(engines=[engine.Engine()], fuel_max=1000000, fuel = 1000000)], orders=[order.Order(location=location.Location(1, 0, 0), speed=-1)])
-        fleet_2 = fleet.Fleet(location=location.Location(1, 1, 1), player=p2, ships=[ship.Ship(engines=[engine.Engine()], fuel_max=1000000, fuel = 1000000)], orders=[order.Order(location=location.Location(0, 0, 1), speed=-1)])
+        fleet_1 = fleet.Fleet(location=location.Location(1, 1, 1), player=reference.Reference(p1), ships=[ship.Ship(engines=[engine.Engine()], fuel_max=1000000, fuel = 1000000)], orders=[order.Order(location=location.Location(1, 0, 0), speed=-1)])
+        fleet_2 = fleet.Fleet(location=location.Location(1, 1, 1), player=reference.Reference(p2), ships=[ship.Ship(engines=[engine.Engine()], fuel_max=1000000, fuel = 1000000)], orders=[order.Order(location=location.Location(0, 0, 1), speed=-1)])
         fleet_1.read_orders()
         fleet_2.read_orders()
-        print(fleet_1.is_stationary)
         hyperdenial.calc([fleet_1, fleet_2])
-        print(math.sqrt(2))
-        l1 = location.Location(0, 1, 0)
-        l2 = location.Location(1, 1, 1)
-        print(l1 - l2)
-        self.assertEqual(fleet_1.hyperdenial_effect[1], 0)
-        self.assertEqual(fleet_2.hyperdenial_effect[1], stars_math.volume(10/math.sqrt(2)) - 4.15)
+        self.assertEqual(fleet_1.hyperdenial_effect[0], 0)
+        self.assertEqual(fleet_2.hyperdenial_effect[0], stars_math.volume(10/math.sqrt(2)) - 4.15)
