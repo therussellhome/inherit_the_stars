@@ -19,7 +19,7 @@ __defaults = {
 class Orders(PlayerUI):
     def __init__(self, actions, **kwargs):
         super().__init__(**kwargs)
-        if not self.player():
+        if not self.player:
             return
         for item in seperate_display:
             self['orders_' + item + '_display'] = self.display(item)
@@ -32,7 +32,7 @@ class Orders(PlayerUI):
             if action.startswith('order='):
                 self.order_index = str(action.split('=')[1])
             if action == 'start' and self.order_fleet_index != -1 and self.order_index != -1:
-                order = self.player().fleets[self.order_fleet_index].orders[self.order_index]
+                order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
                 for key in Order.defaults:
                     self['orders_' + key] = order[key]
             # get last screen
@@ -45,7 +45,7 @@ class Orders(PlayerUI):
                 self.topbar[-1] += '">Back</i>'
             self.order_fleet_index != -1
         if self.order_fleet_index != -1 and self.order_index != -1:
-            order = self.player().fleets[self.order_fleet_index].orders[self.order_index]
+            order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
             for key in Order.defaults:
                 order[key] = self['orders_' + key]
             #print(order.__dict__, '\n')
@@ -79,9 +79,9 @@ class Orders(PlayerUI):
     def find_max(self, item):
         if self.order_fleet_index != -1:
             if 'fuel' in item:
-                return self.player().fleets[self.order_fleet_index].__cache__['fuel_max']
+                return self.player.fleets[self.order_fleet_index].stats.fuel_max
             else:
-                return self.player().fleets[self.order_fleet_index].__cache__['cargo_max']
+                return self.player.fleets[self.order_fleet_index].stats.cargo_max
                 
 
 for key in Order.defaults:

@@ -19,6 +19,18 @@ function init() {
     for(element of document.getElementsByClassName('onload')) {
         element.dispatchEvent(load_event);
     }
+    // Special handling for collapse elements
+    folding(document);
+    reset();
+}
+
+function reset() {
+    // Let objects initialize themselves
+    var reset_event = document.createEvent("HTMLEvents");
+    reset_event.initEvent("reset", false, false);
+    for(element of document.getElementsByClassName('onreset')) {
+        element.dispatchEvent(reset_event);
+    }
 }
 
 // Apply/remove a class to all children
@@ -103,6 +115,7 @@ function show_menu(show) {
 function show_home() {
     toggle(document.getElementById('play_mode'), 'hide', true);
     document.getElementById('player_token').value = '';
+    reset();
     game_mode = 'host';
     toggle(document.getElementById('sidebar_play'), 'hide', true);
     toggle(document.getElementById('sidebar_host'), 'hide', false);
@@ -142,8 +155,9 @@ function show_minister(name) {
 
 // Switch to play mode
 function launch_player(token) {
-    if(token.value != '') {
+    if((token.value != '') && (game_mode != 'play')) {
         game_mode = 'play';
+        reset();
         toggle(document.getElementById('sidebar_host'), 'hide', true);
         toggle(document.getElementById('sidebar_play'), 'hide', false);
         show_screen();
@@ -389,23 +403,6 @@ function shutdown() {
     }
 }
 
-function planetary_color_picker(element) {
-    parentFixed = element,
-    pickerFixed = new Picker({
-        parent: parentFixed,
-        popup: false,
-        alpha: false,
-//        editor: false,
-        onChange: function(color) {
-            document.getElementById('planetary_color').value = color.rgbaString;
-            post('planetary_minister')
-            //parentFixed.style.backgroundColor = color.rgbaString;
-            //console.log(document.getElementById('planetary_color').value)
-        },
-    });
-    pickerFixed.openHandler();
-}
-
 // Update the color of race icons
 function update_race_icon_color() {
     var all = document.getElementsByClassName('race_icon');
@@ -416,6 +413,9 @@ function update_race_icon_color() {
 
 // Create a slider
 function finance_slider(element, form, min, max, step) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     noUiSlider.create(element, {
         start: [min+31/100*(max-min), min+61/100*(max-min), min+91/100*(max-min)],
         connect: [true, true, true, true],
@@ -435,6 +435,9 @@ function finance_slider(element, form, min, max, step) {
 
 // Create a slider
 function planetary_slider(element, form, min, max, step) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     noUiSlider.create(element, {
         start: [min+(max-min)/5, min+37/100*(max-min), min+7/10*(max-min)],
         connect: [true, true, true, true],
@@ -454,6 +457,9 @@ function planetary_slider(element, form, min, max, step) {
 
 // Create a slider
 function slider(element, form, min, max, step, fractiondigits, units) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     var tooltips = true;
     if(units == null) {
         tooltips = false;
@@ -473,7 +479,7 @@ function slider(element, form, min, max, step, fractiondigits, units) {
                 return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value) + units;
             },
             from: function(value) {
-                return Number(Number(value).toFixed(fractiondigits));
+                return parseInt(value);
                 
             }
         },
@@ -487,6 +493,9 @@ function slider(element, form, min, max, step, fractiondigits, units) {
 
 // Create a slider
 function slider3(element, form, min, max, step, formatter, units) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     var tooltips = true;
     if(units == null) {
         tooltips = false;
@@ -519,6 +528,9 @@ function slider3(element, form, min, max, step, formatter, units) {
 
 // Create a slider
 function slider2(element, form, min, max, step, formatter) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
     noUiSlider.create(element, {
         start: [min, max],
         connect: true,
@@ -592,10 +604,13 @@ function gravity_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -659,10 +674,13 @@ function temperature_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -726,10 +744,13 @@ function radiation_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -765,6 +786,9 @@ function tech_post() {
 
 // Render the tech display
 function tech_display() {
+    if(!json_map['tech'].hasOwnProperty('overview')) {
+        return;
+    }
     if(document.getElementById('player_token').value != '') {
         player_tech = true;
     }
@@ -817,28 +841,35 @@ function tech_display() {
             for(var row of json_map['tech']['guts'][component]) {
                 guts.insertRow(-1).innerHTML = row;
             }
-        }        
+        }
+        folding(div);
+        div.classList.toggle('tech_collapsed', true);
     }
     toggle(document.body, 'tech_template', false);
 }
 
-// Expand the tech display
-function tech_expand(div, expand_guts) {
-    if(expand_guts != null) {
-        var guts = div.getElementsByClassName('tech_guts')[0];
-        guts.classList.toggle('hide');
-        expand_guts.classList.toggle('fa-angle-double-up');
-        expand_guts.classList.toggle('fa-angle-double-down');
-        if(div.style.height != '55px') {
-            div.style.height = '55px'
-            div.style.height = div.scrollHeight + 'px'
-        }
+// Register the table folding
+function folding(element) {
+    for(var div of element.getElementsByClassName('fa-angle-double-up')) {
+        div.addEventListener("click", function(evt){fold(evt.target, true);});
+        fold(div, false);
+    }
+    for(var div of element.getElementsByClassName('fa-angle-double-down')) {
+        div.addEventListener("click", function(evt){fold(evt.target, true);});
+        fold(div, false);
+    }
+}
+
+// Expand the table
+function fold(div, flip) {
+    if(div.classList.contains('fa-angle-double-down') != flip) {
+        div.classList.toggle('fa-angle-double-up', false);
+        div.classList.toggle('fa-angle-double-down', true);
+        toggle(div.parentElement.parentElement, 'collapse', false);
     } else {
-        if((div.style.height != '55px') && (div.style.height != '')) {
-            div.style.height = '55px'
-        } else {
-            div.style.height = div.scrollHeight + 'px'
-        }
+        div.classList.toggle('fa-angle-double-up', true);
+        div.classList.toggle('fa-angle-double-down', false);
+        toggle(div.parentElement.parentElement, 'collapse', true);
     }
 }
 
@@ -920,9 +951,9 @@ function combat_chart(chart, data) {
                         } else if(tooltipItem.datasetIndex == 2) {
                             label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
                         } else if(tooltipItem.datasetIndex == 3) {
-                            base = data.datasets[1].data[0] + data.datasets[2].data[0];
-                            value = parseInt(tooltipItem.value);
-                            label += Math.round(value / base * 100) + '%';
+                            base = Math.max(1.0, data.datasets[1].data[0] + data.datasets[2].data[0]);
+                            value = parseFloat(tooltipItem.value);
+                            label += Math.round(value / base * 100.0) + '%';
                         } else {
                             label += tooltipItem.value;
                         }

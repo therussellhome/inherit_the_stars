@@ -15,24 +15,23 @@
     color: white;
     padding-right: 150px;
 }
+div.tech_collapsed {
+    height: 60px;
+}
 div.tech_expand {
     position: absolute;
     width: 50%;
-    height: 55px;
+    height: 60px;
     z-index: 9;
     cursor: pointer;
 }
 div.tech {
     width: 550px;
-    height: 55px;
     border: 0;
     border-bottom: 1px solid white;
     overflow-x: hidden; 
     overflow-y: hidden; 
     font-weight: normal;
-}
-table.tech {
-    #margin-left: 1em;
 }
 div.screen {
     z-index: 1;
@@ -66,6 +65,15 @@ div.sidebar {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 2;
+    height: 100%;
+    background-color: rgba(0, 0, 44, 0.5);
+    transition: 0.5s;
+}
+div.sidebar2 {
+    position: fixed;
+    top: 0;
+    right: 0;
     z-index: 2;
     height: 100%;
     background-color: rgba(0, 0, 44, 0.5);
@@ -311,14 +319,8 @@ i.fas.fa-star {
 /* Expand section */
 div.fa-angle-double-up, div.fa-angle-double-down {
     width: 100%;
-    border-top: 1px dotted silver;
-    border-bottom: 1px dotted silver;
-    padding: 2px;
-    padding-left: 5px;
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    color: black;
-    background-color: silver;
     cursor: pointer;
 }
 

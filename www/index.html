@@ -116,7 +116,7 @@ void main() {
     <img class="button" id="button_help_play" title="Help" src="help.png" onclick="show_screen('help')"/>
 </div>
 
-<div class="sidebarr hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
+<div class="sidebar2 hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
 </table></div>
 
 <div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
@@ -125,7 +125,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_launch" style="width: 600px" onload="post('launch')">
+<div class="screen hide onreset" id="screen_launch" style="width: 600px" onreset="post('launch', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Launch" src="launch.gif"/></td>
         <td class="hfill" style="font-size: 200%">Launch</td>
@@ -136,14 +136,14 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_host" id="screen_host" style="width: 600px" onload="post('host')" onsubmit="host_auto()">
+<div class="screen hide onreset onsubmit_host" id="screen_host" style="width: 600px" onreset="post('host', '?reset')" onsubmit="host_auto()">
     <table class="topbar hfill"><tr>
         <td><img title="Host / Generate" src="generate.png"/></td>
         <td class="hfill" style="font-size: 200%">Host / Generate</td>
         <td><i class="button far fa-times-circle" title="Close Host" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table id="host_game" class="hfill" style="margin-top: 1em; margin-bottom: 1em">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Select Game</caption>
+        <caption><div class="fa-angle-double-down"> Select Game</div></caption>
     </table>
     <input id="host_blocking" type="checkbox" disabled="true" style="display: none"/>
     <table class="hfill" style="background: black"><tr>
@@ -156,12 +156,12 @@ void main() {
         <td style="text-align: right" id="host_ready"></td>
     </tr></table>
     <table class="hfill" id="host_status">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Player Status</caption>
+        <caption><div class="fa-angle-double-down"> Player Status</div></caption>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_new_game" style="width: 600px" onload="post('new_game')">
+<div class="screen hide onreset" id="screen_new_game" style="width: 600px" onreset="post('new_game', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="New Game" src="new_game.png"/></td>
         <td class="hfill" style="font-size: 200%">New Game</td>
@@ -174,9 +174,9 @@ void main() {
             <td class="hfill" style="padding-right: 9px;"><input id="new_game_name" class="hfill" onchange="post('new_game')"/></td>
         </tr>
     </table><table class="hfill" id="new_game_players">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Players</caption>
+        <caption><div class="fa-angle-double-down">  Players</div></caption>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Galaxy</caption>
+        <caption><div class="fa-angle-double-down"> Galaxy</div></caption>
         <tr>
             <td>Diameter: X axis</td>
             <td class="hfill"><div class="onload" id="new_game_x" onload="slider(this, 'new_game', 0, 10000, 100, 0, ' ly')"/></td>
@@ -191,7 +191,7 @@ void main() {
             <td class="hfill"><div class="onload" id="new_game_num_systems" onload="slider(this, 'new_game', 50, 10000, 50, 0, ' systems')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Victory Conditions</caption>
+        <caption><div class="fa-angle-double-down"> Victory Conditions</div></caption>
         <tr>
             <td colspan="2">Public Scores After</td>
             <td class="hfill"><div class="onload" id="new_game_public_player_scores" onload="slider(this, 'new_game', 0, 200, 10, 0, ' years')"/></td>
@@ -244,8 +244,8 @@ void main() {
             <td colspan="2">Winner Must Meet</td>
             <td style="width: 150px"><div class="onload" id="new_game_victory_conditions" onload="slider(this, 'new_game', 1, 10, 1, 0, ' victory conditions')"/></td>
         </tr><tr class="slider_padding"></tr>
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Customizations</caption>
+    </table><table class="hfill">
+        <caption><div class="fa-angle-double-up"> Customizations</div></caption>
         <tr>
             <td>Technology Tree</td>
             <td class="hfill"><select id="new_game_tech_tree" class="hfill" onchange="post('new_game')"></select></td>
@@ -258,26 +258,31 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_race_editor" style="width: 620px" onload="post('race_editor')">
+<div class="screen hide onreset" id="screen_race_editor" style="width: 620px" onreset="post('race_editor', '?reset')">
     <table class="topbar hfill"><tr>
-        <td><img title="Race Editor / Viewer" src="race.png"/></td>
-        <td class="hfill" style="font-size: 200%" id="race_editor_screen_title"></td>
+        <td><img title="Race Editor" src="race.png"/></td>
+        <td class="hfill" style="font-size: 200%">Race Editor</td>
         <td class="onsubmit_race_editor" onsubmit="race_viewer(this)"><i class="button fas fa-plus-circle" title="Save Race" onclick="save_race()"></i></td>
         <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
         <tr class="onsubmit_race_editor">
             <td>Load Existing</td>
             <td class="hfill"><select id="race_editor_file_to_load" class="hfill" onchange="post('race_editor')"></select></td>
-            <td rowspan="3" style="min-width: 75px; text-align: right; font-size: 300%" id="race_editor_icon"></td>
+            <td rowspan="4" style="min-width: 75px; text-align: right; font-size: 300%" id="race_editor_icon"></td>
         </tr><tr>
             <td>Race Name</td>
             <td style="padding-right: 9px" class="hfill"><input id="race_editor_ID" class="hfill" onchange="post('race_editor')"/></td>
         </tr><tr>
             <td colspan="2" class="hfill">Advantage Points Left: <input disabled="true" id="race_editor_advantage_points_left" style="width: 55px;"/></td>
+        </tr><tr>
+            <td colspan="2" class="hfill">Starting Energy: <input disabled="false" id="race_editor_starting_energy" style="width: 75px;"/></td>
         </tr>
     </table><table class="hfill onsubmit" onsubmit="race_viewer(this); update_race_icon_color()">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Icon</caption>
-        <tr><td colspan="11" style="text-align: center">Color: <input type="color" id="race_editor_icon_color" onchange="update_race_icon_color(); post('race_editor')"/></td></tr>
+        <caption><div class="fa-angle-double-down"> Race Icon</div></caption>
+        <tr><td colspan="11" style="text-align: center">
+            Color: <input type="color" id="race_editor_icon_color" onchange="update_race_icon_color(); post('race_editor')"/>
+            <input id="race_editor_icon_class" disabled="true" style="display: none"/>
+        </td></tr>
         <tr style="text-align: center">
             <td onclick="post('race_editor', '?fas fa-pastafarianism')"><i class="button fas fa-pastafarianism race_icon"></i></td>
             <td onclick="post('race_editor', '?fab fa-mailchimp')"><i class="button fab fa-mailchimp race_icon"></i></td>
@@ -332,7 +337,7 @@ void main() {
             <td onclick="post('race_editor', '?fas fa-kiwi-bird')"><i class="button fas fa-kiwi-bird race_icon"></i></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Race Traits</caption>
+        <caption><div class="fa-angle-double-down"> Race Traits</div></caption>
         <tr>
             <td>Primary Racial Trait</td>
             <td class="hfill"><select id="race_editor_primary_race_trait" style="width: 100%" onchange="post('race_editor')"></select></td>
@@ -362,10 +367,9 @@ void main() {
             <td colspan="2"><input id="race_editor_lrt_JuryRigged" type="checkbox" onchange="post('race_editor')"/> JuryRigged</td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">
-            + Habitability
+        <caption><div class="fa-angle-double-down"> Habitability
             <input style="width: 50%; position: absolute; right: 10px; color: black; text-align: right" disabled="true" id="race_editor_habitability_message"/>
-        </caption>
+        </div></caption>
         <tr>
             <td>Gravity</td>
             <td class="hfill" style="padding-left: 20px; padding-right: 20px"><div class="onload" id="race_editor_hab_gravity" onload="slider2(this, 'race_editor', 0, 100, 2, format_gravity)"/></td>
@@ -382,49 +386,53 @@ void main() {
             <td>Growth Rate</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_growth_rate" onload="slider(this, 'race_editor', 5, 20, 1, 0, ' %')"/></td>
         </tr><tr class="slider_padding"></tr>
-            <td>body mass</td>
+            <td>Body Mass</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_body_mass" onload="slider(this, 'race_editor', 10, 160, 5, 0, 'kgs')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting colonists</td>
+            <td>Starting Colonists</td>
             <td class="hfill" colspan="2"><div class="onload" id="race_editor_starting_colonists" onload="slider(this, 'race_editor', 175000, 350000, 5000, 0, ' people')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse'); 
-                gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
-                temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
-                radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">+ Habitability Charts</caption>
+    </table><table class="hfill">
+        <caption onclick="gravity_chart('race_editor_gravity_chart', 'race_editor_hab_gravity'); 
+                 temperature_chart('race_editor_temperature_chart', 'race_editor_hab_temperature'); 
+                 radiation_chart('race_editor_radiation_chart', 'race_editor_hab_radiation')">
+            <div class="fa-angle-double-up"> Habitability Charts</div>
+        </caption>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onsubmit_race_editor" id="race_editor_gravity_chart" onsubmit="gravity_chart(this.id, 'race_editor_hab_gravity')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onsubmit_race_editor" id="race_editor_temperature_chart" onsubmit="temperature_chart(this.id, 'race_editor_hab_temperature')"></canvas></td>
         </tr>
         <tr>
-            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onload onsubmit_race_editor" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
+            <td style="background: rgba(255, 255, 255, 0.5)"><canvas class="hfill onsubmit_race_editor" id="race_editor_radiation_chart" onsubmit="radiation_chart(this.id, 'race_editor_hab_radiation')"></canvas></td>
         </tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Economy</caption>
+        <caption><div class="fa-angle-double-down"> Economy</div></caption>
         <tr>
-            <td>Mineral extractors per 10,000 colonists</td>
+            <td>Mineral Extractors per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_mineral_extractors_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mines')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Factories per 10,000 colonists</td>
-            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' facories')"/></td>
+            <td>Factories per 10,000 Colonists</td>
+            <td class="hfill"><div class="onload" id="race_editor_factories_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' factories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Power plants per 10,000 colonists</td>
+            <td>Power Plants per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_power_plants_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Defenses per 10,000 colonists</td>
+            <td>Defenses per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_defenses_per_10k_colonists" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>Energy per 10,000 colonists</td>
+            <td>Energy per 10,000 Colonists</td>
             <td class="hfill"><div class="onload" id="race_editor_energy_per_10k_colonists" onload="slider(this, 'race_editor', 100, 2000, 50, 0, ' YJ')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>cost of baryogenesis</td>
+            <td>Cost of Baryogenesis</td>
             <td class="hfill"><div class="onload" id="race_editor_cost_of_baryogenesis" onload="slider(this, 'race_editor', 200, 2000, 50, 0, ' YJ / kT')"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Scrap Rate</td>
+            <td class="hfill"><div class="onload" id="race_editor_scrap_rate" onload="slider(this, 'race_editor', 0, 100, 1, 0, '%')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research</caption>
+        <caption><div class="fa-angle-double-down"> Research</div></caption>
         <tr>
             <td></td>
             <td style="text-align: center">Research Modifier</td>
@@ -456,43 +464,48 @@ void main() {
             <td><input id="race_editor_starting_tech_biotechnology" type="number" min="0" max="25" onchange="post('race_editor')"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Starting Advantages</caption>
+        <caption><div class="fa-angle-double-down"> Starting Advantages</div></caption>
         <tr>
-            <td>starting mineral extractors</td>
+            <td>Starting Mineral Extractors</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_mineral_extractors" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' mineral_extractors')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting factories</td>
+            <td>Starting Factories</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_factories" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' factories')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting power plants</td>
+            <td>Starting Power Plants</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_power_plants" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' power plants')"/></td>
         </tr><tr class="slider_padding"></tr>
-            <td>starting defenses</td>
+            <td>Starting Defenses</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_defenses" onload="slider(this, 'race_editor', 4, 25, 1, 0, ' defenses')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting energy</td>
-            <td class="hfill"><div class="onload" id="race_editor_starting_energy" onload="slider(this, 'race_editor', 50000, 200000, 2500, 0, ' YJ')"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>starting lithium</td>
+            <td>Starting Lithium</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_lithium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting silicon</td>
+            <td>Starting Silicon</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_silicon" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td>starting titanium</td>
+            <td>Starting Titanium</td>
             <td class="hfill"><div class="onload" id="race_editor_starting_titanium" onload="slider(this, 'race_editor', 250, 1000, 5, 0, ' KT')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
     </table>
 </div>
 
 
-<div class="screen hide onload onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onload="post('tech_browser')" onsubmit="tech_post()">
+<div class="screen hide onreset onsubmit_tech_browser" id="screen_tech_browser" style="width: 600px" onreset="post('tech_browser', '?reset')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Technology Browser" src="tech_browser.png"/></td>
         <td class="hfill" style="font-size: 200%">Technology Browser</td> 
         <td><i class="button far fa-times-circle" title="Close Browser" onclick="show_screen(null)"></i></td>
     </tr></table>
-    <div> Technology Group <select class="hfill" id="tech_browser_group" onchange="post('tech_browser')"></select></div>
+    <table>
+        <tr>
+            <td>Technology Tree </td>
+            <td class="hfill"><select id="tech_browser_tree" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr><tr>
+            <td>Technology Group </td>
+            <td class="hfill"><select id="tech_browser_group" class="hfill" onchange="post('tech_browser')"></select></td>
+        </tr>
+    </table>
     <table id="tech_browser"></table>
 </div>
 
@@ -510,14 +523,14 @@ void main() {
 <!-- RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY     RENDER GALAXY -->
 
 
-<div class="hide onsubmit_render_stars onload" id="play_mode" tabindex="0" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black" onload="post('render_stars')">
+<div class="hide onsubmit_render_stars onreset" id="play_mode" tabindex="0" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black" onreset="post('render_stars', '?reset')">
 </div>
 
 
 <!-- PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS     PLAY SCREENS -->
 
 
-<div class="screen hide onload" id="screen_messages" style="width: 600px" onload="post('messages')">
+<div class="screen hide onreset" id="screen_messages" style="width: 600px" onreset="post('messages', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Messages" src="/messages.png"/></td>
         <td class="hfill" style="font-size: 200%">Messages</td>
@@ -536,11 +549,11 @@ void main() {
         <tr><td colspan="7" id="messages_text" style="white-space: normal"></td></tr>
         <tr style="display: none"><td id="messages_index">0</td></tr>
     </table><table id="messages_inbox" class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Inbox</caption>
+        <caption><div class="fa-angle-double-down"> Inbox</div></caption>
     </table>
 </div>
 
-<div class="screen hide onload" id="screen_planets" style="width: 600px" onload="post('planets')">
+<div class="screen hide onreset" id="screen_planets" style="width: 600px" onreset="post('planets', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Planets" src="planets.png"/><td>
         <td class="hfill" style="font-size: 200%">Planets</td>
@@ -555,14 +568,14 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_orders" style="width: 600px" onload="post('orders')">
+<div class="screen hide onreset" id="screen_orders" style="width: 600px" onreset="post('orders', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Waypoints" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
         <td class="hfill" id="topbar"></td>
     </tr></table>
     <table class="hfill" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Other</caption>
+        <caption><div class="fa-angle-double-down"> Other</div></caption>
         <tr>
             <td>Speed</td>
             <td class="hfill"><div class="onload" id="orders_speed" onload="slider3(this, 'orders', -2, 10, 1, null, null)"/></td>
@@ -590,7 +603,7 @@ void main() {
             <td colspan="3"><input id="orders_patrol" type="checkbox" onchange="post('orders')"/> Patrol</td>
         </tr>
     </table><table class="hfill" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Load</caption>
+        <caption><div class="fa-angle-double-down"> Load</div></caption>
         <tr>
             <td>Load Titanium:</td>
             <td><i class="ti" id="orders_load_ti_display" style="text-align: center; min-width: 5em"/></td>
@@ -615,7 +628,7 @@ void main() {
             <td colspan="2"><input id="order_load_dunnage" type="checkbox" onchange="post('orders')"/> Load Dunnage</td>
         </tr>
     </table><table class="hfill" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Colonization Criteria</caption>
+        <caption><div class="fa-angle-double-down"> Colonization Criteria</div></caption>
         <tr>
             <td>>= <i id="orders_colonize_min_hab_display" style="text-align: center; min-width: 5em"/></td>
             <td class="hfill"><div class="onload" id="orders_colonize_min_hab" onload="slider3(this, 'orders', 0, 101, 1, null, null)"/></td>
@@ -632,7 +645,7 @@ void main() {
             <td colspan="3"><input id="order_colonize_manual" type="checkbox" onchange="post('orders')"/> Ignore Critera, Colonize Waypoint</td>
         </tr>
     </table><table class="hfill" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Unload</caption>
+        <caption><div class="fa-angle-double-down"> Unload</div></caption>
         <tr>
             <td>Unload Titanium:</td>
             <td><i class="ti" id="orders_unload_ti_display" style="text-align: center; min-width: 5em"/></td>
@@ -655,7 +668,7 @@ void main() {
             <td colspan="2" class="hfill"><div class="onload" id="orders_unload_people" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Buy</caption>
+        <caption><div class="fa-angle-double-down"> Buy</div></caption>
         <tr>
             <td>Buy Titanium:</td>
             <td><i class="ti" id="orders_buy_ti_display" style="text-align: center; min-width: 5em"/></td>
@@ -678,7 +691,7 @@ void main() {
             <td colspan="2" class="hfill"><div class="onload" id="orders_buy_fuel" onload="slider3(this, 'orders', -1, 200, 1, null, null)"/></td>
         </tr><tr class="slider_padding"></tr>
     </table><table class="hfill" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Sell</caption>
+        <caption><div class="fa-angle-double-down"> Sell</div></caption>
         <tr>
             <td colspan="2"><input id="orders_sell_ti" type="checkbox" onchange="post('orders')"/> Sell Titanium</td>
         </tr><tr>
@@ -688,53 +701,50 @@ void main() {
         </tr><tr>
             <td colspan="2"><input id="orders_sell_fuel" type="checkbox" onchange="post('orders')"/> Sell Fuel</td>
         </tr>
-    </table><table class="hfill" style="text-align: center" onload="toggle(this.parentElement, 'collapse')">
-        <tr>
-            <td><input disabled="true" id="order_last_screen" class="hfill" onchange="post('orders')"/></td>
-            <td><input disabled="true" id="order_fleet_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
-            <td><input disabled="true" id="order_index" type="number" min="0" max="10000" onchange="post('orders', 'start')"/></td>
-        </tr>
     </table>
+    <input disabled="true" id="order_last_screen" class="hide" onchange="post('orders')"/>
+    <input disabled="true" id="order_fleet_index" class="hide" type="number" min="0" max="10000" onchange="post('orders', 'start')"/>
+    <input disabled="true" id="order_index" class="hide" type="number" min="0" max="10000" onchange="post('orders', 'start')"/>
 </div>
 
 
-<div class="screen hide onload" id="screen_fleets" style="width: 600px" onload="post('fleets')">
+<div class="screen hide onreset" id="screen_fleets" style="width: 600px" onreset="post('fleets', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Fleets" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Fleets</td> 
         <td><i class="button far fa-times-circle" title="Close Fleet Viewer" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill" id="fleet_list" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Fleets</caption>
+        <caption><div class="fa-angle-double-down"> Fleets</div></caption>
     </table>
     <table class="hfill" id="ships" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Ships</caption>
+        <caption><div class="fa-angle-double-down"> Ships</div></caption>
     </table>
     <table class="hfill" id="fleet_orders" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Orders</caption>
+        <caption><div class="fa-angle-double-down"> Orders</div></caption>
     </table>
     <table class="hfill" id="other_ships" style="text-align: center">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Other Player's Ships</caption>
+        <caption><div class="fa-angle-double-down"> Other Player's Ships</div></caption>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_interstellar" style="width: 600px" onload="post('interstellar')">
+<div class="screen hide onreset" id="screen_interstellar" style="width: 600px" onreset="post('interstellar', '?reset')">
 </div>
 
 
-<div class="screen hide onload" id="screen_battles" style="width: 600px" onload="post('battles')">
+<div class="screen hide onreset" id="screen_battles" style="width: 600px" onreset="post('battles', '?reset')">
 </div>
 
 
-<div class="screen hide onload" id="screen_finance_minister" style="width: 600px" onload="post('finance_minister')">
+<div class="screen hide onreset" id="screen_finance_minister" style="width: 600px" onreset="post('finance_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Finance Minister" src="/finance_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Finance Minister</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table><table class="hfill">
         <tr>
-            <td>construction</td><td>mattrans</td><td>research</td><td title="trade and savings">other</td>
+            <td color="factory-color">construction</td><td color="mat-trans-color">mattrans</td><td color="research-color">research</td><td color="mine-color" title="trade and savings">other</td>
         </tr><tr>
             <td id="finance_construction"></td>
             <td id="finance_mattrans"></td>
@@ -748,14 +758,14 @@ void main() {
             <td colspan="4"><input type="checkbox" id="finance_research_use_surplus" onchange="post('finance_minister')"/> allow research to use surplus</td>
         </tr>
     </table><table class="hfill" id="finance_queue" style="font-size: 75%">
-        <caption onclick="toggle(this.parentElement, 'collapse')" style="font-size: 133%">+ Build Queue</caption>
+        <caption style="font-size: 133%"><div class="fa-angle-double-down"> Build Queue</div></caption>
     </table><table class="hfill" id="finance_buildable" style="font-size: 75%">
-        <caption onclick="toggle(this.parentElement, 'collapse')" style="font-size: 133%">+ Buildable</caption>
+        <caption style="font-size: 133%"><div class="fa-angle-double-down"> Buildable</div></caption>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_planetary_ministers" style="width: 600px" onload="post('planetary_minister')">
+<div class="screen hide onreset" id="screen_planetary_ministers" style="width: 600px" onreset="post('planetary_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Planetary Ministers" src="/ministers.png"/></td>
         <td class="hfill" style="font-size: 200%">Planetary Ministers</td> 
@@ -771,7 +781,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_planetary_minister" style="width: 600px" onload="post('planetary_minister')">
+<div class="screen hide onreset" id="screen_planetary_minister" style="width: 600px" onreset="post('planetary_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Planetary Minister" src="/planetary_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Planetary Minister</td> 
@@ -796,7 +806,7 @@ void main() {
         </tr><tr>
             <td colspan="4"><input id="planetary_allow_baryogenesis" type="checkbox" onchange="post('planetary_minister')" style="width: 1em"/> allow baryogenesis</td>
         </tr><tr>
-            <td colspan="4" class="onload" onload="planetary_color_picker(this)"></td>
+            <td colspan="11" style="text-align: center">Color: <input type="color" id="planetary_color" onchange="post('planetary_minister')"/></td></tr>
         </tr><tr hidden="false">
             <td colspan="4"><input disabled="true" id="planetary_color" onchange="post('planetary_minister')"/></td>
         </tr>
@@ -804,7 +814,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onload="post('research_minister')" onsubmit="tech_post()">
+<div class="screen hide onreset onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onreset="post('research_minister', '?reset')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Research Minister" src="research_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Research Minister</td> 
@@ -813,18 +823,18 @@ void main() {
     <table class="hfill" id="research_level" style="font-size: 150%; text-aign: justify; text-align-last: justify; text-justify: inter-character">
     </table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Research Queue</caption>
+        <caption><div class="fa-angle-double-down"> Research Queue</div></caption>
         <tr><td colspan="2"><table id="research_queue"></table></td></tr>
 		<tr><td>Default Research Field</td><td class="hfill"><select class="hfill" id="research_default_field" onchange="post('research_minister')"></select></td></tr>
     </table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <caption><div class="fa-angle-double-down"> Tech Tree</div></caption>
         <tr><td>Technology Group</td><td class="hfill"><select class="hfill" id="research_tech_group" onchange="post('research_minister')"></select></td></tr>
         <tr><td colspan="2"><table id="research_tech"></table></td></tr>
     </table>
 </div>
 
-<div class="screen hide onload" id="screen_foreign_minister" style="width: 600px" onload="post('foreign_minister')">
+<div class="screen hide onreset" id="screen_foreign_minister" style="width: 600px" onreset="post('foreign_minister', '?reset')">
     <table class="topbar hfill"><tr>
         <td><img title="Foreign Minister" src="foreign_minister.png"/></td>
         <td class="hfill" style="font-size: 200%">Foreign Minister</td>
@@ -833,7 +843,7 @@ void main() {
     <table class="hfill" id="foreign_treaties" style="text-align: center">
     </table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Negotiation</caption>
+        <caption><div class="fa-angle-double-down"> Negotiation</div></caption>
         <tr>
             <td colspan="3"><table class="hfill" style="font-size: 125%"><tr>
                 <td class="hfill" id="foreign_other_player"/></td>
@@ -917,35 +927,39 @@ void main() {
 </div>
 
 
-<div class="screen hide onload onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onload="post('shipyard')" onsubmit="tech_post(); ship_display()">
+<div class="screen hide onreset onsubmit_shipyard" id="screen_shipyard" style="width: 600px" onreset="post('shipyard', '?reset')" onsubmit="tech_post(); ship_display()">
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
-        <td>Existing Designs</td><td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
-        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
+        <td>Design</td>
+        <td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
         <td><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
+        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
         <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
+    </tr><tr>
+        <td>Rename</td><td colspan="4" class="hfill" style="padding-right: 9px;"><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td>
     </tr></table>
     <table class="hfill" id="shipyard_ship_overview">
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Combat Effectivity</caption>
+        <caption><div class="fa-angle-double-up" onload="folding(this)">Overview</div></caption>
+    </table><table class="hfill">
+        <caption><div class="fa-angle-double-up"> Combat Effectivity</div></caption>
         <tr>
             <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Strength (GJ/m<sup>2</sup>)</td>
             <td><canvas id="shipyard_combat_chart" style="width: 550px"></canvas></td>
         </tr><tr>
             <td style="font-size: 85%; text-align: center">Range (terameters)</td>
         </tr>
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Scanning</caption>
+    </table><table class="hfill">
+        <caption><div class="fa-angle-double-up"> Scanning</div></caption>
         <tr>
             <td style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl">Range (ly)</td>
             <td><canvas id="shipyard_sensor_chart" style="width: 550px"></canvas></td>
         </tr>
-    </table><table class="hfill onload" onload="toggle(this, 'collapse', true)">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Engine</caption>
+    </table><table class="hfill">
+        <caption><div class="fa-angle-double-up"> Engine</div></caption>
         <tr>
             <td rowspan="2" style="font-size: 85%; transform: rotate(180deg); writing-mode: vertical-rl; vertical-align: bottom">Tachometer (<i class="fa-free-code-camp"></i> / ly)</td>
             <td><canvas id="shipyard_engine_chart" style="width: 550px"></canvas></td>
@@ -953,13 +967,11 @@ void main() {
             <td style="font-size: 85%; text-align: center">Hyper</td>
         </tr>
     </table>
-    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
-    <table class="hfill tech_guts hide" id="shipyard_ship_guts" style="font-size: 85%">
+    <table class="hfill" id="shipyard_ship_guts" style="font-size: 85%">
+        <caption><div class="fa-angle-double-up"> Details</div></caption>
     </table>
     <table class="hfill"> 
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Edit Design</caption>
-        <tr><td>Design Name </td><td class="hfill" style="padding-right: 9px;"><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td></tr>
-        <tr><td>Hull </td><td><select class="hfill" id="shipyard_hull" onchange="post('shipyard')"></select></td></tr>
+        <caption><div class="fa-angle-double-down"> Edit Design</div></caption>
         <tr><td colspan="2" class="hfill"><table class="hfill"><tr>
             <td>General Slots</td><td id="shipyard_slots_general"></td>
             <td>Depot Slots</td><td id="shipyard_slots_depot"></td>
@@ -968,82 +980,38 @@ void main() {
         <tr><td colspan="2"><table id="shipyard_design"></table></td></tr>
     </table>
     <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ Tech Tree</caption>
+        <caption><div class="fa-angle-double-down"> Tech Tree</div></caption>
         <tr><td>Technology Group </td><td class="hfill"><select class="hfill" id="shipyard_tech_group" onchange="post('shipyard')"></select></td></tr>
         <tr><td colspan="2"><table id="shipyard_tech"></table></td></tr>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_plans" style="width: 600px" onload="post('plans')">
+<div class="screen hide onreset" id="screen_plans" style="width: 600px" onreset="post('plans', '?reset')">
 </div>
 
 
-<div class="screen hide onload" id="screen_score" style="width: 600px" onload="post('score')">
+<div class="screen hide onreset" id="screen_score" style="width: 600px" onreset="post('score', '?reset')">
     <table class="topbar hfill"><tr>
         <td style="font-size: 200%">Score</td>
     </tr></table>
+    <table class="hfill" id="score_table"></table>
     <table class="hfill">
+        <caption><div class="fa-angle-double-down"> Score Chart</div></caption>
         <tr>
-            <td></td>
-            <td><input id="score_player01" disabled="true" class="vertical"/></td>
-            <td><input id="score_player02" disabled="true" class="vertical"/></td>
-            <td><input id="score_player03" disabled="true" class="vertical"/></td>
-            <td><input id="score_player04" disabled="true" class="vertical"/></td>
-            <td><input id="score_player05" disabled="true" class="vertical"/></td>
-            <td><input id="score_player06" disabled="true" class="vertical"/></td>
-            <td><input id="score_player07" disabled="true" class="vertical"/></td>
-            <td><input id="score_player08" disabled="true" class="vertical"/></td>
-            <td><input id="score_player09" disabled="true" class="vertical"/></td>
-            <td><input id="score_player10" disabled="true" class="vertical"/></td>
-            <td><input id="score_player11" disabled="true" class="vertical"/></td>
-            <td><input id="score_player12" disabled="true" class="vertical"/></td>
-            <td><input id="score_player13" disabled="true" class="vertical"/></td>
-            <td><input id="score_player14" disabled="true" class="vertical"/></td>
-            <td><input id="score_player15" disabled="true" class="vertical"/></td>
-            <td><input id="score_player16" disabled="true" class="vertical"/></td>
-        </tr>
-        <tr>
-            <td>Planets</td>
-            <td><input id="score_planets01" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets02" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets03" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets04" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets05" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets06" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets07" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets08" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets09" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets10" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets11" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets12" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets13" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets14" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets15" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_planets16" disabled="true" style="width: 5em"/></td>
-        </tr>
-        <tr>
-            <td>Ships</td>
-            <td><input id="score_ships13" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships14" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships15" disabled="true" style="width: 5em"/></td>
-            <td><input id="score_ships16" disabled="true" style="width: 5em"/></td>
-        </tr>
-    </table>
-    <table class="hfill">
-        <caption onclick="toggle(this.parentElement, 'collapse')">+ <select id="score_chart" onchange="post('score')"></select></caption>
-        <tr>
-            <td>TODO</td>
+            <td><select class="hfill" id="score_chart_type" onchange="post('score')"></select></td>
+        </tr><tr>
+            <td><canvas class="score_chart"></canvas></td>
         </tr>
     </table>
 </div>
 
 
-<div class="screen hide onload" id="screen_settings" style="width: 600px" onload="post('settings')">
+<div class="screen hide onreset" id="screen_settings" style="width: 600px" onreset="post('settings', '?reset')">
 </div>
 
 
-<div class="screen overlay_message hide onload onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onload="post('play_complete')" onsubmit="play_complete_auto()">
+<div class="screen overlay_message hide onreset onsubmit_play_complete" id="screen_play_complete" style="width: 600px" onreset="post('play_complete', '?reset')" onsubmit="play_complete_auto()">
     <table class="topbar hfill"><tr>
         <td><img title="Play Complete" src="generate.png"/></td>
         <td class="hfill" style="font-size: 200%">Waiting for new turn</td> 
@@ -1053,7 +1021,7 @@ void main() {
 </div>
 
 
-<div class="screen hide onload" id="screen_race_viewer" style="width: 600px" onload="post('race_viewer')">
+<div class="screen hide onreset" id="screen_race_viewer" style="width: 600px" onreset="post('race_viewer', '?reset')">
 </div>
 
 
@@ -1061,8 +1029,8 @@ void main() {
 
 
 <!-- This is for copying -->
-<div class="hide onload onsubmit_tech" id="tech_template" onsubmit="tech_display()" onload="post('tech')">
-    <div class="tech_expand" onclick="tech_expand(this.parentElement, null)"></div>
+<div class="hide onreset onsubmit_tech" id="tech_template" onsubmit="tech_display()" onreset="post('tech', '?reset')">
+    <div class="tech_expand" onclick="this.parentElement.classList.toggle('tech_collapsed')"></div>
     <table class="hfill tech_overview">
     </table>
 
@@ -1089,8 +1057,8 @@ void main() {
         <tr><td style="font-size: 85%; text-align: center">Hyper</td></tr>
     </table>
 
-    <br/><div class="fa-angle-double-up" onclick="tech_expand(this.parentElement, this)"> Details</div>
-    <table class="hfill tech_guts hide" style="font-size: 85%">
+    <table class="hfill tech_guts" style="font-size: 85%">
+        <caption><div class="fa-angle-double-up"> Details</div></caption>
     </table>
     <br/>
 </div>

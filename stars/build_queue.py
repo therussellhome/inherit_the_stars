@@ -17,16 +17,7 @@ class BuildQueue(Defaults):
     """ Apply effort, child classes should override to determine when finished """
     def build(self, spend=Cost()):
         self.spent += spend
-        self.cost -= spend
-        return self.cost
-
-    """ Called when being removed from the build queue """
-    def cancel(self):
-        pass
-
-    """ Build for display, child classes should override """
-    def to_html(self):
-        return '??? mystery item ???'
+        return self.cost - self.spent
 
 
 BuildQueue.set_defaults(BuildQueue, __defaults)

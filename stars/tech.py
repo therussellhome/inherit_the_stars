@@ -66,13 +66,19 @@ class Tech(Defaults):
         game_engine.register(self)
 
     """ Add a tech to self using the current miniaturization_level """
-    def merge(self, other):
+    def merge(self, other, max_not_merge=False):
         for key in Tech.defaults:
             # Skip strings
             if isinstance(self[key], str):
                 pass
             elif isinstance(self[key], list):
                 self[key].extend(other[key])
+            elif max_not_merge and key == 'scanner':
+                self[key].anti_cloak = max(self[key].anti_cloak, other[key].anti_cloak)
+                self[key].penetrating = max(self[key].penetrating, other[key].penetrating)
+                self[key].normal = max(self[key].normal, other[key].normal)
+            elif max_not_merge and key == 'hyperdenial':
+                self[key].radius = max(self[key].radius, other[key].radius)
             else:
                 self[key] += other[key]
 
@@ -107,11 +113,17 @@ class Tech(Defaults):
                     return False
         return True
 
+    """ Is this a hull tech item """
+    def is_hull(self):
+        if self.slots_general > 0 or self.slots_depot > 0 or self.slots_orbital > 0:
+            return True
+        return False
+
     """ Calculate the scrap value """
     def scrap_value(self, race, miniaturization_level=None):
         # Force scrap to be just minerals
-        m = Minerals() + self.cost * self.miniaturization(tech_level)
-        return m * (race.scrap_rate() / 100)
+        m = Minerals(self.cost * self.miniaturization(miniaturization_level))
+        return m * (race.scrap_rate / 100)
 
     """ How much past the base is the miniaturization """
     def miniaturization(self, miniaturization_level=None):
@@ -123,8 +135,21 @@ class Tech(Defaults):
             levels_over = miniaturization_level.total_levels()
         else:
             for f in TECH_FIELDS:
+                if miniaturization_level[f] < self.level[f]:
+                    return 1
                 levels_over += (miniaturization_level[f] - self.level[f]) * self.level[f] / base
         return 1 / (0.1 * levels_over ** 0.5 + 1)
+
+    """ Compute the miniaturization cost """
+    def build_cost(self, miniaturization_level=None):
+        return self.cost * self.miniaturization(miniaturization_level)
+
+    """ Compute the cost to overhaul this component to a new miniaturization level """
+    def overhaul_cost(self, current_level, overhaul_level, race):
+        current_miniaturization = self.miniaturization(current_level)
+        overhaul_miniaturization = self.miniaturization(overhaul_level)
+        # overhaul efficency is affected by scrap efficency
+        return self.cost * (current_miniaturization - overhaul_miniaturization) * (200 - race.scrap_rate) / 100
 
     """ Build the overview table """
     def html_overview(self, player_race=Race(), player_level=TechLevel(), player_partial=TechLevel()):
@@ -172,7 +197,7 @@ class Tech(Defaults):
                 range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
                 chart['armor'].append(self.armor)
                 chart['shield'].append(self.shield + self.armor)
-                chart['ecm'].append((self.shield + self.armor) * self.ecm * math.sqrt(range_ly))
+                chart['ecm'].append(max(1.0, self.shield + self.armor) * self.ecm * math.sqrt(range_ly))
                 chart['firepower'].append(0)
                 for weapon in self.weapons:
                     power = weapon.get_power(range_ly, sys.maxsize, 0)
@@ -255,7 +280,7 @@ class Tech(Defaults):
         self._html_filter(html, self.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0}/y</i>')
         self._html_filter(html, self.shipyard, 'Heavy Equipment', 'Shipyard capacity', '{0} kT/y')
         self._html_filter(html, self.mines_laid, 'Heavy Equipment', 'Mines laid', '{0}/y')
-        self._html_filter(html, self.hyperdenial, 'Heavy Equipment', 'Hyper denial', '{0}ly')
+        self._html_filter(html, self.hyperdenial.radius, 'Heavy Equipment', 'Hyper denial', '{0}ly')
         self._html_filter(html, self.extraction_rate, 'Heavy Equipment', 'Mineral extraction rate', '{0}/y')
         self._html_filter(html, self.mineral_depletion_factor, 'Heavy Equipment', 'Mineral depletion', '{0}/kT mined')
         self._html_filter(html, self.mat_trans_energy, 'Heavy Equipment', 'Mat-trans energy', '{0}/kT')

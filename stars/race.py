@@ -9,7 +9,8 @@ PRIMARY_RACE_TRAITS = ['Aku\'Ultani', 'Kender', 'Formics', 'Gaerhule', 'Halleyfo
 """ Default values [default, min, max]  """
 __defaults = {
     'ID': '@UUID',
-    'icon': '<i style="color: #FFFFFF; padding-right: 0" class="fas fa-pastafarianism">',
+    'icon_color': '#FFFFFF',
+    'icon_class': 'fas fa-pastafarianism',
     'start_date': (3000, 0, sys.maxsize),
     'primary_race_trait': 'Melconians',
     'lrt_Trader': False,
@@ -58,7 +59,7 @@ __defaults = {
     'starting_mineral_extractors': (10, 4, 25),
     'starting_power_plants': (10, 4, 25),
     'starting_defenses': (10, 4, 25),
-    'starting_energy': (165000, 50000, 200000),
+    'starting_energy': (165000, 50000, sys.maxsize),
     'starting_lithium': (500, 250, 1000),
     'starting_silicon': (500, 250, 1000),
     'starting_titanium': (500, 250, 1000),
@@ -67,15 +68,15 @@ __defaults = {
 
 """ Advantage points gain/cost for each primary/lesser racial trait """
 trait_cost = {
-    'Aku\'Ultani': 6557, 
-    'Kender': 6664, 
-    'Formics': 6500, 
-    'Gaerhule': 6610, 
-    'Halleyforms': 6478, 
-    'Pa\'anuri': 6560, 
-    'Melconians': 6886, 
-    'TANSTAAFL': 6609, 
-    'Patryns': 6494,
+    'Aku\'Ultani': 6457, 
+    'Kender': 6564, 
+    'Formics': 6400, 
+    'Gaerhule': 6510, 
+    'Halleyforms': 6378, 
+    'Pa\'anuri': 6420, 
+    'Melconians': 6786, 
+    'TANSTAAFL': 6509, 
+    'Patryns': 6394,
     'Trader': -126,
     'Bioengineer': -122,
     '2ndSight': -99,
@@ -109,7 +110,7 @@ start_cost = {
     'mineral_extractors': 3,
     'power_plants': 6,
     'defenses': 2,
-    'energy': 1/2500,
+#    'energy': 1/2500,
     'titanium': .2,
     'lithium': .2,
     'silicon': .2,
@@ -119,7 +120,7 @@ start_cost = {
 hab_cost = {
     'growthrate_cost': 128,
     'body_mass_cost': 6.4,
-    'range_cost_per_click': 4.5,
+    'range_cost_per_click': 4,
     'grav_dis_slope': .8,
     'temp_dis_slope': 2,
     'rad_dis_slope': .8,
@@ -130,6 +131,10 @@ hab_cost = {
 
 """ Storage class for race parameters """
 class Race(Defaults):
+    """ Extract the color """
+    def icon(self): # TODO test
+        return '<i style="color: ' + self.icon_color + '; padding-right: 0" class="' + self.icon_class + '"></i>'
+
     """ Calculate the advantage points for this race (invalid race if <0) """
     def calc_points(self): # TODO test
         p = 0
@@ -137,12 +142,13 @@ class Race(Defaults):
             p += trait_cost[t]
         p += self._calc_points_research()
         p += self._calc_points_economy()
-        p += self._calc_points_habitability()
+        p += self._calc_points_hab()
         p += self._calc_points_start()
+        self._calc_starting_energy(p)
         return round(p)
     
     """ How many colonists per kT """
-    def pop_per_kt(self): # TODO test
+    def pop_per_kt(self):
         return 80000 / self.body_mass
     
     """ Make a list of the selected primary/lesser traits for this race """
@@ -190,11 +196,11 @@ class Race(Defaults):
             for i in range(self.hab_radiation, self.hab_radiation_stop + 1):
                 hab += 100.0/101.0
             overall_hab *= hab / 100.0
-        overall_hab = 100.0 * max(overall_hab, 0.001)
+        overall_hab = 100.0 * max(overall_hab, 0.0001)
         return overall_hab
     
     """ Advantage points for habitability settings """
-    def _calc_points_habitability(self): # TODO test
+    def _calc_points_hab(self): # TODO test
         p = 0
         p -= self.growth_rate * hab_cost['growthrate_cost']
         # Cost of body mass
@@ -204,7 +210,7 @@ class Race(Defaults):
             immunities += 1
         else:
         # Cost of gravity range
-            grav_range = self.hab_gravity_stop - self.hab_gravity + 1
+            grav_range = self.hab_gravity_stop - self.hab_gravity
             grav_dis = abs((self.hab_gravity + self.hab_gravity_stop) / 2 - 50)
             p -= grav_range * hab_cost['range_cost_per_click'] - grav_dis * hab_cost['grav_dis_slope']
         if self.hab_temperature_immune:
@@ -212,14 +218,14 @@ class Race(Defaults):
             p -= hab_cost['immune_temp_extra_cost']
         else:
         # Cost of temperature range
-            temp_range = self.hab_temperature_stop - self.hab_temperature + 1
+            temp_range = self.hab_temperature_stop - self.hab_temperature
             temp_dis = abs((self.hab_temperature + self.hab_temperature_stop) / 2 - 50)
             p -= temp_range * hab_cost['range_cost_per_click'] - temp_dis * hab_cost['temp_dis_slope']
         if self.hab_radiation_immune:
             immunities += 1
         else:
         # Cost of radiation range
-            rad_range = self.hab_radiation_stop - self.hab_radiation + 1
+            rad_range = self.hab_radiation_stop - self.hab_radiation
             rad_dis = abs((self.hab_radiation + self.hab_radiation_stop) / 2 - 50)
             p -= rad_range * hab_cost['range_cost_per_click'] - rad_dis * hab_cost['rad_dis_slope']
         p -= (immunities ** 1.5) * hab_cost['immunity_cost'] * self.growth_rate/10
@@ -255,9 +261,16 @@ class Race(Defaults):
     
     def _calc_points_start(self):
         p = 0
+        if self.primary_race_trait == 'Pa\'anuri':
+            for s in ['colonists', 'titanium', 'silicon', 'lithium']:
+                p -= self['starting_' + s] * start_cost[s]
+            return p
         for s in start_cost:
             p -= self['starting_' + s] * start_cost[s]
         return p
-
+    
+    def _calc_starting_energy(self, points):
+        self.starting_energy = points * 2500 + 50000
+    
 
 Race.set_defaults(Race, __defaults, sparse_json=False)

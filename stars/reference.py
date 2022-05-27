@@ -9,6 +9,7 @@ class Reference(game_engine.BaseClass):
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
         reference = ''
+        cache = None
         if '__reference__' in kwargs:
             reference = kwargs['__reference__']
         elif len(args) == 1:
@@ -21,12 +22,13 @@ class Reference(game_engine.BaseClass):
                     reference = args[0] + '/'
             elif hasattr(args[0], 'ID'):
                 reference = args[0].__class__.__name__ + '/' +  args[0].ID
+                cache = args[0]
             else:
                 raise LookupError('Cannot create reference to "' + str(args[0]) + '"')
         elif len(args) == 2:
             reference = args[0] + '/' + args[1]
         object.__setattr__(self, '__reference__', reference)
-        object.__setattr__(self, '__cache__', None)
+        object.__setattr__(self, '__cache__', cache)
 
     """ Override the subscript operator """
     def __getitem__(self, name):
@@ -51,6 +53,14 @@ class Reference(game_engine.BaseClass):
     """ Dereference the object """
     def __invert__(self):
         return object.__getattribute__(self, '__get_obj__')('~')
+
+    """ Return the class type """
+    def __pos__(self):
+        return object.__getattribute__(self, '__reference__').split('/', 1)[0]
+
+    """ Return the object ID """
+    def __neg__(self):
+        return object.__getattribute__(self, '__reference__').split('/', 1)[1]
 
     """ Get/cache the object """
     def __get_obj__(self, name):
@@ -86,20 +96,22 @@ class Reference(game_engine.BaseClass):
 
     """ Equality test """
     def __eq__(self, other):
+        reference = object.__getattribute__(self, '__reference__')
+        # Test against a non-reference object
         if type(self) != type(other):
             if hasattr(other, 'ID'):
-                return (object.__getattribute__(self, '__reference__') == other.__class__.__name__ + '/' + other.ID)
+                return (reference == other.__class__.__name__ + '/' + other.ID)
             return False
-        return (object.__getattribute__(self, '__reference__') == object.__getattribute__(other, '__reference__'))
-
+        # Test reference, references with just class (no ID) cannot be equal
+        return (reference == object.__getattribute__(other, '__reference__') and reference.split('/', 1)[1] != '')
     
     """ Test just the class portion """
     def __xor__(self, classname):
         return (object.__getattribute__(self, '__reference__').split('/', 1)[0] == classname)
-
 
     """ Use the reference as the hash """
     def __hash__(self):
         return hash(self.__reference__)
 
 game_engine._reference_class = Reference
+Reference.tmp_fields = {'__cache__': True}

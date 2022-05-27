@@ -21,7 +21,3 @@ class FacilityTestCase(unittest.TestCase):
         f.planet.power_plants = 4
         f.build(f.cost)
         self.assertEqual(f.planet.power_plants, 5)
-
-    def test_html1(self):
-        f = facility.Facility(facility_type='power_plants')
-        self.assertEqual(f.to_html(), 'Power Plant')
