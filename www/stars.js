@@ -942,9 +942,9 @@ function combat_chart(chart, data) {
                         } else if(tooltipItem.datasetIndex == 2) {
                             label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
                         } else if(tooltipItem.datasetIndex == 3) {
-                            base = data.datasets[1].data[0] + data.datasets[2].data[0];
-                            value = parseInt(tooltipItem.value);
-                            label += Math.round(value / base * 100) + '%';
+                            base = Math.max(1.0, data.datasets[1].data[0] + data.datasets[2].data[0]);
+                            value = parseFloat(tooltipItem.value);
+                            label += Math.round(value / base * 100.0) + '%';
                         } else {
                             label += tooltipItem.value;
                         }
