@@ -604,10 +604,13 @@ function gravity_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -671,10 +674,13 @@ function temperature_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -738,10 +744,13 @@ function radiation_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
