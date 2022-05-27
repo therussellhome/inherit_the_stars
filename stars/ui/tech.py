@@ -13,8 +13,6 @@ __defaults = {
     'sensor': {}, # visability over range (standard, penetrating, anti-cloak, self-cloak)
     'engine': {}, # tacometer over hyper (computed for 1..10)
     'guts': {},
-
-#    'apparent_mass': [0, 0, sys.maxsize],
 }
 
 """ Display information about a tech item or ship design """
