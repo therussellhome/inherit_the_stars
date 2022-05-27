@@ -23,7 +23,8 @@ class PlanetaryMinisters(PlayerUI):
         if not self.player:
             return
         #print('1', action)
-        if self.planetary_curent_minister:
+        self.planetary_curent_minister = Reference('PlanetaryMinister/' + self.planetary_ID)
+        if not self.planetary_curent_minister:
             self.planetary_curent_minister = Reference(self.player.ministers[-1])
         if action.startswith('uuid='):
             self.planetary_curent_minister = Reference('PlanetaryMinister/' + action[5:])
@@ -33,6 +34,8 @@ class PlanetaryMinisters(PlayerUI):
             self.player.ministers.append(mini)
             self.planetary_curent_minister = Reference(mini)
             action = 'revert'
+        for key in PlanetaryMinister.defaults:
+            print('3', key, self.planetary_curent_minister[key])
         #print('2', self.planetary_curent_minister.__dict__)
         if action == 'revert':
             self.planetary_name = self.planetary_curent_minister.name
@@ -41,7 +44,6 @@ class PlanetaryMinisters(PlayerUI):
             self.planetary_facility_types[0] = self.planetary_power_plants
             self.planetary_facility_types[1] = self.planetary_factories + self.planetary_facility_types[0]
             self.planetary_facility_types[2] = self.planetary_mineral_extractors + self.planetary_facility_types[1]
-        #print('3', self.planetary_curent_minister.__dict__)
         #for minister in self.player.ministers:
         #    print('4 minister  = ', minister.__dict__)
         #print('self  = ', self.__dict__)
@@ -67,7 +69,8 @@ class PlanetaryMinisters(PlayerUI):
         for key in PlanetaryMinister.defaults:
             if not key == 'ID':
                 setattr(self.planetary_curent_minister, key, getattr(self, 'planetary_' + key))
-        #print('7', self.planetary_curent_minister.__dict__)
+                print('7', key, self.planetary_curent_minister[key])
+        """ make minister selection """
         for planet in self.player.planets:
             if hasattr(self, 'planetary_' + planet.ID + '_minister'):
                 self.player.planetary_minister_map[Reference(planet)] = Reference('PlanetaryMinister/' + self['planetary_' + planet.ID + '_minister'])
@@ -76,7 +79,7 @@ class PlanetaryMinisters(PlayerUI):
             except:
                 self.player.planetary_minister_map[Reference(planet)] = Reference(get_minister(planet))
         #print('8', self.planetary_curent_minister.__dict__)
-        # set display values
+        """ set display values """
         for minister in self.player.ministers:
             if hasattr(minister, 'new_colony_minister'):
                 self.options_planetary_new_col_minister.append(minister.name)

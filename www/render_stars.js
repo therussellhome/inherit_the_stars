@@ -281,7 +281,7 @@ function get_system(intersected, index) {
     console.log(details);
     var alpha_map = new THREE.TextureLoader().load( "/alphamap-circle.png" );
     var texture_ship = new THREE.TextureLoader().load( "/ships.png" );
-    var texture_asteroid = new THREE.TextureLoader().load( "/inderstellar_objects.png" );
+    var texture_asteroid = new THREE.TextureLoader().load( "/interstellar_objects.png" );
     var texture_wormhole = new THREE.TextureLoader().load( "/generate.png" );
     var texture_sun = new THREE.TextureLoader().load( "/texture-sun.png" );
     var texture_planet = new THREE.TextureLoader().load( "/texture-planet.png" );

@@ -140,11 +140,11 @@ class Ship(ShipDesign):
         report = {
             'location': self.location,
         }
-        if scan_type == 'anticloak':
+        if scan_type == 'anticloak' or scan_type == 'self':
             report['Mass'] = self.total_mass
-        elif scan_type == 'penetrating':
+        if scan_type == 'penetrating' or scan_type == 'self':
             report['Apparent Mass'] = self.apparent_mass
-        elif scan_type == 'normal':
+        if scan_type == 'normal' or scan_type == 'self':
             report['Apparent KE'] = self.apparent_ke
         return report
 

@@ -403,23 +403,6 @@ function shutdown() {
     }
 }
 
-function planetary_color_picker(element) {
-    parentFixed = element,
-    pickerFixed = new Picker({
-        parent: parentFixed,
-        popup: false,
-        alpha: false,
-//        editor: false,
-        onChange: function(color) {
-            document.getElementById('planetary_color').value = color.rgbaString;
-            post('planetary_minister')
-            //parentFixed.style.backgroundColor = color.rgbaString;
-            //console.log(document.getElementById('planetary_color').value)
-        },
-    });
-    pickerFixed.openHandler();
-}
-
 // Update the color of race icons
 function update_race_icon_color() {
     var all = document.getElementsByClassName('race_icon');
@@ -621,10 +604,13 @@ function gravity_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -688,10 +674,13 @@ function temperature_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -755,10 +744,13 @@ function radiation_chart(element_id, slider_id) {
         });
     }
     race = document.getElementById(slider_id).noUiSlider.get();
+    immune = document.getElementById(slider_id + '_immune').checked;
     data = charts[element_id].data.datasets[1].data;
     race_data = [];
     for(var i=0; i <= 100; i++) {
-        if((i < race[0]) || (i > race[1])) {
+        if(immune) {
+            race_data.push(data[i]);
+        } else if((i < race[0]) || (i > race[1])) {
             race_data.push(0);
         } else {
             race_data.push(data[i]);
@@ -959,9 +951,9 @@ function combat_chart(chart, data) {
                         } else if(tooltipItem.datasetIndex == 2) {
                             label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
                         } else if(tooltipItem.datasetIndex == 3) {
-                            base = data.datasets[1].data[0] + data.datasets[2].data[0];
-                            value = parseInt(tooltipItem.value);
-                            label += Math.round(value / base * 100) + '%';
+                            base = Math.max(1.0, data.datasets[1].data[0] + data.datasets[2].data[0]);
+                            value = parseFloat(tooltipItem.value);
+                            label += Math.round(value / base * 100.0) + '%';
                         } else {
                             label += tooltipItem.value;
                         }

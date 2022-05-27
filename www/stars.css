@@ -16,12 +16,12 @@
     padding-right: 150px;
 }
 div.tech_collapsed {
-    height: 55px;
+    height: 60px;
 }
 div.tech_expand {
     position: absolute;
     width: 50%;
-    height: 55px;
+    height: 60px;
     z-index: 9;
     cursor: pointer;
 }
