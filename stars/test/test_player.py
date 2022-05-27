@@ -182,7 +182,32 @@ class PlayerTestCase(unittest.TestCase):
         p.add_intel(s, {'name': 'test'})
         self.assertEqual(p.get_name(s), 'test')
 
+    def test_add_message1(self):
+        p = player.Player()
+        p.add_message(message = 'this is a test')
+        self.assertEqual(p.messages[-1].message, 'this is a test')
 
+    def test_cleanup_messages1(self):
+        p = player.Player()
+        cnt = len(p.messages)
+        p.add_message(message = 'testing 1', star = False, read = False)
+        p.add_message(message = 'testing 2', star = False, read = True)
+        p.add_message(message = 'testing 3', star = True, read = False)
+        p.add_message(message = 'testing 4', star = True, read = True)
+        p.cleanup_messages()
+        self.assertEqual(len(p.messages), cnt + 3)
+
+    def test_treaty1(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        msg_cnt = len(p2.messages)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        p1.treaty_negotiations()
+        p2.treaty_negotiations()
+        self.assertEqual(len(p2.messages), msg_cnt + 1)
 
 
     def test_do_research(self):
