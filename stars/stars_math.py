@@ -22,7 +22,7 @@ def volume_add(r1, r2):
         return r1
     v = volume(r1) + volume(r2)
     r = ((3.0 * v) / (4.0 * math.pi)) ** (1.0/3.0)
-    return round(r, 2)
+    return r
 
 """ Volume """
 def volume(r):

@@ -182,137 +182,585 @@ class PlayerTestCase(unittest.TestCase):
         p.add_intel(s, {'name': 'test'})
         self.assertEqual(p.get_name(s), 'test')
 
-
-
-
-    def test_do_research(self):
-        #TODO
-        return
+    def test_add_message1(self):
         p = player.Player()
-        p.energy = 1000000
-        p.energy_minister.allocate_budget(p.energy)
-        p.energy_minister.research_budget = 100
+        p.add_message(message = 'this is a test')
+        self.assertEqual(p.messages[-1].message, 'this is a test')
+
+    def test_cleanup_messages1(self):
+        p = player.Player()
+        cnt = len(p.messages)
+        p.add_message(message = 'testing 1', star = False, read = False)
+        p.add_message(message = 'testing 2', star = False, read = True)
+        p.add_message(message = 'testing 3', star = True, read = False)
+        p.add_message(message = 'testing 4', star = True, read = True)
+        p.cleanup_messages()
+        self.assertEqual(len(p.messages), cnt + 3)
+
+    def test_treaty01(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        msg_cnt = len(p2.messages)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        p1.treaty_negotiations()
+        p2.treaty_negotiations()
+        self.assertEqual(len(p2.messages), msg_cnt + 1)
+
+    def test_treaty02(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        msg_cnt = len(p2.messages)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'signed'
+        t2.status = 'signed'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        self.assertEqual(len(p2.messages), msg_cnt + 1)
+
+    def test_treaty03(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        treaty_cnt = len(p2.treaties)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'rejected'
+        t2.status = 'rejected'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        self.assertEqual(len(p2.treaties), treaty_cnt)
+
+    def test_treaty04(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        treaty_cnt = len(p2.treaties)
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'signed'
+        t2.status = 'signed'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t1.status = 'signed'
+        t2.status = 'signed'
+        p1.treaty_finalization()
+        p2.treaty_finalization()
+        self.assertEqual(len(p2.treaties), treaty_cnt + 1)
+
+    def test_get_treaty01(self):
+        p = player.Player()
+        t = p.get_treaty(p)
+        self.assertTrue(t.relation == 'me')
+    
+    def test_get_treaty02(self):
+        p = player.Player()
+        t = p.get_treaty(p, True)
+        self.assertTrue(t == None)
+    
+    def test_get_treaty03(self):
+        p = player.Player()
+        p1 = player.Player()
+        t = p.get_treaty(p1)
+        self.assertTrue(t.other_player == reference.Reference(p1))
+    
+    def test_get_treaty11(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t = p1.get_treaty(p2, True)
+        self.assertTrue(t == t1)
+
+    def test_get_treaty12(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        t1.status = 'active'
+        t2.status = 'active'
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t = p1.get_treaty(p2, True)
+        self.assertTrue(t == None)
+
+    def test_get_treaty13(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        t1 = treaty.Treaty(other_player = reference.Reference(p2))
+        t2 = treaty.Treaty(other_player = reference.Reference(p1), treaty_key = t1.treaty_key)
+        t1.status = 'active'
+        t2.status = 'active'
+        p1.treaties.append(t1)
+        p2.treaties.append(t2)
+        t = p1.get_treaty(p2)
+        self.assertTrue(t == t1)
+
+    def test_get_relation01(self):
+        p = player.Player()
+        self.assertEqual(p.get_relation(p), 'me')
+
+    def test_get_relation02(self):
+        p = player.Player()
+        o = player.Player()
+        self.assertEqual(p.get_relation(o), 'neutral')
+
+    def test_max_terraform01(self):
+        p = player.Player()
+        p.tech_level.biotechnology = 0
+        self.assertEqual(p.max_terraform(), 0.0)
+
+    def test_max_terraform02(self):
+        r = race.Race(lrt_Bioengineer=True)
+        p = player.Player(race=r)
+        p.tech_level.biotechnology = 0
+        self.assertEqual(p.max_terraform(), 0)
+
+    def test_max_terraform03(self):
+        p = player.Player()
+        p.tech_level.biotechnology = 1
+        self.assertEqual(p.max_terraform(), 0.5)
+
+    def test_max_terraform04(self):
+        r = race.Race(lrt_Bioengineer=True)
+        p = player.Player(race=r)
+        p.tech_level.biotechnology = 1
+        self.assertEqual(p.max_terraform(), 1)
+
+    def test_max_terraform05(self):
+        p = player.Player()
+        p.tech_level.biotechnology = 50
+        self.assertEqual(p.max_terraform(), 20)
+
+    def test_max_terraform06(self):
+        r = race.Race(lrt_Bioengineer=True)
+        p = player.Player(race=r)
+        p.tech_level.biotechnology = 50
+        self.assertEqual(p.max_terraform(), 40)
+
+    def test_predict_budget(self):
+        pass #TODO
+
+    def test_allocate_budget01(self):
+        p = player.Player()
+        p.energy = 0
+        p.allocate_budget()
+        for category in ['construction', 'mattrans', 'research']:
+            self.assertEqual(p['budget_' + category], 0)
+
+
+    def test_allocate_budget02(self):
+        p = player.Player()
+        p.energy = 100
+        p.allocate_budget()
+        self.assertEqual(p['budget_construction'], 90)
+        self.assertEqual(p['budget_mattrans'], 0)
+        self.assertEqual(p['budget_research'], 10)
+
+    def test_allocate_budget03(self):
+        p = player.Player()
+        p.allocate_budget()
+        self.assertEqual(p['budget_construction'], p.energy*0.9)
+        self.assertEqual(p['budget_mattrans'], 0)
+        self.assertEqual(p['budget_research'], p.energy*0.1)
+
+    def test_add_energy01(self):
+        p = player.Player()
+        p.energy = 90
+        len_intel = len(p.intel)
+        p.add_energy(10)
+        self.assertEqual(p.energy, 100)
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend01(self):
+        p = player.Player()
+        p.energy = 100
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('Ship', spend=False), 90)
+        self.assertEqual(p.energy, 100)
+        self.assertEqual(p.budget_construction, 90)        
+        self.assertEqual(len(p.intel), len_intel)
+
+    def test_spend02(self):
+        p = player.Player()
+        p.energy = 100
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('StarBase'), 90)
+        self.assertEqual(p.energy, 10)
+        self.assertEqual(p.budget_construction, 0)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend03(self):
+        p = player.Player()
+        p.energy = 100
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('Facility', 4), 4)
+        self.assertEqual(p.energy, 96)
+        self.assertEqual(p.budget_construction, 86)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend04(self):
+        p = player.Player()
+        p.energy = 100
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('Baryogenesis', request=8), 8)
+        self.assertEqual(p.energy, 92)
+        self.assertEqual(p.budget_construction, 82)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend11(self):
+        p = player.Player()
+        p.energy = 100
+        p.finance_mattrans_use_surplus = False
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('mattrans'), 0)
+        self.assertEqual(p.energy, 100)
+        self.assertEqual(p.budget_construction, 90)        
+        self.assertEqual(p.budget_mattrans, 0)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend12(self):
+        p = player.Player()
+        p.energy = 100
+        p.finance_mattrans_use_surplus = True
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('mattrans'), 90)
+        self.assertEqual(p.energy, 10)
+        self.assertEqual(p.budget_construction, 90)        
+        self.assertEqual(p.budget_mattrans, -90)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend21(self):
+        p = player.Player()
+        p.energy = 100
+        p.finance_research_use_surplus = False
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('research'), 10)
+        self.assertEqual(p.energy, 90)
+        self.assertEqual(p.budget_construction, 90)        
+        self.assertEqual(p.budget_research, 0)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend22(self):
+        p = player.Player()
+        p.energy = 100
+        p.finance_research_use_surplus = True
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('research'), 100)
+        self.assertEqual(p.energy, 0)
+        self.assertEqual(p.budget_construction, 90)        
+        self.assertEqual(p.budget_research, -90)        
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_spend31(self):
+        p = player.Player()
+        p.energy = 100
+        p.allocate_budget()
+        len_intel = len(p.intel)
+        self.assertEqual(p.spend('planitoid'), 100)
+        self.assertEqual(p.energy, 0)
+        self.assertEqual(len(p.intel), len_intel +1)
+
+    def test_build_from_queue01(self):
+        p1 = player.Player()
+        p2 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p2))
+        to_build = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build)
+        p1.build_from_queue()
+        self.assertEqual(len(p1.build_queue), 0)
+        self.assertEqual(len(p1.fleets), 0)
+        self.assertEqual(len(p2.build_queue), 0)
+        self.assertEqual(len(p2.fleets), 0)
+
+    def test_build_from_queue02(self):
+        p1 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p1))
+        to_build = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build)
+        with patch.object(planet.Planet, 'build', return_value=True) as mock:
+            p1.build_from_queue()
+        self.assertEqual(len(p1.build_queue), 0)
+        self.assertEqual(mock.call_count, 1)
+
+    def test_build_from_queue03(self):
+        p1 = player.Player()
+        home_planet = planet.Planet(player=reference.Reference(p1))
+        to_build_1 = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build_1)
+        to_build_2 = build_ship.BuildShip(planet=reference.Reference(home_planet))
+        p1.build_queue.append(to_build_2)
+        self.assertEqual(len(p1.build_queue), 2)
+        with patch.object(planet.Planet, 'build', side_effect=[True, False]) as mock:
+            p1.build_from_queue()
+        self.assertEqual(len(p1.build_queue), 1)
+        self.assertEqual(mock.call_count, 2)
+
+    def test_research01(self):
+        p = player.Player()
+        p.energy = 55000
+        p.allocate_budget()
         p.research_field = 'energy'
-        p.tech_level.energy = 0
-        p.next_tech_cost.energy = 100
-        p._do_research()
+        p.tech_level = tech_level.TechLevel()
+        p.research()
         self.assertEqual(p.tech_level.energy, 1)
-        self.assertEqual(p.energy_minister.research_budget, 0)
-        p.energy_minister.research_budget = 300
+        self.assertEqual(p.budget_research, 0)
+        self.assertEqual(p.energy, 49500)
+
+    def test_research02(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        p.energy = 55000
+        p.allocate_budget()
         p.research_field = 'energy'
-        p.tech_level.energy = 0
-        p.next_tech_cost.energy = 100
-        p._do_research()
-        self.assertEqual(p.tech_level.energy, 2)
-        self.assertEqual(p.energy_minister.research_budget, 0)
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        for f in player.TECH_FIELDS:
+            if f == 'energy':
+                self.assertEqual(p.research_partial[f], 22000)
+                self.assertEqual(p.tech_level.energy, 3)
+                continue
+            self.assertEqual(p.research_partial[f], 0)
+            self.assertEqual(p.tech_level[f], 0)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
 
-    def test_calc_research_cost(self):
-        # TODO
-        pass
+    def test_research03(self):
+        p = player.Player()
+        p.race.lrt_MadScientist = True 
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = 'energy'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        print(p.tech_level.__dict__)
+        print('Player.research_partial:', p.research_partial.__dict__)
+        for f in player.TECH_FIELDS:
+            self.assertEqual(p.tech_level[f], 0)
+            if f == 'energy':
+                self.assertEqual(p.research_partial[f], 3025)
+                continue
+            self.assertEqual(p.research_partial[f], 825)
+        self.assertEqual(p.budget_research, 0)
+        self.assertEqual(p.energy, 49500)
 
-    def test_calc_next_research_field(self):
-        # TODO
-        pass
+    def test_research04(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        p.race.lrt_MadScientist = True 
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = 'energy'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        for f in player.TECH_FIELDS:
+            if f == 'energy':
+                self.assertEqual(p.tech_level[f], 2)
+                continue
+            self.assertEqual(p.tech_level[f], 1)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
 
-    def test_allocate(self):
-        return # TODO these tests predate the move to player
-        m = energy_minister.EnergyMinister()
-        # test 1
-        m.energy_minister_construction_percent = 100
-        m.energy_minister_mattrans_percent = 100
-        m.energy_minister_research_percent = 100
-        m.allocate_budget(100)
-        self.assertEqual(m.construction_budget, 100)
-        self.assertEqual(m.mattrans_budget, 0)
-        self.assertEqual(m.research_budget, 0)
-        self.assertEqual(m.unallocated_budget, 0)
-        # test 2
-        m.energy_minister_construction_percent = 0
-        m.energy_minister_mattrans_percent = 100
-        m.energy_minister_research_percent = 100
-        m.allocate_budget(100)
-        self.assertEqual(m.construction_budget, 0)
-        self.assertEqual(m.mattrans_budget, 100)
-        self.assertEqual(m.research_budget, 0)
-        self.assertEqual(m.unallocated_budget, 0)
-        # test 3
-        m.energy_minister_construction_percent = 0
-        m.energy_minister_mattrans_percent = 0
-        m.energy_minister_research_percent = 100
-        m.allocate_budget(100)
-        self.assertEqual(m.construction_budget, 0)
-        self.assertEqual(m.mattrans_budget, 0)
-        self.assertEqual(m.research_budget, 100)
-        self.assertEqual(m.unallocated_budget, 0)
-        # test 4
-        m.energy_minister_construction_percent = 0
-        m.energy_minister_mattrans_percent = 0
-        m.energy_minister_research_percent = 0
-        m.allocate_budget(100)
-        self.assertEqual(m.construction_budget, 0)
-        self.assertEqual(m.mattrans_budget, 0)
-        self.assertEqual(m.research_budget, 0)
-        self.assertEqual(m.unallocated_budget, 100)
-        # test 5
-        m.energy_minister_construction_percent = 10
-        m.energy_minister_mattrans_percent = 10
-        m.energy_minister_research_percent = 10
-        m.allocate_budget(100)
-        self.assertEqual(m.construction_budget, 10)
-        self.assertEqual(m.mattrans_budget, 10)
-        self.assertEqual(m.research_budget, 10)
-        self.assertEqual(m.unallocated_budget, 70)
+    def test_research11(self):
+        p = player.Player()
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        for f in player.TECH_FIELDS:
+            if f == 'energy':
+                self.assertEqual(p.tech_level[f], 1)
+                continue
+            self.assertEqual(p.tech_level[f], 0)
+        self.assertEqual(p.budget_research, 0)
+        self.assertEqual(p.energy, 49500)
 
-    def test_check_budget(self):
-        return # TODO these tests predate the move to player
-        m = energy_minister.EnergyMinister()
-        m.energy_minister_construction_percent = 40
-        m.energy_minister_mattrans_percent = 30
-        m.energy_minister_research_percent = 20
-        m.allocate_budget(100)
-        self.assertEqual(m.check_budget('ship', 30), 30)
-        self.assertEqual(m.check_budget('ship', 40), 40)
-        self.assertEqual(m.check_budget('ship', 111), 40)
-        self.assertEqual(m.check_budget('planetary', 111), 40)
-        self.assertEqual(m.check_budget('baryogenesis', 111), 40)
-        self.assertEqual(m.check_budget('mattrans', 111), 30)
-        self.assertEqual(m.check_budget('research', 111), 20)
-        self.assertEqual(m.check_budget('trade', 111), 100)
-        m.energy_minister_mattrans_use_surplus = True
-        self.assertEqual(m.check_budget('mattrans', 111), 70)
-        m.energy_minister_research_use_surplus = True
-        self.assertEqual(m.check_budget('research', 111), 90)
-        self.assertEqual(m.construction_budget, 40)
-        self.assertEqual(m.mattrans_budget, 30)
-        self.assertEqual(m.research_budget, 20)
-        self.assertEqual(m.unallocated_budget, 10)
+    def test_research12(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        for f in player.TECH_FIELDS:
+            if f == 'energy' or f == 'weapons':
+                self.assertEqual(p.tech_level[f], 2)
+                continue
+            self.assertEqual(p.tech_level[f], 1)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
 
-    def test_spend_budget(self):
-        return # TODO these tests predate the move to player
-        m = energy_minister.EnergyMinister()
-        m.energy_minister_construction_percent = 40
-        m.energy_minister_mattrans_percent = 30
-        m.energy_minister_research_percent = 20
-        m.allocate_budget(100)
-        # Construction
-        self.assertEqual(m.spend_budget('ship', 1), 1)
-        self.assertEqual(m.construction_budget, 39)
-        self.assertEqual(m.spend_budget('planetary', 1), 1)
-        self.assertEqual(m.construction_budget, 38)
-        self.assertEqual(m.spend_budget('baryogenesis', 1), 1)
-        self.assertEqual(m.construction_budget, 37)
-        # Mattrans
-        self.assertEqual(m.spend_budget('mattrans', 111), 30)
-        self.assertEqual(m.mattrans_budget, 0)
-        m.energy_minister_mattrans_use_surplus = True
-        self.assertEqual(m.spend_budget('mattrans', 5), 5)
-        self.assertEqual(m.mattrans_budget, -5)
-        # Research
-        self.assertEqual(m.spend_budget('research', 111), 20)
-        self.assertEqual(m.research_budget, 0)
-        m.energy_minister_research_use_surplus = True
-        self.assertEqual(m.spend_budget('research', 111), 32)
-        self.assertEqual(m.research_budget, -32)
-        # Unallocated
-        self.assertEqual(m.spend_budget('trade', 111), 10)
-        self.assertEqual(m.unallocated_budget, 0)
+    def test_research13(self):
+        p = player.Player()
+        p.race.lrt_MadScientist = True 
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        for f in player.TECH_FIELDS:
+            self.assertEqual(p.tech_level[f], 0)
+            if f == 'energy':
+                self.assertEqual(p.research_partial[f], 3025)
+                continue
+            self.assertEqual(p.research_partial[f], 825)
+        self.assertEqual(p.budget_research, 0)
+        self.assertEqual(p.energy, 49500)
+
+    def test_research14(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        p.race.lrt_MadScientist = True 
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        print(p.tech_level.__dict__)
+        print('Player.research_partial:', p.research_partial.__dict__)
+        for f in player.TECH_FIELDS:
+            if f == 'energy' or f == 'weapons':
+                self.assertEqual(p.tech_level[f], 2)
+                continue
+            self.assertEqual(p.tech_level[f], 1)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
+
+    def test_research21(self):
+        p = player.Player()
+        t_l = tech_level.TechLevel(weapons=1)
+        t = tech.Tech(level=t_l)
+        p.research_queue.append(t)
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        for f in player.TECH_FIELDS:
+            if f == 'weapons':
+                self.assertEqual(p.tech_level[f], 1)
+                continue
+            self.assertEqual(p.tech_level[f], 0)
+        self.assertEqual(p.budget_research, 0)
+        self.assertEqual(p.energy, 49500)
+
+    def test_research22(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        t_l = tech_level.TechLevel(weapons=1)
+        t = tech.Tech(level=t_l)
+        p.research_queue.append(t)
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        print(p.tech_level.__dict__)
+        print('Player.research_partial:', p.research_partial.__dict__)
+        for f in player.TECH_FIELDS:
+            if f == 'energy' or f == 'weapons':
+                self.assertEqual(p.tech_level[f], 2)
+                continue
+            self.assertEqual(p.tech_level[f], 1)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
+
+    def test_research23(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        t_l = tech_level.TechLevel(weapons=3)
+        t = tech.Tech(level=t_l)
+        p.research_queue.append(t)
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        print(p.tech_level.__dict__)
+        print('Player.research_partial:', p.research_partial.__dict__)
+        for f in player.TECH_FIELDS:
+            if f == 'weapons':
+                self.assertEqual(p.tech_level[f], 3)
+                continue
+            if f == 'biotechnology':
+                self.assertEqual(p.tech_level[f], 0)
+                continue
+            self.assertEqual(p.tech_level[f], 1)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
+
+    def test_research24(self):
+        p = player.Player()
+        p.race.lrt_MadScientist = True 
+        t_l = tech_level.TechLevel(weapons=1)
+        t = tech.Tech(level=t_l)
+        p.research_queue.append(t)
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        print(p.tech_level.__dict__)
+        print('Player.research_partial:', p.research_partial.__dict__)
+        for f in player.TECH_FIELDS:
+            self.assertEqual(p.tech_level[f], 0)
+            if f == 'weapons':
+                self.assertEqual(p.research_partial[f], 3025)
+                continue
+            self.assertEqual(p.research_partial[f], 825)
+        self.assertEqual(p.budget_research, 0)
+        self.assertEqual(p.energy, 49500)
+
+    def test_research25(self):
+        p = player.Player()
+        p.finance_research_use_surplus = True 
+        p.race.lrt_MadScientist = True 
+        t_l = tech_level.TechLevel(weapons=3)
+        t = tech.Tech(level=t_l)
+        p.research_queue.append(t)
+        p.energy = 55000
+        p.allocate_budget()
+        p.research_field = '<LOWEST>'
+        p.tech_level = tech_level.TechLevel()
+        p.research()
+        print(p.tech_level.__dict__)
+        print('Player.research_partial:', p.research_partial.__dict__)
+        for f in player.TECH_FIELDS:
+            if f == 'weapons':
+                self.assertEqual(p.tech_level[f], 2)
+                self.assertEqual(p.research_partial[f], 15735)
+                continue
+            self.assertEqual(p.tech_level[f], 1)
+            self.assertEqual(p.research_partial[f], 2755)
+        self.assertEqual(p.budget_research, -49500)
+        self.assertEqual(p.energy, 0)
+
+    def test_design_miniaturization(self):
+        return #TODO
+        p = player.Player()
+        d = ship_design.ShipDesign()
+        p.ship_designs.append(d)
+        self.assertEqual(3, 2)

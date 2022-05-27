@@ -103,7 +103,7 @@ class Game(Defaults):
                     p.add_intel(s.sun(), {'location': s.sun().location, 'color': s.sun().get_color(), 'size': s.sun().gravity})
             for b in self.blackholes:
                 for p in self.players:
-                    p.add_intel(b, {'location': b.location, 'size': b.range})
+                    p.add_intel(b, {'location': b.location, 'size': b.radius})
             self._scan([])
             self._call(self.players, 'update_stats')
                 
