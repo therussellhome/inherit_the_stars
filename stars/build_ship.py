@@ -35,7 +35,7 @@ class BuildShip(BuildQueue):
         # Recover any scrap
         if len(self.to_scrap) > 0:
             for tech in self.to_scrap:
-                self.ship.remove_component(tech)
+                self.ship.remove_component(tech) #how are minerals loaded into self.scrap_minerals?
             self.planet.on_surface += self.scrap_minerals
             super().build(self.scrap_minerals * -1)
             self.to_scrap = []
@@ -108,7 +108,7 @@ class BuildShip(BuildQueue):
         self.scrap_minerals = Minerals()
         if self.ship:
             if not self.buships.overhaul:
-                self.level = self.ship.level
+                self.level = self.ship.level #
             for (tech, cnt) in self.ship.components.items():
                 for i in range(cnt):
                     if tech in self.to_build:

@@ -84,7 +84,9 @@ class Fleet(Defaults):
     """ Adds ships to the fleet """
     def add_ships(self, ships):
         if isinstance(ships, Fleet):
-            ships = ships.ships
+            all_ships = ships.ships
+            all_ships += ships.under_construction
+            ships = all_ships
         elif not isinstance(ships, list):
             ships = [ships]
         for ship in ships:
@@ -92,6 +94,7 @@ class Fleet(Defaults):
             if ship ^ 'Ship' and ship not in self.ships:
                 self.ships.append(ship)
             if ship ^ 'BuShips' and ship not in self.under_construction:
+                #TODO BuShips vs BuildShips??
                 self.under_construction.append(ship)
         self.stats = None
         self.cargo = None
@@ -176,6 +179,7 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         self.move_to = self.order.move_calc(self.location)
+        print(self.move_to.__dict__)
         if self.move_to.root_location != self.location.root_location:
             self.is_stationary = False
 

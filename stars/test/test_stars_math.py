@@ -9,7 +9,7 @@ class StarsMathTestCase(unittest.TestCase):
         self.assertEqual(stars_math.volume_add(200, 0), 200)
 
     def test_add3(self):
-        self.assertEqual(stars_math.volume_add(100, 200), 208.01)
+        self.assertAlmostEqual(stars_math.volume_add(100, 200), 208.00838230)
 
     def test_vol1(self):
         self.assertAlmostEqual(stars_math.volume(100), 4188790.2047863905)

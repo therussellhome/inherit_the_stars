@@ -49,6 +49,25 @@ class TechLevel(Defaults):
         return cost
 
     """
+    Calculate the most expesive field in YJ to attain this level and the Tech with which it is associated
+    race (Race object) used for research modifiers
+    level (TechLevel object) current levels for the player
+    partial (TechLevel object) energy spent on next levels
+    " ""
+    def most_expensive_field(self, race, level, partial):
+        cost = {}
+        max_field = 'energy'
+        max_cost = -1
+        for field in TECH_FIELDS:
+            increase = max(0, self[field] - level[field])
+            cost = max(0, level.cost_for_next_level(field, race, increase) - partial[field])
+            if cost > max_cost:
+                max_field = field
+                max_cost = cost
+        return max_field
+        #"""
+    
+    """
     Cost in YJ to attain this level
     race (Race object) used for research modifiers
     level (TechLevel object) current levels for the player
