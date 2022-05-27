@@ -264,94 +264,46 @@ class Planet(Defaults):
         self.production = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
         return self.production
     
-    """ Get the time needed to get all the materials for a production queue item. """
-    def time_til_done(self, queue, i):
-        ti = 0
-        li = 0
-        si = 0
-        yj = 0
-        pro = 0
-        # get what is needed
-        for j in range(len(queue)):
-            item = queue[j]
-            yj += item.cost.energy
-            if item.planet == self:
-                ti += item.cost.titanium
-                li += item.cost.lithium
-                si += item.cost.silicon
-            if j == i:
-                break
-        pro = ti + li + si
-        # calculate the time needed to get what is needed
-        try:
-            t_ti = ceil(max((ti - self.on_surface.titanium) / (self.mineral_availability('titanium') * self._operate('mineral_extractors')), 1))/100
-        except ZeroDivisionError:
-            if ti - self.on_surface.titanium >= 0:
-                t_ti = 0.01
-            else:
-                t_ti = 'never'
-        try:
-            t_li = ceil(max((li - self.on_surface.lithium) / (self.mineral_availability('lithium') * self._operate('mineral_extractors')), 1))/100
-        except ZeroDivisionError:
-            if li - self.on_surface.lithium >= 0:
-                t_li = 0.01
-            else:
-                t_li = 'never'
-        try:
-            t_si = ceil(max((si - self.on_surface.silicon) / (self.mineral_availability('silicon') * self._operate('mineral_extractors')), 1))/100
-        except ZeroDivisionError:
-            if si - self.on_surface.silicon >= 0:
-                t_si = 0.01
-            else:
-                t_si = 'never'
-        try:
-            t_yj = ceil(max((yj - (self.player.energy * self.player.finance_construction_percent / 100)) / (self.player.predict_budget() * self.player.finance_construction_percent / 100), 1))/100
-        except ZeroDivisionError:
-            if yj - (self.player.energy * self.player.finance_construction_percent / 100) >= 0:
-                t_yj = 0.01
-            else:
-                t_yj = 'never'
-        try:
-            t_pro = ceil(max(pro / (1 + self._operate('factories') * (5 + self.player.tech_level.construction / 2)), 1))/100
-        except ZeroDivisionError:
-            t_pro = 'never'
-        return (t_ti, t_li, t_si, t_yj, t_pro, pro)
-    
-    def time_til_html(self, cost_in_html, queue, i):
+    def time_til_html(self, cost_in_html, total_cost):
         html1 = ''
         html2 = ''
-        time = self.time_til_done(queue, i)
+        extractors = self._operate('mineral_extractors')
         cost = cost_in_html.split('</i>')
         for c in cost:
             if 'Titanium' in c:
                 html1 += '<td>' + c + '</i></td>'
-                if time[0] == 'never':
+                if total_cost[0] < self.on_surface.titanium:
+                    html2 += '<td>0 years</td>'
+                elif extractors == 0:
                     html2 += '<td>never</td>'
                 else:
-                    html2 += '<td>' + str(time[0]) + ' years</td>'
+                    html2 += '<td>' +  str(ceil((total_cost[0] - self.on_surface.titanium) / (self.mineral_availability('titanium') * extractors))/100) + ' years</td>'
             elif 'Lithium' in c:
                 html1 += '<td>' + c + '</i></td>'
-                if time[1] == 'never':
+                if total_cost[1] < self.on_surface.lithium:
+                    html2 += '<td>0 years</td>'
+                elif extractors == 0:
                     html2 += '<td>never</td>'
                 else:
-                    html2 += '<td>' + str(time[1]) + ' years</td>'
+                    html2 += '<td>' + str(ceil((total_cost[1] - self.on_surface.lithium) / (self.mineral_availability('lithium') * extractors))/100) + ' years</td>'
             elif 'Silicon' in c:
                 html1 += '<td>' + c + '</i></td>'
-                if time[2] == 'never':
+                if total_cost[2] < self.on_surface.silicon:
+                    html2 += '<td>0 years</td>'
+                elif extractors == 0:
                     html2 += '<td>never</td>'
                 else:
-                    html2 += '<td>' + str(time[2]) + ' years</td>'
+                    html2 += '<td>' + str(ceil((total_cost[2] - self.on_surface.silicon) / (self.mineral_availability('silicon') * extractors))/100) + ' years</td>'
             elif 'Energy' in c:
                 html1 += '<td>' + c + '</i></td>'
-                if time[3] == 'never':
+                if total_cost[3] < self.player.energy * self.player.finance_construction_percent:
+                    html2 += '<td>0 years</td>'
+                elif self.player.finance_contruction_percent == 0:
                     html2 += '<td>never</td>'
                 else:
-                    html2 += '<td>' + str(time[3]) + ' years</td>'
+                    html2 += '<td>' + str(ceil((total_cost[3] - (self.player.energy * self.player.finance_construction_percent / 100)) / (self.player.predict_budget() * self.player.finance_construction_percent / 100))/100) + ' years</td>'
         html1 += '<td>' + str(queue[i].cost.titanium + queue[i].cost.lithium + queue[i].cost.silicon) + '</i></td>'
-        if time[4] == 'never':
-            html2 += '<td>never</td>'
-        else:
-            html2 += '<td>' + str(time[4]) + ' years</td>'
+        html2 += '<td>' + str(ceil(pro / (1 + self._operate('factories') * (5 + self.player.tech_level.construction / 2)))/100) + ' years</td>'
         return (html1, html2)
     
     """ Build an item """
