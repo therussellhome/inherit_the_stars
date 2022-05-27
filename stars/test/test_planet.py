@@ -495,6 +495,9 @@ class PlanetTestCase(unittest.TestCase):
         p.factories = 25
         self.assertEqual(p.operate_factories(), 2.01)
 
+    def test_time_til(self):
+        p = planet.Planet()
+
     def test_build1(self):
         p = planet.Planet()
         p.on_surface.people = 100
