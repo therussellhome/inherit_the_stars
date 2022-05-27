@@ -9,29 +9,10 @@ from ..tech_level import TechLevel
 
 __defaults = {
     'overview': {},
-#    'repair': [0, 0, sys.maxsize],
-#    'fuel_generation': [0, 0, sys.maxsize],
-#    'special_type': '',
-#    'colonizer': False,
-
     'combat': {}, # power over range (computed for 0..99)
     'sensor': {}, # visability over range (standard, penetrating, anti-cloak, self-cloak)
     'engine': {}, # tacometer over hyper (computed for 1..10)
     'guts': {},
-#    'engine_siphon': [0, 0, sys.maxsize],
-
-#    'ecm': [0, 0, 100],
-#    'weapon_power': [0, 0, sys.maxsize],
-#    'weapon_range': [0.0, 0.0, 1.0],
-#    'weapon_accuracy': [0, 0, 100],
-#    'scanner_normal': [0, 0, sys.maxsize],
-#    'scanner_penetrating': [0, 0, sys.maxsize],
-#    'scanner_anticloak': [0, 0, sys.maxsize],
-#    'cloak': [0, 0, 100],
-#    'apparent_mass': [0, 0, sys.maxsize],
-#    'engine_kt_exp': [0.0, 0.0, sys.maxsize],
-#    'engine_speed_div': [0.0, 0.0001, sys.maxsize],
-#    'engine_speed_exp': [0.0, 0.0, sys.maxsize],
 }
 
 """ Display information about a tech item or ship design """

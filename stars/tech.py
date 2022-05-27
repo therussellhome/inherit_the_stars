@@ -197,7 +197,7 @@ class Tech(Defaults):
                 range_ly = i / 100 * stars_math.TERAMETER_2_LIGHTYEAR
                 chart['armor'].append(self.armor)
                 chart['shield'].append(self.shield + self.armor)
-                chart['ecm'].append((self.shield + self.armor) * self.ecm * math.sqrt(range_ly))
+                chart['ecm'].append(max(1.0, self.shield + self.armor) * self.ecm * math.sqrt(range_ly))
                 chart['firepower'].append(0)
                 for weapon in self.weapons:
                     power = weapon.get_power(range_ly, sys.maxsize, 0)
@@ -280,7 +280,7 @@ class Tech(Defaults):
         self._html_filter(html, self.fuel_generation, 'Heavy Equipment', 'Fuel generation', '<i class="fa-free-code-camp">{0}/y</i>')
         self._html_filter(html, self.shipyard, 'Heavy Equipment', 'Shipyard capacity', '{0} kT/y')
         self._html_filter(html, self.mines_laid, 'Heavy Equipment', 'Mines laid', '{0}/y')
-        self._html_filter(html, self.hyperdenial, 'Heavy Equipment', 'Hyper denial', '{0}ly')
+        self._html_filter(html, self.hyperdenial.radius, 'Heavy Equipment', 'Hyper denial', '{0}ly')
         self._html_filter(html, self.extraction_rate, 'Heavy Equipment', 'Mineral extraction rate', '{0}/y')
         self._html_filter(html, self.mineral_depletion_factor, 'Heavy Equipment', 'Mineral depletion', '{0}/kT mined')
         self._html_filter(html, self.mat_trans_energy, 'Heavy Equipment', 'Mat-trans energy', '{0}/kT')
