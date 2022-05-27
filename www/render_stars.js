@@ -147,7 +147,7 @@ function onWheel(event) {
 // Key controls
 function onKeyPress(event) {
     var pos = selected_position.clone().sub(camera.position);
-    console.log('key:', event.keyCode, 'camera(', 'up:', camera.up, 'position:', camera.position, ') selected_position:', selected_position, 'pos:', pos);//, camera);
+    console.log('key:', event.key, 'keyCode:', event.keyCode, 'camera(', 'up:', camera.up, 'position:', camera.position, ') selected_position:', selected_position, 'pos:', pos);//, camera);
     var rotateDirection;
     // up
     if(event.keyCode == 38) {
@@ -168,6 +168,14 @@ function onKeyPress(event) {
     else if(event.keyCode == 39) {
         rotateDirection = new THREE.Vector3(-1, 0, 0);
         rotateCamera(rotateDirection, selected_position);
+    }
+    // display ship orders
+    else if(event.key == "o") {
+        for(var i = 0; i < details[selected_id.toString()].length; i++) {
+            if(details[selected_id.toString()][i].type === 'Ship') {
+                show_screen('orders')
+            }
+        }
     }
     // reset
     else if(event.key == "r") {
@@ -225,6 +233,13 @@ function onClick(event) {
     console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
+        console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object);
+        console.log('type: ', intersects[0].object.name);
+        if(intersects[0].object.name === 'Ship') {
+            post('orders', '?fleet_index='+.toString());
+            show_order_sidebar();
+            console.log('intersected ship');
+        }
         select_object(intersects[0].object, intersects[0].index, false, false);
     } else {
         raycaster.params.Points.threshold = TERAMETER / 10;
@@ -321,7 +336,7 @@ function get_system(intersected, index) {
             size: ((system_data[i].size + 200) * TERAMETER / size_mod)
         } );
         var point = new THREE.Points( geometry, material );
-        point.name = system_data[i].name;
+        point.name = system_data[i].type// = system_data[i].name;
         inner_system.add(point);
     }
     scene.remove(in_system);

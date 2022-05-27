@@ -1,8 +1,60 @@
 from .playerui import PlayerUI
 from ..reference import Reference
-from ..order import Order, depart_options, standoff_options, seperate_display, veriable_maxes
+from ..location import Location
+from ..order import Order
 import sys
 import copy
+from ..game import Game#finding Game.x through attribute trees
+
+depart_options = [
+    'immediately',
+    'after x years',
+    'repair to x',
+    'remain indef',
+]
+
+standoff_options = [
+    'No Standoff',
+    'Avoid Detection',
+    'Penetrating Minimum',
+    'Anti-Cloak Minimum',
+    'Hyper-Denial Minimum',
+    ]
+
+separate_display = [
+    'speed',
+    'load_si',
+    'load_ti',
+    'load_li',
+    'load_people',
+    'unload_si',
+    'unload_ti',
+    'unload_li',
+    'unload_people',
+    'buy_si',
+    'buy_ti',
+    'buy_li',
+    'buy_fuel',
+    'colonize_min_hab',
+    'colonize_min_ti',
+    'colonize_min_li',
+    'colonize_min_si',
+    ]
+
+variable_maxes = [
+    'load_si',
+    'load_ti',
+    'load_li',
+    'load_people',
+    'unload_si',
+    'unload_ti',
+    'unload_li',
+    'unload_people',
+    'buy_si',
+    'buy_ti',
+    'buy_li',
+    'buy_fuel',
+]
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -12,43 +64,101 @@ __defaults = {
     'options_orders_depart': depart_options,
     'options_orders_standoff': standoff_options,
     'topbar': [],
+    'orders_location_name': '',
+    'orders_set_deepspace': False,
+    'order_set_deepspace': [],
+    'orders_x_max': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_x': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_x_min': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_y_max': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_y': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_y_min': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_z_max': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_z': (0.0, -sys.maxsize, sys.maxsize),
+    'orders_z_min': (0.0, -sys.maxsize, sys.maxsize),
+    #'order_waypoint_display': [],
 }
 
 
-""" Foregin misister shows current relationships / treaties and pending treaties """
+""" Order Screen """
 class Orders(PlayerUI):
-    def __init__(self, actions, **kwargs):
+    def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
         if not self.player:
             return
-        for item in seperate_display:
-            self['orders_' + item + '_display'] = self.display(item)
-        for item in veriable_maxes:
-            self['orders_' + item + '_max'] = self.find_max(item)
-        for action in actions.split(';'):
-            # get fleet value
-            if action.startswith('fleet_index='):
-                self.order_fleet_index = str(action.split('=')[1])
-            if action.startswith('order='):
-                self.order_index = str(action.split('=')[1])
-            if action == 'start' and self.order_fleet_index != -1 and self.order_index != -1:
+        # Load the screen with the order
+        if action.startswith('load='):
+            self.order_last_screen = action.split('=')[1].split(';')[0]
+            self.order_fleet_index = action.split('=')[1].split(';')[1]
+            self.order_index = action.split('=')[1].split(';')[2]
+            if self.order_index == -1:
+                # create order
+                fleet = self.player.fleets[self.order_fleet_index]
+                fleet.orders.append(Order())
+                self.order_index = len(fleet.orders) - 1
+            for item in separate_display:
+                self['orders_' + item + '_display'] = self.display(item)
+            for item in variable_maxes:
+                self['orders_' + item + '_max'] = self.find_max(item)
+            for key in Order.defaults:
                 order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
-                for key in Order.defaults:
-                    self['orders_' + key] = order[key]
-            # get last screen
-            if action.startswith('screen='):
-                self.order_last_screen = str(action.split('=')[1])
-            if self.order_last_screen != '' and len(self.topbar) == 0:
-                self.topbar.append('<i class="button far fa-times-circle" title="Return to ' + str(self.order_last_screen) + ' screen" onclick="show_screen(\'' + str(self.order_last_screen) + '\')')
-                if self.order_last_screen == 'fleets':
-                    self.topbar[-1] += ', post(\'' + str(self.order_last_screen) + '\', \'?select_' + str(self.order_fleet_index) + '\')'
-                self.topbar[-1] += '">Back</i>'
-            self.order_fleet_index != -1
+                if key == 'location':
+                    continue
+                self['orders_' + key] = order[key]
+            # Special handling for location
+            if order.location.reference:
+                self.orders_location_name = 'some place'
+            else:
+                self.orders_set_deepspace = True
+                self.orders_location_name = 'Deep Space'
+            # Set x/y/z min/max
+            print('orders printing self.player.game.__dict__:')
+            for key in Game.defaults:
+                print(' * ', key, ':', self.player.game[key])
+            self.orders_x_min = self.player.game.x * -1.0
+            self.orders_x_max = self.player.game.x * 1.0
+            self.orders_x = order.location.x
+            self.orders_y_min = self.player.game.y * -1.0
+            self.orders_y_max = self.player.game.y * 1.0
+            self.orders_y = order.location.y
+            self.orders_z_min = self.player.game.z * -1.0
+            self.orders_z_max = self.player.game.z * 1.0
+            self.orders_z = order.location.z
+        # Change the location
+        print('orders printing self.__dict__:')
+        for key in self.__dict__:
+            print(' * ', key, ':', self[key])
+        if self.orders_set_deepspace == True:
+            print('setting deepspace')
+            self.orders_location_name = 'Deep Space'
+        # Store updates back to the order
         if self.order_fleet_index != -1 and self.order_index != -1:
             order = self.player.fleets[self.order_fleet_index].orders[self.order_index]
             for key in Order.defaults:
+                if key == 'location':
+                    if self.orders_location_name == 'Deep Space':
+                        order[key] = Location(self.orders_x, self.orders_y, self.orders_z)
+                    continue
                 order[key] = self['orders_' + key]
-            #print(order.__dict__, '\n')
+            # Set the x/y/z back to what's actually in order
+            self.orders_x = order.location.x
+            self.orders_y = order.location.y
+            self.orders_z = order.location.z
+        # Topbar
+        self.topbar.append('<i class="button far fa-times-circle"')
+        if self.order_last_screen != '':
+            self.topbar[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="show_screen(\'' + str(self.order_last_screen) + '\')'
+            if self.order_last_screen == 'fleets':
+                self.topbar[-1] += ', post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
+            self.topbar[-1] += '">Back</i>'
+        else:
+            self.topbar[-1] += ' title="Close Orders screen" onclick="show_screen(null)">Close</i>'
+        # set waypoint display
+        self.order_set_deepspace.append('<td colspan="2">Set to Deepspace Coordinate</td>'+'<td><input id="orders_set_deepspace" type="checkbox" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td>X</td>'+'<td colspan="2"><input id="orders_x" type="number" min="'+str(self.orders_x_min)+'" max="'+str(self.orders_x_max)+'" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td>Y</td>'+'<td colspan="2"><input id="orders_y" type="number" min="'+str(self.orders_y_min)+'" max="'+str(self.orders_y_max)+'" onchange="post(\'orders\')"/></td>')
+        self.order_set_deepspace.append('<td>Z</td>'+'<td colspan="2"><input id="orders_z" type="number" min="'+str(self.orders_z_min)+'" max="'+str(self.orders_z_max)+'" onchange="post(\'orders\')"/></td>')
+        print('orders printing, self.orders_set_deepspace:', self.orders_set_deepspace)
 
     def display(self, item):
         if item == 'speed':

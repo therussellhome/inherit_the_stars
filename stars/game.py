@@ -44,7 +44,10 @@ __defaults = {
     'victory_shipsofthewall': True,
     'victory_shipsofthewall_number': (150, 50, 1000), 
     'victory_starbases': True,
-    'victory_starbases_number': (25, 10, 100), 
+    'victory_starbases_number': (25, 10, 100),
+    'x': (50, 0, sys.maxsize),
+    'y': (50, 0, sys.maxsize),
+    'z': (50, 0, sys.maxsize),
 }
 
 
@@ -64,11 +67,11 @@ class Game(Defaults):
             num_systems = min(num_systems, len(system_names))
             # create systems
             min_distance = 3 * stars_math.TERAMETER_2_LIGHTYEAR
-            x = max(x, 2)
-            y = max(y, 2)
-            z = max(z, 2)
+            self.x = max(x, 2)
+            self.y = max(y, 2)
+            self.z = max(z, 2)
             while len(self.systems) < num_systems:
-                l = Location(new_random=(x / 2, y / 2, z / 2), is_system=True)
+                l = Location(new_random=(self.x / 2, self.y / 2, self.z / 2), is_system=True)
                 for s in self.systems:
                     if s.location - l < min_distance:
                         break
@@ -76,7 +79,7 @@ class Game(Defaults):
                     system_name = system_names.pop(randint(0, len(system_names) - 1))
                     self.systems.append(StarSystem(ID=system_name, location=l))
             # pick home systems
-            min_distance = max(x, y, z) * 0.8
+            min_distance = max(self.x, self.y, self.z) * 0.8
             homes = []
             while len(homes) < min(len(races), len(self.systems)):
                 for s in self.systems:
