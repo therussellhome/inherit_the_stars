@@ -31,15 +31,20 @@ class Planets(PlayerUI):
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
-        if not hasattr(self.player, 'planet_report'):
-            planets = [] 
+        if not hasattr(self.player, 'planet_report') or len(self.player.planet_report) == 0:
+            print('no preprepared planet reports')
+            planets = []
+            print(self.player.get_intel(by_type='Planet'))
             for (reference, intel) in self.player.get_intel(by_type='Planet').items():
+                print('Planet Reports printing planet intel:', reference, ':', intel.__dict__)
                 planets.append(self.process_intel(reference, intel))
             for (reference, intel) in self.player.get_intel(by_type='Sun').items():
+                print('Planet Reports printing suns intel:', reference, ':', intel.__dict__)
                 planets.append(self.process_intel(reference, intel))
             # Puts the report in the cache
             self.player.planet_report = planets
         else:
+            print('you previously prepared planets reports')
             planets = self.player.planet_report
         print('planets:', planets)
         for p in planets:
@@ -56,12 +61,13 @@ class Planets(PlayerUI):
         planet['date'] = intel.date
         if reference: 
             planet['Habitability'] = reference.habitability
-            planet['Population'] = reference.population
-            planet['Capacity'] = reference.capacity
-            planet['Max Population'] = reference.max_pop 
+            pop = reference.on_surface.people
+            planet['Population'] = pop
+            # precent of max population planet['Capacity'] = reference.capacity
+            planet['Max Population'] = reference.maxpop(self.player.race) 
             planet['Energy Generation'] = '<i class="YJ">' + str(reference.generate_energy() * 100) + '</i>'
             planet['Production Capacity'] = str(reference.operate_factories() * 100)
-            planet['Scanner Range'] = str(reference.scanning_penetrating()) + '/' + str(reference.scanning_normal())
+            planet['Scanner Range'] = str((self.player.race.pop_per_kt() * pop * 3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0)) + '/' + str((reference.player.race.pop_per_kt() * pop * 3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0)
             planet['Shield Coverage'] = str(reference.raise_shields())
             planet['Mineral Output'] = str(reference.mine_minerals() * 100)
             planet['Mineral Availability'] = reference.mineral_availability
