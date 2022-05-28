@@ -1,4 +1,3 @@
-import copy
 import math
 import random
 import sys
@@ -27,6 +26,7 @@ __defaults = {
     'order': Order(), # current actions
     'orders': [], # future actions
     'orders_repeat': False,
+    'fuel_reserve': (30, 0, 100), # minimum fuel reserve before cross-fleet sharing
 }
 
 """ Temporary values (default, min, max)  """
@@ -130,10 +130,11 @@ class Fleet(Defaults):
     """ Duplicates the flees except for the ships for use with split """
     def duplicate(self):
         f = Fleet()
-        f.order = copy.copy(self.order)
+        f.order = Order(self.order)
         for o in self.orders:
-            f.orders.append(copy.copy(o))
+            f.orders.append(Order(o))
         f.orders_repeat = self.orders_repeat
+        f.fuel_reserve = self.fuel_reserve
         return f
 
     """ Update cache """
@@ -556,7 +557,7 @@ class Fleet(Defaults):
     def cargo_distribution(self):
         if self.stats.cargo_max == 0.0:
             return
-        cargo_left = copy.copy(self.cargo)
+        cargo_left = Cargo(self.cargo)
         for ctype in CARGO_TYPES:
             for ship in self.ships:
                 ship.cargo[ctype] = int(self.cargo[ctype] * ship.cargo_max / self.stats.cargo_max)

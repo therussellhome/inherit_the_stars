@@ -183,6 +183,9 @@ tr.collapse {
 tr.slider_padding {
     height: 2em;
 }
+tr.slider_padding_min {
+    height: 0.5em;
+}
 td {
     white-space: nowrap;
 }
@@ -235,60 +238,67 @@ textarea:disabled {
     background: black;
 }
 /* titanium */
-#orders_load_ti .noUi-connect {
+.center-fill-ti {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
     background: dodgerblue;
+    z-index: 0;
 }
 #orders_colonize_min_ti .noUi-connect {
     background: dodgerblue;
 }
-#orders_unload_ti .noUi-connect {
-    background: dodgerblue;
-}
-#orders_buy_ti .noUi-connect {
-    background: dodgerblue;
-}/* titanium - lithium */
-#orders_load_li .noUi-connect {
+/* lithium */
+.center-fill-li {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
     background: lightgreen;
+    z-index: 0;
 }
 #orders_colonize_min_li .noUi-connect {
     background: lightgreen;
 }
-#orders_unload_li .noUi-connect {
-    background: lightgreen;
-}
-#orders_buy_li .noUi-connect {
-    background: lightgreen;
-}/* lithium - silicon */
-#orders_load_si .noUi-connect {
+/* silicon */
+.center-fill-si {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
     background: orange;
+    z-index: 0;
 }
 #orders_colonize_min_si .noUi-connect {
     background: orange;
 }
-#orders_unload_si .noUi-connect {
-    background: orange;
-}
-#orders_buy_si .noUi-connect {
-    background: orange;
-}/* silicon - people*/
-#orders_load_people .noUi-connect {
+/* people*/
+.center-fill-pop {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
     background: white;
+    z-index: 0;
 }
 #orders_colonize_min_people .noUi-connect {
     background: white;
 }
-#orders_unload_people .noUi-connect {
-    background: white;
-}
-#orders_buy_people .noUi-connect {
-    background: white;
-}/* people - habinability */
+/* habinability */
 #orders_colonize_min_hab .noUi-connect {
     background: white;
-}/* habitability - fuel */
-#orders_buy_fuel .noUi-connect {
+}
+/* fuel */
+.center-fill-fuel {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
     background: magenta;
-}/* fuel - speed */
+    z-index: 0;
+}
+/* fuel - speed */
 #orders_speed .noUi-connect {
     background: magenta;
 }/* speed - background */
@@ -353,6 +363,13 @@ i.si {
     color: orange;
 }
 
+i.pop:before {
+    content: 'Pop ';
+}
+i.pop {
+    color: white;
+}
+
 i.fa-weight-hanging {
     color: gray;
 }
@@ -375,7 +392,7 @@ i.fa-free-code-camp.vertical:after {
     border-left: 1px solid magenta;
 }
 
-i.ti:after, i.li:after, i.si:after, i.fa-weight-hanging:after, i.fa-luggage-cart:after {
+i.ti:after, i.li:after, i.si:after, i.pop:after, i.fa-weight-hanging:after, i.fa-luggage-cart:after {
     content: 'kT';
 }
 

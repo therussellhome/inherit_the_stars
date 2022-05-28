@@ -5,13 +5,6 @@ from . import game_engine
 from .defaults import Defaults
 from .location import Location
 from .reference import Reference
-cargo_options = ['_ti', '_li', '_si', '_people']
-depart_options = [
-    'immediately',
-    'after x years',
-    'repair to x',
-    'remain indef',
-]
 
 standoff_options = [
     'No Standoff',
@@ -21,83 +14,40 @@ standoff_options = [
     'Hyper-Denial Minimum',
 ]
 
-seperate_display = [
-    'speed',
-    'load_si',
-    'load_ti',
-    'load_li',
-    'load_people',
-    'unload_si',
-    'unload_ti',
-    'unload_li',
-    'unload_people',
-    'buy_si',
-    'buy_ti',
-    'buy_li',
-    'buy_fuel',
-    'colonize_min_hab',
-    'colonize_min_ti',
-    'colonize_min_li',
-    'colonize_min_si',
-]
-
-veriable_maxes = [
-    'load_si',
-    'load_ti',
-    'load_li',
-    'load_people',
-    'unload_si',
-    'unload_ti',
-    'unload_li',
-    'unload_people',
-    'buy_si',
-    'buy_ti',
-    'buy_li',
-    'buy_fuel',
-]
-
 """ Default values (default, min, max)  """
 __defaults = {
+    'ID': '@UUID',
     'location': Location(),
-    'speed': (-2, -2, 10), # -2=auto stargate, -1=auto, 0-10=manual
+    'speed': (-1, -2, 10), # -2=auto stargate, -1=auto, 0-10=manual
     'description': '',
     'standoff': standoff_options[0],
-    'upgrade_if_commanded': False,#???
-    'depart': depart_options[0],
-    'depart_after_x': (0.01, 0.0, sys.maxsize),
-    'repair_to_x': (0, 0, sys.maxsize),
-    'load_si': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
-    'load_ti': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
-    'load_li': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
-    'load_people': (0, -1, sys.maxsize), # -1=load all available, 0-max=load exactly kt
-    'load_all_available': False,
-    'unload_si': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
-    'unload_ti': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
-    'unload_li': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
-    'unload_people': (0, -1, sys.maxsize), # -1=unload all, 0-max=load exactly kt
-    'buy_si': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
-    'buy_ti': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
-    'buy_li': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
-    'buy_fuel': (0, -1, sys.maxsize), # -1=buy all available, 0-max=buy exactly kt
-    'sell_si': False,
-    'sell_ti': False,
-    'sell_li': False,
-    'sell_fuel': False,
-    'patrol': False,
+    'depart': (0.0, 0.0, 10.0), # depart after x years, 10.0=never
+    'repair_to': (0, 0, sys.maxsize), # TODO Do we even want this option?
+    'load_si': (0, -100, 100), # unload / load %
+    'load_ti': (0, -100, 100), # unload / load %
+    'load_li': (0, -100, 100), # unload / load %
+    'load_pop': (0, -100, 100), # unload / load %
+    'buy_si': (0, -100, 100), # buy / sell %
+    'buy_ti': (0, -100, 100), # buy / sell %
+    'buy_li': (0, -100, 100), # buy / sell %
+    'buy_fuel': (0, -100, 100), # buy / sell %
     'transfer_to': Reference('Player'),
+    'hyperdenial': True,
+    'lay_mines': True,
+    'auto_colonize': True, 
     'merge': False,
-    'hyperdenial': False,
-    'lay_mines': False,
-    'colonize_manual': False, # 
-    'colonize_min_hab': (70, 0, 101), # 101=do not auto colonize
-    'colonize_min_ti': (0, 0, 10),
-    'colonize_min_li': (0, 0, 10),
-    'colonize_min_si': (0, 0, 10),
     'scrap': False,
+    'patrol': False,
 }
 
 """ Class defining waypoints - edited by the player through fleet """
 class Order(Defaults):
+    """ Initialize and register """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        game_engine.register(self)
+
+    """ Calculate where to move to """
     def move_calc(self, fleet_location):
         # Intentionally stopped
         if self.speed == 0:

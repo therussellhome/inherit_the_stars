@@ -436,7 +436,6 @@ class Planet(Defaults):
             radius = (self.player.race.pop_per_kt() * self.on_surface.people * 3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0)
             if self.player.race.lrt_2ndSight:
                 radius *= 2.5
-            print('penetrating', radius)
             scan.penetrating(self.player, self.location, radius)
 
     """ Perform normal scanning """
@@ -446,7 +445,6 @@ class Planet(Defaults):
             radius = (self.player.race.pop_per_kt() * self.on_surface.people * 3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0
             if self.player.race.lrt_2ndSight:
                 radius /= 2.0
-            print('normal', radius)
             scan.normal(self.player, self.location, radius)
 
     """ Create a report about itself """
