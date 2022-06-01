@@ -129,6 +129,9 @@ class Player(Defaults):
                 if Reference(ship.ID) not in self.get_intel(None, 'ship'):
                     self.add_intel(ship, ship.scan_report())
 
+    def __str__(self):
+        return str(self.ID)
+
     """ Player filename """
     def filename(self):
         return self.game_ID + ' - ' + self.ID
@@ -358,7 +361,7 @@ class Player(Defaults):
 
     """ Get the relationship """
     def get_relation(self, player):
-        if player is self:
+        if Reference(player) == Reference(self):
             return 'me'
         return self.get_treaty(player).relation
 
