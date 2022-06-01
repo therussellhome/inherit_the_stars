@@ -226,7 +226,7 @@ function onClick(event) {
     );
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
-    raycaster.params.Points.threshold = TERAMETER / 10;
+    raycaster.params.Points.threshold = TERAMETER / 50;
     raycaster.near = 0;
     raycaster.far = 10;
     var intersects = raycaster.intersectObject( in_system, true );
@@ -236,7 +236,7 @@ function onClick(event) {
         console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object);
         console.log('type: ', intersects[0].object.name);
         if(intersects[0].object.name === 'Ship') {
-            post('orders', '?fleet_index='+.toString());
+//TODO            post('orders', '?fleet_index='+intersects[0].object.toString());
             show_order_sidebar();
             console.log('intersected ship');
         }

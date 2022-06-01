@@ -98,7 +98,10 @@ def apply_defaults(obj):
 def copy_from(obj, other):
     # copy from other object
     for key in getattr(object.__getattribute__(obj, '__class__'), 'defaults', {}).keys():
-        if hasattr(other, key):
+        default = getattr(obj.__class__, 'defaults', {}).get(key, None)
+        if isinstance(default, str) and default == '@UUID':
+            pass
+        elif hasattr(other, key):
             setattr(obj, key, copy.copy(getattr(other, key)))
 
 
