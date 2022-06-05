@@ -87,6 +87,7 @@ class Game(Defaults):
                         if s.location - h.location < min_distance:
                             break
                     else:
+                        print('Game Making a Home System')
                         homeworld = s.create_system(races[len(homes)])
                         player = Player(race=races[len(homes)], tech=tech_tree, game_ID=self.ID, game=Reference(self), planets=[homeworld])
                         self.players.append(player)

@@ -77,7 +77,7 @@ class PlanetaryMinisters(PlayerUI):
             try:
                 self.player.planetary_minister_map[Reference(planet)]
             except:
-                self.player.planetary_minister_map[Reference(planet)] = Reference(get_minister(planet))
+                self.player.planetary_minister_map[Reference(planet)] = Reference(self.player.get_minister(planet))
         #print('8', self.planetary_curent_minister.__dict__)
         """ set display values """
         for minister in self.player.ministers:

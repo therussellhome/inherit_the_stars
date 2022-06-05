@@ -32,9 +32,15 @@ class Planets(PlayerUI):
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
-        if not hasattr(self.player, 'planet_report') or len(self.player.planet_report) == 0:
+        if True or not hasattr(self.player, 'planet_report') or len(self.player.planet_report) == 0:
             print('no preprepared planet reports')
             planets = []
+            print('race.g_start', self.player.race.hab_gravity)
+            print('race.g_stop', self.player.race.hab_gravity_stop)
+            print('race.t_start', self.player.race.hab_temperature)
+            print('race.t_stop', self.player.race.hab_temperature_stop)
+            print('race.r_start', self.player.race.hab_radiation)
+            print('race.r_stop', self.player.race.hab_radiation_stop)
             for (reference, intel) in self.player.get_intel(by_type='Planet').items():
                 planets.append(self.process_intel(reference, intel))
             for (reference, intel) in self.player.get_intel(by_type='Sun').items():
@@ -76,6 +82,9 @@ class Planets(PlayerUI):
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
             planet['Habitability'] = reference.habitability(self.player.race)
+            planet['Gravity'] = intel.gravity
+            planet['Temperature'] = intel.temperature
+            planet['Radiation'] = intel.radiation
             num_people = getattr(intel, 'Population', '?')
             pop = reference.on_surface.people
             planet['Population'] = pop
@@ -105,6 +114,9 @@ class Planets(PlayerUI):
             planet['Lithium Output'] = -1.0
             planet['Titanium Output'] = -1.0
             planet['Habitability'] = -101.0
+            planet['Gravity'] = '?'
+            planet['Temperature'] = '?'
+            planet['Radiation'] = '?'
             planet['Population'] = getattr(intel, 'Population', -1.0)
             planet['Capacity'] = getattr(intel, 'capacity', -1.0)
             planet['Max Population'] = getattr(intel, 'max_pop', -1.0)
@@ -112,6 +124,9 @@ class Planets(PlayerUI):
             planet['Silicon Availability'] = getattr(intel, 'Silicon availability', -1.0)
             planet['Titanium Availability'] = getattr(intel, 'Titanium availability', -1.0)
         planet['details'] += '<tr><td>Habitability</td><td>' + str(planet['Habitability']) + '</td></tr>'
+        planet['details'] += '<tr><td>    Gravity</td><td>' + str(planet['Gravity']) + '</td></tr>'
+        planet['details'] += '<tr><td>    Temperature</td><td>' + str(planet['Temperature']) + '</td></tr>'
+        planet['details'] += '<tr><td>    Radiation</td><td>' + str(planet['Radiation']) + '</td></tr>'
         planet['details'] += '<tr><td>Population</td><td>' + str(planet['Population']) + '</td></tr>'
         planet['details'] += '<tr><td>Capacity</td><td>' + str(planet['Capacity']) + '</td></tr>'
         planet['details'] += '<tr><td>Max Population</td><td>' + str(planet['Max Population']) + '</td></tr>'
@@ -128,6 +143,11 @@ class Planets(PlayerUI):
         planet['details'] += '<tr><td>Inhabitant</td><td>' + str(planet['Inhabitant']) + '</td></tr>'
         if reference ^ 'Planet':
             planet['All Planets'] = True
+            print('planet:', reference.__reference__)
+            print('  *  gravity:',  reference.gravity)
+            print('  *  temperature:',  reference.temperature)
+            print('  *  radiation:',  reference.radiation)
+            print('  *  habitability:',  reference.habitability(self.player.race))
         else:
             planet['All Suns'] = True
         if not hasattr(intel, 'Player'):

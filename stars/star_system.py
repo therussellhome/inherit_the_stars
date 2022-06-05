@@ -40,7 +40,7 @@ class StarSystem(Defaults):
             num_planets = round(random() * 5)
         home = -1
         if race:
-            planet_args['radiation'] = (race.hab_radiation_stop + race.hab_radiation) / 2
+            planet_args['radiation'] = int((race.hab_radiation_stop + race.hab_radiation) / 2)
             if race.primary_race_trait == 'Pa\'anuri':
                 num_planets = max(1, num_planets)
                 home = 0
@@ -52,14 +52,23 @@ class StarSystem(Defaults):
             segment = 100.0 / num_planets
             planet_args['ID'] = self.ID + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
-            if i != home:
+            if i != home - 1:
                 self.planets.append(Planet(**planet_args))
             else:
-                self.planets.append(Planet(**planet_args, 
-                    homeworld=True, 
-                    gravity=(race.hab_gravity_stop + race.hab_gravity) / 2,
-                    temperature=(race.hab_temperature_stop + race.hab_temperature) / 2))
+                planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
+                planet_args['temperature'] = int((race.hab_temperature_stop + race.hab_temperature) / 2)
+                print('Creating a homeworld for:', race.ID)
+                for i in race.__dict__:
+                    print('  * ', i, ':', race[i])
+                print('Creating homeworld:', planet_args)
+                print('num planets, including Star:', len(self.planets))
+                self.planets.append(Planet(**planet_args, homeworld=True))
+                print('num planets, including Star and Home:', len(self.planets))
+                planet_args.remove('gravity')
+                planet_args.remove('temperature')
         if race:
+            print('StarSystem planet that is Homeworld:', home)
+            print('passing to game:', Reference(self.planets[home]).__dict__)
             return Reference(self.planets[home])
         return None
 
