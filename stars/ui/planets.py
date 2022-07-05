@@ -1,7 +1,6 @@
 from .playerui import PlayerUI
 import math
 
-
 """ Default values (default, min, max)  """
 __defaults = {
     'options_planets_filter': [],
@@ -33,14 +32,7 @@ class Planets(PlayerUI):
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
         if True or not hasattr(self.player, 'planet_report') or len(self.player.planet_report) == 0:
-            print('no preprepared planet reports')
             planets = []
-            print('race.g_start', self.player.race.hab_gravity)
-            print('race.g_stop', self.player.race.hab_gravity_stop)
-            print('race.t_start', self.player.race.hab_temperature)
-            print('race.t_stop', self.player.race.hab_temperature_stop)
-            print('race.r_start', self.player.race.hab_radiation)
-            print('race.r_stop', self.player.race.hab_radiation_stop)
             for (reference, intel) in self.player.get_intel(by_type='Planet').items():
                 planets.append(self.process_intel(reference, intel))
             for (reference, intel) in self.player.get_intel(by_type='Sun').items():
@@ -48,7 +40,6 @@ class Planets(PlayerUI):
             # Puts the report in the cache
             self.player.planet_report = planets
         else:
-            print('you previously prepared planets reports')
             planets = self.player.planet_report
         filtered_planets = self.planet_filter(planets, self.planets_filter)
         sorted_planets = self.planet_sort(filtered_planets, self.planets_field)
@@ -81,6 +72,9 @@ class Planets(PlayerUI):
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
+            reference.gravity = intel.gravity
+            reference.temperature = intel.temperature
+            reference.radiation = intel.radiation
             planet['Habitability'] = reference.habitability(self.player.race)
             planet['Gravity'] = intel.gravity
             planet['Temperature'] = intel.temperature
@@ -143,11 +137,6 @@ class Planets(PlayerUI):
         planet['details'] += '<tr><td>Inhabitant</td><td>' + str(planet['Inhabitant']) + '</td></tr>'
         if reference ^ 'Planet':
             planet['All Planets'] = True
-            print('planet:', reference.__reference__)
-            print('  *  gravity:',  reference.gravity)
-            print('  *  temperature:',  reference.temperature)
-            print('  *  radiation:',  reference.radiation)
-            print('  *  habitability:',  reference.habitability(self.player.race))
         else:
             planet['All Suns'] = True
         if not hasattr(intel, 'Player'):

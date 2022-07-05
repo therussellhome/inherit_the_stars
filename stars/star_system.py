@@ -35,6 +35,8 @@ class StarSystem(Defaults):
             'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
             'radiation': randint(0, 100),
+            'gravity': 'generate',
+            'temperature': 'generate',
         }
         if num_planets < 0:
             num_planets = round(random() * 5)
@@ -44,6 +46,8 @@ class StarSystem(Defaults):
             if race.primary_race_trait == 'Pa\'anuri':
                 num_planets = max(1, num_planets)
                 home = 0
+                planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
+                planet_args['temperature'] = int((race.hab_temperature_stop + race.hab_temperature) / 2)
             else:
                 num_planets = max(2, num_planets)
                 home = randint(1, num_planets)
@@ -52,23 +56,23 @@ class StarSystem(Defaults):
             segment = 100.0 / num_planets
             planet_args['ID'] = self.ID + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
+            planet_args['gravity'] = 'generate'
+            planet_args['temperature'] = 'generate'
             if i != home - 1:
                 self.planets.append(Planet(**planet_args))
             else:
                 planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
                 planet_args['temperature'] = int((race.hab_temperature_stop + race.hab_temperature) / 2)
-                print('Creating a homeworld for:', race.ID)
-                for i in race.__dict__:
-                    print('  * ', i, ':', race[i])
-                print('Creating homeworld:', planet_args)
-                print('num planets, including Star:', len(self.planets))
                 self.planets.append(Planet(**planet_args, homeworld=True))
-                print('num planets, including Star and Home:', len(self.planets))
-                planet_args.remove('gravity')
-                planet_args.remove('temperature')
+                planet_temp = round(self.planets[home].distance * 0.35 + self.sun().temperature * 0.65)
+                if planet_temp - self.planets[home].temperature not in range(-15, 15):
+                    self.sun()['temperature'] = round(((self.planets[home].temperature) - (self.planets[home].distance * 0.35)) / 0.65)
+                    for pi in range(1, len(self.planets)-1):
+                        planet = self.planets[pi]
+                        planet_temp = round(planet.distance * 0.35 + self.sun().temperature * 0.65)
+                        if planet.temperature - planet_temp not in range(-15, 15):
+                            planet.temperature = planet_temp + randint(-15, 15)
         if race:
-            print('StarSystem planet that is Homeworld:', home)
-            print('passing to game:', Reference(self.planets[home]).__dict__)
             return Reference(self.planets[home])
         return None
 
