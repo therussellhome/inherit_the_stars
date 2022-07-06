@@ -44,8 +44,8 @@ class Planets(PlayerUI):
         filtered_planets = self.planet_filter(planets, self.planets_filter)
         sorted_planets = self.planet_sort(filtered_planets, self.planets_field)
         for p in sorted_planets:
-            self.planets_report.append('<td colspan="3"><table class="hfill"><caption><div class="fa-angle-double-down" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + '</div></caption><tr><td>' + str(p['name']) + '</td><td>' + str(p[self.planets_field]) +'</td><td>' + p['date'] + '</td></tr>')
-            self.planets_report[-1] += '<tr><td colspan="3"><table class="hfill">' + str(p['details']) + '</table></td></tr>'
+            self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + ' . : . ' + str(p[self.planets_field]) + ' . : . ' + str(p['date']) + '</div></caption>')#'<tr class="collapse"><td class="collapse">' + str(p['name']) + '</td><td class="collapse">' + str(p[self.planets_field]) +'</td><td class="collapse">' + str(p['date']) + '</td></tr>')
+            self.planets_report[-1] += '<tr class="collapse"><td class="collapse" colspan="3"><table class="hfill collapse">' + str(p['details']) + '</table></td></tr>'
             self.planets_report[-1] += '</table></td>'
             
     def planet_filter(self, planets, planet_type):
@@ -117,24 +117,24 @@ class Planets(PlayerUI):
             planet['Lithium Availability'] = getattr(intel, 'Lithium availability', -1.0)
             planet['Silicon Availability'] = getattr(intel, 'Silicon availability', -1.0)
             planet['Titanium Availability'] = getattr(intel, 'Titanium availability', -1.0)
-        planet['details'] += '<tr><td>Habitability</td><td>' + str(planet['Habitability']) + '</td></tr>'
-        planet['details'] += '<tr><td>    Gravity</td><td>' + str(planet['Gravity']) + '</td></tr>'
-        planet['details'] += '<tr><td>    Temperature</td><td>' + str(planet['Temperature']) + '</td></tr>'
-        planet['details'] += '<tr><td>    Radiation</td><td>' + str(planet['Radiation']) + '</td></tr>'
-        planet['details'] += '<tr><td>Population</td><td>' + str(planet['Population']) + '</td></tr>'
-        planet['details'] += '<tr><td>Capacity</td><td>' + str(planet['Capacity']) + '</td></tr>'
-        planet['details'] += '<tr><td>Max Population</td><td>' + str(planet['Max Population']) + '</td></tr>'
-        planet['details'] += '<tr><td>Energy Generation</td><td>' + str(planet['Energy Generation']) + '</td></tr>'
-        planet['details'] += '<tr><td>Production Capacity</td><td>' + str(planet['Production Capacity']) + '</td></tr>'
-        planet['details'] += '<tr><td>Scanner Range</td><td>' + str(planet['Scanner Range']) + '</td></tr>'
-        planet['details'] += '<tr><td>Shield Coverage</td><td>' + str(planet['Shield Coverage']) + '</td></tr>'
-        planet['details'] += '<tr><td>Lithium Output</td><td>' + str(planet['Lithium Output']) + '</td></tr>'
-        planet['details'] += '<tr><td>Silicon Output</td><td>' + str(planet['Silicon Output']) + '</td></tr>'
-        planet['details'] += '<tr><td>Titanium Output</td><td>' + str(planet['Titanium Output']) + '</td></tr>'
-        planet['details'] += '<tr><td>Lithium Availability</td><td>' + str(planet['Lithium Availability']) + '</td></tr>'
-        planet['details'] += '<tr><td>Silicon Availability</td><td>' + str(planet['Silicon Availability']) + '</td></tr>'
-        planet['details'] += '<tr><td>Titanium Availability</td><td>' + str(planet['Titanium Availability']) + '</td></tr>'
-        planet['details'] += '<tr><td>Inhabitant</td><td>' + str(planet['Inhabitant']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Habitability</td><td class="collapse">' + str(planet['Habitability']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">    Gravity</td><td class="collapse">' + str(planet['Gravity']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">    Temperature</td><td class="collapse">' + str(planet['Temperature']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">    Radiation</td><td class="collapse">' + str(planet['Radiation']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Population</td><td class="collapse">' + str(planet['Population']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Capacity</td><td class="collapse">' + str(planet['Capacity']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Max Population</td><td class="collapse">' + str(planet['Max Population']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Energy Generation</td><td class="collapse">' + str(planet['Energy Generation']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Production Capacity</td><td class="collapse">' + str(planet['Production Capacity']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Scanner Range</td><td class="collapse">' + str(planet['Scanner Range']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Shield Coverage</td><td class="collapse">' + str(planet['Shield Coverage']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Lithium Output</td><td class="collapse">' + str(planet['Lithium Output']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Silicon Output</td><td class="collapse">' + str(planet['Silicon Output']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Titanium Output</td><td class="collapse">' + str(planet['Titanium Output']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Lithium Availability</td><td class="collapse">' + str(planet['Lithium Availability']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Silicon Availability</td><td class="collapse">' + str(planet['Silicon Availability']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Titanium Availability</td><td class="collapse">' + str(planet['Titanium Availability']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Inhabitant</td><td class="collapse">' + str(planet['Inhabitant']) + '</td></tr>'
         if reference ^ 'Planet':
             planet['All Planets'] = True
         else:
