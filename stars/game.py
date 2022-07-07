@@ -186,6 +186,7 @@ class Game(Defaults):
         self._call(planets, 'extract_minerals')
         self._call(planets, 'operate_factories')
         self._call(players, 'allocate_budget')
+        self._call(players, 'reconcile_buships')
         self._call(players, 'build_from_queue')
         self._call(planets, 'build_planetary')
         self._call(planets, 'baryogenesis', reverse=True)

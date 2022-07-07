@@ -434,6 +434,9 @@ class Player(Defaults):
                 remove_from_queue.append(b)
         for d in remove_from_queue:
             self.build_queue.remove(d)
+            for item in self.buships:
+                if d.buships == item:
+                    self.buships.remove(item)
 
     """ Research """
     def research(self):
@@ -459,6 +462,8 @@ class Player(Defaults):
                         lowest = self.tech_level[f]
                         field = f
             # Cost to get to the next level in the selected field
+            if field == '<LOWEST>':
+                field = TECH_FIELDS[0]
             cost = self.tech_level.cost_for_next_level(field, self.race) - self.research_partial[field]
             # Mad scientist gets 130% return with 55% in the selected field and 15% in every other field
             if self.race.lrt_MadScientist:

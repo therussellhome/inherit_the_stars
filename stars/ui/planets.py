@@ -44,7 +44,7 @@ class Planets(PlayerUI):
         filtered_planets = self.planet_filter(planets, self.planets_filter)
         sorted_planets = self.planet_sort(filtered_planets, self.planets_field)
         for p in sorted_planets:
-            self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + ' . : . ' + str(p[self.planets_field]) + ' . : . ' + str(p['date']) + '</div></caption>')#'<tr class="collapse"><td class="collapse">' + str(p['name']) + '</td><td class="collapse">' + str(p[self.planets_field]) +'</td><td class="collapse">' + str(p['date']) + '</td></tr>')
+            self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + '  $  ' + str(p[self.planets_field]) + '  $  ' + str(p['date']) + '</div></caption>')#'<tr class="collapse"><td class="collapse">' + str(p['name']) + '</td><td class="collapse">' + str(p[self.planets_field]) +'</td><td class="collapse">' + str(p['date']) + '</td></tr>')
             self.planets_report[-1] += '<tr class="collapse"><td class="collapse" colspan="3"><table class="hfill collapse">' + str(p['details']) + '</table></td></tr>'
             self.planets_report[-1] += '</table></td>'
             
@@ -68,6 +68,11 @@ class Planets(PlayerUI):
         planet = {'name': intel.name, 'details': ''}
         planet['date'] = intel.date
         planet['World Type'] = str(world_type)
+        planet['Energy Generation'] = '?'
+        planet['Production Capacity'] = '?'
+        planet['Silicon Output'] = -1.0
+        planet['Lithium Output'] = -1.0
+        planet['Titanium Output'] = -1.0
         if reference:
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
@@ -84,29 +89,29 @@ class Planets(PlayerUI):
             planet['Population'] = pop
             planet['Max Population'] = reference.maxpop(self.player.race)#store max_pop in intel? 
             planet['Capacity'] = pop / planet['Max Population']#getattr(intel, 'Population', '?')
-            planet['Energy Generation'] = '<i class="YJ">' + str(reference.generate_energy() * 100) + '</i>'
-            planet['Production Capacity'] = str(reference.operate_factories() * 100)
-            planet['Scanner Range'] = str((self.player.race.pop_per_kt() * pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0)) + '/' + str((reference.player.race.pop_per_kt() * pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0)
+            planet['Scanner Range'] = str((self.player.race.pop_per_kt() * pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0)) + ' / ' + str((reference.player.race.pop_per_kt() * pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0)
             planet['Shield Coverage'] = str(reference.raise_shields())
             min_availability = reference.mineral_availability()
-            planet['Silicon Availability'] = min_availability.silicon
-            planet['Lithium Availability'] = min_availability.lithium
-            planet['Titanium Availability'] = min_availability.titanium
-            operate = reference._operate('mineral_extractors')
-            planet['Silicon Output'] = operate * min_availability.silicon
-            planet['Lithium Output'] = operate * min_availability.lithium
-            planet['Titanium Output'] = operate * min_availability.titanium
+            planet['Silicon Availability'] = round(min_availability.silicon)
+            planet['Lithium Availability'] = round(min_availability.lithium)
+            planet['Titanium Availability'] = round(min_availability.titanium)
+            if hasattr(intel, 'Player'):
+                relation = self.player.get_relation(getattr(intel, 'Player'))
+                if relation == 'me':
+                    facility_yj =  round(reference._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
+                    pop_yj = reference.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
+                    planet['Energy Generation'] = '<i class="YJ">' + str((facility_yj + pop_yj) * 100) + '</i>'
+                    planet['Production Capacity'] = str(reference.operate_factories() * 100)
+                    operate = reference._operate('mineral_extractors')
+                    planet['Silicon Output'] = round(operate * min_availability.silicon)
+                    planet['Lithium Output'] = round(operate * min_availability.lithium)
+                    planet['Titanium Output'] = round(operate * min_availability.titanium)
         else:
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
-            planet['Energy Generation'] = '?'
-            planet['Production Capacity'] = '?'
             planet['Scanner Range'] = '?'
             planet['Shield Coverage'] = '?'
-            planet['Silicon Output'] = -1.0
-            planet['Lithium Output'] = -1.0
-            planet['Titanium Output'] = -1.0
             planet['Habitability'] = -101.0
             planet['Gravity'] = '?'
             planet['Temperature'] = '?'

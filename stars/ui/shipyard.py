@@ -61,10 +61,10 @@ class Shipyard(PlayerUI):
                 self.player.design_cache.append(ShipDesign())
             design = self.player.design_cache[0]
         # Design id
-        if self.shipyard_ID == '':
-            self.shipyard_ID = design.ID
-        else:
+        if action == 'rename':
             design.ID = self.shipyard_ID
+        else:
+            self.shipyard_ID = design.ID
         # Build design list after any chance for the name to change
         self.options_shipyard_existing_design = []
         for existing_design in self.player.design_cache:
@@ -110,7 +110,7 @@ class Shipyard(PlayerUI):
             if design.components[t] > 1:
                 count = '<div style="color: lightseagreen">x' + str(design.components[t]) + '</div>'
             self.shipyard_design.append('<td class="hfill"><div class="tech tech_template">' + t.ID + '</div></td>' \
-                    + '<td style="text-align: right;">' + count + '<i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
+                    + '<td style="text-align: right;">' + count + '<i class="button far fa-trash-alt" title="Remove from ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
 
         # Slots
         self.shipyard_slots_general = str(design.hull().slots_general - design.slots_general) + '/' + str(design.hull().slots_general)
