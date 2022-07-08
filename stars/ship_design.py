@@ -66,8 +66,8 @@ class ShipDesign(Tech):
         cost = Cost()
         for (t,cnt) in self.components.items():
             modifier = t.miniaturization(self.level)
-            mass += t.mass * modifier
-            cost += t.cost * modifier
+            mass += t.mass * modifier * cnt
+            cost += t.cost * modifier * cnt
         return (mass, cost)
 
     """ Check if design is valid """
