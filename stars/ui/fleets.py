@@ -39,12 +39,13 @@ class Fleets(PlayerUI):
             if hasattr(fleet, 'name'):
                 fleet_name = fleet.name
             #intel = self.player.get_intel(reference=fleet)
+            fleet_location = getattr(fleet, 'location')
             self.fleet_list.append('<tr>'
                 + '<td><i class="button fas fa-eye" title="Select Fleet" onclick="post(\'fleets\', \'?select_' + str(i) + '\')"></i></td>'
                 + '<td>' + str(fleet_name) + '</td>'#intel.name) + '</td>'
-                + '<td>' + str(fleet.location.x) + '</td>'
-                + '<td>' + str(fleet.location.y) + '</td>'
-                + '<td>' + str(fleet.location.z) + '</td>'
+                + '<td>' + str(round(fleet_location.x, 4)) + '</td>'
+                + '<td>' + str(round(fleet_location.y, 4)) + '</td>'
+                + '<td>' + str(round(fleet_location.z, 4)) + '</td>'
                 + '<td>' + str(fleet.fuel) + '</td>'
                 + '<td>' + str(fleet.cargo.people) + '</td>'
                 + '<td>' + str(fleet.cargo.titanium) + '</td>'

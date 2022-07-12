@@ -55,7 +55,7 @@ class Fleet(Defaults):
     def __getattribute__(self, name):
         self_dict = object.__getattribute__(self, '__dict__')
         # Safety check if inital defaults have not been applied or if has value
-        if '__init_complete__' not in self_dict or name not in self_dict or self_dict[name] is not None:
+        if '__init_complete__' not in self_dict or name not in self_dict or (self_dict[name] is not None and name != 'location'):
             return super().__getattribute__(name)
         # Calculate if not yet calculated
         if name == 'stats':
@@ -241,6 +241,7 @@ class Fleet(Defaults):
     def move(self):
         if self.is_stationary:
             return
+        print('\n * Fleet Move Is Called', end=' $ ')
         # Determine speed
         speed = self.order.speed
         hyperdenial = self.hyperdenial_effect
@@ -283,7 +284,10 @@ class Fleet(Defaults):
                 stop_at = self.location.move(self.move_to, distance)
         # Move the fleet
         if stop_at:
+            print('Fleet:', self.ID, 'Moved', end=' : ')
+            print('origonal position:', self.location.xyz, end=' -> ')
             self.update_location(stop_at)
+            print('new location', self.location.xyz)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
             # Blackhole message
@@ -373,7 +377,7 @@ class Fleet(Defaults):
         (cargo, cargo_max) = self._other_cargo()
         if not cargo or cargo.sum() >= cargo_max:
             return
-        order = {'titanium': self.order.unload_ti, 'lithium': self.order.unload_li, 'silicon': self.order.unload_si, 'people': self.order.unload_people} # cannot use cargo type because of 0 min
+        order = {'titanium': max(0, -1*self.order.load_ti), 'lithium': max(0, -1*self.order.load_li), 'silicon': max(0, -1*self.order.load_si), 'people': max(0, -1*self.order.load_pop)} # cannot use cargo type because of 0 min
         # TODO check unloading people on non-owned planet
         for ctype in CARGO_TYPES:
             if order[ctype] > 0:

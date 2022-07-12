@@ -6,6 +6,7 @@ from .reference import Reference
 from .ship import Ship
 from .ship_design import ShipDesign
 from .tech_level import TechLevel
+from . import game_engine
 
 """ Default values (default, min, max)  """
 __defaults = {
