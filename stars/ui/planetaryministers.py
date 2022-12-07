@@ -34,8 +34,8 @@ class PlanetaryMinisters(PlayerUI):
             self.player.ministers.append(mini)
             self.planetary_curent_minister = Reference(mini)
             action = 'revert'
-        for key in PlanetaryMinister.defaults:
-            print('3', key, self.planetary_curent_minister[key])
+        #for key in PlanetaryMinister.defaults:
+        #    print('3', key, self.planetary_curent_minister[key])
         #print('2', self.planetary_curent_minister.__dict__)
         if action == 'revert':
             self.planetary_name = self.planetary_curent_minister.name
@@ -69,7 +69,7 @@ class PlanetaryMinisters(PlayerUI):
         for key in PlanetaryMinister.defaults:
             if not key == 'ID':
                 setattr(self.planetary_curent_minister, key, getattr(self, 'planetary_' + key))
-                print('7', key, self.planetary_curent_minister[key])
+        #        print('7', key, self.planetary_curent_minister[key])
         """ make minister selection """
         for planet in self.player.planets:
             planet = Reference(planet)
