@@ -50,12 +50,13 @@ class Fleet(Defaults):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         game_engine.register(self)
+        print('\n *  fleet printing:\n +  ID:', self.ID, '\n +  location:', self.location.xyz)
 
     """ Provide calculated values """
     def __getattribute__(self, name):
         self_dict = object.__getattribute__(self, '__dict__')
         # Safety check if inital defaults have not been applied or if has value
-        if '__init_complete__' not in self_dict or name not in self_dict or (self_dict[name] is not None and name != 'location'):
+        if '__init_complete__' not in self_dict or name not in self_dict or self_dict[name] is not None:
             return super().__getattribute__(name)
         # Calculate if not yet calculated
         if name == 'stats':
@@ -63,8 +64,10 @@ class Fleet(Defaults):
         elif name == 'location':
             if len(self.ships) > 0:
                 self_dict[name] = self.ships[0].location
+                print('-Ship-', end='')
             else:
                 self_dict[name] = Location()
+                print('-Default-', end='')
         elif name == 'cargo':
             self_dict[name] = Cargo()
             for s in self.ships:
