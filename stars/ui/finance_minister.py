@@ -63,12 +63,17 @@ class FinanceMinister(PlayerUI):
         for planet in self.player.planets:
             self.options_finance_planet.append(planet.ID)
         # build queue
-        self.finance_queue = ['<td>ID</td><td>remaining cost</td><td>percent complete</td><td>planet</td><td></td>']
+        self.finance_queue = ['<td>name</td><td>energy</td><td>titanium</td><td>lithium</td><td>silicon</td><td>production</td><td>percent complete</td><td>planet</td><td></td>']
+        total_cost = [0, 0, 0, 0, 0] #ti, li, si, yj, production
         for item in self.player.buships:
-            self.finance_queue.append('<td>' + item.ship_design.ID + '</td><td>' + item.cost.to_html() + '</td><td>' + str(item.percent) + '</td><td>' + item.planet.ID + '</td>'
-                + '<td><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + item.ID + '\')"></i></td>')
-            self.finance_queue.append('<td></td>')
-            #TODO <td>' + item.planet.time_til_html(item.cost.to_html(), queue, i)[0] + '</td><td rowspan="2">' + item.planet.ID + '</td>  ' + item.planet.time_til_html(item.cost.to_html(), queue, i)[1] + '
+            total_cost[0] += item.cost.titanium
+            total_cost[1] += item.cost.lithium
+            total_cost[2] += item.cost.silicon
+            total_cost[3] += item.cost.energy
+            total_cost[4] == total_cost[0] + total_cost[1] + total_cost[2]
+            self.finance_queue.append('<td>' + item.ship_design.ID + '</td>' + item.planet.time_til_html(total_cost, item.cost)[0] + '</td><td rowspan="2">' + str(item.percent) + '</td><td rowspan="2">' + item.planet.ID + '</td>'
+                + '<td rowspan="2"><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + item.ID + '\')"></i></td>')
+            self.finance_queue.append('<td style="size: 80%">time needed</td>' + item.planet.time_til_html(total_cost, item.cost)[1])
         # buildables
         buildables = self.player.ship_designs
         self.finance_buildable.append('<td colspan="3"><select id="finance_planet" style="width: 100%" onchange="post(\'finance_minister\')"/></td>')

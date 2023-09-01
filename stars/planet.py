@@ -264,7 +264,7 @@ class Planet(Defaults):
         self.production = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
         return self.production
     
-    def time_til_html(self, cost_in_html, total_cost):
+    def time_til_html(self, total_cost, item_cost):
         html1 = ''
         html2 = ''
         extractors = self._operate('mineral_extractors')
