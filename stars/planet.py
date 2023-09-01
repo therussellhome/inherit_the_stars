@@ -298,7 +298,7 @@ class Planet(Defaults):
                 html1 += '<td>' + c + '</i></td>'
                 if total_cost[3] < self.player.energy * self.player.finance_construction_percent:
                     html2 += '<td>0 years</td>'
-                elif self.player.finance_contruction_percent == 0:
+                elif self.player.finance_construction_percent == 0:
                     html2 += '<td>never</td>'
                 else:
                     html2 += '<td>' + str(ceil((total_cost[3] - (self.player.energy * self.player.finance_construction_percent / 100)) / (self.player.predict_budget() * self.player.finance_construction_percent / 100))/100) + ' years</td>'
