@@ -125,7 +125,7 @@ function show_home() {
 // Show the tech browser open to a specific item
 function show_tech(name) {
     if(current_screen  != 'tech_browser') {
-        show_screen('tech_browser')
+        show_screen('tech_browser');
     }
     post('tech_browser', '?' + name);
 }
@@ -133,13 +133,33 @@ function show_tech(name) {
 //show the planetary sidebar and have it populated
 function show_planetary() {
     if(current_sidebar != 'planetary') {
+        if(current_sidebar != null) {
+            toggle(document.getElementById('sidebar_' + current_sidebar), 'hide', true);
+        }
         toggle(document.getElementById('sidebar_planetary'), 'hide', false);
         post('planetary_minister');
         show_screen('planetary_ministers');
-        current_sidebar = 'planetary'
+        current_sidebar = 'planetary';
     } else {
-        current_sidebar = null
+        current_sidebar = null;
         toggle(document.getElementById('sidebar_planetary'), 'hide', true);
+        show_screen(null);
+    }
+}
+
+//show the order sidebar and have it populated
+function show_order_sidebar(show=false) {
+    if(current_sidebar != 'order') {show = true;}
+    if(show) {
+        if(current_sidebar != null) {
+            toggle(document.getElementById('sidebar_' + current_sidebar), 'hide', true);
+        }
+        toggle(document.getElementById('sidebar_order'), 'hide', false);
+        post('orders');
+        current_sidebar = 'order';
+    } else {
+        current_sidebar = null;
+        toggle(document.getElementById('sidebar_order'), 'hide', true);
         show_screen(null);
     }
 }

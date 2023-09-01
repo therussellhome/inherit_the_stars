@@ -119,6 +119,9 @@ void main() {
 <div class="sidebar2 hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
 </table></div>
 
+<div class="sidebar2 hide" id="sidebar_order"><table id="order_sidebar" style="height: 100%">
+</table></div>
+
 <div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
     <div style="font-size: 600%">INHERIT THE</div>
     <div style="font-size: 1050%">STARS!</div>
@@ -570,7 +573,7 @@ void main() {
 
 <div class="screen hide onreset" id="screen_orders" style="width: 600px" onreset="post('orders', '?reset')">
     <table class="topbar hfill"><tr>
-        <td><img title="Waypoints" src="ships.png"/></td>
+        <td><img title="Orders" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
         <td class="hfill" id="topbar"></td>
     </tr></table>
@@ -602,6 +605,8 @@ void main() {
         </tr><tr>
             <td colspan="3"><input id="orders_patrol" type="checkbox" onchange="post('orders')"/> Patrol</td>
         </tr>
+    </table><table class="hfil" id="order_set_deepspace" style="text-align:center">
+        <caption><div class="fa-angle-double-down"> Set Waypoint</div></caption>
     </table><table class="hfill" style="text-align: center">
         <caption><div class="fa-angle-double-down"> Load</div></caption>
         <tr>
