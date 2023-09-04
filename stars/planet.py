@@ -233,7 +233,7 @@ class Planet(Defaults):
         return facility_yj + pop_yj
 
     """ mineral extractors extract the minerals per 100th """
-    def extract_minerals(self, component=None, qty=0, max_extraction=sys.maxsize):
+    def extract_minerals(self, component=None, qty=0, max_extraction=sys.maxsize, forecast=False):
         if component:
             operate = component.extraction_rate * qty
             factor = component.mineral_depletion_factor
@@ -246,8 +246,9 @@ class Planet(Defaults):
             extract = min(max_extraction, operate * availability[mineral] / 100)
             max_extraction -= extract
             extracted[mineral] = extract
-            self.remaining_minerals[mineral] -= extract * factor
-        if not component:
+            if not forecast:
+                self.remaining_minerals[mineral] -= extract * factor
+        if not component and not forecast:
             self.on_surface += extracted
         return extracted
 
@@ -259,52 +260,35 @@ class Planet(Defaults):
         return avail
 
     """ calculates max production capacity per 100th """
-    def operate_factories(self):
+    def operate_factories(self, forecast=False):
         # 1 unit of production free
-        self.production = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
-        return self.production
+        production = 0.01 + self._operate('factories') * (5 + self.player.tech_level.construction / 2) / 100
+        if not forecast:
+            self.production = production
+        return production
     
     def time_til_html(self, total_cost, item_cost):
-        html1 = ''
-        html2 = ''
-        extractors = self._operate('mineral_extractors')
-        cost = cost_in_html.split('</i>')
-        for c in cost:
-            if 'Titanium' in c:
-                html1 += '<td>' + c + '</i></td>'
-                if total_cost[0] < self.on_surface.titanium:
-                    html2 += '<td>0 years</td>'
-                elif extractors == 0:
-                    html2 += '<td>never</td>'
-                else:
-                    html2 += '<td>' +  str(ceil((total_cost[0] - self.on_surface.titanium) / (self.mineral_availability('titanium') * extractors))/100) + ' years</td>'
-            elif 'Lithium' in c:
-                html1 += '<td>' + c + '</i></td>'
-                if total_cost[1] < self.on_surface.lithium:
-                    html2 += '<td>0 years</td>'
-                elif extractors == 0:
-                    html2 += '<td>never</td>'
-                else:
-                    html2 += '<td>' + str(ceil((total_cost[1] - self.on_surface.lithium) / (self.mineral_availability('lithium') * extractors))/100) + ' years</td>'
-            elif 'Silicon' in c:
-                html1 += '<td>' + c + '</i></td>'
-                if total_cost[2] < self.on_surface.silicon:
-                    html2 += '<td>0 years</td>'
-                elif extractors == 0:
-                    html2 += '<td>never</td>'
-                else:
-                    html2 += '<td>' + str(ceil((total_cost[2] - self.on_surface.silicon) / (self.mineral_availability('silicon') * extractors))/100) + ' years</td>'
-            elif 'Energy' in c:
-                html1 += '<td>' + c + '</i></td>'
-                if total_cost[3] < self.player.energy * self.player.finance_construction_percent:
-                    html2 += '<td>0 years</td>'
-                elif self.player.finance_construction_percent == 0:
-                    html2 += '<td>never</td>'
-                else:
-                    html2 += '<td>' + str(ceil((total_cost[3] - (self.player.energy * self.player.finance_construction_percent / 100)) / (self.player.predict_budget() * self.player.finance_construction_percent / 100))/100) + ' years</td>'
-        html1 += '<td>' + str(queue[i].cost.titanium + queue[i].cost.lithium + queue[i].cost.silicon) + '</i></td>'
-        html2 += '<td>' + str(ceil(pro / (1 + self._operate('factories') * (5 + self.player.tech_level.construction / 2)))/100) + ' years</td>'
-        return (html1, html2)
+        html = ''
+        extract = self.extract_minerals(forecast=True)
+        html += '<td>' + item_cost.to_html() + str(ceil(item_cost.titanium + item_cost.lithium + item_cost.silicon)) + 'P</td>'
+        time = 0
+        contraining_factor = ''
+        for mineral in MINERAL_TYPES:
+            t = (total_cost[mineral] - self.on_surface[mineral]) / (extract[mineral] + 0.000000001) / 100
+            if t > time:
+                time = t
+                constraining_factor = mineral
+        t = (total_cost['energy'] - self.player.energy * self.player.finance_construction_percent/100) / (self.player.predict_income('construction') + 0.000000001) / 100
+        if t > time:
+            time = t
+            constraining_factor = 'energy'
+        pro = total_cost.titanium + total_cost.lithium + total_cost.silicon
+        t = pro / self.operate_factories(forecast=True) / 100
+        if t > time:
+            time = t
+            constraining_factor = 'production'
+        html += '<td>' + str(ceil(time)) + 'years</td><td>' + constraining_factor + '</td>'
+        return html
     
     """ Build an item """
     def build(self, item, from_queue=True):
