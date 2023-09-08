@@ -353,7 +353,7 @@ function host_auto() {
         if(document.getElementById('host_autogen').checked && document.getElementById('host_ready').innerHTML == 'Ready') {
             document.getElementById('host_blocking').checked = true;
             post('host', '?generate');
-        } else if(document.getElementById('host_name').innerHTML != '') {
+        } else if(document.getElementById('host_ID').innerHTML != '') {
             window.setTimeout(host_post, 10000);
         }
     }
@@ -469,9 +469,78 @@ function planetary_slider(element, form, min, max, step) {
     });
     var connect = element.querySelectorAll('.noUi-connect');
     var classes = ['power-color', 'factory-color', 'mine-color', 'shield-color'];
-    for (var i = 0; i < connect.length; i++) {
+    for(var i = 0; i < connect.length; i++) {
         connect[i].classList.add(classes[i]);
     }
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function speed_slider(element, form) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
+    noUiSlider.create(element, {
+        start: [-1],
+        connect: false,
+        step: 1,
+        tooltips: [true],
+        format: {
+            to: function(value) {
+                labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
+                return labels[parseInt(value) + 2];
+            },
+            from: function(value) {
+                labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
+                for(var i = 0; i < labels.length; i++) {
+                    if(value == labels[i]) {
+                        return i - 2;
+                    }
+                }
+                return -1;
+            }
+        },
+        range: {
+            'min': -2,
+            'max': 10
+        }
+    });
+    element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function depart_slider(element, form) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
+    noUiSlider.create(element, {
+        start: [0.0],
+        connect: false,
+        step: 0.01,
+        tooltips: [true],
+        format: {
+            to: function(value) {
+                if(value == 10.0) {
+                    return 'never';
+                } else if(value == 0.0) {
+                    return 'immediately';
+                }
+                return 'after ' + Intl.NumberFormat('en', {maximumFractionDigits: 2}).format(value) + ' years';
+            },
+            from: function(value) {
+                if(value == 'never') {
+                    return 10.0;
+                } else if(value == 'immediately') {
+                    return 0.0;
+                }
+                return parseInt(value);
+            }
+        },
+        range: {
+            'min': 0.0,
+            'max': 10.0
+        }
+    });
     element.noUiSlider.on('change', function() { post(form) });
 }
 
@@ -509,6 +578,28 @@ function slider(element, form, min, max, step, fractiondigits, units) {
         }
     });
     element.noUiSlider.on('change', function() { post(form) });
+}
+
+// Create a slider
+function center_slider(element, form, min, max, step, fractiondigits, units, fillclass) {
+    if(element.hasOwnProperty('noUiSlider')) {
+        return;
+    }
+    slider(element, form, min, max, step, fractiondigits, units);
+    let fill = document.createElement('div');
+    fill.classList.add(fillclass);
+    element.appendChild(fill);
+    element.noUiSlider.on('update', (values, handle, unencoded, tap, positions) => {
+        if(positions[0] >= 50) {
+            fill.style.left = '50%';
+            fill.style.right = 'auto';
+            fill.style.width = (positions[0] - 50) + '%';
+        } else {
+            fill.style.left = 'auto';
+            fill.style.right = '50%';
+            fill.style.width = (50 - positions[0]) + '%';
+        }
+    });
 }
 
 // Create a slider
