@@ -40,7 +40,7 @@ class Shipyard(PlayerUI):
             self.shipyard_name = self.shipyard_ID
             self.shipyard_design_to_load = ''
         for existing_design in self.player.design_cache:
-            if existing_design.ID == self.shipyard_ID: #TODO will not work if shipyar_ID is changed
+            if existing_design.ID == self.shipyard_ID:
                 design = existing_design
                 break
         # Actions
