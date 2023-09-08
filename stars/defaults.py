@@ -34,7 +34,7 @@ class Defaults(game_engine.BaseClass):
                     if isinstance(default, bool):
                         value = bool(value)
                     elif isinstance(default, int):
-                        value = int(round(float(value)))
+                        value = int(round(float(value), 7))
                     elif isinstance(default, float):
                         value = float(value)
                     elif isinstance(value, type(default)):
