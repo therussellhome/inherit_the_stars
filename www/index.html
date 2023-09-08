@@ -888,13 +888,16 @@ void main() {
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
-        <td>Design</td>
-        <td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
-        <td><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
-        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
-        <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
+        <td>Load Design</td>
+        <td class="hfill"><select id="shipyard_design_to_load" class="hfill" onchange="post('shipyard')"></select></td>
+        <td rowspan="2"><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
+        <td rowspan="2"><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
+        <td rowspan="2"><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
     </tr><tr>
-        <td>Rename</td><td colspan="4" class="hfill" style="padding-right: 9px;"><input class="hfill" id="shipyard_ID" onchange="post('shipyard')"/></td>
+        <td>Name</td><td class="hfill" style="padding-right: 9px;">
+            <input class="hfill" id="shipyard_name" onchange="post('shipyard')"/>
+            <input style="display: none;" id="shipyard_ID"/>
+        </td>
     </tr></table>
     <table class="hfill" id="shipyard_ship_overview">
         <caption><div class="fa-angle-double-up" onload="folding(this)">Overview</div></caption>

@@ -34,9 +34,6 @@ class PlanetaryMinisters(PlayerUI):
             self.player.ministers.append(mini)
             self.planetary_curent_minister = Reference(mini)
             action = 'revert'
-        for key in PlanetaryMinister.defaults:
-            print('3', key, self.planetary_curent_minister[key])
-        #print('2', self.planetary_curent_minister.__dict__)
         if action == 'revert':
             self.planetary_name = self.planetary_curent_minister.name
             for key in PlanetaryMinister.defaults:
@@ -44,9 +41,6 @@ class PlanetaryMinisters(PlayerUI):
             self.planetary_facility_types[0] = self.planetary_power_plants
             self.planetary_facility_types[1] = self.planetary_factories + self.planetary_facility_types[0]
             self.planetary_facility_types[2] = self.planetary_mineral_extractors + self.planetary_facility_types[1]
-        #for minister in self.player.ministers:
-        #    print('4 minister  = ', minister.__dict__)
-        #print('self  = ', self.__dict__)
         """ set the new colony minister. """
         if self.planetary_new_col_minister == '':
             for minister in self.player.ministers:
@@ -54,13 +48,11 @@ class PlanetaryMinisters(PlayerUI):
         #            print(minister.__dict__)
                     if minister.new_colony_minister:
                         self.planetary_new_col_minister = minister.name
-        #print('5', self.planetary_curent_minister.__dict__)
         for minister in self.player.ministers:
             if hasattr(minister, 'new_colony_minister'):
                 minister.new_colony_minister = False
                 if minister.name == self.planetary_new_col_minister:
                     minister.new_colony_minister = True
-        #print('6', self.planetary_curent_minister.__dict__)
         """ save """
         self.planetary_power_plants = self.planetary_facility_types[0]
         self.planetary_factories = self.planetary_facility_types[1]-self.planetary_facility_types[0]
@@ -69,16 +61,13 @@ class PlanetaryMinisters(PlayerUI):
         for key in PlanetaryMinister.defaults:
             if not key == 'ID':
                 setattr(self.planetary_curent_minister, key, getattr(self, 'planetary_' + key))
-                print('7', key, self.planetary_curent_minister[key])
         """ make minister selection """
         for planet in self.player.planets:
+            planet = Reference(planet)
             if hasattr(self, 'planetary_' + planet.ID + '_minister'):
-                self.player.planetary_minister_map[Reference(planet)] = Reference('PlanetaryMinister/' + self['planetary_' + planet.ID + '_minister'])
-            try:
-                self.player.planetary_minister_map[Reference(planet)]
-            except:
-                self.player.planetary_minister_map[Reference(planet)] = Reference(get_minister(planet))
-        #print('8', self.planetary_curent_minister.__dict__)
+                self.player.planetary_minister_map[planet] = Reference('PlanetaryMinister/' + self['planetary_' + planet.ID + '_minister'])
+            if planet in self.player.planetary_minister_map:
+                self.player.planetary_minister_map[planet] = Reference(self.player.get_minister(planet))
         """ set display values """
         for minister in self.player.ministers:
             if hasattr(minister, 'new_colony_minister'):
@@ -95,9 +84,6 @@ class PlanetaryMinisters(PlayerUI):
             p_tmp = '<select id="planetary_' + p.ID + '_minister" onchange="post(\'planetary_minister\')">' + m_list + '</select>'
             self['planetary_' + p.ID + '_minister'] = m.ID
             self.planetary_planets.append('<td>' + p.ID + '</td><td class="hfill">' + p_tmp.replace(m.ID + '"', m.ID + '" selected') + '</td>')
-        #for planet in self.player.planetary_minister_map:
-        #    setattr(self, 'options_planetary_' + planet.ID + '_minister', self.options_planetary_new_col_minister)
-        #    self.planetary_planets.append('<td>' + planet.ID + '<select id="planetary_' + planet.ID + '_minister" style="width: 100%" /></td>')
         self.planetary_sidebar.append('<td><img class="button" title="ministers" src="/planetary_minister.png" onclick="show_screen(\'planetary_ministers\')"/></td>')
         for minister in self.player.ministers:
             if hasattr(minister, 'new_colony_minister'):

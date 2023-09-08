@@ -1,6 +1,7 @@
 from .playerui import PlayerUI
 from ..buships import BuShips
 from ..reference import Reference
+from ..cost import Cost
 
 
 """ Default values (default, min, max)  """
@@ -56,19 +57,19 @@ class FinanceMinister(PlayerUI):
         for value in values:
             self.player[value] = self[value]
         """ set display values """
-        self.finance_construction = '<i class="fa-bolt">' + str(round(self.player.finance_construction_percent * self.player.predict_budget() / 100)) + '</i>'
-        self.finance_mattrans = '<i class="fa-bolt">' + str(round(self.player.finance_mattrans_percent * self.player.predict_budget() / 100)) + '</i>'
-        self.finance_research = '<i class="fa-bolt">' + str(round(self.player.finance_research_percent * self.player.predict_budget() / 100)) + '</i>'
-        self.finance_other = '<i class="fa-bolt">' + str(round((((100-self.player.finance_construction_percent) - self.player.finance_research_percent) - self.player.finance_mattrans_percent) * self.player.predict_budget() / 100)) + '</i>'
+        self.finance_construction = '<i class="fa-bolt">' + str(round(self.player.predict_income('construction') * 100)) + '</i>'
+        self.finance_mattrans = '<i class="fa-bolt">' + str(round(self.player.predict_income('mattrans') * 100)) + '</i>'
+        self.finance_research = '<i class="fa-bolt">' + str(round(self.player.predict_income('research') * 100)) + '</i>'
+        self.finance_other = '<i class="fa-bolt">' + str(round(self.player.predict_income('other') * 100)) + '</i>'
         for planet in self.player.planets:
             self.options_finance_planet.append(planet.ID)
-        # build queue
-        self.finance_queue = ['<td>ID</td><td>remaining cost</td><td>percent complete</td><td>planet</td><td></td>']
+        # build queue #TODO add way to rearrage build queue without removing in progres items
+        self.finance_queue = ['<td>name</td><td>cost remaining</td><td>time left</td><td>limiting factor</td><td>% complete</td><td>planet</td><td></td>']
+        total_cost = Cost()
         for item in self.player.buships:
-            self.finance_queue.append('<td>' + item.ship_design.ID + '</td><td>' + item.cost.to_html() + '</td><td>' + str(item.percent) + '</td><td>' + item.planet.ID + '</td>'
+            total_cost += item.cost
+            self.finance_queue.append('<td>' + item.ship_design.ID + '</td>' + item.planet.time_til_html(total_cost, item.cost) + '</td><td>' + str(item.percent) + '</td><td>' + item.planet.ID + '</td>'
                 + '<td><i class="button far fa-trash-alt" title="Remove from queue" onclick="post(\'finance_minister\', \'?del=' + item.ID + '\')"></i></td>')
-            self.finance_queue.append('<td></td>')
-            #TODO <td>' + item.planet.time_til_html(item.cost.to_html(), queue, i)[0] + '</td><td rowspan="2">' + item.planet.ID + '</td>  ' + item.planet.time_til_html(item.cost.to_html(), queue, i)[1] + '
         # buildables
         buildables = self.player.ship_designs
         self.finance_buildable.append('<td colspan="3"><select id="finance_planet" style="width: 100%" onchange="post(\'finance_minister\')"/></td>')
