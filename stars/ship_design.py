@@ -18,8 +18,8 @@ __defaults = {
 """ Ship design from which ships are built """
 class ShipDesign(Tech):
     """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     """ Add a component """
     def add_component(self, tech, allow_hull_swap=True):

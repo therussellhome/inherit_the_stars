@@ -13,8 +13,8 @@ __defaults = {
 """ The planetary minister controls the planetary construction phase of turn generation """
 class Minister(Defaults):
     """ Initialize """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
 
     """ Get the icon """

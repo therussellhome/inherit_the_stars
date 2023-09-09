@@ -57,8 +57,8 @@ __tmp_defaults = {
 """ Planets are colonizable by only one player, have minerals, etc """
 class Planet(Defaults):
     """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if 'temperature' not in kwargs:
             self.temperature = randint(0, 100)
             if 'star_system' in kwargs:

@@ -13,8 +13,8 @@ __defaults = {
 class BattlePlan(Defaults):
     options_p_target = ['any', 'starbase', 'ship', 'disengage']
     options_s_target = ['any', 'starbase', 'ship', 'disengage']
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if self.p_target not in BattlePlan.options_p_target:
             self.s_target = BattlePlan.options_p_target[0]
         if self.p_target not in BattlePlan.options_s_target:
