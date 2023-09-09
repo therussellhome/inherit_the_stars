@@ -47,8 +47,8 @@ __tmp_defaults = {
 """ Class defining fleets - directly modifiable by the player """
 class Fleet(Defaults):
     """ Initialize and register """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
 
     """ Provide calculated values """
@@ -203,11 +203,8 @@ class Fleet(Defaults):
             for planet in self.location.root_reference.planets:
                 if planet.is_colonized():
                     continue
-                elif self.order.colonize_manual:
-                    if self.order.location.reference and self.order.location.reference == planet:
-                        planets.append(planet)
-                elif planet.habitability(self.player.race, hab_terraform) >= self.order.colonize_min_hab:
-                    min_minerals = Minerals(titanium=self.order.colonize_min_ti, lithium=self.order.colonize_min_li, silicon=self.order.colonize_min_si)
+                elif planet.habitability(self.player.race, hab_terraform) >= self.player.colonize_min_hab:
+                    min_minerals = Minerals(titanium=self.player.colonize_min_ti, lithium=self.player.colonize_min_li, silicon=self.player.colonize_min_si)
                     if planet.mineral_availability() >= min_minerals:
                         planets.append(planet)
         if len(planets) == 0:
@@ -367,27 +364,6 @@ class Fleet(Defaults):
                 self.fuel += steal
                 mark.fuel -= steal
 
-    """ Unload cargo """
-    def unload(self):
-        if not self.is_stationary:
-            return
-        (cargo, cargo_max) = self._other_cargo()
-        if not cargo or cargo.sum() >= cargo_max:
-            return
-        order = {'titanium': self.order.unload_ti, 'lithium': self.order.unload_li, 'silicon': self.order.unload_si, 'people': self.order.unload_people} # cannot use cargo type because of 0 min
-        # TODO check unloading people on non-owned planet
-        for ctype in CARGO_TYPES:
-            if order[ctype] > 0:
-                order[ctype] = min(cargo_max - cargo.sum(), order[ctype], self.cargo[ctype])
-                self.cargo[ctype] -= order[ctype]
-                cargo[ctype] += order[ctype]
-        for ctype in CARGO_TYPES:
-            if order[ctype] == -1:
-                order[ctype] = min(cargo_max - cargo.sum(), self.cargo[ctype])
-                self.cargo[ctype] -= order[ctype]
-                cargo[ctype] += order[ctype]
-        # cargo is intentionally not redistributed yet
-
     """ Conduct trade """
     def buy(self):
         if not self.is_stationary:
@@ -410,25 +386,32 @@ class Fleet(Defaults):
             s.scrap()
         self - self.ships
 
-    """ Load cargo """
-    def load(self):
+    """ Load and unload cargo """
+    def load_unload(self):
         if not self.is_stationary:
             return
-        (cargo, cargo_max) = self._other_cargo()
-        if not cargo or self.cargo.sum() >= self.stats.cargo_max:
+        (other_cargo, other_max) = self._other_cargo()
+        if not other_cargo:
             return
-        order = {'titanium': self.order.load_ti, 'lithium': self.order.load_li, 'silicon': self.order.load_si, 'people': self.order.load_people} # cannot use cargo type because of 0 min
-        # TODO check loading people on non-owned planet
+        short_name = {'titanium': 'ti', 'lithium': 'li', 'silicon': 'si', 'people': 'pop'}
+        # Shift cargo to meet order
         for ctype in CARGO_TYPES:
-            if order[ctype] > 0:
-                order[ctype] = min(self.stats.cargo_max - self.cargo.sum(), order[ctype], cargo[ctype])
-                cargo[ctype] -= order[ctype]
-                self.cargo[ctype] += order[ctype]
+            # TODO check loading people on non-owned planet
+            need = self.order[short_name[ctype]] * self.stats.cargo_max / 100.0 - self.cargo[ctype]
+            if need > 0:
+                avail = min(need, self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
+                other_cargo[ctype] -= avail
+                self.cargo[ctype] += avail
+            elif need < 0:
+                avail = min(need * -1, other_max - other_cargo.sum())
+                other_cargo[ctype] += avail
+                self.cargo[ctype] -= avail
+        # Load dunnage
         for ctype in CARGO_TYPES:
-            if order[ctype] == -1:
-                order[ctype] = min(self.stats.cargo_max - self.cargo.sum(), cargo[ctype])
-                cargo[ctype] -= order[ctype]
-                self.cargo[ctype] += order[ctype]
+            if self.order[short_name[ctype] + '_dunnage']:
+                avail = min(self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
+                other_cargo[ctype] -= avail
+                self.cargo[ctype] += avail
         # cargo is intentionally not redistributed yet
 
     """ Transfers ownership of the fleet to the specified player """

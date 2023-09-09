@@ -22,8 +22,8 @@ __tmp_defaults = {
 
 """ Represent 'a bomb' """
 class Bomb(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         # Calculate the adjustment for the max defense to put 0 shields at 0 defense
         self.zero_zero_adjustment = 500.0 / self.max_defense
 

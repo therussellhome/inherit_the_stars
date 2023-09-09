@@ -54,6 +54,10 @@ __defaults = {
     'finance_research_percent': (10.0, 0.0, 100.0),
     'finance_research_use_surplus': False,
     'finance_baryogenesis_default': True,
+    'colonize_min_hab': (50, -100, 100),
+    'colonize_min_ti': (0, 0, 100),
+    'colonize_min_li': (0, 0, 100),
+    'colonize_min_si': (0, 0, 100),
 }
 
 """ Temporary values (default, min, max)  """
@@ -84,16 +88,20 @@ _player_fields = [
     'finance_mattrans_use_surplus',
     'finance_research_percent',
     'finance_research_use_surplus',
+    'colonize_min_hab',
+    'colonize_min_ti',
+    'colonize_min_li',
+    'colonize_min_si',
 ]
 
 
 """ A player in a game """
 class Player(Defaults):
     """ Initialize """
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         if 'ID' not in kwargs and 'race' in kwargs and kwargs['race'].ID != '':
             kwargs['ID'] = kwargs['race'].ID
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         if 'validation_key' not in kwargs:
             self.validation_key = str(uuid.uuid4())
             if len(self.planets) > 0:

@@ -208,10 +208,9 @@ class Game(Defaults):
         self._call(fleets, 'bomb')
         self._call(planets, 'bomb_impact')
         self._call(fleets, 'piracy')
-        self._call(fleets, 'unload')
-        self._call(fleets, 'buy')
         self._call(fleets, 'scrap')
-        self._call(fleets, 'load')
+        self._call(fleets, 'load_unload')
+        self._call(fleets, 'buy')
         self._call(multi_fleet.get(), 'share_fuel')
         # redistribute cached values then process fleet changes
         self._call(fleets, 'fuel_distribution')
