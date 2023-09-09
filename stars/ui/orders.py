@@ -68,11 +68,11 @@ class Orders(PlayerUI):
         self.orders_x = min(self.player.game.x, max(self.player.game.x * -1.0, self.orders_x))
         self.orders_y = min(self.player.game.y, max(self.player.game.y * -1.0, self.orders_y))
         self.orders_z = min(self.player.game.z, max(self.player.game.z * -1.0, self.orders_z))
-        self.orders_ti_display = self.orders_load_ti * fleet.stats.cargo_max
-        self.orders_li_display = self.orders_load_li * fleet.stats.cargo_max
-        self.orders_si_display = self.orders_load_si * fleet.stats.cargo_max
-        self.orders_pop_display = self.orders_load_pop * fleet.stats.cargo_max
-        self.orders_fuel_display = self.orders_buy_fuel * fleet.stats.fuel_max
+        self.orders_ti_display = self.orders_ti * fleet.stats.cargo_max
+        self.orders_li_display = self.orders_li * fleet.stats.cargo_max
+        self.orders_si_display = self.orders_si * fleet.stats.cargo_max
+        self.orders_pop_display = self.orders_pop * fleet.stats.cargo_max
+        self.orders_fuel_display = self.orders_fuel * fleet.stats.fuel_max
         # Load settings from orders library
         if self.orders_library != self.options_orders_library[0]:
             pass #TODO
