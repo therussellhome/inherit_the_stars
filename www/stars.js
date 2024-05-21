@@ -646,9 +646,13 @@ function slider2(element, form, min, max, step, formatter) {
         start: [min, max],
         connect: true,
         step: step,
-        tooltips: [true, true],
+        //tooltips: [true, true],
+        tooltips: [{ to: formatter }, { to: formatter }],
         format: {
-            to: formatter,
+            //to: formatter,
+            to: function(value) {
+                return Number(value)
+            },
             from: function(value) {
                 return Number(value);
             }
@@ -692,19 +696,26 @@ function gravity_chart(element_id, slider_id) {
                 ]
             },
             options: { 
-                legend: {display: false},
-                elements: {point: false},
-                title: {
-                    display: true,
-                    text: 'Planetary Gravity Probabiliy'
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        color: 'white',
+                        display: true,
+                        text: 'Planetary Gravity Probabiliy'
+                    }
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false}
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                        }
                     },
                     y: {
                         gridLines: {display: false},
                         ticks: {
+                            color: 'white',
                             callback: function(value) {
                                 return value + '%';
                             }
@@ -762,19 +773,26 @@ function temperature_chart(element_id, slider_id) {
                 ]
             },
             options: { 
-                legend: {display: false},
-                elements: {point: false},
-                title: {
-                    display: true,
-                    text: 'Planetary Temperature Probabiliy'
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        color: 'white',
+                        display: true,
+                        text: 'Planetary Temperature Probabiliy'
+                    }
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false}
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                        }
                     },
                     y: {
                         gridLines: {display: false},
                         ticks: {
+                            color: 'white',
                             callback: function(value) {
                                 return value + '%';
                             }
@@ -832,19 +850,26 @@ function radiation_chart(element_id, slider_id) {
                 ]
             },
             options: { 
-                legend: {display: false},
-                elements: {point: false},
-                title: {
-                    display: true,
-                    text: 'Planetary Radiation Probability'
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        color: 'white',
+                        display: true,
+                        text: 'Planetary Radiation Probability'
+                    }
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false}
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                        }
                     },
                     y: {
                         gridLines: {display: false},
                         ticks: {
+                            color: 'white',
                             callback: function(value) {
                                 return value + '%';
                             }
