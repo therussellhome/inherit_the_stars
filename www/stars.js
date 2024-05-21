@@ -862,9 +862,7 @@ function radiation_chart(element_id, slider_id) {
                 scales: { 
                     x: {
                         gridLines: {display: false},
-                        ticks: {
-                            color: 'white',
-                        }
+                        ticks: {color: 'white'}
                     },
                     y: {
                         gridLines: {display: false},
@@ -1068,41 +1066,54 @@ function combat_chart(chart, data) {
             ]
         },
         options: { 
-            legend: {display: false},
             elements: {point: {radius: 1}},
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-                position: 'nearest',
-                titleFontSize: 10,
-                bodyFontSize: 10,
-                callbacks: {
-                    title: function(tooltipItems, data) {
-                        return 'Range: ' + tooltipItems[0].label + ' Tm';
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    titleFontSize: 10,
+                    bodyFontSize: 10,
+                    title: function(context) {
+                        return 'Range: ' + context.label + ' Tm';
                     },
-                    label: function(tooltipItem, data) {
-                        var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
-                        if(tooltipItem.datasetIndex == 0) {
-                            label += Math.round(tooltipItem.value);
-                        } else if(tooltipItem.datasetIndex == 2) {
-                            label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
-                        } else if(tooltipItem.datasetIndex == 3) {
-                            base = Math.max(1.0, data.datasets[1].data[0] + data.datasets[2].data[0]);
-                            value = parseFloat(tooltipItem.value);
-                            label += Math.round(value / base * 100.0) + '%';
-                        } else {
-                            label += tooltipItem.value;
+                    callbacks: {
+                        //afterLabel: ' Tm',
+                        /*beforeLabel: 'Range: ',
+                        label: function(context) {
+                            let label = context.dataset.label + ': ';
+                            return 'Range: ' + label + ' Tm';
+                        }//*/
+                        label: function(context) {
+                            console.log('context: ', context);
+                            console.log('this: ', this);
+                            var label = context.dataset.label + ': ';
+                            if(context.datasetIndex == 0) {
+                                label += Math.round(context.raw);
+                            } else if(context.datasetIndex == 2) {
+                                label += parseInt(context.raw) - data.armor[0];
+                            } else if(context.datasetIndex == 3) {
+                                base = Math.max(1.0, data.armor[0] + data.shield[0]);
+                                value = parseFloat(context.raw);
+                                label += Math.round(value / base * 100.0) + '%';
+                            } else {
+                                label += context.formattedValue;
+                            }
+                            console.log('context: ', context);
+                            return label;
                         }
-                        return label;
                     }
                 }
             },
             scales: { 
                 x: {
-                    gridLines: {display: false}
+                    gridLines: {display: false},
+                    ticks: {color: 'white'}
                 },
                 y: {
-                    gridLines: {display: false}
+                    gridLines: {display: false},
+                    ticks: {color: 'white'}
                 }
             }
         }
