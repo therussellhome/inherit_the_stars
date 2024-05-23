@@ -957,6 +957,7 @@ function tech_display() {
         if(json_map['tech']['combat'].hasOwnProperty(component)) {
             var chart_element = div.getElementsByClassName('tech_combat_chart')[0];
             chart_element.style.width = chart_width + 'px';
+            console.log('Chart_element: ', chart_element);
             combat_chart(chart_element, json_map['tech']['combat'][component]);
         }
         if(json_map['tech']['sensor'].hasOwnProperty(component)) {
@@ -1009,115 +1010,113 @@ function fold(div, flip) {
 
 // Render the ship charts
 function ship_display() {
+    console.log('Jason Map:', json_map);
     if(current_screen == 'shipyard') {
-        combat_chart(document.getElementById('shipyard_combat_chart'), json_map['shipyard']['shipyard_combat_chart']);
+        combat_chart('shipyard_combat_chart', json_map['shipyard']['shipyard_combat_chart']);
         sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart']);
         engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart']);
+        console.log('Jason Map:', json_map);
     }
 }
 
 // Create a chart for combat defense/weapon curves
-function combat_chart(chart, data) {
-    labels = [];
-    firepower_data = [];
-    armor_data = [];
-    shield_data = [];
-    ecm_data = [];
-    for(var i=0; i < 100; i++) {
-        labels.push(i / 100);
-        firepower_data.push(data['firepower'][i]);
-        armor_data.push(data['armor'][i]);
-        shield_data.push(data['shield'][i]);
-        ecm_data.push(data['ecm'][i]);
-    }
-    var jschart = new Chart(chart, {
-        type: 'line',
-        data: { 
-            labels: labels,
-            datasets: [
-                { 
-                    label: 'Firepower',
-                    borderColor: 'red',
-                    backgroundColor: '#ff000055',
-                    fill: false,
-                    data: firepower_data
-                },
-                { 
-                    label: 'Armor',
-                    borderColor: 'gray',
-                    backgroundColor: '#99999955',
-                    fill: 'origin',
-                    data: armor_data
-                },
-                { 
-                    label: 'Shield',
-                    borderColor: 'cyan',
-                    backgroundColor: '#00ffff55',
-                    fill: '-1',
-                    data: shield_data
-                },
-                { 
-                    label: 'ECM',
-                    borderColor: 'yellow',
-                    backgroundColor: '#ffff0055',
-                    fill: false,
-                    data: ecm_data
-                }
-            ]
-        },
-        options: { 
-            elements: {point: {radius: 1}},
-            plugins: {
-                legend: {display: false},
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                    title: function(context) {
-                        return 'Range: ' + context.label + ' Tm';
+function combat_chart(element_id, data) {
+    chart = document.getElementById(element_id)
+    console.log(charts);
+    if(!charts.hasOwnProperty(element_id)) {
+        labels = [];
+        firepower_data = [];
+        armor_data = [];
+        shield_data = [];
+        ecm_data = [];
+        for(var i=0; i < 100; i++) {
+            labels.push(i / 100);
+            firepower_data.push(data['firepower'][i]);
+            armor_data.push(data['armor'][i]);
+            shield_data.push(data['shield'][i]);
+            ecm_data.push(data['ecm'][i]);
+        }
+        console.log(chart);
+        var jschart = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        label: 'Firepower',
+                        borderColor: 'red',
+                        backgroundColor: '#ff000055',
+                        fill: false,
+                        data: firepower_data
                     },
-                    callbacks: {
-                        //afterLabel: ' Tm',
-                        /*beforeLabel: 'Range: ',
-                        label: function(context) {
-                            let label = context.dataset.label + ': ';
-                            return 'Range: ' + label + ' Tm';
-                        }//*/
-                        label: function(context) {
-                            console.log('context: ', context);
-                            console.log('this: ', this);
-                            var label = context.dataset.label + ': ';
-                            if(context.datasetIndex == 0) {
-                                label += Math.round(context.raw);
-                            } else if(context.datasetIndex == 2) {
-                                label += parseInt(context.raw) - data.armor[0];
-                            } else if(context.datasetIndex == 3) {
-                                base = Math.max(1.0, data.armor[0] + data.shield[0]);
-                                value = parseFloat(context.raw);
-                                label += Math.round(value / base * 100.0) + '%';
-                            } else {
-                                label += context.formattedValue;
-                            }
-                            console.log('context: ', context);
-                            return label;
+                    { 
+                        label: 'Armor',
+                        borderColor: 'gray',
+                        backgroundColor: '#99999955',
+                        fill: 'origin',
+                        data: armor_data
+                    },
+                    { 
+                        label: 'Shield',
+                        borderColor: 'cyan',
+                        backgroundColor: '#00ffff55',
+                        fill: '-1',
+                        data: shield_data
+                    },
+                    { 
+                        label: 'ECM',
+                        borderColor: 'yellow',
+                        backgroundColor: '#ffff0055',
+                        fill: false,
+                        data: ecm_data
+                    }
+                ]
+            },
+            options: { 
+                elements: {point: {radius: 1}},
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.label + ': ';
+                                if(context.datasetIndex == 0) {
+                                    label += Math.round(context.raw);
+                                } else if(context.datasetIndex == 2) {
+                                    label += parseInt(context.raw) - data.armor[0];
+                                } else if(context.datasetIndex == 3) {
+                                    base = Math.max(1.0, data.armor[0] + data.shield[0]);
+                                    value = parseFloat(context.raw);
+                                    label += Math.round(value / base * 100.0) + '%';
+                                } else {
+                                    label += context.formattedValue;
+                                }
+                                return label;
+                            },
+                            title: function(context) {
+                                return 'Range: ' + this.dataPoints[0].label + ' Tm';
+                            },
                         }
                     }
-                }
-            },
-            scales: { 
-                x: {
-                    gridLines: {display: false},
-                    ticks: {color: 'white'}
                 },
-                y: {
-                    gridLines: {display: false},
-                    ticks: {color: 'white'}
+                scales: { 
+                    x: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 }
 
 // Create a chart for sensor curve
@@ -1143,18 +1142,23 @@ function sensor_chart(chart, data) {
             ]
         },
         options: { 
-            legend: {display: false},
-            tooltips: {
-                mode: 'dataset',
-                intersect: false,
-                position: 'nearest',
-                titleFontSize: 10,
-                bodyFontSize: 10,
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    mode: 'dataset',
+                    intersect: false,
+                    position: 'nearest',
+                    titleFontSize: 10,
+                    bodyFontSize: 10,
+                }
             },
             scales: { 
                 r: {
                     gridLines: {display: false},
-                    ticks: {backdropColor: '#000000ff'},
+                    ticks: {
+                        backdropColor: '#000000ff',
+                        color: 'white'
+                    },
                     max: max
                 }
             }
@@ -1202,32 +1206,41 @@ function engine_chart(chart, data) {
             ]
         },
         options: { 
-            legend: {display: false},
             elements: {point: {radius: 1}},
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-                position: 'nearest',
-                titleFontSize: 10,
-                bodyFontSize: 10,
-                filter: function(tooltipItem, data) {
-                    if(tooltipItem.datasetIndex == 2) {
-                        return false;
-                    }
-                    return true;
-                },
-                callbacks: {
-                    title: function(tooltipItems, data) {
-                        return 'Hyper ' + tooltipItems[0].label;
+            plugins: {
+                legend: {display: false},
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    titleFontSize: 10,
+                    bodyFontSize: 10,
+                    filter: function(context) {
+                        if(context.datasetIndex == 2) {
+                            return false;
+                        }
+                        return true;
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            console.log('context: ', context);
+                            return context.dataset.label + ': ' + context.raw;
+                        },
+                        title: function(context) {
+                            console.log('this: ', this);
+                            return 'Hyper ' + this.dataPoints[0].label;
+                        }
                     }
                 }
             },
             scales: { 
                 x: {
-                    gridLines: {color: 'gray'}
+                    gridLines: {color: 'gray'},
+                    ticks: {color: 'white'}
                 },
                 y: {
                     gridLines: {display: false},
+                    ticks: {color: 'white'},
                     max: 120
                 }
             }
