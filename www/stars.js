@@ -557,8 +557,7 @@ function slider(element, form, min, max, step, fractiondigits, units) {
         start: [min],
         connect: true,
         step: step,
-        tooltips: [tooltips],
-        format: {
+        tooltips: [{
             to: function(value) {
                 if(fractiondigits == null) {
                     return value;
@@ -566,10 +565,14 @@ function slider(element, form, min, max, step, fractiondigits, units) {
                     return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value);
                 }
                 return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value) + units;
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
                 return parseInt(value);
-                
             }
         },
         range: {
@@ -577,6 +580,9 @@ function slider(element, form, min, max, step, fractiondigits, units) {
             'max': max
         }
     });
+    if(tooltips == false) {
+        element.noUiSlider.tooltips = [false];
+    }
     element.noUiSlider.on('change', function() { post(form) });
 }
 
