@@ -948,7 +948,6 @@ function tech_display() {
             div.getElementsByClassName('tech_sensor')[0].style.display = 'inline-table';
         }
         if(json_map['tech']['engine'].hasOwnProperty(component)) {
-            console.log(json_map['tech']['engine'].hasOwnProperty(component));
             chart_cnt++;
             div.getElementsByClassName('tech_engine')[0].style.display = 'inline-table';
         }
@@ -957,7 +956,6 @@ function tech_display() {
         if(json_map['tech']['combat'].hasOwnProperty(component)) {
             var chart_element = div.getElementsByClassName('tech_combat_chart')[0];
             chart_element.style.width = chart_width + 'px';
-            console.log('Chart_element: ', chart_element);
             combat_chart(chart_element, json_map['tech']['combat'][component]);
         }
         if(json_map['tech']['sensor'].hasOwnProperty(component)) {
@@ -1010,33 +1008,39 @@ function fold(div, flip) {
 
 // Render the ship charts
 function ship_display() {
-    console.log('Jason Map:', json_map);
     if(current_screen == 'shipyard') {
-        combat_chart('shipyard_combat_chart', json_map['shipyard']['shipyard_combat_chart']);
-        sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart']);
-        engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart']);
-        console.log('Jason Map:', json_map);
+        combat_chart(document.getElementById('shipyard_combat_chart'), json_map['shipyard']['shipyard_combat_chart'], 'shipyard_combat_chart');
+        sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart'], 'shipyard_sensor_chart');
+        engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart'], 'shipyard_engine_chart');
     }
 }
 
 // Create a chart for combat defense/weapon curves
-function combat_chart(element_id, data) {
-    chart = document.getElementById(element_id)
-    console.log(charts);
-    if(!charts.hasOwnProperty(element_id)) {
-        labels = [];
-        firepower_data = [];
-        armor_data = [];
-        shield_data = [];
-        ecm_data = [];
-        for(var i=0; i < 100; i++) {
-            labels.push(i / 100);
-            firepower_data.push(data['firepower'][i]);
-            armor_data.push(data['armor'][i]);
-            shield_data.push(data['shield'][i]);
-            ecm_data.push(data['ecm'][i]);
+function combat_chart(chart, data, element_id=null) {
+    var labels = [];
+    var firepower_data = [];
+    var armor_data = [];
+    var shield_data = [];
+    var ecm_data = [];
+    for(var i=0; i < 100; i++) {
+        labels.push(i / 100);
+        firepower_data.push(data['firepower'][i]);
+        armor_data.push(data['armor'][i]);
+        shield_data.push(data['shield'][i]);
+        ecm_data.push(data['ecm'][i]);
+    }
+    if(element_id != null && charts.hasOwnProperty(element_id)) {
+        data = [
+            firepower_data,
+            armor_data,
+            shield_data,
+            ecm_data
+        ]
+        for(var i=0; i<4; i++) {
+            charts[element_id].data.datasets[i].data = data[i];
         }
-        console.log(chart);
+        charts[element_id].update();
+    } else {
         var jschart = new Chart(chart, {
             type: 'line',
             data: { 
@@ -1088,13 +1092,13 @@ function combat_chart(element_id, data) {
                                 if(context.datasetIndex == 0) {
                                     label += Math.round(context.raw);
                                 } else if(context.datasetIndex == 2) {
-                                    label += parseInt(context.raw) - data.armor[0];
+                                    label += parseInt(context.raw) - this.dataPoints[1].raw;
                                 } else if(context.datasetIndex == 3) {
-                                    base = Math.max(1.0, data.armor[0] + data.shield[0]);
+                                    base = Math.max(1.0, this.dataPoints[1].raw + this.dataPoints[2].raw);
                                     value = parseFloat(context.raw);
                                     label += Math.round(value / base * 100.0) + '%';
                                 } else {
-                                    label += context.formattedValue;
+                                    label += context.raw;
                                 }
                                 return label;
                             },
@@ -1116,11 +1120,14 @@ function combat_chart(element_id, data) {
                 }
             }
         });
+        if(element_id) {
+            charts[element_id] = jschart;
+        }
     }
 }
 
 // Create a chart for sensor curve
-function sensor_chart(chart, data) {
+function sensor_chart(chart, data, element_id=null) {
     var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'HyperDenial'];
     var sensor_data = [];
     var max = 0;
@@ -1130,44 +1137,53 @@ function sensor_chart(chart, data) {
             max = data[i];
         }
     }
-    var jschart = new Chart(chart, {
-        type: 'polarArea',
-        data: { 
-            labels: labels,
-            datasets: [
-                { 
-                    backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
-                    data: sensor_data
-                }
-            ]
-        },
-        options: { 
-            plugins: {
-                legend: {display: false},
-                tooltip: {
-                    mode: 'dataset',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                }
+    if(element_id != null && charts.hasOwnProperty(element_id)) {
+        charts[element_id].data.datasets[0].data = sensor_data;
+        charts[element_id].options.scales.r.max = max;
+        charts[element_id].update();
+    } else {
+        var jschart = new Chart(chart, {
+            type: 'polarArea',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
+                        data: sensor_data
+                    }
+                ]
             },
-            scales: { 
-                r: {
-                    gridLines: {display: false},
-                    ticks: {
-                        backdropColor: '#000000ff',
-                        color: 'white'
-                    },
-                    max: max
+            options: { 
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'dataset',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                    }
+                },
+                scales: { 
+                    r: {
+                        gridLines: {display: false},
+                        ticks: {
+                            backdropColor: '#000000ff',
+                            color: 'white'
+                        },
+                        max: max
+                    }
                 }
             }
+        });
+        if(element_id) {
+            charts[element_id] = jschart;
         }
-    });
+    }
 }
 
 // Create a chart for engine curve
-function engine_chart(chart, data) {
+function engine_chart(chart, data, element_id=null) {
     labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
     engine_data = [];
     siphon_data = [];
@@ -1177,73 +1193,80 @@ function engine_chart(chart, data) {
         siphon_data.push(data['siphon'][i]);
         safe_data.push(100);
     }
-    var jschart = new Chart(chart, {
-        type: 'line',
-        data: { 
-            labels: labels,
-            datasets: [
-                { 
-                    label: ' ₥ / kT / ly',
-                    borderColor: 'white',
-                    backgroundColor: 'white',
-                    fill: false,
-                    data: engine_data
-                },
-                { 
-                    label: ' siphon %',
-                    borderColor: 'blue',
-                    backgroundColor: 'blue',
-                    fill: false,
-                    data: siphon_data
-                },
-                { 
-                    label: 'Max Safe',
-                    borderColor: '#ff000000',
-                    backgroundColor: '#ff000088',
-                    fill: 'end',
-                    data: safe_data
-                }
-            ]
-        },
-        options: { 
-            elements: {point: {radius: 1}},
-            plugins: {
-                legend: {display: false},
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    titleFontSize: 10,
-                    bodyFontSize: 10,
-                    filter: function(context) {
-                        if(context.datasetIndex == 2) {
-                            return false;
-                        }
-                        return true;
+    if(element_id != null && charts.hasOwnProperty(element_id)) {
+        charts[element_id].data.datasets[0].data = engine_data;
+        charts[element_id].data.datasets[1].data = siphon_data;
+        charts[element_id].update();
+    } else {
+        var jschart = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        label: ' ₥ / kT / ly',
+                        borderColor: 'white',
+                        backgroundColor: 'white',
+                        fill: false,
+                        data: engine_data
                     },
-                    callbacks: {
-                        label: function(context) {
-                            console.log('context: ', context);
-                            return context.dataset.label + ': ' + context.raw;
+                    { 
+                        label: ' siphon %',
+                        borderColor: 'blue',
+                        backgroundColor: 'blue',
+                        fill: false,
+                        data: siphon_data
+                    },
+                    { 
+                        label: 'Max Safe',
+                        borderColor: '#ff000000',
+                        backgroundColor: '#ff000088',
+                        fill: 'end',
+                        data: safe_data
+                    }
+                ]
+            },
+            options: { 
+                elements: {point: {radius: 1}},
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                        filter: function(context) {
+                            if(context.datasetIndex == 2) {
+                                return false;
+                            }
+                            return true;
                         },
-                        title: function(context) {
-                            console.log('this: ', this);
-                            return 'Hyper ' + this.dataPoints[0].label;
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw;
+                            },
+                            title: function(context) {
+                                return 'Hyper ' + this.dataPoints[0].label;
+                            }
                         }
                     }
-                }
-            },
-            scales: { 
-                x: {
-                    gridLines: {color: 'gray'},
-                    ticks: {color: 'white'}
                 },
-                y: {
-                    gridLines: {display: false},
-                    ticks: {color: 'white'},
-                    max: 120
+                scales: { 
+                    x: {
+                        gridLines: {color: 'gray'},
+                        ticks: {color: 'white'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'},
+                        max: 120
+                    }
                 }
             }
+        });
+        if(element_id) {
+            charts[element_id] = jschart;
         }
-    });
+    }
 }
