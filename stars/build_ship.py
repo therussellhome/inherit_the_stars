@@ -51,17 +51,19 @@ class BuildShip(BuildQueue):
             elif len(self.to_build) > 0: # add component
                 if not self.ship:
                     self.ship = Reference(Ship(location=Location(reference=self.planet), race=Reference(self.planet.player.race)))
+                    print('\nBuildShip[ ship.location ]:', '\nx:', self.ship.location.x, '\ny:', self.ship.location.y, '\nz:', self.ship.location.z)
                     for f in self.planet.player.fleets:
                         if self.buships in f.under_construction:
                             self.planet.player.add_ships(self.ship, f)
-                            f - self
+                            f - Reference(self)#.buships?
                             break
                     else:
                         self.planet.player.add_ships(self.ship)
-                self.ship.description = self.buships.ID
+                self.ship.description = self.buships.ship_design.ID
                 self.ship.add_component(self.to_build.pop(0), False)
             self.ship.update(self.level)
             self._next_component()
+            print('\nBuildShip[ ', self.ID, '.in_progress ]: ', self.in_progress.__dict__, sep='')
         return self.in_progress
 
     """ Next component """

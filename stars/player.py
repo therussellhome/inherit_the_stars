@@ -445,6 +445,12 @@ class Player(Defaults):
                 remove_from_queue.append(b)
         for d in remove_from_queue:
             self.build_queue.remove(d)
+            if isinstance(d, BuildShip):
+                if d.buships:
+                    self.buships.remove(~d.buships)
+                    for f in self.fleets:
+                        if d.buships in f.under_construction:
+                            f - Reference(d.buships)
 
     """ Research """
     def research(self):
