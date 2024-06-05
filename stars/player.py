@@ -133,7 +133,7 @@ class Player(Defaults):
         game_engine.register(self)
         for fleet in self.fleets:
             for ship in fleet.ships:
-                if Reference(ship.ID) not in self.get_intel(None, 'ship'):
+                if Reference(ship) not in self.get_intel(None, 'Ship'):
                     self.add_intel(ship, ship.scan_report())
 
     """ Player filename """

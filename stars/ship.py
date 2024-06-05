@@ -140,6 +140,8 @@ class Ship(ShipDesign):
         report = {
             'location': self.location,
         }
+        #print('\nShip[ location ]:', self.location.__dict__)
+        #print('Ship.scan_report[ location ]:', report['location'].__dict__)
         if scan_type == 'anticloak' or scan_type == 'self':
             report['Mass'] = self.total_mass
         if scan_type == 'penetrating' or scan_type == 'self':

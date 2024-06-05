@@ -159,8 +159,10 @@ class Fleet(Defaults):
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
+            print('Fleet: getting offset')
             offset_distances = {'Sun': 7000, 'Planet': 700}
             offset = offset_distances.get(+(location.reference), offset)
+            print('offset:', offset)
         # Update all ships
         for s in self.ships:
             if reference == s:
@@ -462,6 +464,7 @@ class Fleet(Defaults):
     def scan_self(self):
         for ship in self.ships:
             self.player.add_intel(self, ship.scan_report('self'))
+        #print('Fleet.scan_self[ location ]:', self.player.intel[Reference(self)].location)
 
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):
