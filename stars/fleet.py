@@ -150,12 +150,16 @@ class Fleet(Defaults):
         # Either offset from ship 0 or orbit the thing being referenced
         offset = 10
         reference = location.reference
+        for ship in self.ships:
+            if ship.is_space_station():
+                reference = ship.location.reference
+                break
         if not reference:
             if len(self.ships) > 0:
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
-            offset_distances = {'Sun': 7000, 'Planet': 7000}
+            offset_distances = {'Sun': 7000, 'Planet': 700}
             offset = offset_distances.get(+(location.reference), offset)
         # Update all ships
         for s in self.ships:
@@ -180,7 +184,6 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         self.move_to = self.order.move_calc(self.location)
-        print(self.move_to.__dict__)
         if self.move_to.root_location != self.location.root_location:
             self.is_stationary = False
 

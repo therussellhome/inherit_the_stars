@@ -16,10 +16,9 @@ from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .minerals import Minerals, MINERAL_TYPES
 from .facility import Facility, FACILITY_TYPES
-from .fleet import Fleet
+from .order import Order
 from .ship import Ship
-from .cargo import Cargo
-from .message import Message
+from .buships import BuShips
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -195,6 +194,8 @@ class Player(Defaults):
     """ Update the date """
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
+        if False: #len(self.ships) > 0:
+            ship = self.ships[-1]
 
     """ Update stats """
     def update_stats(self):
@@ -231,11 +232,17 @@ class Player(Defaults):
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
-        if not fleet:
-            fleet = Fleet(player=Reference(self))
-            self.fleets.append(fleet)
         if not isinstance(ships, list):
             ships = [ships]
+        if not fleet:
+            if isinstance(ships[0], BuShips):
+                location = ships[0].ship.location
+                ID = ships[0].ship.ID
+            else:
+                location = ships[0].location
+                ID = ships[0].ID
+            fleet = Fleet(player=Reference(self), order=Order(location=location))
+            self.fleets.append(fleet)
         for s in ships:
             if isinstance(s, Reference):
                 s = ~s
