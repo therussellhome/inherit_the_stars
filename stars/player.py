@@ -194,8 +194,6 @@ class Player(Defaults):
     """ Update the date """
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
-        if False: #len(self.ships) > 0:
-            ship = self.ships[-1]
 
     """ Update stats """
     def update_stats(self):
