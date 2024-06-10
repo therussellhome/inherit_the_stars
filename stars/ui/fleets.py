@@ -42,9 +42,9 @@ class Fleets(PlayerUI):
             self.fleet_list.append('<tr>'
                 + '<td><i class="button fas fa-eye" title="Select Fleet" onclick="post(\'fleets\', \'?select_' + str(i) + '\')"></i></td>'
                 + '<td>' + str(intel.name) + '</td>'
-                + '<td>' + str(intel.location[0]) + '</td>'
-                + '<td>' + str(intel.location[1]) + '</td>'
-                + '<td>' + str(intel.location[2]) + '</td>'
+                + '<td>' + '{:.5}'.format(intel.location[0]) + '</td>'
+                + '<td>' + '{:.5}'.format(intel.location[1]) + '</td>'
+                + '<td>' + '{:.5}'.format(intel.location[2]) + '</td>'
                 + '<td>' + str(fleet.fuel) + '</td>'
                 + '<td>' + str(fleet.cargo.people) + '</td>'
                 + '<td>' + str(fleet.cargo.titanium) + '</td>'
@@ -75,6 +75,7 @@ class Fleets(PlayerUI):
         #for i in self.player.fleets:
         if len(self.player.fleets) > 0:
             for I in range(len(self.player.fleets[self.fleet_index].orders)):
+                print('Fleets screen printing order:', i)
                 order = self.player.fleets[self.fleet_index].orders[I]
                 shown = ''
                 if 'description' in order.__dict__:
