@@ -15,7 +15,7 @@ from .ship import Ship
 
 
 """ Offset of ships from fleet center """
-SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
+SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 20000
 
 
 """ Default values (default, min, max)  """
@@ -168,7 +168,7 @@ class Fleet(Defaults):
             if reference == s:
                 s.location = Location(location)
             else:
-                s.location = Location(reference=reference, offset=offset * stars_math.KILOMETER_2_LIGHTYEAR)
+                s.location = Location(reference=reference, offset=offset * SHIP_OFFSET)
         self.location = location
 
     """ Check if the fleet can/ordered to move """
