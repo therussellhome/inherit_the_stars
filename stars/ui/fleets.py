@@ -74,9 +74,7 @@ class Fleets(PlayerUI):
             + '<th><i class="button fas fa-plus-circle" title="create order" onclick="show_screen(\'orders\'), post(\'orders\', \'?create_order;fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></th>')
         #for i in self.player.fleets:
         if len(self.player.fleets) > 0:
-            print('Fleets screen printing:', self.player.fleets[self.fleet_index].__dict__)
             for I in range(len(self.player.fleets[self.fleet_index].orders)):
-                print('Fleets screen printing order:', I)
                 order = self.player.fleets[self.fleet_index].orders[I]
                 shown = ''
                 if 'description' in order.__dict__:
@@ -92,7 +90,6 @@ class Fleets(PlayerUI):
                     + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'
                     + shown + '<td><i class="button far fa-trash-alt" title="Delete Order" onclick="post(\'fleets\', \'?select_' + str(self.fleet_index) + ';delete_order=' + str(I) + '\')"></i></td>'
                     + '</tr>')
-                print(' *  ', self.fleet_orders[I])
         
 
 
