@@ -497,7 +497,7 @@ function speed_slider(element, form) {
                         return i - 2;
                     }
                 }
-                return -1;
+                return parseInt(value);
             }
         },
         range: {
@@ -533,7 +533,7 @@ function depart_slider(element, form) {
                 } else if(value == 'immediately') {
                     return 0.0;
                 }
-                return parseInt(value);
+                return parseFloat(value);
             }
         },
         range: {
