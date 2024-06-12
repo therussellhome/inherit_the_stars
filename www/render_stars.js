@@ -235,8 +235,8 @@ function onClick(event) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
         console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object);
         console.log('type: ', intersects[0].object.name);
-        if(intersects[0].object.name === 'Ship') {
-//TODO            post('orders', '?fleet_index='+intersects[0].object.toString());
+        if(intersects[0].object.name.startsWith('Ship:')) {
+            post('orders', '?fleet_index=' + intersects[0].object.name.substring(5));
             show_order_sidebar();
             console.log('intersected ship');
         }
@@ -336,7 +336,7 @@ function get_system(intersected, index) {
             size: ((system_data[i].size + 200) * TERAMETER / size_mod)
         } );
         var point = new THREE.Points( geometry, material );
-        point.name = system_data[i].type// = system_data[i].name;
+        point.name = system_data[i].type + '/' + system_data[i].name;
         inner_system.add(point);
     }
     scene.remove(in_system);

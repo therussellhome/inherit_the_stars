@@ -10,8 +10,8 @@ __defaults = {
 
 """ Temporary class to indicate terraforming in progress """
 class Terraform(BuildQueue):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         base = 2500
         if self.planet.player.race.lrt_Bioengineer:
             base = 1800

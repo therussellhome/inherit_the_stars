@@ -50,8 +50,8 @@ TREATY_HALF_FIELDS = ['_ti', '_si', '_li', '_fuel', '_gate', '_hyper_denial', '_
 
 """ The treaty class is from a given player's perspective to the other player """
 class Treaty(Defaults):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     """ Both players proposed a treaty so copy each one's sell at into a combined treaty """
     def merge(self, other):

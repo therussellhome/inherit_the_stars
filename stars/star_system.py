@@ -25,8 +25,8 @@ _roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 """ Star System with its planets """
 class StarSystem(Defaults):
     """ Initialize defaults """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
 
     """ create planets """

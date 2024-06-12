@@ -7,13 +7,14 @@ from ..tech import TECH_GROUPS
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'shipyard_existing_design': '',
-    'options_shipyard_existing_design': [],
+    'shipyard_design_to_load': '',
+    'options_shipyard_design_to_load': [],
     'shipyard_ship_overview': [], # table with ship tech display
     'shipyard_combat_chart': {},
     'shipyard_sensor_chart': [],
     'shipyard_engine_chart': {},
     'shipyard_ship_guts': [],
+    'shipyard_name': '',
     'shipyard_ID': '',
     'shipyard_design': [],
     'shipyard_slots_general': '0/0',
@@ -34,26 +35,31 @@ class Shipyard(PlayerUI):
         design = None
         if len(self.player.design_cache) == 0:
             self.player.design_cache = list(self.player.ship_designs)
+        if self.shipyard_design_to_load != '':
+            self.shipyard_ID = self.shipyard_design_to_load
+            self.shipyard_name = self.shipyard_ID
+            self.shipyard_design_to_load = ''
         for existing_design in self.player.design_cache:
-            if existing_design.ID == self.shipyard_existing_design:
+            if existing_design.ID == self.shipyard_ID:
                 design = existing_design
                 break
         # Actions
         if action == 'new_design':
             design = ShipDesign()
             self.player.design_cache.append(design)
-            self.shipyard_existing_design = design.ID
             self.shipyard_ID = ''
+            self.shipyard_name = ''
         elif action == 'copy_design':
             design = design.clone_design()
             self.player.design_cache.append(design)
-            self.shipyard_existing_design = design.ID
             self.shipyard_ID = ''
+            self.shipyard_name = ''
         elif action == 'delete_design':
             if design in self.player.ship_designs:
                 self.player.ship_designs.remove(design)
             self.player.design_cache.remove(design)
             self.shipyard_ID = ''
+            self.shipyard_name = ''
             design = None
         # Load / create design
         if design == None:
@@ -63,13 +69,15 @@ class Shipyard(PlayerUI):
         # Design id
         if self.shipyard_ID == '':
             self.shipyard_ID = design.ID
+        if self.shipyard_name == '':
+            self.shipyard_name = design.ID
         else:
+            self.shipyard_ID = self.shipyard_name
             design.ID = self.shipyard_ID
         # Build design list after any chance for the name to change
-        self.options_shipyard_existing_design = []
+        self.options_shipyard_design_to_load = []
         for existing_design in self.player.design_cache:
-            self.options_shipyard_existing_design.append(existing_design.ID)
-        self.shipyard_existing_design = design.ID
+            self.options_shipyard_design_to_load.append(existing_design.ID)
 
         # Add to ship design
         if action.startswith('add='):

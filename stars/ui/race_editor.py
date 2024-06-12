@@ -9,7 +9,7 @@ __defaults = {
     'race_editor_habitability_message': '',
     'race_editor_file_to_load': '',
     'options_race_editor_file_to_load': [],
-    'race_editor_advantage_points_left': (0, -20000000, 2000000),
+    'race_editor_advantage_points_left': (0, -sys.maxsize, sys.maxsize),
     'race_editor_icon': '',
 }
 

@@ -23,14 +23,19 @@ __defaults = {
     'standoff': standoff_options[0],
     'depart': (0.0, 0.0, 10.0), # depart after x years, 10.0=never
     'repair_to': (0, 0, sys.maxsize), # TODO Do we even want this option?
-    'load_si': (0, -100, 100), # unload / load %
-    'load_ti': (0, -100, 100), # unload / load %
-    'load_li': (0, -100, 100), # unload / load %
-    'load_pop': (0, -100, 100), # unload / load %
-    'buy_si': (0, -100, 100), # buy / sell %
-    'buy_ti': (0, -100, 100), # buy / sell %
-    'buy_li': (0, -100, 100), # buy / sell %
-    'buy_fuel': (0, -100, 100), # buy / sell %
+    'ti': (0, 0, 100), # unload / load %
+    'ti_dunnage': False, # load dunnage
+    'ti_trade': False, # buy / sell
+    'li': (0, 0, 100), # unload / load %
+    'li_dunnage': False, # load dunnage
+    'li_trade': False, # buy / sell
+    'si': (0, 0, 100), # unload / load %
+    'si_dunnage': False, # load dunnage
+    'si_trade': False, # buy / sell
+    'pop': (0, 0, 100), # unload / load %
+    'pop_dunnage': False, # load dunnage
+    'fuel': (0, 0, 100), # buy / sell %
+    'fuel_trade': False, # buy / sell
     'transfer_to': Reference('Player'),
     'hyperdenial': True,
     'lay_mines': True,
@@ -43,8 +48,8 @@ __defaults = {
 """ Class defining waypoints - edited by the player through fleet """
 class Order(Defaults):
     """ Initialize and register """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
 
     """ Calculate where to move to """
