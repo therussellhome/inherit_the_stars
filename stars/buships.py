@@ -25,8 +25,8 @@ __tmp_defaults = {
 """ Ship building queue """
 class BuShips(Defaults):
     """ Initialize the cost """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if 'ship' not in kwargs and self.planet and self.planet.player: 
             # Force the creation of a fleet for the player to interact with
             self.planet.player.add_ships(self)

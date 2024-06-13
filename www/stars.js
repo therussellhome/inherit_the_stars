@@ -484,20 +484,18 @@ function speed_slider(element, form) {
         start: [-1],
         connect: false,
         step: 1,
-        tooltips: [true],
-        format: {
+        tooltips: [{
             to: function(value) {
                 labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
                 return labels[parseInt(value) + 2];
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
-                labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-                for(var i = 0; i < labels.length; i++) {
-                    if(value == labels[i]) {
-                        return i - 2;
-                    }
-                }
-                return -1;
+                return parseInt(value);
             }
         },
         range: {
@@ -517,8 +515,7 @@ function depart_slider(element, form) {
         start: [0.0],
         connect: false,
         step: 0.01,
-        tooltips: [true],
-        format: {
+        tooltips: [{
             to: function(value) {
                 if(value == 10.0) {
                     return 'never';
@@ -526,14 +523,14 @@ function depart_slider(element, form) {
                     return 'immediately';
                 }
                 return 'after ' + Intl.NumberFormat('en', {maximumFractionDigits: 2}).format(value) + ' years';
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
-                if(value == 'never') {
-                    return 10.0;
-                } else if(value == 'immediately') {
-                    return 0.0;
-                }
-                return parseInt(value);
+                return parseFloat(value);
             }
         },
         range: {
@@ -557,8 +554,7 @@ function slider(element, form, min, max, step, fractiondigits, units) {
         start: [min],
         connect: true,
         step: step,
-        tooltips: [tooltips],
-        format: {
+        tooltips: [{
             to: function(value) {
                 if(fractiondigits == null) {
                     return value;
@@ -566,10 +562,14 @@ function slider(element, form, min, max, step, fractiondigits, units) {
                     return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value);
                 }
                 return Intl.NumberFormat('en', {maximumFractionDigits: fractiondigits}).format(value) + units;
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
                 return parseInt(value);
-                
             }
         },
         range: {
@@ -577,6 +577,9 @@ function slider(element, form, min, max, step, fractiondigits, units) {
             'max': max
         }
     });
+    if(tooltips == false) {
+        element.noUiSlider.tooltips = [false];
+    }
     element.noUiSlider.on('change', function() { post(form) });
 }
 
@@ -646,9 +649,13 @@ function slider2(element, form, min, max, step, formatter) {
         start: [min, max],
         connect: true,
         step: step,
-        tooltips: [true, true],
+        //tooltips: [true, true],
+        tooltips: [{ to: formatter }, { to: formatter }],
         format: {
-            to: formatter,
+            //to: formatter,
+            to: function(value) {
+                return Number(value)
+            },
             from: function(value) {
                 return Number(value);
             }
@@ -692,19 +699,26 @@ function gravity_chart(element_id, slider_id) {
                 ]
             },
             options: { 
-                legend: {display: false},
-                elements: {point: false},
-                title: {
-                    display: true,
-                    text: 'Planetary Gravity Probabiliy'
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        color: 'white',
+                        display: true,
+                        text: 'Planetary Gravity Probabiliy'
+                    }
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false}
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                        }
                     },
                     y: {
                         gridLines: {display: false},
                         ticks: {
+                            color: 'white',
                             callback: function(value) {
                                 return value + '%';
                             }
@@ -762,19 +776,26 @@ function temperature_chart(element_id, slider_id) {
                 ]
             },
             options: { 
-                legend: {display: false},
-                elements: {point: false},
-                title: {
-                    display: true,
-                    text: 'Planetary Temperature Probabiliy'
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        color: 'white',
+                        display: true,
+                        text: 'Planetary Temperature Probabiliy'
+                    }
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false}
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                        }
                     },
                     y: {
                         gridLines: {display: false},
                         ticks: {
+                            color: 'white',
                             callback: function(value) {
                                 return value + '%';
                             }
@@ -832,19 +853,24 @@ function radiation_chart(element_id, slider_id) {
                 ]
             },
             options: { 
-                legend: {display: false},
-                elements: {point: false},
-                title: {
-                    display: true,
-                    text: 'Planetary Radiation Probability'
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    title: {
+                        color: 'white',
+                        display: true,
+                        text: 'Planetary Radiation Probability'
+                    }
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false}
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
                     },
                     y: {
                         gridLines: {display: false},
                         ticks: {
+                            color: 'white',
                             callback: function(value) {
                                 return value + '%';
                             }
@@ -925,7 +951,6 @@ function tech_display() {
             div.getElementsByClassName('tech_sensor')[0].style.display = 'inline-table';
         }
         if(json_map['tech']['engine'].hasOwnProperty(component)) {
-            console.log(json_map['tech']['engine'].hasOwnProperty(component));
             chart_cnt++;
             div.getElementsByClassName('tech_engine')[0].style.display = 'inline-table';
         }
@@ -987,19 +1012,19 @@ function fold(div, flip) {
 // Render the ship charts
 function ship_display() {
     if(current_screen == 'shipyard') {
-        combat_chart(document.getElementById('shipyard_combat_chart'), json_map['shipyard']['shipyard_combat_chart']);
-        sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart']);
-        engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart']);
+        combat_chart(document.getElementById('shipyard_combat_chart'), json_map['shipyard']['shipyard_combat_chart'], 'shipyard_combat_chart');
+        sensor_chart(document.getElementById('shipyard_sensor_chart'), json_map['shipyard']['shipyard_sensor_chart'], 'shipyard_sensor_chart');
+        engine_chart(document.getElementById('shipyard_engine_chart'), json_map['shipyard']['shipyard_engine_chart'], 'shipyard_engine_chart');
     }
 }
 
 // Create a chart for combat defense/weapon curves
-function combat_chart(chart, data) {
-    labels = [];
-    firepower_data = [];
-    armor_data = [];
-    shield_data = [];
-    ecm_data = [];
+function combat_chart(chart, data, element_id=null) {
+    var labels = [];
+    var firepower_data = [];
+    var armor_data = [];
+    var shield_data = [];
+    var ecm_data = [];
     for(var i=0; i < 100; i++) {
         labels.push(i / 100);
         firepower_data.push(data['firepower'][i]);
@@ -1007,85 +1032,105 @@ function combat_chart(chart, data) {
         shield_data.push(data['shield'][i]);
         ecm_data.push(data['ecm'][i]);
     }
-    var jschart = new Chart(chart, {
-        type: 'line',
-        data: { 
-            labels: labels,
-            datasets: [
-                { 
-                    label: 'Firepower',
-                    borderColor: 'red',
-                    backgroundColor: '#ff000055',
-                    fill: false,
-                    data: firepower_data
-                },
-                { 
-                    label: 'Armor',
-                    borderColor: 'gray',
-                    backgroundColor: '#99999955',
-                    fill: 'origin',
-                    data: armor_data
-                },
-                { 
-                    label: 'Shield',
-                    borderColor: 'cyan',
-                    backgroundColor: '#00ffff55',
-                    fill: '-1',
-                    data: shield_data
-                },
-                { 
-                    label: 'ECM',
-                    borderColor: 'yellow',
-                    backgroundColor: '#ffff0055',
-                    fill: false,
-                    data: ecm_data
-                }
-            ]
-        },
-        options: { 
-            legend: {display: false},
-            elements: {point: {radius: 1}},
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-                position: 'nearest',
-                titleFontSize: 10,
-                bodyFontSize: 10,
-                callbacks: {
-                    title: function(tooltipItems, data) {
-                        return 'Range: ' + tooltipItems[0].label + ' Tm';
+    if(element_id != null && charts.hasOwnProperty(element_id)) {
+        data = [
+            firepower_data,
+            armor_data,
+            shield_data,
+            ecm_data
+        ]
+        for(var i=0; i<4; i++) {
+            charts[element_id].data.datasets[i].data = data[i];
+        }
+        charts[element_id].update();
+    } else {
+        var jschart = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        label: 'Firepower',
+                        borderColor: 'red',
+                        backgroundColor: '#ff000055',
+                        fill: false,
+                        data: firepower_data
                     },
-                    label: function(tooltipItem, data) {
-                        var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
-                        if(tooltipItem.datasetIndex == 0) {
-                            label += Math.round(tooltipItem.value);
-                        } else if(tooltipItem.datasetIndex == 2) {
-                            label += parseInt(tooltipItem.value) - data.datasets[1].data[0];
-                        } else if(tooltipItem.datasetIndex == 3) {
-                            base = Math.max(1.0, data.datasets[1].data[0] + data.datasets[2].data[0]);
-                            value = parseFloat(tooltipItem.value);
-                            label += Math.round(value / base * 100.0) + '%';
-                        } else {
-                            label += tooltipItem.value;
+                    { 
+                        label: 'Armor',
+                        borderColor: 'gray',
+                        backgroundColor: '#99999955',
+                        fill: 'origin',
+                        data: armor_data
+                    },
+                    { 
+                        label: 'Shield',
+                        borderColor: 'cyan',
+                        backgroundColor: '#00ffff55',
+                        fill: '-1',
+                        data: shield_data
+                    },
+                    { 
+                        label: 'ECM',
+                        borderColor: 'yellow',
+                        backgroundColor: '#ffff0055',
+                        fill: false,
+                        data: ecm_data
+                    }
+                ]
+            },
+            options: { 
+                elements: {point: {radius: 1}},
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.label + ': ';
+                                if(context.datasetIndex == 0) {
+                                    label += Math.round(context.raw);
+                                } else if(context.datasetIndex == 2) {
+                                    label += parseInt(context.raw) - this.dataPoints[1].raw;
+                                } else if(context.datasetIndex == 3) {
+                                    base = Math.max(1.0, this.dataPoints[1].raw + this.dataPoints[2].raw);
+                                    value = parseFloat(context.raw);
+                                    label += Math.round(value / base * 100.0) + '%';
+                                } else {
+                                    label += context.raw;
+                                }
+                                return label;
+                            },
+                            title: function(context) {
+                                return 'Range: ' + this.dataPoints[0].label + ' Tm';
+                            },
                         }
-                        return label;
+                    }
+                },
+                scales: { 
+                    x: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
                     }
                 }
-            },
-            scales: { 
-                x: {
-                    gridLines: {display: false}
-                },
-                y: {
-                    gridLines: {display: false}
-                }
             }
+        });
+        if(element_id) {
+            charts[element_id] = jschart;
         }
-    });
+    }
 }
 
 // Create a chart for sensor curve
-function sensor_chart(chart, data) {
+function sensor_chart(chart, data, element_id=null) {
     var labels = ['Normal', 'Penetrating', 'Anti-Cloak', 'HyperDenial'];
     var sensor_data = [];
     var max = 0;
@@ -1095,39 +1140,53 @@ function sensor_chart(chart, data) {
             max = data[i];
         }
     }
-    var jschart = new Chart(chart, {
-        type: 'polarArea',
-        data: { 
-            labels: labels,
-            datasets: [
-                { 
-                    backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
-                    data: sensor_data
-                }
-            ]
-        },
-        options: { 
-            legend: {display: false},
-            tooltips: {
-                mode: 'dataset',
-                intersect: false,
-                position: 'nearest',
-                titleFontSize: 10,
-                bodyFontSize: 10,
+    if(element_id != null && charts.hasOwnProperty(element_id)) {
+        charts[element_id].data.datasets[0].data = sensor_data;
+        charts[element_id].options.scales.r.max = max;
+        charts[element_id].update();
+    } else {
+        var jschart = new Chart(chart, {
+            type: 'polarArea',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        backgroundColor: ['#ffffff88', '#00ff0088', '#ffff0088', '#ff000088'],
+                        data: sensor_data
+                    }
+                ]
             },
-            scales: { 
-                r: {
-                    gridLines: {display: false},
-                    ticks: {backdropColor: '#000000ff'},
-                    max: max
+            options: { 
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'dataset',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                    }
+                },
+                scales: { 
+                    r: {
+                        gridLines: {display: false},
+                        ticks: {
+                            backdropColor: '#000000ff',
+                            color: 'white'
+                        },
+                        max: max
+                    }
                 }
             }
+        });
+        if(element_id) {
+            charts[element_id] = jschart;
         }
-    });
+    }
 }
 
 // Create a chart for engine curve
-function engine_chart(chart, data) {
+function engine_chart(chart, data, element_id=null) {
     labels = ['alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
     engine_data = [];
     siphon_data = [];
@@ -1137,64 +1196,80 @@ function engine_chart(chart, data) {
         siphon_data.push(data['siphon'][i]);
         safe_data.push(100);
     }
-    var jschart = new Chart(chart, {
-        type: 'line',
-        data: { 
-            labels: labels,
-            datasets: [
-                { 
-                    label: ' ₥ / kT / ly',
-                    borderColor: 'white',
-                    backgroundColor: 'white',
-                    fill: false,
-                    data: engine_data
-                },
-                { 
-                    label: ' siphon %',
-                    borderColor: 'blue',
-                    backgroundColor: 'blue',
-                    fill: false,
-                    data: siphon_data
-                },
-                { 
-                    label: 'Max Safe',
-                    borderColor: '#ff000000',
-                    backgroundColor: '#ff000088',
-                    fill: 'end',
-                    data: safe_data
-                }
-            ]
-        },
-        options: { 
-            legend: {display: false},
-            elements: {point: {radius: 1}},
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-                position: 'nearest',
-                titleFontSize: 10,
-                bodyFontSize: 10,
-                filter: function(tooltipItem, data) {
-                    if(tooltipItem.datasetIndex == 2) {
-                        return false;
+    if(element_id != null && charts.hasOwnProperty(element_id)) {
+        charts[element_id].data.datasets[0].data = engine_data;
+        charts[element_id].data.datasets[1].data = siphon_data;
+        charts[element_id].update();
+    } else {
+        var jschart = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: labels,
+                datasets: [
+                    { 
+                        label: ' ₥ / kT / ly',
+                        borderColor: 'white',
+                        backgroundColor: 'white',
+                        fill: false,
+                        data: engine_data
+                    },
+                    { 
+                        label: ' siphon %',
+                        borderColor: 'blue',
+                        backgroundColor: 'blue',
+                        fill: false,
+                        data: siphon_data
+                    },
+                    { 
+                        label: 'Max Safe',
+                        borderColor: '#ff000000',
+                        backgroundColor: '#ff000088',
+                        fill: 'end',
+                        data: safe_data
                     }
-                    return true;
-                },
-                callbacks: {
-                    title: function(tooltipItems, data) {
-                        return 'Hyper ' + tooltipItems[0].label;
-                    }
-                }
+                ]
             },
-            scales: { 
-                x: {
-                    gridLines: {color: 'gray'}
+            options: { 
+                elements: {point: {radius: 1}},
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                        filter: function(context) {
+                            if(context.datasetIndex == 2) {
+                                return false;
+                            }
+                            return true;
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw;
+                            },
+                            title: function(context) {
+                                return 'Hyper ' + this.dataPoints[0].label;
+                            }
+                        }
+                    }
                 },
-                y: {
-                    gridLines: {display: false},
-                    max: 120
+                scales: { 
+                    x: {
+                        gridLines: {color: 'gray'},
+                        ticks: {color: 'white'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'},
+                        max: 120
+                    }
                 }
             }
+        });
+        if(element_id) {
+            charts[element_id] = jschart;
         }
-    });
+    }
 }

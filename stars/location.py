@@ -55,7 +55,7 @@ class Location(Defaults):
             del kwargs['new_orbit']
         if 'reference' in kwargs:
             kwargs['reference'] = Reference(kwargs['reference'])
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
     
     """ Orbit """
     def orbit(self):

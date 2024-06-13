@@ -15,7 +15,7 @@ from .ship import Ship
 
 
 """ Offset of ships from fleet center """
-SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
+SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 20000
 
 
 """ Default values (default, min, max)  """
@@ -47,10 +47,9 @@ __tmp_defaults = {
 """ Class defining fleets - directly modifiable by the player """
 class Fleet(Defaults):
     """ Initialize and register """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
-        print('\n *  fleet printing:\n +  ID:', self.ID, '\n +  location:', self.location.xyz)
 
     """ Provide calculated values """
     def __getattribute__(self, name):
@@ -64,10 +63,8 @@ class Fleet(Defaults):
         elif name == 'location':
             if len(self.ships) > 0:
                 self_dict[name] = self.ships[0].location
-                print('-Ship-', end='')
             else:
                 self_dict[name] = Location()
-                print('-Default-', end='')
         elif name == 'cargo':
             self_dict[name] = Cargo()
             for s in self.ships:
@@ -152,19 +149,25 @@ class Fleet(Defaults):
         # Either offset from ship 0 or orbit the thing being referenced
         offset = 10
         reference = location.reference
+        for ship in self.ships:
+            if ship.is_space_station():
+                reference = ship.location.reference
+                break
         if not reference:
             if len(self.ships) > 0:
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
-            offset_distances = {'Sun': 7000, 'Planet': 7000}
+            print('Fleet: getting offset')
+            offset_distances = {'Sun': 7000, 'Planet': 700}
             offset = offset_distances.get(+(location.reference), offset)
+            print('offset:', offset)
         # Update all ships
         for s in self.ships:
             if reference == s:
                 s.location = Location(location)
             else:
-                s.location = Location(reference=reference, offset=offset * stars_math.KILOMETER_2_LIGHTYEAR)
+                s.location = Location(reference=reference, offset=offset * SHIP_OFFSET)
         self.location = location
 
     """ Check if the fleet can/ordered to move """
@@ -182,7 +185,6 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         self.move_to = self.order.move_calc(self.location)
-        #print(self.move_to.__dict__)
         if self.move_to.root_location != self.location.root_location:
             self.is_stationary = False
 
@@ -205,11 +207,8 @@ class Fleet(Defaults):
             for planet in self.location.root_reference.planets:
                 if planet.is_colonized():
                     continue
-                elif self.order.colonize_manual:
-                    if self.order.location.reference and self.order.location.reference == planet:
-                        planets.append(planet)
-                elif planet.habitability(self.player.race, hab_terraform) >= self.order.colonize_min_hab:
-                    min_minerals = Minerals(titanium=self.order.colonize_min_ti, lithium=self.order.colonize_min_li, silicon=self.order.colonize_min_si)
+                elif planet.habitability(self.player.race, hab_terraform) >= self.player.colonize_min_hab:
+                    min_minerals = Minerals(titanium=self.player.colonize_min_ti, lithium=self.player.colonize_min_li, silicon=self.player.colonize_min_si)
                     if planet.mineral_availability() >= min_minerals:
                         planets.append(planet)
         if len(planets) == 0:
@@ -373,27 +372,6 @@ class Fleet(Defaults):
                 self.fuel += steal
                 mark.fuel -= steal
 
-    """ Unload cargo """
-    def unload(self):
-        if not self.is_stationary:
-            return
-        (cargo, cargo_max) = self._other_cargo()
-        if not cargo or cargo.sum() >= cargo_max:
-            return
-        order = {'titanium': max(0, -1*self.order.load_ti), 'lithium': max(0, -1*self.order.load_li), 'silicon': max(0, -1*self.order.load_si), 'people': max(0, -1*self.order.load_pop)} # cannot use cargo type because of 0 min
-        # TODO check unloading people on non-owned planet
-        for ctype in CARGO_TYPES:
-            if order[ctype] > 0:
-                order[ctype] = min(cargo_max - cargo.sum(), order[ctype], self.cargo[ctype])
-                self.cargo[ctype] -= order[ctype]
-                cargo[ctype] += order[ctype]
-        for ctype in CARGO_TYPES:
-            if order[ctype] == -1:
-                order[ctype] = min(cargo_max - cargo.sum(), self.cargo[ctype])
-                self.cargo[ctype] -= order[ctype]
-                cargo[ctype] += order[ctype]
-        # cargo is intentionally not redistributed yet
-
     """ Conduct trade """
     def buy(self):
         if not self.is_stationary:
@@ -416,25 +394,32 @@ class Fleet(Defaults):
             s.scrap()
         self - self.ships
 
-    """ Load cargo """
-    def load(self):
+    """ Load and unload cargo """
+    def load_unload(self):
         if not self.is_stationary:
             return
-        (cargo, cargo_max) = self._other_cargo()
-        if not cargo or self.cargo.sum() >= self.stats.cargo_max:
+        (other_cargo, other_max) = self._other_cargo()
+        if not other_cargo:
             return
-        order = {'titanium': self.order.load_ti, 'lithium': self.order.load_li, 'silicon': self.order.load_si, 'people': self.order.load_people} # cannot use cargo type because of 0 min
-        # TODO check loading people on non-owned planet
+        short_name = {'titanium': 'ti', 'lithium': 'li', 'silicon': 'si', 'people': 'pop'}
+        # Shift cargo to meet order
         for ctype in CARGO_TYPES:
-            if order[ctype] > 0:
-                order[ctype] = min(self.stats.cargo_max - self.cargo.sum(), order[ctype], cargo[ctype])
-                cargo[ctype] -= order[ctype]
-                self.cargo[ctype] += order[ctype]
+            # TODO check loading people on non-owned planet
+            need = self.order[short_name[ctype]] * self.stats.cargo_max / 100.0 - self.cargo[ctype]
+            if need > 0:
+                avail = min(need, self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
+                other_cargo[ctype] -= avail
+                self.cargo[ctype] += avail
+            elif need < 0:
+                avail = min(need * -1, other_max - other_cargo.sum())
+                other_cargo[ctype] += avail
+                self.cargo[ctype] -= avail
+        # Load dunnage
         for ctype in CARGO_TYPES:
-            if order[ctype] == -1:
-                order[ctype] = min(self.stats.cargo_max - self.cargo.sum(), cargo[ctype])
-                cargo[ctype] -= order[ctype]
-                self.cargo[ctype] += order[ctype]
+            if self.order[short_name[ctype] + '_dunnage']:
+                avail = min(self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
+                other_cargo[ctype] -= avail
+                self.cargo[ctype] += avail
         # cargo is intentionally not redistributed yet
 
     """ Transfers ownership of the fleet to the specified player """

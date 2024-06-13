@@ -1,4 +1,5 @@
 import sys
+from math import ceil
 from .minerals import Minerals
 
 
@@ -54,11 +55,11 @@ class Cost(Minerals):
         if self.energy > 0:
             html += '<i class="fa-bolt" title="Energy">' + str(round(self.energy)) + '</i>'
         if self.titanium > 0:
-            html += '<i class="ti" title="Titanium">' + str(round(self.titanium)) + '</i>'
+            html += '<i class="ti" title="Titanium">' + str(ceil(self.titanium)) + '</i>'
         if self.lithium > 0:
-            html += '<i class="li" title="Lithium">' + str(round(self.lithium)) + '</i>'
+            html += '<i class="li" title="Lithium">' + str(ceil(self.lithium)) + '</i>'
         if self.silicon > 0:
-            html += '<i class="si" title="Silicon">' + str(round(self.silicon)) + '</i>'
+            html += '<i class="si" title="Silicon">' + str(ceil(self.silicon)) + '</i>'
         return html
 
 

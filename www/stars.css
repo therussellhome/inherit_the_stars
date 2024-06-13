@@ -238,6 +238,7 @@ textarea:disabled {
     background: black;
 }
 /* titanium */
+
 .center-fill-ti {
     position: absolute;
     top: 0;
@@ -258,7 +259,7 @@ textarea:disabled {
     background: lightgreen;
     z-index: 0;
 }
-#orders_colonize_min_li .noUi-connect {
+#orders_li .noUi-connect {
     background: lightgreen;
 }
 /* silicon */
@@ -302,7 +303,7 @@ textarea:disabled {
 #orders_speed .noUi-connect {
     background: magenta;
 }/* speed - background */
-#orders_load_ti, #orders_colonize_min_ti, #orders_unload_ti, #orders_buy_ti, #orders_load_li, #orders_colonize_min_li, #orders_unload_li, #orders_buy_li, #orders_load_si, #orders_colonize_min_si, #orders_unload_si, #orders_buy_si, #orders_load_people, #orders_colonize_min_people, #orders_unload_people, #orders_buy_people, #orders_colonize_min_hab, #orders_buy_fuel, #orders_speed .noUi-connects {
+#orders_ti, #orders_li, #orders_si, #orders_pop, #orders_fuel, #orders_speed .noUi-connects {
     background: black;
 }/* background - */
 div.fas.fa-random {
@@ -320,6 +321,10 @@ i {
     padding-right: 0.5em; 
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
+}
+
+i.no_pad_i {
+    padding-right: 0em;
 }
 
 i.fas.fa-star {

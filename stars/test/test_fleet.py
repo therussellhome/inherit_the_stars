@@ -210,7 +210,8 @@ class FleetCase(unittest.TestCase):
         f.ships[0].cargo.people = 500
         f.location = location.Location(reference=s)
         s.create_system(num_planets=1)
-        f.order.colonize_manual = True
+        f.order.auto_colonize = True
+        f.player.colonize_min_hab = 100
         f.colonize()
         self.assertEqual(len(f.ships), 1)
         self.assertFalse(s.planets[1].is_colonized())
@@ -221,25 +222,12 @@ class FleetCase(unittest.TestCase):
         f.ships[0].cargo.people = 500
         f.location = location.Location(reference=s)
         s.create_system(num_planets=1)
-        f.order.colonize_manual = True
-        f.order.location = location.Location(reference=s.planets[1])
-        f.colonize()
-        self.assertEqual(len(f.ships), 0)
-        self.assertTrue(s.planets[1].is_colonized())
-        self.assertTrue(s.planets[1].on_surface.people, 500)
-
-    def test_colonize7(self):
-        s = star_system.StarSystem(location=location.Location(is_system=True))
-        f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
-        f.ships[0].cargo.people = 500
-        f.location = location.Location(reference=s)
-        s.create_system(num_planets=1)
         s.planets[1].temperature = -1
         f.colonize()
         self.assertEqual(len(f.ships), 1)
         self.assertFalse(s.planets[1].is_colonized())
 
-    def test_colonize8(self):
+    def test_colonize7(self):
         s = star_system.StarSystem(location=location.Location(is_system=True))
         f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
         f.ships[0].cargo.people = 500
@@ -253,7 +241,7 @@ class FleetCase(unittest.TestCase):
         self.assertTrue(s.planets[1].is_colonized())
         self.assertTrue(s.planets[1].on_surface.people, 500)
 
-    def test_colonize9(self):
+    def test_colonize8(self):
         s = star_system.StarSystem(location=location.Location(is_system=True))
         f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500)
         f.ships[0].cargo.people = 500
@@ -271,7 +259,7 @@ class FleetCase(unittest.TestCase):
         self.assertTrue(s.planets[2].is_colonized())
         self.assertTrue(s.planets[2].on_surface.people, 500)
 
-    def test_colonize10(self):
+    def test_colonize9(self):
         s = star_system.StarSystem(location=location.Location(is_system=True))
         f = fleet.Fleet() + ship.Ship(is_colonizer=True, cargo_max=500, commissioning=101) + ship.Ship(is_colonizer=True, cargo_max=500, commissioning=100)
         f.ships[0].cargo.people = 500
@@ -595,61 +583,6 @@ class FleetCase(unittest.TestCase):
         self.assertEqual(f1.cargo.titanium, 100)
         self.assertEqual(f2.cargo.titanium, 100)
 
-    def test_unload1(self):
-        f = fleet.Fleet() + ship.Ship()
-        f.is_stationary = False
-        with patch.object(fleet.Fleet, '_other_cargo', return_value=(None,0)) as mock:
-            f.unload()
-            self.assertEqual(mock.call_count, 0)
-
-    def test_unload2(self):
-        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
-        f2 = fleet.Fleet() + ship.Ship(cargo_max=10)
-        f2.player = reference.Reference(player.Player())
-        f.location = location.Location(reference=f2)
-        f.order.unload_ti = 1
-        f.order.unload_li = 0
-        f.order.unload_si = -1
-        f.unload()
-        self.assertEqual(f.cargo.sum(), 6)
-        self.assertEqual(f2.cargo.sum(), 0)
-
-    def test_unload3(self):
-        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
-        f2 = fleet.Fleet() + ship.Ship(cargo_max=0)
-        f2.player = f.player
-        f.location = location.Location(reference=f2)
-        f.order.unload_ti = 1
-        f.order.unload_li = 0
-        f.order.unload_si = -1
-        f.unload()
-        self.assertEqual(f.cargo.sum(), 6)
-        self.assertEqual(f2.cargo.sum(), 0)
-
-    def test_unload4(self):
-        p_ref = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
-        f2 = fleet.Fleet(player=p_ref) + ship.Ship(cargo_max=10)
-        f.location = location.Location(reference=f2)
-        f.order.unload_ti = 1
-        f.order.unload_li = 0
-        f.order.unload_si = -1
-        f.unload()
-        self.assertEqual(f.cargo.sum(), 3)
-        self.assertEqual(f2.cargo.sum(), 3)
-
-    def test_unload5(self):
-        p_ref = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
-        p = planet.Planet(player=p_ref)
-        f.location = location.Location(reference=p)
-        f.order.unload_ti = 1
-        f.order.unload_li = 0
-        f.order.unload_si = -1
-        f.unload()
-        self.assertEqual(f.cargo.sum(), 3)
-        self.assertEqual(p.on_surface.sum(), 3)
-
     def test_buy1(self):
         pass #TODO
 
@@ -690,11 +623,66 @@ class FleetCase(unittest.TestCase):
             f.scrap()
             self.assertEqual(mock.call_count, 1)
 
+    def test_unload1(self):
+        f = fleet.Fleet() + ship.Ship()
+        f.is_stationary = False
+        with patch.object(fleet.Fleet, '_other_cargo', return_value=(None,0)) as mock:
+            f.load_unload()
+            self.assertEqual(mock.call_count, 0)
+
+    def test_unload2(self):
+        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        f2 = fleet.Fleet() + ship.Ship(cargo_max=10)
+        f2.player = reference.Reference(player.Player())
+        f.location = location.Location(reference=f2)
+        f.order.ti = 0
+        f.order.li = 0
+        f.order.si = 0
+        f.load_unload()
+        self.assertEqual(f.cargo.sum(), 6)
+        self.assertEqual(f2.cargo.sum(), 0)
+
+    def test_unload3(self):
+        f = fleet.Fleet() + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        f2 = fleet.Fleet() + ship.Ship(cargo_max=0)
+        f2.player = f.player
+        f.location = location.Location(reference=f2)
+        f.order.ti = 0
+        f.order.li = 0
+        f.order.si = 0
+        f.load_unload()
+        self.assertEqual(f.cargo.sum(), 6)
+        self.assertEqual(f2.cargo.sum(), 0)
+
+    def test_unload4(self):
+        p_ref = reference.Reference(player.Player())
+        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        f2 = fleet.Fleet(player=p_ref) + ship.Ship(cargo_max=10)
+        f.location = location.Location(reference=f2)
+        f.order.ti = 10
+        f.order.li = 100
+        f.order.si = 0
+        f.load_unload()
+        self.assertEqual(f.cargo.sum(), 3)
+        self.assertEqual(f2.cargo.sum(), 3)
+
+    def test_unload5(self):
+        p_ref = reference.Reference(player.Player())
+        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        p = planet.Planet(player=p_ref)
+        f.location = location.Location(reference=p)
+        f.order.ti = 10
+        f.order.li = 100
+        f.order.si = 0
+        f.load_unload()
+        self.assertEqual(f.cargo.sum(), 3)
+        self.assertEqual(p.on_surface.sum(), 3)
+
     def test_load1(self):
         f = fleet.Fleet() + ship.Ship()
         f.is_stationary = False
         with patch.object(fleet.Fleet, '_other_cargo', return_value=(None,0)) as mock:
-            f.load()
+            f.load_unload()
             self.assertEqual(mock.call_count, 0)
 
     def test_load2(self):
@@ -703,10 +691,11 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         f2 = fleet.Fleet(player=p2) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 1
-        f.order.load_li = 0
-        f.order.load_si = -1
-        f.load()
+        f.order.ti = 10
+        f.order.li = 0
+        f.order.si = 0
+        f.order.si_dunnage = True
+        f.load_unload()
         self.assertEqual(f.cargo.sum(), 0)
         self.assertEqual(f2.cargo.sum(), 6)
 
@@ -715,10 +704,11 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=0)
         f2 = fleet.Fleet(player=p1) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 1
-        f.order.load_li = 0
-        f.order.load_si = -1
-        f.load()
+        f.order.ti = 10
+        f.order.li = 0
+        f.order.si = 0
+        f.order.si_dunnage = True
+        f.load_unload()
         self.assertEqual(f.cargo.sum(), 0)
         self.assertEqual(f2.cargo.sum(), 6)
 
@@ -727,10 +717,11 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         f2 = fleet.Fleet(player=p1) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 1
-        f.order.load_li = 0
-        f.order.load_si = -1
-        f.load()
+        f.order.ti = 10
+        f.order.li = 0
+        f.order.si = 0
+        f.order.si_dunnage = True
+        f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(f2.cargo.sum(), 3)
 
@@ -739,10 +730,11 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         p = planet.Planet(player=p1, on_surface=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=p)
-        f.order.load_ti = 1
-        f.order.load_li = 0
-        f.order.load_si = -1
-        f.load()
+        f.order.ti = 10
+        f.order.li = 0
+        f.order.si = 0
+        f.order.si_dunnage = True
+        f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
 

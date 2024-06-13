@@ -30,7 +30,7 @@ __defaults = {
     'buy_si': (0, -100, 100), # buy / sell %
     'buy_ti': (0, -100, 100), # buy / sell %
     'buy_li': (0, -100, 100), # buy / sell %
-    'buy_fuel': (0, -100, 100), # buy / sell %
+    'buy_fuel': (0, -100, 100), # buy / sell 
     'transfer_to': Reference('Player'),
     'hyperdenial': True,
     'lay_mines': True,
@@ -43,8 +43,8 @@ __defaults = {
 """ Class defining waypoints - edited by the player through fleet """
 class Order(Defaults):
     """ Initialize and register """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
 
     """ Calculate where to move to """

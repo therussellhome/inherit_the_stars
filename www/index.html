@@ -656,9 +656,9 @@ void main() {
             <td><i class="fa-free-code-camp" id="orders_buy_fuel_display" style="text-align: center; min-width: 5em"/></td>
         </tr><tr class="slider_padding_min"></tr>
     </table>
-    <input disabled="true" id="order_last_screen" class="hide" onchange="post('orders')"/>
-    <input disabled="true" id="order_fleet_index" class="hide" type="number" min="0" max="10000" onchange="post('orders', 'start')"/>
-    <input disabled="true" id="order_index" class="hide" type="number" min="0" max="10000" onchange="post('orders', 'start')"/>
+    <input disabled="true" id="order_last_screen" style="display: none;" onchange="post('orders')"/>
+    <input disabled="true" id="order_fleet_index" style="display: none;" type="number" min="-1" max="10000" onchange="post('orders')"/>
+    <input disabled="true" id="order_index" style="display: none;" type="number" min="-2" max="10000" onchange="post('orders')"/>
 </div>
 
 
@@ -810,71 +810,71 @@ void main() {
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="ti" title="Titanium">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
             <td id="foreign_buy_ti_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_ti" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
             <td id="foreign_sell_ti_display" style="text-align: center; min-width: 5em"></td>
         <!-- lithium -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="li" title="Lithium">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
             <td id="foreign_buy_li_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_li" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
             <td id="foreign_sell_li_display" style="text-align: center; min-width: 5em"></td>
         <!-- silicon -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="si" title="Silicon">1</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
             <td id="foreign_buy_si_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_si" onload="slider(this, 'foreign_minister', -100, 4000, 100, null, null)"/></td>
             <td id="foreign_sell_si_display" style="text-align: center; min-width: 5em"></td>
         <!-- fuel -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fa-free-code-camp vertical" title="Fuel">100</i></div></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
             <td id="foreign_buy_fuel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_fuel" onload="slider(this, 'foreign_minister', -1, 50, 1, null, null)"/></td>
             <td id="foreign_sell_fuel_display" style="text-align: center; min-width: 5em"></td>
         <!-- gates -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fab fa-galactic-republic" title="Stargate Use"> / transit</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
             <td id="foreign_buy_gate_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_gate" onload="slider(this, 'foreign_minister', -1000, 50000, 1000, null, null)"/></td>
             <td id="foreign_sell_gate_display" style="text-align: center; min-width: 5em"></td>
         <!-- hyper denial -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-ban" title="Hyper Denial"> / year</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
             <td id="foreign_buy_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_hyper_denial" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
             <td id="foreign_sell_hyper_denial_display" style="text-align: center; min-width: 5em"></td>
         <!-- intel -->
         </tr><tr><td colspan="4" style="border-top: 1px solid silver"></td></tr><tr>
             <td rowspan="2" style="font-size: 150%; height: 4em" class="vertical"><i class="fas fa-user-secret" title="Intel Sharing"> / year</i></td>
             <td>Buy @</td>
-            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_buy_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
             <td id="foreign_buy_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr><tr>
             <td>Sell @</td>
-            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, 0, null)"/></td>
+            <td class="hfill"><div class="onload" id="foreign_sell_intel" onload="slider(this, 'foreign_minister', -4000, 200000, 4000, null, null)"/></td>
             <td id="foreign_sell_intel_display" style="text-align: center; min-width: 5em"></td>
         </tr></table></td></tr>
     </table>
@@ -888,13 +888,16 @@ void main() {
         <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
-        <td>Design</td>
-        <td class="hfill"><select id="shipyard_existing_design" class="hfill" onchange="post('shipyard')"></select></td>
-        <td><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
-        <td><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
-        <td><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
+        <td>Load Design</td>
+        <td class="hfill"><select id="shipyard_design_to_load" class="hfill" onchange="post('shipyard')"></select></td>
+        <td rowspan="2"><i class="button far fa-clone" title="Copy Design" onclick="post('shipyard', '?copy_design')"></i></td>
+        <td rowspan="2"><i class="button fas fa-plus-circle" title="New Design" onclick="post('shipyard', '?new_design')"></i></td>
+        <td rowspan="2"><i class="button far fa-trash-alt" title="Delete Design" onclick="post('shipyard', '?delete_design')"></i></td>
     </tr><tr>
-        <td>Rename</td><td colspan="4" class="hfill" style="padding-right: 9px;"><input class="hfill" id="shipyard_ID" onchange="post('shipyard', '?rename')"/></td>
+        <td>Name</td><td class="hfill" style="padding-right: 9px;">
+            <input class="hfill" id="shipyard_name" onchange="post('shipyard')"/>
+            <input style="display: none;" id="shipyard_ID"/>
+        </td>
     </tr></table>
     <table class="hfill" id="shipyard_ship_overview">
         <caption><div class="fa-angle-double-up" onload="folding(this)">Overview</div></caption>

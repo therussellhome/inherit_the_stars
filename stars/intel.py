@@ -47,6 +47,15 @@ class Intel(Defaults):
         # Special handling for locations to remove relative and reduce memory size
         if 'location' in report:
             report['location_root'] = report['location'].root_location.xyz
+            if report['location_root'] != (0.0, 0.0, 0.0) and hasattr(self, 'location_root') and self.location_root == (0.0, 0.0, 0.0):
+                print('\nIntel fixing location')
+            if float(date) % 1.0 == 0.99 and report['location_root'] == (0.0, 0.0, 0.0) and hasattr(self, 'location_root') and self.location_root != (0.0, 0.0, 0.0):
+                print('\nIntel adding to (0, 0, 0):', report)
+                print(' *  location:', reference.location.__dict__)
+            if float(date) % 1.0 == 0.99:
+                if report['location_root'] == (0.0, 0.0, 0.0):
+                    raise KeyError('setting location root to galactic 0')
+                raise LookupError('Reseting')
             report['system_key'] = '{:.20f},{:.20f},{:.20f}'.format(*(report['location'].root_location.xyz))
             report['location'] = report['location'].xyz
         self.date = date

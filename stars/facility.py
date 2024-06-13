@@ -31,9 +31,9 @@ _facility_names = {
 """ Temporary class to indicate facility in process """
 class Facility(BuildQueue):
     """ Store the cost to build the facility """
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         global _facility_costs
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         self.cost = _facility_costs[self.facility_type]
 
     """ Check if we are completed """

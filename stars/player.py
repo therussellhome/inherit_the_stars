@@ -16,10 +16,9 @@ from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .minerals import Minerals, MINERAL_TYPES
 from .facility import Facility, FACILITY_TYPES
-from .fleet import Fleet
+from .order import Order
 from .ship import Ship
-from .cargo import Cargo
-from .message import Message
+from .buships import BuShips
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -54,6 +53,10 @@ __defaults = {
     'finance_research_percent': (10.0, 0.0, 100.0),
     'finance_research_use_surplus': False,
     'finance_baryogenesis_default': True,
+    'colonize_min_hab': (50, -100, 100),
+    'colonize_min_ti': (0, 0, 100),
+    'colonize_min_li': (0, 0, 100),
+    'colonize_min_si': (0, 0, 100),
 }
 
 """ Temporary values (default, min, max)  """
@@ -84,16 +87,20 @@ _player_fields = [
     'finance_mattrans_use_surplus',
     'finance_research_percent',
     'finance_research_use_surplus',
+    'colonize_min_hab',
+    'colonize_min_ti',
+    'colonize_min_li',
+    'colonize_min_si',
 ]
 
 
 """ A player in a game """
 class Player(Defaults):
     """ Initialize """
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         if 'ID' not in kwargs and 'race' in kwargs and kwargs['race'].ID != '':
             kwargs['ID'] = kwargs['race'].ID
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         if 'validation_key' not in kwargs:
             self.validation_key = str(uuid.uuid4())
             if len(self.planets) > 0:
@@ -126,7 +133,7 @@ class Player(Defaults):
         game_engine.register(self)
         for fleet in self.fleets:
             for ship in fleet.ships:
-                if Reference(ship.ID) not in self.get_intel(None, 'ship'):
+                if Reference(ship) not in self.get_intel(None, 'Ship'):
                     self.add_intel(ship, ship.scan_report())
 
     def __str__(self):
@@ -226,11 +233,17 @@ class Player(Defaults):
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
-        if not fleet:
-            fleet = Fleet(player=Reference(self))
-            self.fleets.append(fleet)
         if not isinstance(ships, list):
             ships = [ships]
+        if not fleet:
+            if isinstance(ships[0], BuShips):
+                location = ships[0].ship.location
+                ID = ships[0].ship.ID
+            else:
+                location = ships[0].location
+                ID = ships[0].ID
+            fleet = Fleet(player=Reference(self), order=Order(location=location))
+            self.fleets.append(fleet)
         for s in ships:
             if isinstance(s, Reference):
                 s = ~s
@@ -371,16 +384,22 @@ class Player(Defaults):
             return min(40, self.tech_level.biotechnology)
         return min(40, self.tech_level.biotechnology) / 2
 
-    """ predict the next years budget """
-    def predict_budget(self):
-        return 10000 # TODO 
+    """ predict the next 100th's energy income """
+    def predict_income(self, category):
+        income = 10000 #TODO
+        if hasattr(self, 'finance_' + category + '_percent'):
+            percent = self['finance_' + category + '_percent']
+        else:
+            percent = 100 - self['finance_construction_percent'] - self['finance_mattrans_percent'] - self['finance_research_percent']
+        return round(income * percent / 100)
     
     """ Allocate the available energy into budget categories """
     def allocate_budget(self):
-        total = self.energy
+        allocated = 0
         for category in ['construction', 'mattrans', 'research']:
-            allocation = min(round(total * self['finance_' + category + '_percent'] / 100), self.energy)
+            allocation = min(allocated + round(self.energy * self['finance_' + category + '_percent'] / 100), self.energy) - allocated
             self['budget_' + category] = allocation
+            allocated += allocation
 
     """ Incoming energy """
     def add_energy(self, energy):
@@ -434,9 +453,12 @@ class Player(Defaults):
                 remove_from_queue.append(b)
         for d in remove_from_queue:
             self.build_queue.remove(d)
-            for item in self.buships:
-                if d.buships == item:
-                    self.buships.remove(item)
+            if isinstance(d, BuildShip):
+                if d.buships:
+                    self.buships.remove(~d.buships)
+                    for f in self.fleets:
+                        if d.buships in f.under_construction:
+                            f - Reference(d.buships)
 
     """ Research """
     def research(self):
@@ -462,8 +484,6 @@ class Player(Defaults):
                         lowest = self.tech_level[f]
                         field = f
             # Cost to get to the next level in the selected field
-            if field == '<LOWEST>':
-                field = TECH_FIELDS[0]
             cost = self.tech_level.cost_for_next_level(field, self.race) - self.research_partial[field]
             # Mad scientist gets 130% return with 55% in the selected field and 15% in every other field
             if self.race.lrt_MadScientist:

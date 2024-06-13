@@ -6,7 +6,7 @@ from .reference import Reference
 from .ship import Ship
 from .ship_design import ShipDesign
 from .tech_level import TechLevel
-from . import game_engine
+from .order import Order
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -54,14 +54,9 @@ class BuildShip(BuildQueue):
                     self.ship = Reference(Ship(location=Location(reference=self.planet), race=Reference(self.planet.player.race)))
                     for f in self.planet.player.fleets:
                         if self.buships in f.under_construction:
-                            print(self.ship.location.xyz)
-                            print(f.location.xyz)
-                            f.location = None
                             self.planet.player.add_ships(self.ship, f)
-                            print(f.location.xyz)
-                            f - self.buships
-                            f.order.location = Location(reference=self.planet)
-                            print(f.order.location.xyz)
+                            f - Reference(self)#.buships?
+                            f.order = Order(location=Location(reference=self.planet))
                             break
                     else:
                         self.planet.player.add_ships(self.ship)

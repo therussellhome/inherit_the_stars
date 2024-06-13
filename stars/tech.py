@@ -61,8 +61,8 @@ TECH_GROUPS = ['Weapons', 'Defense', 'Electronics', 'Engines', 'Hulls & Mechanic
 """ Represent a tech component """
 class Tech(Defaults):
     """ Register with game engine """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         game_engine.register(self)
 
     """ Add a tech to self using the current miniaturization_level """
