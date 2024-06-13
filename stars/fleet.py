@@ -94,7 +94,6 @@ class Fleet(Defaults):
             if ship ^ 'Ship' and ship not in self.ships:
                 self.ships.append(ship)
             if ship ^ 'BuShips' and ship not in self.under_construction:
-                #TODO BuShips vs BuildShips??
                 self.under_construction.append(ship)
         self.stats = None
         self.cargo = None
@@ -244,6 +243,7 @@ class Fleet(Defaults):
     def move(self):
         if self.is_stationary:
             return
+        print('\n * Fleet Move Is Called', end=' $ ')
         # Determine speed
         speed = self.order.speed
         hyperdenial = self.hyperdenial_effect
@@ -286,7 +286,10 @@ class Fleet(Defaults):
                 stop_at = self.location.move(self.move_to, distance)
         # Move the fleet
         if stop_at:
+            print('Fleet:', self.ID, 'Moved', end=' : ')
+            print('origonal position:', self.location.xyz, end=' -> ')
             self.update_location(stop_at)
+            print('new location', self.location.xyz)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
             # Blackhole message
@@ -464,7 +467,6 @@ class Fleet(Defaults):
     def scan_self(self):
         for ship in self.ships:
             self.player.add_intel(self, ship.scan_report('self'))
-        #print('Fleet.scan_self[ location ]:', self.player.intel[Reference(self)].location)
 
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):

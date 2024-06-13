@@ -57,21 +57,22 @@ __tmp_defaults = {
 """ Planets are colonizable by only one player, have minerals, etc """
 class Planet(Defaults):
     """ Initialize defaults """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if 'temperature' not in kwargs:
+        if 'temperature' in kwargs and kwargs['temperature'] == 'generate':
             self.temperature = randint(0, 100)
             if 'star_system' in kwargs:
                 sun = self.star_system.sun()
                 if sun is not None:
                     self.temperature = round(self.distance * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
-        if 'radiation' not in kwargs:
+        if 'radiation' in kwargs and kwargs['radiation'] == 'generate':
             self.radiation = randint(0, 100)
             if 'star_system' in kwargs:
                 sun = self.star_system.sun()
                 if sun is not None:
                     self.radiation = sun.radiation
-        if 'gravity' not in kwargs:
+        if 'gravity' in kwargs and kwargs['gravity'] == 'generate':
             self.gravity = min(100, abs(randint(0, 110) - randint(0, 110)))
         if 'remaining_minerals' not in kwargs:
             if self.homeworld:

@@ -35,15 +35,19 @@ class StarSystem(Defaults):
             'ID': self.ID + "'s " + 'Star',
             'star_system': Reference(self),
             'radiation': randint(0, 100),
+            'gravity': 'generate',
+            'temperature': 'generate',
         }
         if num_planets < 0:
             num_planets = round(random() * 5)
         home = -1
         if race:
-            planet_args['radiation'] = (race.hab_radiation_stop + race.hab_radiation) / 2
+            planet_args['radiation'] = int((race.hab_radiation_stop + race.hab_radiation) / 2)
             if race.primary_race_trait == 'Pa\'anuri':
                 num_planets = max(1, num_planets)
                 home = 0
+                planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
+                planet_args['temperature'] = int((race.hab_temperature_stop + race.hab_temperature) / 2)
             else:
                 num_planets = max(2, num_planets)
                 home = randint(1, num_planets)
@@ -52,13 +56,22 @@ class StarSystem(Defaults):
             segment = 100.0 / num_planets
             planet_args['ID'] = self.ID + ' ' + _roman[i]
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
-            if i != home:
+            planet_args['gravity'] = 'generate'
+            planet_args['temperature'] = 'generate'
+            if i != home - 1:
                 self.planets.append(Planet(**planet_args))
             else:
-                self.planets.append(Planet(**planet_args, 
-                    homeworld=True, 
-                    gravity=(race.hab_gravity_stop + race.hab_gravity) / 2,
-                    temperature=(race.hab_temperature_stop + race.hab_temperature) / 2))
+                planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
+                planet_args['temperature'] = int((race.hab_temperature_stop + race.hab_temperature) / 2)
+                self.planets.append(Planet(**planet_args, homeworld=True))
+                planet_temp = round((100 - self.planets[home].distance) * 0.35 + self.sun().temperature * 0.65)
+                if planet_temp - self.planets[home].temperature not in range(-15, 15):
+                    self.sun()['temperature'] = round(((self.planets[home].temperature) - ((100 - self.planets[home].distance) * 0.35)) / 0.65)
+                    for pi in range(1, len(self.planets)-1):
+                        planet = self.planets[pi]
+                        planet_temp = round((100 - planet.distance) * 0.35 + self.sun().temperature * 0.65)
+                        if planet.temperature - planet_temp not in range(-15, 15):
+                            planet.temperature = planet_temp + randint(-15, 15)
         if race:
             return Reference(self.planets[home])
         return None

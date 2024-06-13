@@ -79,6 +79,8 @@ class Tech(Defaults):
                 self[key].normal = max(self[key].normal, other[key].normal)
             elif max_not_merge and key == 'hyperdenial':
                 self[key].radius = max(self[key].radius, other[key].radius)
+            elif key == 'mineral_depletion_factor':
+                self[key] = max(self[key], other[key])
             else:
                 self[key] += other[key]
 

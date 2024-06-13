@@ -238,19 +238,52 @@ textarea:disabled {
     background: black;
 }
 /* titanium */
-#orders_ti .noUi-connect {
+
+.center-fill-ti {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
+    background: dodgerblue;
+    z-index: 0;
+}
+#orders_colonize_min_ti .noUi-connect {
     background: dodgerblue;
 }
 /* lithium */
+.center-fill-li {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
+    background: lightgreen;
+    z-index: 0;
+}
 #orders_li .noUi-connect {
     background: lightgreen;
 }
 /* silicon */
-#orders_si .noUi-connect {
+.center-fill-si {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
+    background: orange;
+    z-index: 0;
+}
+#orders_colonize_min_si .noUi-connect {
     background: orange;
 }
 /* people*/
-#orders_pop .noUi-connect {
+.center-fill-pop {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
+    background: white;
+    z-index: 0;
+}
+#orders_colonize_min_people .noUi-connect {
     background: white;
 }
 /* habinability */
@@ -258,7 +291,16 @@ textarea:disabled {
     background: white;
 }
 /* fuel */
-#orders_fuel, #orders_speed .noUi-connect {
+.center-fill-fuel {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 1;
+    background: magenta;
+    z-index: 0;
+}
+/* fuel - speed */
+#orders_speed .noUi-connect {
     background: magenta;
 }/* speed - background */
 #orders_ti, #orders_li, #orders_si, #orders_pop, #orders_fuel, #orders_speed .noUi-connects {
