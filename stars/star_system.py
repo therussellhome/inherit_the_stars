@@ -64,12 +64,12 @@ class StarSystem(Defaults):
                 planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
                 planet_args['temperature'] = int((race.hab_temperature_stop + race.hab_temperature) / 2)
                 self.planets.append(Planet(**planet_args, homeworld=True))
-                planet_temp = round(self.planets[home].distance * 0.35 + self.sun().temperature * 0.65)
+                planet_temp = round((100 - self.planets[home].distance) * 0.35 + self.sun().temperature * 0.65)
                 if planet_temp - self.planets[home].temperature not in range(-15, 15):
-                    self.sun()['temperature'] = round(((self.planets[home].temperature) - (self.planets[home].distance * 0.35)) / 0.65)
+                    self.sun()['temperature'] = round(((self.planets[home].temperature) - ((100 - self.planets[home].distance) * 0.35)) / 0.65)
                     for pi in range(1, len(self.planets)-1):
                         planet = self.planets[pi]
-                        planet_temp = round(planet.distance * 0.35 + self.sun().temperature * 0.65)
+                        planet_temp = round((100 - planet.distance) * 0.35 + self.sun().temperature * 0.65)
                         if planet.temperature - planet_temp not in range(-15, 15):
                             planet.temperature = planet_temp + randint(-15, 15)
         if race:
