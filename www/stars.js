@@ -484,19 +484,17 @@ function speed_slider(element, form) {
         start: [-1],
         connect: false,
         step: 1,
-        tooltips: [true],
-        format: {
+        tooltips: [{
             to: function(value) {
                 labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
                 return labels[parseInt(value) + 2];
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
-                labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-                for(var i = 0; i < labels.length; i++) {
-                    if(value == labels[i]) {
-                        return i - 2;
-                    }
-                }
                 return parseInt(value);
             }
         },
@@ -517,8 +515,7 @@ function depart_slider(element, form) {
         start: [0.0],
         connect: false,
         step: 0.01,
-        tooltips: [true],
-        format: {
+        tooltips: [{
             to: function(value) {
                 if(value == 10.0) {
                     return 'never';
@@ -526,13 +523,13 @@ function depart_slider(element, form) {
                     return 'immediately';
                 }
                 return 'after ' + Intl.NumberFormat('en', {maximumFractionDigits: 2}).format(value) + ' years';
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
-                if(value == 'never') {
-                    return 10.0;
-                } else if(value == 'immediately') {
-                    return 0.0;
-                }
                 return parseFloat(value);
             }
         },
