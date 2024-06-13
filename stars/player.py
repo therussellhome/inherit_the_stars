@@ -16,10 +16,9 @@ from .treaty import Treaty
 from .tech_level import TechLevel, TECH_FIELDS
 from .minerals import Minerals, MINERAL_TYPES
 from .facility import Facility, FACILITY_TYPES
-from .fleet import Fleet
+from .order import Order
 from .ship import Ship
-from .cargo import Cargo
-from .message import Message
+from .buships import BuShips
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -134,7 +133,7 @@ class Player(Defaults):
         game_engine.register(self)
         for fleet in self.fleets:
             for ship in fleet.ships:
-                if Reference(ship.ID) not in self.get_intel(None, 'ship'):
+                if Reference(ship) not in self.get_intel(None, 'Ship'):
                     self.add_intel(ship, ship.scan_report())
 
     """ Player filename """
@@ -231,11 +230,17 @@ class Player(Defaults):
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
-        if not fleet:
-            fleet = Fleet(player=Reference(self))
-            self.fleets.append(fleet)
         if not isinstance(ships, list):
             ships = [ships]
+        if not fleet:
+            if isinstance(ships[0], BuShips):
+                location = ships[0].ship.location
+                ID = ships[0].ship.ID
+            else:
+                location = ships[0].location
+                ID = ships[0].ID
+            fleet = Fleet(player=Reference(self), order=Order(location=location))
+            self.fleets.append(fleet)
         for s in ships:
             if isinstance(s, Reference):
                 s = ~s
@@ -445,6 +450,12 @@ class Player(Defaults):
                 remove_from_queue.append(b)
         for d in remove_from_queue:
             self.build_queue.remove(d)
+            if isinstance(d, BuildShip):
+                if d.buships:
+                    self.buships.remove(~d.buships)
+                    for f in self.fleets:
+                        if d.buships in f.under_construction:
+                            f - Reference(d.buships)
 
     """ Research """
     def research(self):

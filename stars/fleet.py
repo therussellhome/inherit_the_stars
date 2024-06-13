@@ -15,7 +15,7 @@ from .ship import Ship
 
 
 """ Offset of ships from fleet center """
-SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 1000000000
+SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 20000
 
 
 """ Default values (default, min, max)  """
@@ -150,19 +150,25 @@ class Fleet(Defaults):
         # Either offset from ship 0 or orbit the thing being referenced
         offset = 10
         reference = location.reference
+        for ship in self.ships:
+            if ship.is_space_station():
+                reference = ship.location.reference
+                break
         if not reference:
             if len(self.ships) > 0:
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
-            offset_distances = {'Sun': 7000, 'Planet': 7000}
+            print('Fleet: getting offset')
+            offset_distances = {'Sun': 7000, 'Planet': 700}
             offset = offset_distances.get(+(location.reference), offset)
+            print('offset:', offset)
         # Update all ships
         for s in self.ships:
             if reference == s:
                 s.location = Location(location)
             else:
-                s.location = Location(reference=reference, offset=offset * stars_math.KILOMETER_2_LIGHTYEAR)
+                s.location = Location(reference=reference, offset=offset * SHIP_OFFSET)
         self.location = location
 
     """ Check if the fleet can/ordered to move """
@@ -180,7 +186,6 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         self.move_to = self.order.move_calc(self.location)
-        print(self.move_to.__dict__)
         if self.move_to.root_location != self.location.root_location:
             self.is_stationary = False
 
@@ -459,6 +464,7 @@ class Fleet(Defaults):
     def scan_self(self):
         for ship in self.ships:
             self.player.add_intel(self, ship.scan_report('self'))
+        #print('Fleet.scan_self[ location ]:', self.player.intel[Reference(self)].location)
 
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):
