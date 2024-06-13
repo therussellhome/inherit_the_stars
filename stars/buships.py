@@ -3,8 +3,6 @@ from .cost import Cost
 from .defaults import Defaults
 from .ship_design import ShipDesign
 from .reference import Reference
-from .location import Location
-from .ship import Ship
 
 """ Default values (default, min, max)  """
 __defaults = {
