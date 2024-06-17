@@ -90,7 +90,7 @@ class Orders(PlayerUI):
         if self.order_last_screen != '':
             self.topbar[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="post(\'orders\', \'?update\'), show_screen(\'' + str(self.order_last_screen) + '\')'
             if self.order_last_screen == 'fleets':
-                self.topbar[-1] += ', post(\'fleets\', \'?select_' + str(self.fleet_id) + '\')'
+                self.topbar[-1] += ', post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
             self.topbar[-1] += '">Back</i>'
         else:
             self.topbar[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'), show_screen(null)">Close</i>'

@@ -30,7 +30,7 @@ __defaults = {
     'buy_si': (0, -100, 100), # buy / sell %
     'buy_ti': (0, -100, 100), # buy / sell %
     'buy_li': (0, -100, 100), # buy / sell %
-    'buy_fuel': (0, -100, 100), # buy / sell 
+    'buy_fuel': (0, -100, 100), # buy / sell %
     'transfer_to': Reference('Player'),
     'hyperdenial': True,
     'lay_mines': True,

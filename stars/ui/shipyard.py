@@ -74,8 +74,6 @@ class Shipyard(PlayerUI):
         else:
             self.shipyard_ID = self.shipyard_name
             design.ID = self.shipyard_ID
-        else:
-            self.shipyard_ID = design.ID
         # Build design list after any chance for the name to change
         self.options_shipyard_design_to_load = []
         for existing_design in self.player.design_cache:
