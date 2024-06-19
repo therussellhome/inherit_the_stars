@@ -219,6 +219,10 @@ textarea:disabled {
     width: 100%;
     white-space: nowrap;
 }
+.score_vertical {
+    writing-mode: vertical-rl;
+    text-align: center;
+}
 .vertical {
     writing-mode: sideways-lr;
 }

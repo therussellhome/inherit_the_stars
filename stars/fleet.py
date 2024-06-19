@@ -401,7 +401,7 @@ class Fleet(Defaults):
         (other_cargo, other_max) = self._other_cargo()
         if not other_cargo:
             return
-        short_name = {'titanium': 'ti', 'lithium': 'li', 'silicon': 'si', 'people': 'pop'}
+        short_name = {'titanium': 'load_ti', 'lithium': 'load_li', 'silicon': 'load_si', 'people': 'load_pop'}
         # Shift cargo to meet order
         for ctype in CARGO_TYPES:
             # TODO check loading people on non-owned planet
@@ -414,12 +414,12 @@ class Fleet(Defaults):
                 avail = min(need * -1, other_max - other_cargo.sum())
                 other_cargo[ctype] += avail
                 self.cargo[ctype] -= avail
-        # Load dunnage
+        """ # Load dunnage
         for ctype in CARGO_TYPES:
             if self.order[short_name[ctype] + '_dunnage']:
                 avail = min(self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
                 other_cargo[ctype] -= avail
-                self.cargo[ctype] += avail
+                self.cargo[ctype] += avail """
         # cargo is intentionally not redistributed yet
 
     """ Transfers ownership of the fleet to the specified player """
