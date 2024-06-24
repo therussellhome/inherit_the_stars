@@ -65,6 +65,7 @@ __defaults = {
 __tmp_defaults = {
     'msg_cache': [],
     'draft_box_cache': [],
+    'current_draft': Message(),
     'outbox_cache': [],
     'planet_report': [],
     'design_cache': [],
@@ -311,7 +312,7 @@ class Player(Defaults):
 
     """ Write a message """
     def new_draft(self, **kwargs):
-        self.draft_box_cache.append(Message(**kwargs))
+        self.current_draft = Message(**kwargs)
 
     """ Save a message """
     def save_draft(self, draft):

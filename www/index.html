@@ -579,13 +579,13 @@ void main() {
         <tr style="border-bottom: 1px solid silver">
             <td class="hfill"><select id="drafts_receiver" class="hfill" onchange="post('drafts'. '?who')"></select></td>
             <td id="drafts_date"></td>
-            <td class="fas fa-eye" style="padding-right: 1em" onclick="post('drafts', '?save'); post('drafts', '?preview')"></td>
+            <td id="drafts_preview"></td>
             <td class="fas fa-download" style="padding-right: 1em" onclick="post('drafts', '?save')"></td>
             <td><i class="button fas fa-arrow-circle-left" title="Previous Draft" onclick="post('drafts', '?previous')"></i></td>
             <td id="drafts_number"></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Draft" onclick="post('drafts', '?next')"></i></td>
         </tr>
-        <tr><td colspan="7" id="drafts_text" style="white-space: normal"><input id="drafts_text" onchange="post('drafts', '?update')"></input></td></tr>
+        <tr><td colspan="7" style="white-space: normal"><input id="drafts_text" onchange="post('drafts', '?update')"></input></td></tr>
         <tr style="display: none"><td id="drafts_index">0</td></tr>
     </table><table id="drafts_draft_box" class="hfill">
         <caption><div class="fa-angle-double-down"> Drafts</div></caption>
