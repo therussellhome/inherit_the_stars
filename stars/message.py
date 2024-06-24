@@ -6,6 +6,7 @@ from .reference import Reference
 __defaults = {
     'date': '',
     'sender': Reference(),
+    'reciver': Reference(),
     'message': '',
     'parameters': [],
     'action': '',

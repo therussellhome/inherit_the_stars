@@ -150,6 +150,13 @@ class Game(Defaults):
                     planets.append(planet)
         return planets
 
+    """ Haddle player to player messages """
+    def mail_carier(self):
+        for player in self.players:
+            for msg in player.outbox:
+                msg.sender = Reference(player)
+                ~msg.reciver.add_message(msg)
+
     """ Generate hundreth """
     def generate_hundreth(self):
         # players in lowest to highest score
@@ -161,6 +168,7 @@ class Game(Defaults):
             self._call(players, 'treaty_negotiations')
             self._call(players, 'treaty_finalization')
             self._call(players, 'cleanup_messages')
+            self.mail_carrier()
         self._call(players, 'next_hundreth')
         players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
         # planets in lowest to highest population

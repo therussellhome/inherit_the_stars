@@ -32,6 +32,8 @@ __defaults = {
     'computer_player': False,
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
+    'draft_box': [],
+    'outbox': [],
     'planets': [], # list of colonized planets only updated during save
     'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
@@ -62,6 +64,8 @@ __defaults = {
 """ Temporary values (default, min, max)  """
 __tmp_defaults = {
     'msg_cache': [],
+    'draft_box_cache': [],
+    'outbox_cache': [],
     'planet_report': [],
     'design_cache': [],
     'budget_construction': 0,
@@ -304,6 +308,19 @@ class Player(Defaults):
         if intel:
             return intel.name
         return obj.ID
+
+    """ Write a message """
+    def new_draft(self, **kwargs):
+        self.draft_box_cache.append(Message(**kwargs))
+
+    """ Save a message """
+    def save_draft(self, draft):
+        self.draft_box.append(draft)
+
+    """ Send a message """
+    def send_message(self, draft_index):
+        self.outbox.append(self.drafts.pop(draft_index))
+        self.outbox[-1].date = self.date
 
     """ Add a message """
     def add_message(self, **kwargs):
