@@ -14,6 +14,7 @@ from stars.ui import *
 """ Map of post handlers """
 _handlers = {
     '/battles': battles.Battles,
+    '/drafts': drafts.Drafts,
     '/finance_minister':finance_minister.FinanceMinister,
     '/fleets': fleets.Fleets,
     '/foreign_minister': foreign_minister.ForeignMinister,

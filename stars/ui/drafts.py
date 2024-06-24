@@ -1,7 +1,6 @@
 import sys
 from .playerui import PlayerUI
 from ..reference import Reference
-from ..message import Message
 from .. import game_engine
 
 
@@ -18,7 +17,7 @@ __defaults = {
     'drafts_number': '',
     'drafts_text': '',
     'drafts_reciver_options': [],
-    'drafts_save_box': [],
+    'drafts_draft_box': [],
     'drafts_outbox': [],
     'drafts_draft_box_cache': [],
     'drafts_outbox_cache': [],
@@ -28,25 +27,28 @@ __defaults = {
 """ Components of score are precomputed as part of turn generation """
 class Drafts(PlayerUI):
     def __init__(self, action, **kwargs):
+        print('Drafts got something')
         super().__init__(**kwargs)
         if not self.player:
             return
-
+        print('Action:', action)
         # Load drafts
         self.load_cache('draft_box')
         self.load_cache('outbox')
-        self.drafts_date, self.drafts_preview_date = self.player.date
+        self.drafts_date = self.player.date
+        self.drafts_preview_date = self.player.date
         self.drafts_reciver_options = []
         for p in self.player.get_intel(by_type='Player'):
-            self.drafts_reciver_options.append(p.name)
-            print('p.name')
+            self.drafts_reciver_options.append(p.ID)
         # Handle message traffic
         if action.startswith('compose'):
             self.create_new()
+            self.load_cache('draft_box')
             print('create_new')
         elif action.startswith('reply='):
             old = self.player.messages[action.split('=')[1]]
             self.create_new(old)
+            self.load_cache('draft_box')
         elif action.startswith('send'):
             self.player.send_message(self.drafts_index)
         elif action.startswith('save'):
@@ -54,8 +56,8 @@ class Drafts(PlayerUI):
         elif action.startswith('cancel='):
             self.player.save_draft(self.player.outbox.pop(action[7:]))
         elif action.startswith('delete='):
-            self.player.drafts.pop(action[7:])
-        if action.statswith('update'):
+            self.player.draft_box.pop(action[7:])
+        if action.startswith('update'):
             self.drafts_draft_box_cache[self.drafts_index]['text'] = self.drafts_text
         if action.startswith('who'):
             m = self.drafts_draft_box_cache[self.drafts_index]
@@ -73,56 +75,52 @@ class Drafts(PlayerUI):
             self.drafts_preveiw_index = int(action[10:])
             self.drafts_preview_cache = 'outbox'
         elif self.drafts_index == -1:
-            for m in reversed(self.drafts_draft_box_cache):
-                self.drafts_index = m['index']
-                break
-            else:
-                self.drafts_index = len(self.drafts_draft_box_cache) - 1
+            self.drafts_index = len(self.drafts_draft_box_cache) - 1
         self.drafts_index = min(max(self.drafts_index, 0), len(self.drafts_draft_box_cache) - 1)
-        elif action.startswinth('preview'):
+        if action.startswith('preview'):
             self.drafts_preview_cache, self.drafts_preview_index = action[7:].split(':')
-        self.display_mail('safe_box')
+        self.display_mail('draft_box')
         self.display_mail('outbox')
         self.display_drafts()
         
-    def load_cache(self, cache, force=False, new=False):
+    def load_cache(self, cache):
         # Use cached messages
-        if len(self.player[cache + '_cache']) == 0 or force:
-            use_cache = cache
-            if new:
-                use_cache = cache + '_cache'
+        print(cache)
+        if len(self.player[cache + '_cache']) == 0:
             msgs = []
-            for i, m in enumerate(self.player[use_cache]):
+            for i, m in enumerate(self.player[cache]):
                 msg = {'index': i, 'date': m.date, 'reciver': m.reciver, 'action': ''}
-                    msg['text'] = m.message
-                    msg['icon'] = m.parameters[0]['icon']
-                    msg['sender'] = m.parameters[0]['name']
+                msg['text'] = m.message
+                msg['icon'] = m.parameters[0]['icon']
+                msg['sender'] = m.parameters[0]['name']
                 msg['short'] = msg['text']
                 if len(msg['short']) > 58:
                     msg['short'] = msg['short'][:55] + '...'
                 msgs.append(msg)
             self.player[cache + '_cache'] = msgs
+            print('set cache:', msgs)
         else:
             msgs = self.player[cache + '_cache']
+            print('got cache:', msgs)
         self['drafts_' + cache + '_cache'] = msgs
 
     def display_mail(self, cache):
-        for m, i in enumerate(self['drafts_' + cache + '_cache']):
+        for i, m in enumerate(self['drafts_' + cache + '_cache']):
             box = cache
-            if box == 'safe_box':
+            if box == 'draft_box':
                 box = 'drafts'
             current = ''
             unbold = ''
             #unbold = 'font-weight: normal;'
-            if self.drafts == m['index']:
+            if self.drafts_index == i:
                 current = 'background: darkblue;'
             icon = '<i'
             if box == 'drafts':
-                icon += 'class="fas fa-trash-alt" onclick="post(\'drafts\', \'?delete=' + i + '\')"'
+                icon += 'class="fas fa-trash-alt" onclick="post(\'drafts\', \'?delete=' + str(i) + '\')"'
             else:
-                icon += 'class="fas fa-ban" onclick="post(\'drafts\', \'?cancel=' + i + '\')"'
+                icon += 'class="fas fa-ban" onclick="post(\'drafts\', \'?cancel=' + str(i) + '\')"'
             icon += '></i>'
-            self['drafts_' + cache].append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" onclick="post(\'drafts\', \'?' + box + 'id=' + str(m['index']) + '\')">' + m['short'] + '</td><td style="' + current + '">' + icon + '</td>')
+            self['drafts_' + cache].append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" onclick="post(\'drafts\', \'?' + box + '_id=' + str(i) + '\')">' + m['short'] + '</td><td style="' + current + '">' + icon + '</td>')
 
     def display_drafts(self):
         #preview tab
@@ -133,7 +131,7 @@ class Drafts(PlayerUI):
             self.drafts_preview_sender = '<div>' + m.perameters[0]['icon'] + ' ' + m.perameters[0]['name'] + '</div>'
             self.drafts_date = self.player.date
         #drafts tab
-        if self.drafts_index != 1:
+        if self.drafts_index != -1:
             m = self.drafts_draft_box_cache[self.drafts_index]
             self.drafts_text = m['text']
             self.drafts_number = str(len(self.drafts_draft_box_cache) - self.drafts_index) + ' of ' + str(len(self.drafts_draft_box_cache))
@@ -154,7 +152,7 @@ class Drafts(PlayerUI):
             m['parameters'][1] = old.parameters[0]
             m['message'] = '\n* * * * * * * * *\nOn ' + old.date + ' ' + old.sender_name + ' said:\n' + old.message
         self.player.new_draft(**m)
-        self.drafts_index = len(self.player.drafts) -1
+        self.drafts_index = len(self.player.draft_box_cache) -1
         
         
 
