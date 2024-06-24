@@ -13,10 +13,10 @@ __defaults = {
     'drafts_preview_text': '',
     'drafts_preview_cache': '',
     'drafts_index': (-1, -1, sys.maxsize),
-    'drafts_reciver': '',
+    'drafts_receiver': '',
     'drafts_number': '',
     'drafts_text': '',
-    'drafts_reciver_options': [],
+    'drafts_receiver_options': [],
     'drafts_draft_box': [],
     'drafts_outbox': [],
     'drafts_draft_box_cache': [],
@@ -37,9 +37,9 @@ class Drafts(PlayerUI):
         self.load_cache('outbox')
         self.drafts_date = self.player.date
         self.drafts_preview_date = self.player.date
-        self.drafts_reciver_options = []
+        self.drafts_receiver_options = []
         for p in self.player.get_intel(by_type='Player'):
-            self.drafts_reciver_options.append(p.ID)
+            self.drafts_receiver_options.append(p.ID)
         # Handle message traffic
         if action.startswith('compose'):
             self.create_new()
@@ -61,7 +61,7 @@ class Drafts(PlayerUI):
             self.drafts_draft_box_cache[self.drafts_index]['text'] = self.drafts_text
         if action.startswith('who'):
             m = self.drafts_draft_box_cache[self.drafts_index]
-            m['reciver'] = self.drafts_reciver
+            m['receiver'] = self.drafts_reciver
 
         # Makes the previous and next arrows work
         elif action.startswith('previous'):
@@ -89,7 +89,7 @@ class Drafts(PlayerUI):
         if len(self.player[cache + '_cache']) == 0:
             msgs = []
             for i, m in enumerate(self.player[cache]):
-                msg = {'index': i, 'date': m.date, 'reciver': m.reciver, 'action': ''}
+                msg = {'index': i, 'date': m.date, 'receiver': m.reciver, 'action': ''}
                 msg['text'] = m.message
                 msg['icon'] = m.parameters[0]['icon']
                 msg['sender'] = m.parameters[0]['name']
@@ -148,7 +148,7 @@ class Drafts(PlayerUI):
             'action': '<div title="reply" onclick="post(\'drafts\', \'?reply:\')"><i class="fas fa-reply"></i></div>',
         }
         if old:
-            m['reciver'] = old.sender
+            m['receiver'] = old.sender
             m['parameters'][1] = old.parameters[0]
             m['message'] = '\n* * * * * * * * *\nOn ' + old.date + ' ' + old.sender_name + ' said:\n' + old.message
         self.player.new_draft(**m)
