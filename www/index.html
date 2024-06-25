@@ -568,7 +568,7 @@ void main() {
             <td id="drafts_preview_sender" class="hfill"></td>
             <td id="drafts_preview_date"></td>
             <td style="padding-left: 1em"/><i class="far fa-star"></i></td>
-            <td id="drafts_send" class="fas fa-paper-plane" style="padding-right: 1em" onclick="post('drafts', '?send')"></td>
+            <td id="drafts_send"></td>
             <td><i class="button fas fa-arrow-circle-left" title="Previous Message"></i></td>
             <td id="drafts_preview_number"></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Message"></i></td>
@@ -585,8 +585,8 @@ void main() {
             <td id="drafts_number"></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Draft" onclick="post('drafts', '?next')"></i></td>
         </tr>
-        <tr><td colspan="7" style="white-space: normal"><input id="drafts_text" onchange="post('drafts', '?update')"></input></td></tr>
-        <tr style="display: none"><td id="drafts_index">0</td></tr>
+        <tr><td colspan="7" style="white-space: normal"><input type="text" id="drafts_text" onchange="post('drafts', '?update')"></input></td></tr>
+        <tr style="display: none"><td id="drafts_index"></td><td id="drafts_new"></td></tr>
     </table><table id="drafts_draft_box" class="hfill">
         <caption><div class="fa-angle-double-down"> Drafts</div></caption>
     </table><table id="drafts_outbox" class="hfill">

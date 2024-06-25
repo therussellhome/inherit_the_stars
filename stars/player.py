@@ -320,8 +320,9 @@ class Player(Defaults):
 
     """ Send a message """
     def send_message(self, draft_index):
-        self.outbox.append(self.drafts.pop(draft_index))
-        self.outbox[-1].date = self.date
+        if len(self.draft_box) -1 >= draft_index and draft_index >= 0:
+            self.outbox.append(self.draft_box.pop(draft_index))
+            self.outbox[-1].date = self.date
 
     """ Add a message """
     def add_message(self, **kwargs):
