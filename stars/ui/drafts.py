@@ -8,14 +8,14 @@ from .. import game_engine
 __defaults = {
     'drafts_preview_index': (-1, -1, sys.maxsize),
     'drafts_preview_sender': '',
-    'drafts_preview_number': '',
+    'drafts_preview_number': '0 of 0',
     'drafts_preview_date': '',
     'drafts_preview_text': '',
     'drafts_preview_cache': '',
     'drafts_preview': '',
     'drafts_index': (-2, -2, sys.maxsize),
     'drafts_receiver': '',
-    'drafts_number': '',
+    'drafts_number': '0 of 0',
     'drafts_text': '',
     'drafts_send': '<i class="far fa-paper-plane" style="padding-right: 1em"></i>',
     'drafts_receiver_options': [],
@@ -59,11 +59,16 @@ class Drafts(PlayerUI):
             self.load_cache('draft_box', new=True)
         elif action.startswith('send'):
             self.player.send_message(self.drafts_preview_index)
+            if self.drafts_index == self.drafts_preview_index:
+                self.drafts_index == -2
+            elif self.drafts_index > self.drafts_preview_index:
+                self.drafts_index -= 0
             self.drafts_preview_cache = ''
             self.drafts_preview_index = -1
             self.drafts_send = '<i class="far fa-paper-plane" style="padding-right: 1em"></i>'
-            self.drafts_preview_number = ''
+            self.drafts_preview_number = '0 of 0'
             self.drafts_preview_sender = ''
+            self.drafts_preview_text = ''
             self.load_cache('draft_box', True)
             self.load_cache('outbox', True)
         elif action.startswith('save'):
@@ -195,6 +200,7 @@ class Drafts(PlayerUI):
             self['drafts_' + cache].append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" onclick="post(\'drafts\', \'?' + box + '_id=' + str(i) + '\')">' + m['short'] + '</td><td style="' + current + '">' + icon + '</td>')
 
     def display_drafts(self):
+        print('index:', self.drafts_index)
         #preview tab
         if self.drafts_preview_index != -2 and self.drafts_preview_cache != '':
             m = self['drafts_' + self.drafts_preview_cache + '_cache'][self.drafts_preview_index]
@@ -203,7 +209,7 @@ class Drafts(PlayerUI):
             self.drafts_preview_sender = '<div>' + m['icon'] + ' ' + m['sender'] + '</div>'
             self.drafts_date = self.player.date
         #drafts tab
-        if self.drafts_index >= 0 and len(self.drafts_draft_box_cache)-1 :
+        if self.drafts_index >= 0 and len(self.drafts_draft_box_cache) >= 1:
             m = self.drafts_draft_box_cache[self.drafts_index]
             self.drafts_text = m['text']
             self.drafts_number = str(len(self.drafts_draft_box_cache) - self.drafts_index) + ' of ' + str(len(self.drafts_draft_box_cache))
