@@ -229,9 +229,12 @@ class Game(Defaults):
     """ Haddle player to player messages """
     def mail_carrier(self):
         for player in self.players:
+            print(player.ID, player.outbox)
             for msg in player.outbox:
+                print(msg.__dict__)
                 msg.sender = Reference(player)
-                ~msg.reciver.add_message(msg)
+                (~msg.receiver).add_message(msg)
+            player.outbox = []
 
     """ Generate hundreth """
     def generate_hundreth(self):

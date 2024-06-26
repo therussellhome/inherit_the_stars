@@ -38,7 +38,7 @@ class Messages(PlayerUI):
                     msg['icon'] = m.parameters[0]['icon']
                     msg['sender'] = m.parameters[0]['name']
                     if m.action != '':
-                        msg['action'] = m.action.split(':')[0] + '=' + i + m.action.split(':')[1]
+                        msg['action'] = m.action.split(':')[0] + '=' + str(i) + m.action.split(':')[1]
                 else:
                     msg['icon'] = m.sender.get_icon()
                     msg['sender'] = m.sender.get_name()

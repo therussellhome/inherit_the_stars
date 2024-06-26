@@ -8,6 +8,7 @@ from .. import game_engine
 __defaults = {
     'drafts_preview_index': (-1, -1, sys.maxsize),
     'drafts_preview_sender': '',
+    'drafts_preview_receiver': '',
     'drafts_preview_number': '0 of 0',
     'drafts_preview_date': '',
     'drafts_preview_text': '',
@@ -26,13 +27,7 @@ __defaults = {
     'drafts_new': True,
 }
 
-EDIT_FIELDS = [
-    'receiver',
-    'text',
-]
-
-
-""" Components of score are precomputed as part of turn generation """
+""" Writing new messages and sending them to the other players, or even yourself """
 class Drafts(PlayerUI):
     def __init__(self, action, **kwargs):
         super().__init__(**kwargs)
@@ -54,7 +49,7 @@ class Drafts(PlayerUI):
             self.load_cache('draft_box', new=True)
             print('create_new')
         elif action.startswith('reply='):
-            old = self.player.messages[action.split('=')[1]]
+            old = self.player.messages[int(action.split('=')[1])]
             self.create_new(old)
             self.load_cache('draft_box', new=True)
         elif action.startswith('send'):
@@ -68,6 +63,7 @@ class Drafts(PlayerUI):
             self.drafts_send = '<i class="far fa-paper-plane" style="padding-right: 1em"></i>'
             self.drafts_preview_number = '0 of 0'
             self.drafts_preview_sender = ''
+            self.drafts_preview_receiver = ''
             self.drafts_preview_text = ''
             self.load_cache('draft_box', True)
             self.load_cache('outbox', True)
@@ -86,12 +82,10 @@ class Drafts(PlayerUI):
             else:
                 self.player.draft_box.pop(key)
             self.load_cache('draft_box', True)
-        if action.startswith('update'):
+        if action.startswith('update') or action.startswith('who'):
             if len(self.drafts_draft_box_cache) == 0:
                 self.create_new()
                 self.load_cache('draft_box', new=True)
-            self.update_cache()
-        if action.startswith('who'):
             self.update_cache()
 
         # Makes the previous and next arrows work
@@ -125,7 +119,8 @@ class Drafts(PlayerUI):
     def update_cache(self):
         msg = self.drafts_draft_box_cache[self.drafts_index]
         msg['text'] = self.drafts_text
-        msg['receiver'] = self.drafts_receiver
+        if self.drafts_receiver != '':
+            msg['receiver'] = self.drafts_receiver
         msg['short'] = msg['text']
         if len(msg['short']) > 58:
             msg['short'] = msg['short'][:55] + '...'
@@ -171,13 +166,15 @@ class Drafts(PlayerUI):
             print('got cache:', msgs)
         if new:
             m = self.player.current_draft
-            msg = {'index': -1, 'receiver': m.receiver}
+            msg = {'index': -1, 'receiver': -m.receiver}
             msg['text'] = m.message
             msg['icon'] = m.parameters[0]['icon']
             msg['sender'] = m.parameters[0]['name']
             msg['short'] = msg['text']
             if len(msg['short']) > 53:
                 msg['short'] = 'NEW: ' + msg['short'][:50] + '...'
+            else:
+                msg['short'] = 'NEW: ' + msg['short']
             msgs.append(msg)
             self.player[cache + '_cache'] = msgs
             self.drafts_index = -1
@@ -196,11 +193,11 @@ class Drafts(PlayerUI):
                 current = 'background: darkblue;'
             icon = '<i '
             if box == 'drafts':
-                icon += 'class="fas fa-trash-alt" onclick="post(\'drafts\', \'?delete=' + str(i) + '\')"'
+                icon += 'class="fas fa-trash-alt" title="Delete" onclick="post(\'drafts\', \'?delete=' + str(i) + '\')"'
             else:
-                icon += 'class="fas fa-ban" onclick="post(\'drafts\', \'?cancel=' + str(i) + '\')"'
+                icon += 'class="fas fa-ban" title="Cancel" onclick="post(\'drafts\', \'?cancel=' + str(i) + '\')"'
             icon += '></i>'
-            self['drafts_' + cache].append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" onclick="post(\'drafts\', \'?' + box + '_id=' + str(i) + '\')">' + m['short'] + '</td><td style="' + current + '">' + icon + '</td>')
+            self['drafts_' + cache].append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" title="To: ' + m['receiver'] + '" onclick="post(\'drafts\', \'?' + box + '_id=' + str(i) + '\')">' + m['short'] + '</td><td style="' + current + '">' + icon + '</td>')
 
     def display_drafts(self):
         print('index:', self.drafts_index)
@@ -210,6 +207,7 @@ class Drafts(PlayerUI):
             self.drafts_preview_text = m['text']
             self.drafts_preview_number = str(len(self['drafts_' + self.drafts_preview_cache + '_cache']) - self.drafts_preview_index) + ' of ' + str(len(self['drafts_' + self.drafts_preview_cache + '_cache']))
             self.drafts_preview_sender = '<div>' + m['icon'] + ' ' + m['sender'] + '</div>'
+            self.drafts_preview_receiver = '<div>' + m['receiver'] + '</div>'
             self.drafts_date = self.player.date
         #drafts tab
         if self.drafts_index >= 0 and len(self.drafts_draft_box_cache) >= 1:
@@ -232,12 +230,12 @@ class Drafts(PlayerUI):
                 'name': self.player.ID,
                 }],
             'sender': Reference(self.player),
-            'action': '<div title="reply" onclick="post(\'drafts\', \'?reply:\')"><i class="fas fa-reply"></i></div>',
+            'action': '<div title="reply" onclick="show_screen(\'drafts\'); post(\'drafts\', \'?reply:\')"><i class="fas fa-reply"></i></div>',
         }
         if old:
             m['receiver'] = old.sender
-            m['parameters'][1] = old.parameters[0]
-            m['message'] = '\n* * * * * * * * *\nOn ' + old.date + ' ' + old.sender_name + ' said:\n' + old.message
+            m['parameters'].append(old.parameters[0])
+            m['message'] = '\n* * * * * * * * *\nOn ' + old.date + ' ' + -old.sender + ' said:\n' + old.message
         self.player.new_draft(**m)
         self.drafts_index = -1
         

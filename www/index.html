@@ -566,6 +566,7 @@ void main() {
     <table class="hfill">
         <tr style="border-bottom: 1px solid silver">
             <td id="drafts_preview_sender" class="hfill"></td>
+            <td id="drafts_preview_receiver" class="hfill"></td>
             <td id="drafts_preview_date"></td>
             <td style="padding-left: 1em"/><i class="far fa-star"></i></td>
             <td id="drafts_send"></td>
@@ -573,11 +574,11 @@ void main() {
             <td id="drafts_preview_number"></td>
             <td><i class="button fas fa-arrow-circle-right" title="Next Message"></i></td>
         </tr>
-        <tr><td colspan="7" id="drafts_preview_text" style="white-space: normal"></td></tr>
+        <tr><td colspan="8" id="drafts_preview_text" style="white-space: normal"></td></tr>
         <tr style="display: none"><td id="drafts_preview_index">0</td></tr>
     </table><table class="hfill">
         <tr style="border-bottom: 1px solid silver">
-            <td class="hfill"><select id="drafts_receiver" class="hfill" onchange="post('drafts'. '?who')"></select></td>
+            <td class="hfill"><select id="drafts_receiver" class="hfill" onchange="post('drafts', '?who')"></select></td>
             <td id="drafts_date"></td>
             <td id="drafts_preview"></td>
             <td class="fas fa-download" style="padding-right: 1em" onclick="post('drafts', '?save')"></td>

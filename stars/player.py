@@ -83,6 +83,8 @@ _player_fields = [
     'research_field',
     'fleets',
     'messages',
+    'draft_box',
+    'outbox',
     'ministers',
     'ship_designs',
     'treaties',
@@ -92,6 +94,7 @@ _player_fields = [
     'finance_mattrans_use_surplus',
     'finance_research_percent',
     'finance_research_use_surplus',
+    'finance_baryogenesis_default',
     'colonize_min_hab',
     'colonize_min_ti',
     'colonize_min_li',
@@ -330,8 +333,11 @@ class Player(Defaults):
             self.outbox[-1].date = self.date
 
     """ Add a message """
-    def add_message(self, **kwargs):
-        self.messages.append(Message(**kwargs, date=self.date))
+    def add_message(self, *args, **kwargs):
+        if len(args) == 1:
+            self.messages.append(args[0])
+        else:
+            self.messages.append(Message(**kwargs, date=self.date))
 
     """ Cleanup messages """
     def cleanup_messages(self):
