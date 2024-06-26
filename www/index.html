@@ -923,7 +923,7 @@ void main() {
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
-        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+        <td><i class="button far fa-times-circle" title="Close Shipyard" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
         <td>Load Design</td>
@@ -986,9 +986,11 @@ void main() {
 </div>
 
 
-<div class="screen hide onreset" id="screen_score" style="width: 600px" onreset="post('score', '?reset')">
+<div class="screen hide onreset onsubmit_score" id="screen_score" style="width: 600px" onreset="post('score', '?reset')" onsubmit="scores()">
     <table class="topbar hfill"><tr>
+        <td><img title="Score" src="score.png"/></td>
         <td style="font-size: 200%">Score</td>
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill" id="score_table"></table>
     <table class="hfill">
@@ -996,7 +998,7 @@ void main() {
         <tr>
             <td><select class="hfill" id="score_chart_type" onchange="post('score')"></select></td>
         </tr><tr>
-            <td><canvas class="score_chart"></canvas></td>
+            <td><canvas id="score_chart"></canvas></td>
         </tr>
     </table>
 </div>

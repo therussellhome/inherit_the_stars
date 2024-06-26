@@ -204,13 +204,13 @@ class Player(Defaults):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
     """ Update stats """
-    def update_stats(self):
+    def update_stats(self, get=False):
         minerals = 0
+        facilities = 0
         unarmed = 0
         escort = 0
         wall = 0
         starbases = 0
-        score = 0
         for f in self.fleets:
             for s in f.ships:
                 minerals += s.cargo.titanium + s.cargo.lithium + s.cargo.silicon
@@ -224,17 +224,22 @@ class Player(Defaults):
                     wall += 1
         for p in self.planets:
             minerals += p.on_surface.titanium + p.on_surface.lithium + p.on_surface.silicon
-        self.add_intel(self, 
-                {'planets': len(self.planets),
-                'energy': self.energy,
-                'tech_levels': self.tech_level.total_levels(),
-                'minerals': minerals,
-                'ships_unarmed': unarmed,
-                'ships_escort': escort,
-                'ships_of_the_wall': wall,
-                'starbases': starbases,
-                'score': score,})
-        #TODO calculate score
+            facilities += p.power_plants + p.factories + p.mineral_extractors + p.defenses
+        report = {
+            'planets': len(self.planets),
+            'energy': self.energy,
+            'tech_levels': self.tech_level.total_levels(),
+            'minerals': minerals,
+            'ships_unarmed': unarmed,
+            'ships_escort': escort,
+            'ships_of_the_wall': wall,
+            'starbases': starbases,
+            'facilities': facilities,
+            'color': self.race.icon_color,
+        }
+        if get:
+            return report
+        self.add_intel(self, report)
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):

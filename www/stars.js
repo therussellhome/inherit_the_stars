@@ -1009,6 +1009,87 @@ function fold(div, flip) {
     }
 }
 
+function scores() {
+    if(current_screen == 'score') {
+        console.log('scores chart');
+        score_chart(json_map['score']['score_chart'], json_map['score']['score_chart_type']);
+    }
+}
+
+// Create a chart for player scores
+function score_chart(data, chart_tracking) {
+    chart = document.getElementById('score_chart');
+    var dates = [];
+    var datasets = [];
+    console.log('begin loading data');
+    for(var i=0; i <= data[0].length; i++) {
+        dates.push(data[0][i]);
+    }
+    for(var a=0; a <= data[1].length; a++) {
+        p = data[1][a];
+        datasets.push({label: p, data: data[2][a], borderColor: data[3][a]});
+    }
+    console.log('loading score screen:', data);
+    if(charts.hasOwnProperty('score_chart')) {
+        charts['score_chart'].data = {labels: dates, datasets: datasets};
+        charts['score_chart'].options.plugins.tooltip.callbacks = {
+            label: function(context) {
+                console.log('score:', context);
+                var label = context.dataset.label + ' @ ' + dates[context.dataIndex] + ': ' + context.formattedValue;
+                return label;
+            },
+            title: function(context) { return chart_tracking; }
+        };
+        charts['score_chart'].update();
+    } else {
+        charts['score_chart'] = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: dates,
+                datasets: datasets
+            },
+            options: { 
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                        callbacks: {
+                            label: function(context) {
+                                console.log('score:', context);
+                                var label = context.dataset.label + ' @ ' + dates[context.dataIndex] + ': ' + context.formattedValue;
+                                return label;
+                            },
+                            title: function(context) {
+                                return chart_tracking;
+                            },
+                        }
+                    },
+                },
+                scales: { 
+                    x: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                            callback: function(value) {
+                                return value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
 // Render the ship charts
 function ship_display() {
     if(current_screen == 'shipyard') {
