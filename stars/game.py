@@ -168,7 +168,6 @@ class Game(Defaults):
             if 'score' not in field:
                 for i in range(len(self.players)):
                     scores[i] = 0
-                    print('Game calc_score:', data[i][field])
                     if data[i][field]['{:.2f}'.format(self.hundreth/100 + 3000)] > value:
                         value = data[i][field]['{:.2f}'.format(self.hundreth/100 + 3000)]
                         best_by_field[field] = [i]
@@ -229,9 +228,7 @@ class Game(Defaults):
     """ Haddle player to player messages """
     def mail_carrier(self):
         for player in self.players:
-            print(player.ID, player.outbox)
             for msg in player.outbox:
-                print(msg.__dict__)
                 msg.sender = Reference(player)
                 (~msg.receiver).add_message(msg)
             player.outbox = []
