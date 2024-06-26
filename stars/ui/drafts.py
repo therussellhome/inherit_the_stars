@@ -18,7 +18,7 @@ __defaults = {
     'drafts_number': '0 of 0',
     'drafts_text': '',
     'drafts_send': '<i class="far fa-paper-plane" style="padding-right: 1em"></i>',
-    'drafts_receiver_options': [],
+    'options_drafts_receiver': [],
     'drafts_draft_box': [],
     'drafts_outbox': [],
     'drafts_draft_box_cache': [],
@@ -43,10 +43,10 @@ class Drafts(PlayerUI):
         self.load_cache('outbox')
         self.drafts_date = self.player.date
         self.drafts_preview_date = self.player.date
-        self.drafts_receiver_options = []
+        self.options_drafts_receiver = []
         for p in self.player.get_intel(by_type='Player'):
-            self.drafts_receiver_options.append(-p)
-        print('receivers:', self.drafts_receiver_options)
+            self.options_drafts_receiver.append(-p)
+        print('receivers:', self.options_drafts_receiver)
         print('index:', self.drafts_index)
         # Handle message traffic
         if action.startswith('compose'):
@@ -60,9 +60,9 @@ class Drafts(PlayerUI):
         elif action.startswith('send'):
             self.player.send_message(self.drafts_preview_index)
             if self.drafts_index == self.drafts_preview_index:
-                self.drafts_index == -2
+                self.drafts_index = -2
             elif self.drafts_index > self.drafts_preview_index:
-                self.drafts_index -= 0
+                self.drafts_index -= 1
             self.drafts_preview_cache = ''
             self.drafts_preview_index = -1
             self.drafts_send = '<i class="far fa-paper-plane" style="padding-right: 1em"></i>'
@@ -112,6 +112,9 @@ class Drafts(PlayerUI):
         if action.startswith('preview:'):
             self.drafts_preview_cache = 'draft_box'
             self.drafts_preview_index = action[8:]
+            if self.drafts_preview_index == -1:
+                self.drafts_index = len(self.drafts_draft_box_cache) - 1
+                self.drafts_preview_index = self.drafts_index
             self.drafts_send = '<i class="fas fa-paper-plane" title="Send message" style="padding-right: 1em" onclick="post(\'drafts\', \'?send\')"></i>'
         self.display_mail('draft_box')
         self.display_mail('outbox')
@@ -133,7 +136,7 @@ class Drafts(PlayerUI):
             self.create_new()
             self.load_cache('draft_box', new=True)
             self.update_cache()
-        if self.drafts_index == -1:
+        if self.drafts_index == -1 or self.drafts_draft_box_cache[self.drafts_index]['index'] == -1:
             msg = self.drafts_draft_box_cache[self.drafts_index]
             self.player.current_draft.message = msg['text']
             self.player.current_draft.receiver = Reference('Player/' + msg['receiver'])

@@ -189,7 +189,7 @@ class Game(Defaults):
                 rank[v] = place
         for i in range(len(self.players)):
             self.players[i].add_intel(self.players[i], {'score': scores[i], 'score_rank': rank[i]})
-        if self.hundreth - 100 >= self.public_player_scores:
+        if self.hundreth / 100 >= self.public_player_scores:
             for p1 in self.players:
                 for i in range(len(self.players)):
                     if p1.ID != self.players[i].ID:
@@ -225,7 +225,7 @@ class Game(Defaults):
         return planets
 
     """ Haddle player to player messages """
-    def mail_carier(self):
+    def mail_carrier(self):
         for player in self.players:
             for msg in player.outbox:
                 msg.sender = Reference(player)
