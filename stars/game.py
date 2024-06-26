@@ -30,7 +30,9 @@ __defaults = {
     'public_player_scores': (30, 0, 200), # years till public player scores
     'victory_after': (50, 10, 200), # minimum years till game can be won
     'victory_conditions': (1, 1, 10), # minimum number of conditions to win
+    'victory_enemies': True,
     'victory_enemies_left': (0, -1, 15), 
+    'victory_score': True,
     'victory_score_number': (1000, -1, 10000), 
     'victory_tech': True,
     'victory_tech_levels': (100, 10, 300), 
