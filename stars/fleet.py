@@ -159,7 +159,6 @@ class Fleet(Defaults):
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
-            print('Fleet: getting offset')
             offset_distances = {'Sun': 7000, 'Planet': 700}
             offset = offset_distances.get(+(location.reference), offset)
             print('offset:', offset)
