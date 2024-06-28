@@ -233,6 +233,8 @@ class Player(Defaults):
         if not isinstance(ships, list):
             ships = [ships]
         if not fleet:
+            if isinstance(ships[0], Reference):
+                ships[0] = ~ships[0]
             if isinstance(ships[0], BuShips):
                 location = ships[0].ship.location
             else:

@@ -55,7 +55,7 @@ class Order(Defaults):
     """ Calculate where to move to """
     def move_calc(self, fleet_location, in_system_only=False):
         # In-system moves allowed
-        if self.fleet_location.root_location == self.location.root_location:
+        if fleet_location.root_location == self.location.root_location:
             return self.location
         # Intentionally stopped or not allowed to move outside of system
         if self.speed == 0 or in_system_only:
@@ -63,6 +63,7 @@ class Order(Defaults):
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
         if self.standoff == 'No Standoff':
+            print('Order sent a location')
             return self.location
         return fleet_location.move(self.location, standoff=self._standoff(fleet_location))
 

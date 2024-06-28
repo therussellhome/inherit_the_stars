@@ -178,7 +178,10 @@ class Fleet(Defaults):
             elif len(ship.engines) == 0:
                 multi_fleet.add(self)
                 return
-        self.move_to = self.order.move_calc(self.location, in_system_only)
+        if len(self.orders) > 0:
+            self.move_to = self.orders[0].move_calc(self.location, in_system_only)
+        else:
+            self.move_to = self.location
         if self.move_to.root_location == self.location.root_location:
             multi_fleet.add(self)
         else:
