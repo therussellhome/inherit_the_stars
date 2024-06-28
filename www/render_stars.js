@@ -336,7 +336,7 @@ function get_system(intersected, index) {
             size: ((system_data[i].size + 200) * TERAMETER / size_mod)
         } );
         var point = new THREE.Points( geometry, material );
-        point.name = system_data[i].type + '/' + system_data[i].name;
+        point.name = system_data[i].type + '/' + system_data[i].ID;
         inner_system.add(point);
     }
     scene.remove(in_system);

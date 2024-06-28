@@ -6,6 +6,7 @@ from .reference import Reference
 from .ship import Ship
 from .ship_design import ShipDesign
 from .tech_level import TechLevel
+from .order import Order
 
 """ Default values (default, min, max)  """
 __defaults = {
@@ -54,11 +55,12 @@ class BuildShip(BuildQueue):
                     for f in self.planet.player.fleets:
                         if self.buships in f.under_construction:
                             self.planet.player.add_ships(self.ship, f)
-                            f - self
+                            f - Reference(self)
+                            f.order = Order(location=Location(reference=self.planet))
                             break
                     else:
                         self.planet.player.add_ships(self.ship)
-                self.ship.description = self.buships.ID
+                self.ship.description = self.buships.ship_design.ID
                 self.ship.add_component(self.to_build.pop(0), False)
             self.ship.update(self.level)
             self._next_component()

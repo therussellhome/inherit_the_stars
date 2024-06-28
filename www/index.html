@@ -659,8 +659,8 @@ void main() {
         </tr><tr class="slider_padding_min"></tr>
     </table>
     <input disabled="true" id="order_last_screen" class="hide" onchange="post('orders')"/>
-    <input disabled="true" id="order_fleet_index" class="hide" type="number" min="0" max="10000" onchange="post('orders', 'start')"/>
-    <input disabled="true" id="order_index" class="hide" type="number" min="0" max="10000" onchange="post('orders', 'start')"/>
+    <input disabled="true" id="order_fleet_index" class="hide" type="number" min="-1" max="10000" onchange="post('orders')"/>
+    <input disabled="true" id="order_index" class="hide" type="number" min="-2" max="10000" onchange="post('orders')"/>
 </div>
 
 
