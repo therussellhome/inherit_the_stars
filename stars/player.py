@@ -249,12 +249,10 @@ class Player(Defaults):
         if not isinstance(ships, list):
             ships = [ships]
         if not fleet:
-            if isinstance(ships[0], BuShips):
+            if isinstance(ships[0], BuShips) or (isinstance(ships[0], Reference) and ships[0] ^ 'BuShips'):
                 location = ships[0].ship.location
-                ID = ships[0].ship.ID
             else:
                 location = ships[0].location
-                ID = ships[0].ID
             fleet = Fleet(player=Reference(self), order=Order(location=location))
             self.fleets.append(fleet)
         for s in ships:
