@@ -106,10 +106,10 @@ class ForeignMinister(PlayerUI):
                 + '<td rowspan="2"><i class="button far fa-trash-alt" title="Reject" onclick="post(\'foreign_minister\', \'?reject=' + treaty.treaty_key + '\')"></i></td>'
         self.foreign_treaties.append('<td rowspan="2" style="color: silver; font-size: 150%">' + self._display_relationship(treaty.relation) + '</td>'
             + '<td>Buy</td>'
-            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_ti) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_ti, 'buy_ti') + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_li) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_si) + '</td>'
-            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_fuel) + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_fuel, 'buy_fuel') + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_gate) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_hyper_denial) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_intel) + '</td>'
@@ -132,14 +132,16 @@ class ForeignMinister(PlayerUI):
         return '<i class="fas fa-meh"></i>'
 
     """ Format a number as energy or - if none """
-    def _display_energy(self, energy):
+    def _display_energy(self, energy, check=''):
         if energy < 0:
             return '-'
         elif energy >= 1000:
-            energy = round(energy / 1000, 2)
-            if energy % 1 == 0:
-                energy = int(energy)
-            energy = str(energy) + 'k'
-        return '<i class="fa-bolt" title="Energy">' + str(energy) + '</i>'
+            tmp_energy = round(energy / 1000, 2)
+            if tmp_energy % 1 == 0:
+                tmp_energy = int(tmp_energy)
+            tmp_energy = str(tmp_energy) + 'k'
+        else:
+            tmp_energy = energy
+        return '<i class="fa-bolt" title="Energy">' + str(tmp_energy) + '</i>'
 
 ForeignMinister.set_defaults(ForeignMinister, __defaults, sparse_json=False)

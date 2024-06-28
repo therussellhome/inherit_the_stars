@@ -1,4 +1,3 @@
-/*! nouislider - 14.5.0 - 5/11/2020 */
 /* Functional styling;
  * These styles are required for noUiSlider to function.
  * You don't need to change these rules to apply your design.
@@ -39,19 +38,13 @@
   z-index: 1;
   top: 0;
   right: 0;
+  height: 100%;
+  width: 100%;
   -ms-transform-origin: 0 0;
   -webkit-transform-origin: 0 0;
   -webkit-transform-style: preserve-3d;
   transform-origin: 0 0;
   transform-style: flat;
-}
-.noUi-connect {
-  height: 100%;
-  width: 100%;
-}
-.noUi-origin {
-  height: 10%;
-  width: 10%;
 }
 /* Offset direction
  */
@@ -63,6 +56,7 @@
  * connect elements.
  */
 .noUi-vertical .noUi-origin {
+  top: -100%;
   width: 0;
 }
 .noUi-horizontal .noUi-origin {
@@ -89,15 +83,12 @@
  */
 .noUi-horizontal {
   height: 18px;
-  margin-left: 10px;
-  margin-right: 10px;
 }
 .noUi-horizontal .noUi-handle {
-  background: black;
-  width: 14px;
+  width: 34px;
   height: 28px;
-  right: -7px;
-  top: -4px;
+  right: -17px;
+  top: -6px;
 }
 .noUi-vertical {
   width: 18px;
@@ -106,7 +97,7 @@
   width: 28px;
   height: 34px;
   right: -6px;
-  top: -17px;
+  bottom: -17px;
 }
 .noUi-txt-dir-rtl.noUi-horizontal .noUi-handle {
   left: -17px;
@@ -116,8 +107,7 @@
  * Giving the connect element a border radius causes issues with using transform: scale
  */
 .noUi-target {
-  height: 20px;
-  background: black;
+  background: #FAFAFA;
   border-radius: 4px;
   border: 1px solid #D3D3D3;
   box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
@@ -153,14 +143,14 @@
   content: "";
   display: block;
   position: absolute;
-  height: 20px;
+  height: 14px;
   width: 1px;
   background: #E8E7E6;
-  left: 4px;
-  top: 4px;
+  left: 14px;
+  top: 6px;
 }
 .noUi-handle:after {
-  left: 8px;
+  left: 17px;
 }
 .noUi-vertical .noUi-handle:before,
 .noUi-vertical .noUi-handle:after {
@@ -278,13 +268,13 @@
   width: 15px;
 }
 .noUi-tooltip {
-  font-size: 75%;
   display: block;
   position: absolute;
   border: 1px solid #D9D9D9;
   border-radius: 3px;
   background: #fff;
   color: #000;
+  padding: 5px;
   text-align: center;
   white-space: nowrap;
 }
@@ -292,7 +282,7 @@
   -webkit-transform: translate(-50%, 0);
   transform: translate(-50%, 0);
   left: 50%;
-  top: 120%;
+  bottom: 120%;
 }
 .noUi-vertical .noUi-tooltip {
   -webkit-transform: translate(0, -50%);
