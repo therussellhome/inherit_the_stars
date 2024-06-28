@@ -463,7 +463,6 @@ class Fleet(Defaults):
     def scan_self(self):
         for ship in self.ships:
             self.player.add_intel(self, ship.scan_report('self'))
-        #print('Fleet.scan_self[ location ]:', self.player.intel[Reference(self)].location)
 
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):
