@@ -55,7 +55,7 @@ class BuildShip(BuildQueue):
                     for f in self.planet.player.fleets:
                         if self.buships in f.under_construction:
                             self.planet.player.add_ships(self.ship, f)
-                            f - Reference(self)#.buships?
+                            f - Reference(self)
                             f.order = Order(location=Location(reference=self.planet))
                             break
                     else:
