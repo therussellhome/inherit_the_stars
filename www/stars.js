@@ -713,13 +713,13 @@ function gravity_chart(element_id, slider_id) {
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {
                             color: 'white',
                         }
                     },
                     y: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {
                             color: 'white',
                             callback: function(value) {
@@ -790,13 +790,13 @@ function temperature_chart(element_id, slider_id) {
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {
                             color: 'white',
                         }
                     },
                     y: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {
                             color: 'white',
                             callback: function(value) {
@@ -867,11 +867,11 @@ function radiation_chart(element_id, slider_id) {
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {color: 'white'}
                     },
                     y: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {
                             color: 'white',
                             callback: function(value) {
@@ -1116,11 +1116,11 @@ function combat_chart(chart, data, element_id=null) {
                 },
                 scales: { 
                     x: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {color: 'white'}
                     },
                     y: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {color: 'white'}
                     }
                 }
@@ -1172,7 +1172,7 @@ function sensor_chart(chart, data, element_id=null) {
                 },
                 scales: { 
                     r: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {
                             backdropColor: '#000000ff',
                             color: 'white'
@@ -1260,11 +1260,11 @@ function engine_chart(chart, data, element_id=null) {
                 },
                 scales: { 
                     x: {
-                        gridLines: {color: 'gray'},
+                        grid: {color: 'gray'},
                         ticks: {color: 'white'}
                     },
                     y: {
-                        gridLines: {display: false},
+                        grid: {display: false},
                         ticks: {color: 'white'},
                         max: 120
                     }
