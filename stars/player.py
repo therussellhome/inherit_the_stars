@@ -32,6 +32,8 @@ __defaults = {
     'computer_player': False,
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
+    'draft_box': [],
+    'outbox': [],
     'planets': [], # list of colonized planets only updated during save
     'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
@@ -62,6 +64,9 @@ __defaults = {
 """ Temporary values (default, min, max)  """
 __tmp_defaults = {
     'msg_cache': [],
+    'draft_box_cache': [],
+    'current_draft': Message(),
+    'outbox_cache': [],
     'planet_report': [],
     'design_cache': [],
     'budget_construction': 0,
@@ -199,13 +204,13 @@ class Player(Defaults):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
     """ Update stats """
-    def update_stats(self):
+    def update_stats(self, get=False):
         minerals = 0
+        facilities = 0
         unarmed = 0
         escort = 0
         wall = 0
         starbases = 0
-        score = 0
         for f in self.fleets:
             for s in f.ships:
                 minerals += s.cargo.titanium + s.cargo.lithium + s.cargo.silicon
@@ -219,17 +224,22 @@ class Player(Defaults):
                     wall += 1
         for p in self.planets:
             minerals += p.on_surface.titanium + p.on_surface.lithium + p.on_surface.silicon
-        self.add_intel(self, 
-                {'planets': len(self.planets),
-                'energy': self.energy,
-                'tech_levels': self.tech_level.total_levels(),
-                'minerals': minerals,
-                'ships_unarmed': unarmed,
-                'ships_escort': escort,
-                'ships_of_the_wall': wall,
-                'starbases': starbases,
-                'score': score,})
-        #TODO calculate score
+            facilities += p.power_plants + p.factories + p.mineral_extractors + p.defenses
+        report = {
+            'planets': len(self.planets),
+            'energy': self.energy,
+            'tech_levels': self.tech_level.total_levels(),
+            'minerals': minerals,
+            'ships_unarmed': unarmed,
+            'ships_escort': escort,
+            'ships_of_the_wall': wall,
+            'starbases': starbases,
+            'facilities': facilities,
+            'color': self.race.icon_color,
+        }
+        if get:
+            return report
+        self.add_intel(self, report)
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
@@ -302,6 +312,20 @@ class Player(Defaults):
         if intel:
             return intel.name
         return obj.ID
+
+    """ Write a message """
+    def new_draft(self, **kwargs):
+        self.current_draft = Message(**kwargs)
+
+    """ Save a message """
+    def save_draft(self, draft):
+        self.draft_box.append(draft)
+
+    """ Send a message """
+    def send_message(self, draft_index):
+        if len(self.draft_box) -1 >= draft_index and draft_index >= 0:
+            self.outbox.append(self.draft_box.pop(draft_index))
+            self.outbox[-1].date = self.date
 
     """ Add a message """
     def add_message(self, **kwargs):

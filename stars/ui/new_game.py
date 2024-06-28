@@ -24,6 +24,16 @@ __defaults = {
     'new_game_public_player_scores': (30, 0, 200), 
     'new_game_victory_after': (50, 10, 200), 
     'new_game_victory_conditions': (1, 1, 10), 
+    'new_game_victory_enemies': False,
+    'new_game_victory_score': False,
+    'new_game_victory_tech': False,
+    'new_game_victory_planets': False,
+    'new_game_victory_energy': False,
+    'new_game_victory_minerals': False,
+    'new_game_victory_production': False,
+    'new_game_victory_ships': False,
+    'new_game_victory_shipsofthewall': False,
+    'new_game_victory_starbases': False,
     'new_game_victory_enemies_left': (0, -1, 15), 
     'new_game_victory_score_number': (1000, -100, 10000), 
     'new_game_victory_tech_levels': (100, -10, 300), 
@@ -75,6 +85,10 @@ class NewGame(UI):
         # Create the game
         if action == 'create' and len(player_races) > 0:
             game = Game(self.new_game_x, self.new_game_y, self.new_game_z, self.new_game_num_systems, system_names, ID=self.new_game_name, races=player_races, tech_file=self.new_game_tech_tree)
+            for key in Game.defaults:
+                if 'new_game_'+key in self.defaults and 'victory' in key:
+                    game[key] = self['new_game_'+key]
+            game.public_player_scores = self.new_game_public_player_scores
             game.save()
 
     def _races(self, key, races):

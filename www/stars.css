@@ -102,6 +102,16 @@ input {
 input.vertical {
     transform: rotate(-90deg);
 }
+#drafts_text {
+    word-break: normal;
+    word-wrap: normal;
+    color: white;
+    background-color: transparent;
+    font-size: 10pt;
+    height: 4em;
+    width: 44em;
+    resize: none;
+}
 select {
     color: white;
     background-color: transparent;
@@ -218,6 +228,10 @@ textarea:disabled {
 .hfill {
     width: 100%;
     white-space: nowrap;
+}
+.score_vertical {
+    writing-mode: vertical-rl;
+    text-align: center;
 }
 .vertical {
     writing-mode: sideways-lr;

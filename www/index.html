@@ -537,6 +537,7 @@ void main() {
     <table class="topbar hfill"><tr>
         <td><img title="Messages" src="/messages.png"/></td>
         <td class="hfill" style="font-size: 200%">Messages</td>
+        <td><i class="button fas fa-edit" title="Compose" onclick="show_screen('drafts'); post('drafts', '?compose')"></i></td>
         <td><i class="button far fa-times-circle" title="Close Messages" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill">
@@ -553,6 +554,43 @@ void main() {
         <tr style="display: none"><td id="messages_index">0</td></tr>
     </table><table id="messages_inbox" class="hfill">
         <caption><div class="fa-angle-double-down"> Inbox</div></caption>
+    </table>
+</div>
+
+<div class="screen hide onreset" id="screen_drafts" style="width: 600px" onreset="post('drafts', '?reset')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Drafts" src="/messages.png"/></td>
+        <td class="hfill" style="font-size: 200%">Drafts</td>
+        <td><i class="button far fa-times-circle" title="Close Drafts" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill">
+        <tr style="border-bottom: 1px solid silver">
+            <td id="drafts_preview_sender" class="hfill"></td>
+            <td id="drafts_preview_date"></td>
+            <td style="padding-left: 1em"/><i class="far fa-star"></i></td>
+            <td id="drafts_send"></td>
+            <td><i class="button fas fa-arrow-circle-left" title="Previous Message"></i></td>
+            <td id="drafts_preview_number"></td>
+            <td><i class="button fas fa-arrow-circle-right" title="Next Message"></i></td>
+        </tr>
+        <tr><td colspan="7" id="drafts_preview_text" style="white-space: normal"></td></tr>
+        <tr style="display: none"><td id="drafts_preview_index">0</td></tr>
+    </table><table class="hfill">
+        <tr style="border-bottom: 1px solid silver">
+            <td class="hfill"><select id="drafts_receiver" class="hfill" onchange="post('drafts'. '?who')"></select></td>
+            <td id="drafts_date"></td>
+            <td id="drafts_preview"></td>
+            <td class="fas fa-download" style="padding-right: 1em" onclick="post('drafts', '?save')"></td>
+            <td><i class="button fas fa-arrow-circle-left" title="Previous Draft" onclick="post('drafts', '?previous')"></i></td>
+            <td id="drafts_number"></td>
+            <td><i class="button fas fa-arrow-circle-right" title="Next Draft" onclick="post('drafts', '?next')"></i></td>
+        </tr>
+        <tr><td colspan="7" style="white-space: normal"><input type="text" id="drafts_text" onchange="post('drafts', '?update')"></input></td></tr>
+        <tr style="display: none"><td id="drafts_index"></td><td id="drafts_new"></td></tr>
+    </table><table id="drafts_draft_box" class="hfill">
+        <caption><div class="fa-angle-double-down"> Drafts</div></caption>
+    </table><table id="drafts_outbox" class="hfill">
+        <caption><div class="fa-angle-double-down"> Outbox</div></caption>
     </table>
 </div>
 
@@ -885,7 +923,7 @@ void main() {
     <table class="topbar hfill"><tr>
         <td><img title="Shipyard" src="shipyard.png"/></td>
         <td class="hfill" style="font-size: 200%">Shipyard</td> 
-        <td><i class="button far fa-times-circle" title="Close Minister" onclick="show_screen(null)"></i></td>
+        <td><i class="button far fa-times-circle" title="Close Shipyard" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table><tr>
         <td>Load Design</td>
@@ -948,9 +986,11 @@ void main() {
 </div>
 
 
-<div class="screen hide onreset" id="screen_score" style="width: 600px" onreset="post('score', '?reset')">
+<div class="screen hide onreset onsubmit_score" id="screen_score" style="width: 600px" onreset="post('score', '?reset')" onsubmit="scores()">
     <table class="topbar hfill"><tr>
+        <td><img title="Score" src="score.png"/></td>
         <td style="font-size: 200%">Score</td>
+        <td><i class="button far fa-times-circle" title="Close" onclick="show_screen(null)"></i></td>
     </tr></table>
     <table class="hfill" id="score_table"></table>
     <table class="hfill">
@@ -958,7 +998,7 @@ void main() {
         <tr>
             <td><select class="hfill" id="score_chart_type" onchange="post('score')"></select></td>
         </tr><tr>
-            <td><canvas class="score_chart"></canvas></td>
+            <td><canvas id="score_chart"></canvas></td>
         </tr>
     </table>
 </div>
