@@ -53,9 +53,12 @@ class Order(Defaults):
         game_engine.register(self)
 
     """ Calculate where to move to """
-    def move_calc(self, fleet_location):
-        # Intentionally stopped
-        if self.speed == 0:
+    def move_calc(self, fleet_location, in_system_only=False):
+        # In-system moves allowed
+        if self.fleet_location.root_location == self.location.root_location:
+            return self.location
+        # Intentionally stopped or not allowed to move outside of system
+        if self.speed == 0 or in_system_only:
             return fleet_location
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
