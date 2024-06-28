@@ -106,10 +106,10 @@ class ForeignMinister(PlayerUI):
                 + '<td rowspan="2"><i class="button far fa-trash-alt" title="Reject" onclick="post(\'foreign_minister\', \'?reject=' + treaty.treaty_key + '\')"></i></td>'
         self.foreign_treaties.append('<td rowspan="2" style="color: silver; font-size: 150%">' + self._display_relationship(treaty.relation) + '</td>'
             + '<td>Buy</td>'
-            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_ti, 'buy_ti') + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_ti) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_li) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_si) + '</td>'
-            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_fuel, 'buy_fuel') + '</td>'
+            + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_fuel) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_gate) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_hyper_denial) + '</td>'
             + '<td style="font-size: 80%">' + self._display_energy(treaty.buy_intel) + '</td>'
@@ -132,7 +132,7 @@ class ForeignMinister(PlayerUI):
         return '<i class="fas fa-meh"></i>'
 
     """ Format a number as energy or - if none """
-    def _display_energy(self, energy, check=''):
+    def _display_energy(self, energy):
         if energy < 0:
             return '-'
         elif energy >= 1000:
