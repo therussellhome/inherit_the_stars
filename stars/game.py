@@ -113,8 +113,10 @@ class Game(Defaults):
                 for p in self.players:
                     p.add_intel(b, {'location': b.location, 'size': b.radius})
             self._scan([])
-            self.calculate_score()
-            #self._call(self.players, 'update_stats')
+            if self.hundreth == 0:
+                self.calculate_score()
+            else:
+                self._call(self.players, 'update_stats')
                 
     """ Save host and players to file """
     def save(self):
@@ -162,6 +164,7 @@ class Game(Defaults):
         self._call(self.players, 'update_stats')
         for player in self.players:
             data.append(player.get_intel(reference=player))
+            print(game_engine.to_json(data))
         """ Get best in the field """
         for field in SCORE_FIELDS:
             value = 0

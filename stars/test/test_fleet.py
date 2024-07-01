@@ -665,24 +665,25 @@ class FleetCase(unittest.TestCase):
 
     def test_unload4(self):
         p_ref = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
-        f2 = fleet.Fleet(player=p_ref) + ship.Ship(cargo_max=10)
-        f.location = location.Location(reference=f2)
-        f.order.ti = 10
-        f.order.li = 100
-        f.order.si = 0
+        f2 = fleet.Fleet(ID='f2', player=p_ref, location=location.Location(0, 0, 1)) + ship.Ship(cargo=cargo.Cargo(), cargo_max=10)
+        f = fleet.Fleet(ID='f', player=p_ref, location=location.Location(0, 0, 1), orders=[order.Order(location=location.Location(reference=f2))]) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        f.orders[0].load_ti = 10
+        f.orders[0].load_li = 100
+        f.orders[0].load_si = 0
+        f.read_orders()
         f.load_unload()
+        print(game_engine.to_json(f))
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(f2.cargo.sum(), 3)
 
     def test_unload5(self):
         p_ref = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        f = fleet.Fleet(ID='f', player=p_ref, orders=[order.Order()]) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
         p = planet.Planet(player=p_ref)
         f.location = location.Location(reference=p)
-        f.order.ti = 10
-        f.order.li = 100
-        f.order.si = 0
+        f.orders[0].load_ti = 10
+        f.orders[0].load_li = 100
+        f.orders[0].load_si = 0
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
