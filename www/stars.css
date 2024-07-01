@@ -239,6 +239,19 @@ textarea:disabled {
 .hide {
     display: none;
 }
+.noUi-tooltip {
+    color: white;
+    background: transparent;
+    border: 0px;
+    padding: 0px;
+    top: 3.5ex;
+}
+.noUi-handle {
+    background: transparent;
+}
+.noUi-target {
+    background: black;
+}
 #race_editor_hab_gravity .noUi-connect {
     background: blue;
 }
