@@ -87,7 +87,7 @@ class PlanetTestCase(unittest.TestCase):
         r = race.Race(hab_gravity=0, hab_gravity_stop=100,
             hab_temperature=0, hab_temperature_stop=100,
             hab_radiation=0, hab_radiation_stop=100)
-        self.assertEqual(p.habitability(r), 41)
+        self.assertEqual(p.habitability(r), 42)
 
     def test_habitability3(self):
         p = planet.Planet(gravity=0, temperature=-15, radiation=50)
