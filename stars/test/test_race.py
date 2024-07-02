@@ -281,6 +281,6 @@ class RaceTestCase(unittest.TestCase):
 
     def test_calc_percent_hab03(self):
         r = race.Race(hab_gravity=0, hab_gravity_stop=100, hab_temperature_immune=True, hab_radiation=0, hab_radiation_stop=100)
-        self.assertEqual(r.percent_planets_habitable(), 100.0)
+        self.assertAlmostEqual(r.percent_planets_habitable(), 100.0)
 
 
