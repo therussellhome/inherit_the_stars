@@ -225,6 +225,30 @@ class Planet(Defaults):
         if self.on_surface.people == 0:
             pass #TODO
 
+    """ Catch packets """
+    def catch_packet(self, packet):
+        if self.on_surface_people > 0:
+            ke_catcher = 0
+            self.raise_shields()
+            if self.starbase:
+                ke_catcher = self.starbase.catcher()
+            defence_factor = 1 - max(0, (packet.ke - ke_catcher) / packet.ke)
+            self.on_surface += packet.minerals * defence_factor 
+            packet.minerals *= (1 - defence_factor)
+            if defence_factor < 1:
+                kt_damage_shields = packet.ke * (1 - defence_factor) / round(packet.minerals.sum())
+                kt_damage_pop = 50 * packet.ke * (1 - defence_factor) / round(packet.minerals.sum())
+                defence = 75.0 - 500.0 / (self.shields / self.on_surface.people + (500.0 / 75.0))
+                cnt = 0
+                for kt in range(round(packet.minerals.sum())):
+                    if defence < randint(0, 100):
+                        cnt += 1
+                self.on_surface += packet.minerals * 0.1 * (cnt / round(packet.minerals.sum()))
+                self.remaining_minerals += packet.minerals * 0.9 * (cnt / round(packet.minerals.sum()))
+                self.impact_shields += cnt * kt_damage_shields
+                self.impact_people += cnt * kt_damage_pop
+            self.bomb_impact()
+
     """ power plants make energy per 1/100th """
     def generate_energy(self):
         facility_yj =  round(self._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
