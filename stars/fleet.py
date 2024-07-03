@@ -393,12 +393,12 @@ class Fleet(Defaults):
     def load_unload(self):
         if not self.is_stationary:
             return
-        (other_cargo, other_max) = self._other_cargo()
+        (other_cargo, other_max, other_types) = self._other_cargo()
         if not other_cargo:
             return
         short_name = {'titanium': 'ti', 'lithium': 'li', 'silicon': 'si', 'people': 'pop'}
         # Shift cargo to meet order
-        for ctype in CARGO_TYPES:
+        for ctype in other_types:
             # TODO check loading people on non-owned planet
             need = self.order[short_name[ctype]] * self.stats.cargo_max / 100.0 - self.cargo[ctype]
             if need > 0:
@@ -497,13 +497,19 @@ class Fleet(Defaults):
 
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
+        types = []
         if self.location.reference ^ 'Fleet':
             if self.location.reference.player == self.player:
-                return (self.location.reference.cargo, self.location.reference.stats.cargo_max)
+                return (self.location.reference.cargo, self.location.reference.stats.cargo_max, CARGO_TYPES)
         elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
             if self.location.reference.player == self.player:
-                return (self.location.reference.on_surface, sys.maxsize)
-        return (None, 0)
+                types = CARGO_TYPES
+            #elif Mining:
+            #    types = MINERAL_TYPES
+            return (self.location.reference.on_surface, sys.maxsize, types)
+        elif self.location.reference ^ 'Asteroid':
+            return (self.location.reference.minerals, sys.maxsize, types)
+        return (None, 0, types)
 
     """ Calculates fuel usage for fleet """
     def _fuel_calc(self, speed, distance, denials):

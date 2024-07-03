@@ -23,6 +23,6 @@ class Cargo(Minerals):
 
     """ Total the contents """
     def sum(self):
-        return (self.titanium + self.lithium + self.silicon + self.people)
+        return (super().sum() + self.people)
 
 Cargo.set_defaults(Cargo, __defaults)

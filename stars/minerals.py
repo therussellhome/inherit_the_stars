@@ -68,5 +68,8 @@ class Minerals(Defaults):
     def __ge__(self, other):
         return self.titanium >= other.titanium and self.lithium >= other.lithium and self.silicon >= other.silicon
 
+    """ Total """
+    def sum(self):
+        return (self.titanium + self.lithium + self.silicon)
 
 Minerals.set_defaults(Minerals, __defaults)
