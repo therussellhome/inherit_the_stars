@@ -644,9 +644,9 @@ class FleetCase(unittest.TestCase):
         f2 = fleet.Fleet() + ship.Ship(cargo_max=10)
         f2.player = reference.Reference(player.Player())
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 0
-        f.order.load_li = 0
-        f.order.load_si = 0
+        f.order.ti = 0
+        f.order.li = 0
+        f.order.si = 0
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 6)
         self.assertEqual(f2.cargo.sum(), 0)
@@ -656,9 +656,9 @@ class FleetCase(unittest.TestCase):
         f2 = fleet.Fleet() + ship.Ship(cargo_max=0)
         f2.player = f.player
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 0
-        f.order.load_li = 0
-        f.order.load_si = 0
+        f.order.ti = 0
+        f.order.li = 0
+        f.order.si = 0
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 6)
         self.assertEqual(f2.cargo.sum(), 0)
@@ -667,9 +667,9 @@ class FleetCase(unittest.TestCase):
         p_ref = reference.Reference(player.Player())
         f2 = fleet.Fleet(ID='f2', player=p_ref, location=location.Location(0, 0, 1)) + ship.Ship(cargo=cargo.Cargo(), cargo_max=10)
         f = fleet.Fleet(ID='f', player=p_ref, location=location.Location(0, 0, 1), order=order.Order(location=location.Location(reference=f2))) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
-        f.order.load_ti = 10
-        f.order.load_li = 100
-        f.order.load_si = 0
+        f.order.ti = 10
+        f.order.li = 100
+        f.order.si = 0
         f.read_orders()
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
@@ -680,9 +680,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(ID='f', player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
         p = planet.Planet(player=p_ref)
         f.location = location.Location(reference=p)
-        f.order.load_ti = 10
-        f.order.load_li = 100
-        f.order.load_si = 0
+        f.order.ti = 10
+        f.order.li = 100
+        f.order.si = 0
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
@@ -700,9 +700,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         f2 = fleet.Fleet(player=p2) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 10
-        f.order.load_li = 0
-        f.order.load_si = 0
+        f.order.ti = 10
+        f.order.li = 0
+        f.order.si = 0
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 0)
         self.assertEqual(f2.cargo.sum(), 6)
@@ -712,9 +712,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=0)
         f2 = fleet.Fleet(player=p1) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 10
-        f.order.load_li = 0
-        f.order.load_si = 0
+        f.order.ti = 10
+        f.order.li = 0
+        f.order.si = 0
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 0)
         self.assertEqual(f2.cargo.sum(), 6)
@@ -724,9 +724,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         f2 = fleet.Fleet(player=p1) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.load_ti = 20
-        f.order.load_li = 0
-        f.order.load_si = 10
+        f.order.ti = 20
+        f.order.li = 0
+        f.order.si = 10
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(f2.cargo.sum(), 3)
@@ -736,9 +736,9 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         p = planet.Planet(player=p1, on_surface=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=p)
-        f.order.load_ti = 20
-        f.order.load_li = 0
-        f.order.load_si = 10
+        f.order.ti = 20
+        f.order.li = 0
+        f.order.si = 10
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
