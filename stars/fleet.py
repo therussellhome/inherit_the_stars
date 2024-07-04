@@ -241,7 +241,6 @@ class Fleet(Defaults):
     def move(self):
         if self.is_stationary:
             return
-        print('\n * Fleet Move Is Called', end=' $ ')
         # Determine speed
         speed = self.order.speed
         hyperdenial = self.hyperdenial_effect
@@ -284,10 +283,7 @@ class Fleet(Defaults):
                 stop_at = self.location.move(self.move_to, distance)
         # Move the fleet
         if stop_at:
-            print('Fleet:', self.ID, 'Moved', end=' : ')
-            print('origonal position:', self.location.xyz, end=' -> ')
             self.update_location(stop_at)
-            print('new location', self.location.xyz)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
             # Blackhole message
@@ -398,21 +394,18 @@ class Fleet(Defaults):
             return
         (other_cargo, other_max) = self._other_cargo()
         if not other_cargo:
-            print('fleet no other cargo')
             return
         short_name = {'titanium': 'load_ti', 'lithium': 'load_li', 'silicon': 'load_si', 'people': 'load_pop'}
         # Shift cargo to meet order
         for ctype in CARGO_TYPES:
             # TODO check loading people on non-owned planet
             need = self.order[short_name[ctype]] * self.stats.cargo_max / 100.0 - self.cargo[ctype]
-            print(ctype, 'need:', need)
             if need > 0:
                 avail = min(need, self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
                 other_cargo[ctype] -= avail
                 self.cargo[ctype] += avail
             elif need < 0:
                 avail = min(need * -1, other_max - other_cargo.sum())
-                print(ctype, 'avail:', avail)
                 other_cargo[ctype] += avail
                 self.cargo[ctype] -= avail
         """ # Load dunnage
@@ -504,14 +497,11 @@ class Fleet(Defaults):
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
         if self.location.reference ^ 'Fleet':
-            print('is fleet')
             if self.location.reference.player == self.player:
                 return (self.location.reference.cargo, self.location.reference.stats.cargo_max)
         elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
-            print('is planet')
             if self.location.reference.player == self.player:
                 return (self.location.reference.on_surface, sys.maxsize)
-        print('This is a problem:', self.location.__dict__, self.location.reference.__reference__)
         return (None, 0)
 
     """ Calculates fuel usage for fleet """

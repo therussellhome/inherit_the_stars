@@ -58,7 +58,7 @@ class StarSystem(Defaults):
             planet_args['distance'] = round(segment * i + randint(5, round(segment)))
             planet_args['gravity'] = 'generate'
             planet_args['temperature'] = 'generate'
-            if i != home - 1:
+            if i + 1 != home:
                 self.planets.append(Planet(**planet_args))
             else:
                 planet_args['gravity'] = int((race.hab_gravity_stop + race.hab_gravity) / 2)
