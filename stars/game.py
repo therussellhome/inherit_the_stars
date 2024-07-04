@@ -155,7 +155,7 @@ class Game(Defaults):
             'ships_escort': [0],
             'ships_of_the_wall': [0],
             'facilities': [0],
-            'starbases': [0],
+            'starbases': [0]
         }
         data = []
         scores = {}
@@ -233,7 +233,7 @@ class Game(Defaults):
         for player in self.players:
             for msg in player.outbox:
                 msg.sender = Reference(player)
-                (~msg.receiver).add_message(msg)
+                msg.receiver.add_message(msg)
             player.outbox = []
 
     """ Generate hundreth """

@@ -94,7 +94,6 @@ _player_fields = [
     'finance_mattrans_use_surplus',
     'finance_research_percent',
     'finance_research_use_surplus',
-    'finance_baryogenesis_default',
     'colonize_min_hab',
     'colonize_min_ti',
     'colonize_min_li',
@@ -143,9 +142,6 @@ class Player(Defaults):
             for ship in fleet.ships:
                 if Reference(ship) not in self.get_intel(None, 'Ship'):
                     self.add_intel(ship, ship.scan_report())
-
-    def __str__(self):
-        return str(self.ID)
 
     """ Player filename """
     def filename(self):

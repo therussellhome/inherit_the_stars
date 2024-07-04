@@ -241,7 +241,6 @@ class Fleet(Defaults):
     def move(self):
         if self.is_stationary:
             return
-        print('\n * Fleet Move Is Called', end=' $ ')
         # Determine speed
         speed = self.order.speed
         hyperdenial = self.hyperdenial_effect
@@ -284,10 +283,7 @@ class Fleet(Defaults):
                 stop_at = self.location.move(self.move_to, distance)
         # Move the fleet
         if stop_at:
-            print('Fleet:', self.ID, 'Moved', end=' : ')
-            print('origonal position:', self.location.xyz, end=' -> ')
             self.update_location(stop_at)
-            print('new location', self.location.xyz)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
             # Blackhole message
@@ -399,7 +395,7 @@ class Fleet(Defaults):
         (other_cargo, other_max) = self._other_cargo()
         if not other_cargo:
             return
-        short_name = {'titanium': 'load_ti', 'lithium': 'load_li', 'silicon': 'load_si', 'people': 'load_pop'}
+        short_name = {'titanium': 'ti', 'lithium': 'li', 'silicon': 'si', 'people': 'pop'}
         # Shift cargo to meet order
         for ctype in CARGO_TYPES:
             # TODO check loading people on non-owned planet
@@ -412,12 +408,12 @@ class Fleet(Defaults):
                 avail = min(need * -1, other_max - other_cargo.sum())
                 other_cargo[ctype] += avail
                 self.cargo[ctype] -= avail
-        """ # Load dunnage
+        # Load dunnage
         for ctype in CARGO_TYPES:
             if self.order[short_name[ctype] + '_dunnage']:
                 avail = min(self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
                 other_cargo[ctype] -= avail
-                self.cargo[ctype] += avail """
+                self.cargo[ctype] += avail
         # cargo is intentionally not redistributed yet
 
     """ Transfers ownership of the fleet to the specified player """
