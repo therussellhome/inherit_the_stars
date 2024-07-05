@@ -31,7 +31,7 @@ class Planets(PlayerUI):
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
-        if True or not hasattr(self.player, 'planet_report') or len(self.player.planet_report) == 0:
+        if not hasattr(self.player, 'planet_report') or len(self.player.planet_report) == 0:
             planets = []
             for (reference, intel) in self.player.get_intel(by_type='Planet').items():
                 planets.append(self.process_intel(reference, intel))
