@@ -703,6 +703,7 @@ class FleetCase(unittest.TestCase):
         f.order.ti = 10
         f.order.li = 0
         f.order.si = 0
+        f.order.si_dunnage = True
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 0)
         self.assertEqual(f2.cargo.sum(), 6)
@@ -715,6 +716,7 @@ class FleetCase(unittest.TestCase):
         f.order.ti = 10
         f.order.li = 0
         f.order.si = 0
+        f.order.si_dunnage = True
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 0)
         self.assertEqual(f2.cargo.sum(), 6)
@@ -724,9 +726,10 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         f2 = fleet.Fleet(player=p1) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=f2)
-        f.order.ti = 20
+        f.order.ti = 10
         f.order.li = 0
         f.order.si = 10
+        f.order.si_dunnage = True
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(f2.cargo.sum(), 3)
@@ -736,9 +739,10 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet(player=p1) + ship.Ship(cargo_max=10)
         p = planet.Planet(player=p1, on_surface=cargo.Cargo(titanium=2, lithium=2, silicon=2))
         f.location = location.Location(reference=p)
-        f.order.ti = 20
+        f.order.ti = 10
         f.order.li = 0
         f.order.si = 10
+        f.order.si_dunnage = True
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(p.on_surface.sum(), 3)
