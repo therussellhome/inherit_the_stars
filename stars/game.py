@@ -113,10 +113,9 @@ class Game(Defaults):
                 for p in self.players:
                     p.add_intel(b, {'location': b.location, 'size': b.radius})
             self._scan([])
+            self._call(self.players, 'update_stats')
             if self.hundreth == 0:
-                self.calculate_score()
-            else:
-                self._call(self.players, 'update_stats')
+                self._calculate_score()
                 
     """ Save host and players to file """
     def save(self):
@@ -133,7 +132,7 @@ class Game(Defaults):
                 p.update_from_file()
 
     """ Handle public player scores """
-    def calculate_score(self):
+    def _calculate_score(self):
         score_balance = {
             'energy': 0.001,
             'minerals': 0.001,
@@ -161,7 +160,7 @@ class Game(Defaults):
         scores = {}
         placing = {}
         rank = {}
-        self._call(self.players, 'update_stats')
+        self._call(self.players, 'get_stats')
         for player in self.players:
             data.append(player.get_intel(reference=player))
             print(game_engine.to_json(data))
@@ -197,7 +196,7 @@ class Game(Defaults):
             for p1 in self.players:
                 for i in range(len(self.players)):
                     if p1.ID != self.players[i].ID:
-                        report = self.players[i].update_stats(True)
+                        report = self.players[i].get_stats()
                         report['score'] = scores[i]
                         report['score_rank'] = rank[i]
                         p1.add_intel(self.players[i], report)
@@ -312,8 +311,8 @@ class Game(Defaults):
         self.hundreth += 1
         if self.hundreth % 100 == 0:
             self._scan(fleets)
-            self.calculate_score()
-            #self._call(self.players, 'update_stats')
+            self._call(self.players, 'update_stats')
+            self._calculate_score()
             self._check_for_winner()
 
     """ Call a method on a list of classes """

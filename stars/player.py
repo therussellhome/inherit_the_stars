@@ -202,8 +202,8 @@ class Player(Defaults):
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
-    """ Update stats """
-    def update_stats(self, get=False):
+    """ Get stats """
+    def get_stats(self):
         minerals = 0
         facilities = 0
         unarmed = 0
@@ -236,8 +236,11 @@ class Player(Defaults):
             'facilities': facilities,
             'color': self.race.icon_color,
         }
-        if get:
-            return report
+        return report
+
+    """ Update stats """
+    def update_stats(self):
+        self.get_status()
         self.add_intel(self, report)
 
     """ Add ships to the player and put them in a new fleet """
