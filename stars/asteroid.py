@@ -3,7 +3,7 @@ from .location import Location
 from .reference import Reference
 from .minerals import Minerals, MINERAL_TYPES
 import sys
-import math
+from math import floor, pi
 
 
 """ Default values (default, min, max)  """
@@ -33,7 +33,7 @@ class Asteroid(Defaults):
         if mass == 0:
             return 0
         v = (2 * self.ke / mass) ** 0.5
-        hyper = math.floor(v ** 0.5)
+        hyper = floor(v ** 0.5)
         return hyper
 
     def move(self):
@@ -49,10 +49,23 @@ class Asteroid(Defaults):
     def impact(self):
         if not self.location == self.target:
             return
-        if self.location.reference ^ 'Planet':
+        if self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
             planet = self.location.reference
             planet.catch_packet(self)
-        pass
+
+    def decay(self):
+        if self.player
+            if player.race.primay_race_trait == 'TANSTAAFL':
+                self.ke *= (1 - (self.decay_factor * (2/3)))
+            else:
+                self.ke *= (1 - self.decay_factor)
+
+    def scan_penetrating(self):
+        if self.player and player.race.primay_race_trait == 'TANSTAAFL':
+            radius = (3.0 / 4.0 / pi * (self.player.tech_level.electronics + 1.0) / 3.0) ** (1.0 / 3.0)
+            if self.player.race.lrt_2ndSight:
+                radius *= 2.5
+            scan.penetrating(self.player, self.location, radius)
     
 
 Asteroid.set_defaults(Asteroid, __defaults)
