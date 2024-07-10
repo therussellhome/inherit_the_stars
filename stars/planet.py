@@ -236,15 +236,15 @@ class Planet(Defaults):
             self.on_surface += packet.minerals * defence_factor 
             packet.minerals *= (1 - defence_factor)
             if defence_factor < 1:
-                kt_damage_shields = packet.ke * (1 - defence_factor) / round(packet.minerals.sum())
-                kt_damage_pop = 50 * packet.ke * (1 - defence_factor) / round(packet.minerals.sum())
+                kt_damage_shields = packet.ke * (1 - defence_factor) / round(packet.mass)
+                kt_damage_pop = 50 * packet.ke * (1 - defence_factor) / round(packet.mass)
                 defence = 75.0 - 500.0 / (self.shields / self.on_surface.people + (500.0 / 75.0))
                 cnt = 0
-                for kt in range(round(packet.minerals.sum())):
+                for kt in range(round(packet.mass)):
                     if defence < randint(0, 100):
                         cnt += 1
-                self.on_surface += packet.minerals * 0.1 * (cnt / round(packet.minerals.sum()))
-                self.remaining_minerals += packet.minerals * 0.9 * (cnt / round(packet.minerals.sum()))
+                self.on_surface += packet.minerals * 0.1 * (cnt / round(packet.mass))
+                self.remaining_minerals += packet.minerals * 0.9 * (cnt / round(packet.mass))
                 self.impact_shields += cnt * kt_damage_shields
                 self.impact_people += cnt * kt_damage_pop
             self.bomb_impact()

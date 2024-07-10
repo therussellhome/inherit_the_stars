@@ -25,14 +25,18 @@ class Asteroid(Defaults):
         for name in kwargs:
             if name in MINERAL_TYPES:
                 self.minerals[name] += kwargs[name]
-        if self.minerals.sum() == 0:
+        if self.mass == 0:
             pass #TODO delete
 
+    def __getattribute__(self, name):
+        if name == 'mass':
+            return self.minerals.sum()
+        return super().__getattribute__(name)
+
     def get_speed(self):
-        mass = self.minerals.sum()
-        if mass == 0:
+        if self.mass == 0:
             return 0
-        v = (2 * self.ke / mass) ** 0.5
+        v = (2 * self.ke / self.mass) ** 0.5
         hyper = floor(v ** 0.5)
         return hyper
 
@@ -76,7 +80,7 @@ Asteroid.set_defaults(Asteroid, __defaults)
 #minerals is class
 #location is class
 #mass
-#speed is hyper
+#ke is kenetic energy.
 #target is location
 #player (only if TANSTAAFL) is reference
 #decay rate
