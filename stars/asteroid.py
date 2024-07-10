@@ -76,15 +76,6 @@ Asteroid.set_defaults(Asteroid, __defaults)
 #ke -= ke * decay_factor
 
 
-#what does it need to have?
-#minerals is class
-#location is class
-#mass
-#ke is kenetic energy.
-#target is location
-#player (only if TANSTAAFL) is reference
-#decay rate
-
 #from what does it inherit
 #buildable
 #not minerals (it has minerals)
