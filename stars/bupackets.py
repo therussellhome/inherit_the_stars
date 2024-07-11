@@ -24,7 +24,7 @@ class BuPackets(Defaults):
     """ Initialize the cost """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if 'ship' not in kwargs and self.planet and self.planet.player: 
+        if 'asteroid' not in kwargs and self.planet and self.planet.player: 
             # Force the creation of a fleet for the player to interact with
             self.planet.player.add_ships(self)
         if 'cost' not in kwargs and self.ship_design:
@@ -38,7 +38,7 @@ class BuPackets(Defaults):
         if queue:
             self.queue_cache = queue
         if not self.queue_cache:
-            self.queue_cache = BuildShip(planet=self.planet, baryogenesis=self.baryogenesis, buships=Reference(self), ship=self.ship)
+            self.queue_cache = BuildPackets(planet=self.planet, baryogenesis=self.baryogenesis, buships=Reference(self), ship=self.ship)
         return self.queue_cache
 
 BuShips.set_defaults(BuShips, __defaults, __tmp_defaults)
