@@ -172,10 +172,16 @@ function onKeyPress(event) {
     // display ship orders
     else if(event.key == "o") {
         for(var i = 0; i < details[selected_id.toString()].length; i++) {
-            if(details[selected_id.toString()][i].type === 'Ship') {
-                show_screen('orders')
+            item = details[selected_id.toString()][i]
+            if(item.type === 'Ship' && item.team === 'me') {
+                show_screen('orders');
+                post('orders', '?ship;' + item.ID);
             }
         }
+    }
+    // add waypoint
+    else if(event.key == "W") {
+        assign_waypoint(capture_selected)
     }
     // reset
     else if(event.key == "r") {
@@ -282,6 +288,7 @@ function select_object(obj, index=true, flyto=true, is_out_system=true) {
         camera_flyto.set(selected_position.x, selected_position.y, selected_position.z + z_offset);
         camera.up = new THREE.Vector3(0, 1, 0);
     }
+    capture_selected = obj.name
 }
 
 // Gets all the objects in a system or at a point
@@ -335,9 +342,11 @@ function get_system(intersected, index) {
             alphaTest: 0.9,
             size: ((system_data[i].size + 200) * TERAMETER / size_mod)
         } );
-        var point = new THREE.Points( geometry, material );
-        point.name = system_data[i].type + '/' + system_data[i].ID;
-        inner_system.add(point);
+        if (system_data[i].type !== 'StarSystem') {
+            var point = new THREE.Points( geometry, material );
+            point.name = system_data[i].type + '/' + system_data[i].ID;
+            inner_system.add(point);
+        }
     }
     scene.remove(in_system);
     in_system = inner_system;

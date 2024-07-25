@@ -87,7 +87,7 @@ class Fleets(PlayerUI):
                             + '<td>' + str(order.location.y) + '</td>'
                             + '<td>' + str(order.location.z) + '</td>')
                 self.fleet_orders.append('<tr>'
-                    + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'
+                    + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\'); show_order_sidebar()"></td>'
                     + shown + '<td><i class="button far fa-trash-alt" title="Delete Order" onclick="post(\'fleets\', \'?select_' + str(self.fleet_index) + ';delete_order=' + str(I) + '\')"></i></td>'
                     + '</tr>')
         

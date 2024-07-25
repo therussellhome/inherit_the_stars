@@ -1276,3 +1276,8 @@ function engine_chart(chart, data, element_id=null) {
         }
     }
 }
+
+function assign_waypoint(place) {
+    post('orders', '?waypoint;' + place);
+    show_screen('orders');
+}
