@@ -267,4 +267,20 @@ class RaceTestCase(unittest.TestCase):
         r = race.Race(starting_lithium = 250)
         self.assertEqual(r._calc_points_start(), -610)
     
+    def test_calc_percent_hab00(self):
+        r = race.Race()
+        self.assertAlmostEqual(r.percent_planets_habitable(), 45.68850963)
+
+    def test_calc_percent_hab01(self):
+        r = race.Race(hab_gravity=0, hab_gravity_stop=100, hab_temperature=0, hab_temperature_stop=100, hab_radiation=0, hab_radiation_stop=100)
+        self.assertAlmostEqual(r.percent_planets_habitable(), 97.88788622)
+
+    def test_calc_percent_hab02(self):
+        r = race.Race(hab_temperature_immune=True, hab_gravity_immune=True, hab_radiation_immune=True)
+        self.assertEqual(r.percent_planets_habitable(), 100.0)
+
+    def test_calc_percent_hab03(self):
+        r = race.Race(hab_gravity=0, hab_gravity_stop=100, hab_temperature_immune=True, hab_radiation=0, hab_radiation_stop=100)
+        self.assertAlmostEqual(r.percent_planets_habitable(), 100.0)
+
 
