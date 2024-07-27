@@ -35,7 +35,10 @@ class Messages(PlayerUI):
                 if m.sender ^ 'Player':
                     msg['link'] = 'show_screen(\'foreign_minister\')'
                     msg['text'] = m.message
-                    #TODO
+                    msg['icon'] = m.parameters[0]['icon']
+                    msg['sender'] = m.parameters[0]['name']
+                    if m.action != '':
+                        msg['action'] = m.action.split(':')[0] + '=' + str(i) + m.action.split(':')[1]
                 else:
                     msg['icon'] = m.sender.get_icon()
                     msg['sender'] = m.sender.get_name()
@@ -75,8 +78,9 @@ class Messages(PlayerUI):
                 self.messages_index = len(msgs) - 1
         self.messages_index = min(max(self.messages_index, 0), len(msgs) - 1)
         # Update read
-        self.player.messages[self.messages_index].read = True
-        msgs[self.messages_index]['read'] = True
+        if len(msgs) > 0:
+            self.player.messages[self.messages_index].read = True
+            msgs[self.messages_index]['read'] = True
         
         # Sets up the inbox
         newest_unread = len(msgs) - 1
@@ -90,16 +94,17 @@ class Messages(PlayerUI):
             self.messages_inbox.append('<td style="' + current + '">' + m['icon'] + '</td><td style="' + current + unbold + '" onclick="post(\'messages\', \'?id=' + str(m['index']) + '\')">' + m['short'] + '</td><td style="' + current + unbold + '">' + m['date'] + '</td>')
 
         # Sets the message text, number, sender, date and whether to keep it
-        m = msgs[self.messages_index]
-        self.messages_text = m['text']
-        self.messages_number = str(len(msgs) - self.messages_index) + ' of ' + str(len(msgs))
-        self.messages_sender = '<div onclick="' + m['link'] + '">' + m['icon'] + ' ' + m['sender'] + '</div>'
-        self.messages_date = m['date']
-        self.messages_action = m['action']
-        if self.player.messages[self.messages_index].star:
-            self.messages_star = '<i class="fas fa-star"></i>'
-        else:
-            self.messages_star = '<i class="far fa-star"></i>'
+        if len(msgs) > 0:
+            m = msgs[self.messages_index]
+            self.messages_text = m['text']
+            self.messages_number = str(len(msgs) - self.messages_index) + ' of ' + str(len(msgs))
+            self.messages_sender = '<div onclick="' + m['link'] + '">' + m['icon'] + ' ' + m['sender'] + '</div>'
+            self.messages_date = m['date']
+            self.messages_action = m['action']
+            if self.player.messages[self.messages_index].star:
+                self.messages_star = '<i class="fas fa-star"></i>'
+            else:
+                self.messages_star = '<i class="far fa-star"></i>'
 
 
 Messages.set_defaults(Messages, __defaults, sparse_json=False)

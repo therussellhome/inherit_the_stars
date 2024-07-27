@@ -91,7 +91,6 @@ class Fleet(Defaults):
             if ship ^ 'Ship' and ship not in self.ships:
                 self.ships.append(ship)
             if ship ^ 'BuShips' and ship not in self.under_construction:
-                #TODO BuShips vs BuildShips??
                 self.under_construction.append(ship)
         self.stats = None
         self.cargo = None

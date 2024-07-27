@@ -5,7 +5,8 @@ from .reference import Reference
 """ Default values (default, min, max)  """
 __defaults = {
     'date': '',
-    'sender': Reference(),
+    'sender': Reference('Player/'),
+    'receiver': Reference('Player/'),
     'message': '',
     'parameters': [],
     'action': '',
