@@ -318,6 +318,15 @@ class PlayerTestCase(unittest.TestCase):
         o = player.Player()
         self.assertEqual(p.get_relation(o), 'neutral')
 
+    def test_get_relation03(self):
+        p = player.Player()
+        self.assertEqual(p.get_relation(reference.Reference(p)), 'me')
+
+    def test_get_relation04(self):
+        p = player.Player()
+        o = player.Player()
+        self.assertEqual(p.get_relation(reference.Reference(o)), 'neutral')
+
     def test_max_terraform01(self):
         p = player.Player()
         p.tech_level.biotechnology = 0

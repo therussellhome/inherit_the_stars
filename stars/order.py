@@ -23,14 +23,19 @@ __defaults = {
     'standoff': standoff_options[0],
     'depart': (0.0, 0.0, 10.0), # depart after x years, 10.0=never
     'repair_to': (0, 0, sys.maxsize), # TODO Do we even want this option?
-    'load_si': (0, -100, 100), # unload / load %
-    'load_ti': (0, -100, 100), # unload / load %
-    'load_li': (0, -100, 100), # unload / load %
-    'load_pop': (0, -100, 100), # unload / load %
-    'buy_si': (0, -100, 100), # buy / sell %
-    'buy_ti': (0, -100, 100), # buy / sell %
-    'buy_li': (0, -100, 100), # buy / sell %
-    'buy_fuel': (0, -100, 100), # buy / sell %
+    'ti': (0, 0, 100), # unload / load %
+    'ti_dunnage': False, # load dunnage
+    'ti_trade': False, # buy / sell
+    'li': (0, 0, 100), # unload / load %
+    'li_dunnage': False, # load dunnage
+    'li_trade': False, # buy / sell
+    'si': (0, 0, 100), # unload / load %
+    'si_dunnage': False, # load dunnage
+    'si_trade': False, # buy / sell
+    'pop': (0, 0, 100), # unload / load %
+    'pop_dunnage': False, # load dunnage
+    'fuel': (0, 0, 100), # buy / sell %
+    'fuel_trade': False, # buy / sell
     'transfer_to': Reference('Player'),
     'hyperdenial': True,
     'lay_mines': True,
@@ -48,13 +53,17 @@ class Order(Defaults):
         game_engine.register(self)
 
     """ Calculate where to move to """
-    def move_calc(self, fleet_location):
-        # Intentionally stopped
-        if self.speed == 0:
+    def move_calc(self, fleet_location, in_system_only=False):
+        # In-system moves allowed
+        if fleet_location.root_location == self.location.root_location:
+            return self.location
+        # Intentionally stopped or not allowed to move outside of system
+        if self.speed == 0 or in_system_only:
             return fleet_location
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
         if self.standoff == 'No Standoff':
+            print('Order sent a location')
             return self.location
         return fleet_location.move(self.location, standoff=self._standoff(fleet_location))
 

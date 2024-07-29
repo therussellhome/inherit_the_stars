@@ -134,14 +134,20 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship() + ship.Ship()
         p = planet.Planet(location=location.Location(5, 5, 5))
         f.update_location(location.Location(reference=p))
-        self.assertAlmostEqual(f.location.xyz[0], 5)
-        self.assertAlmostEqual(f.location.xyz[1], 5)
-        self.assertAlmostEqual(f.location.xyz[2], 5)
+        self.assertEqual(f.location.root_location.xyz, (5, 5, 5))
+        self.assertEqual(f.location.offset, fleet.FLEET_OFFSET)
+
+    def test_location3(self):
+        f = fleet.Fleet() + ship.Ship() + ship.Ship()
+        p = sun.Sun(location=location.Location(5, 5, 5))
+        f.update_location(location.Location(reference=p))
+        self.assertEqual(f.location.root_location.xyz, (5, 5, 5))
+        self.assertEqual(f.location.offset, 3 * fleet.FLEET_OFFSET)
 
     def test_read_orders1(self):
-        f = fleet.Fleet() + build_ship.BuildShip()
+        f = fleet.Fleet() + build_ship.BuildShip().buships
         f.read_orders()
-        self.assertEqual(f.move_to, f.location)
+        self.assertEqual(f.move_to, None)
 
     def test_read_orders2(self):
         f = fleet.Fleet() + ship.Ship()
@@ -152,13 +158,16 @@ class FleetCase(unittest.TestCase):
         f = fleet.Fleet() + ship.Ship(engines=[engine.Engine()])
         with patch.object(ship.Ship, 'is_space_station', return_value=True) as mock:
             f.read_orders()
-        self.assertEqual(f.move_to, None)
+        self.assertEqual(f.move_to, location.Location())
 
     def test_read_orders4(self):
         f = fleet.Fleet() + ship.Ship(engines=[engine.Engine()])
+        f.orders=[order.Order()]
         f.location = location.Location(1, 0, 0)
         with patch.object(order.Order, 'move_calc', return_value=location.Location()):
             f.read_orders()
+        print(game_engine.to_json(f.move_to))
+        print(game_engine.to_json(f))
         self.assertEqual(f.move_to, location.Location())
 
     def test_read_orders5(self):
@@ -415,7 +424,7 @@ class FleetCase(unittest.TestCase):
         f.location = location.Location(1, 0, 0, reference=system)
         f.move_to = location.Location(-1, 0, 0, reference=system)
         f.move_in_system()
-        self.assertEqual(f.location.xyz, (-1, 0, 0))
+        self.assertEqual(f.location.xyz, (0, 0, 0))
 
     def test_orbital_extraction1(self):
         f = fleet.Fleet() + ship.Ship(cargo_max=100)
@@ -656,19 +665,19 @@ class FleetCase(unittest.TestCase):
 
     def test_unload4(self):
         p_ref = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
-        f2 = fleet.Fleet(player=p_ref) + ship.Ship(cargo_max=10)
-        f.location = location.Location(reference=f2)
+        f2 = fleet.Fleet(ID='f2', player=p_ref, location=location.Location(0, 0, 1)) + ship.Ship(cargo=cargo.Cargo(), cargo_max=10)
+        f = fleet.Fleet(ID='f', player=p_ref, location=location.Location(0, 0, 1), order=order.Order(location=location.Location(reference=f2))) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
         f.order.ti = 10
         f.order.li = 100
         f.order.si = 0
+        f.read_orders()
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
         self.assertEqual(f2.cargo.sum(), 3)
 
     def test_unload5(self):
         p_ref = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
+        f = fleet.Fleet(ID='f', player=p_ref) + ship.Ship(cargo=cargo.Cargo(titanium=2, lithium=2, silicon=2), cargo_max=10)
         p = planet.Planet(player=p_ref)
         f.location = location.Location(reference=p)
         f.order.ti = 10
@@ -719,7 +728,7 @@ class FleetCase(unittest.TestCase):
         f.location = location.Location(reference=f2)
         f.order.ti = 10
         f.order.li = 0
-        f.order.si = 0
+        f.order.si = 10
         f.order.si_dunnage = True
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
@@ -732,7 +741,7 @@ class FleetCase(unittest.TestCase):
         f.location = location.Location(reference=p)
         f.order.ti = 10
         f.order.li = 0
-        f.order.si = 0
+        f.order.si = 10
         f.order.si_dunnage = True
         f.load_unload()
         self.assertEqual(f.cargo.sum(), 3)
@@ -771,7 +780,9 @@ class FleetCase(unittest.TestCase):
     def test_transfer4(self):
         p1 = reference.Reference(player.Player())
         p2 = reference.Reference(player.Player())
-        f = fleet.Fleet(player=p1) + build_ship.BuildShip()
+        b = build_ship.BuildShip()
+        f = fleet.Fleet(player=p1)
+        p1.add_ships(b.buships, f)
         f.order.transfer_to = p2
         f.transfer()
         self.assertEqual(f.player, p1)

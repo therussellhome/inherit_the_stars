@@ -32,6 +32,8 @@ __defaults = {
     'computer_player': False,
     'intel': {}, # map of intel objects indexed by object reference
     'messages': [], # list of messages from oldest to newest
+    'draft_box': [],
+    'outbox': [],
     'planets': [], # list of colonized planets only updated during save
     'ministers': [],
     'planetary_minister_map': {}, # map of planet references to minister references
@@ -62,6 +64,9 @@ __defaults = {
 """ Temporary values (default, min, max)  """
 __tmp_defaults = {
     'msg_cache': [],
+    'draft_box_cache': [],
+    'current_draft': Message(),
+    'outbox_cache': [],
     'planet_report': [],
     'design_cache': [],
     'budget_construction': 0,
@@ -78,6 +83,8 @@ _player_fields = [
     'research_field',
     'fleets',
     'messages',
+    'draft_box',
+    'outbox',
     'ministers',
     'ship_designs',
     'treaties',
@@ -135,9 +142,6 @@ class Player(Defaults):
             for ship in fleet.ships:
                 if Reference(ship) not in self.get_intel(None, 'Ship'):
                     self.add_intel(ship, ship.scan_report())
-
-    def __str__(self):
-        return str(self.ID)
 
     """ Player filename """
     def filename(self):
@@ -198,8 +202,8 @@ class Player(Defaults):
     def next_hundreth(self):
         self.date = '{:01.2f}'.format(float(self.date) + 0.01)
 
-    """ Update stats """
-    def update_stats(self, get=False):
+    """ Get stats """
+    def get_stats(self):
         minerals = 0
         facilities = 0
         unarmed = 0
@@ -232,21 +236,21 @@ class Player(Defaults):
             'facilities': facilities,
             'color': self.race.icon_color,
         }
-        if get:
-            return report
-        self.add_intel(self, report)
+        return report
+
+    """ Update stats """
+    def update_stats(self):
+        self.add_intel(self, self.get_stats())
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
         if not isinstance(ships, list):
             ships = [ships]
         if not fleet:
-            if isinstance(ships[0], BuShips):
+            if isinstance(ships[0], BuShips) or (isinstance(ships[0], Reference) and ships[0] ^ 'BuShips'):
                 location = ships[0].ship.location
-                ID = ships[0].ship.ID
             else:
                 location = ships[0].location
-                ID = ships[0].ID
             fleet = Fleet(player=Reference(self), order=Order(location=location))
             self.fleets.append(fleet)
         for s in ships:
@@ -310,9 +314,26 @@ class Player(Defaults):
             return intel.name
         return obj.ID
 
+    """ Write a message """
+    def new_draft(self, **kwargs):
+        self.current_draft = Message(**kwargs)
+
+    """ Save a message """
+    def save_draft(self, draft):
+        self.draft_box.append(draft)
+
+    """ Send a message """
+    def send_message(self, draft_index):
+        if len(self.draft_box) -1 >= draft_index and draft_index >= 0:
+            self.outbox.append(self.draft_box.pop(draft_index))
+            self.outbox[-1].date = self.date
+
     """ Add a message """
-    def add_message(self, **kwargs):
-        self.messages.append(Message(**kwargs, date=self.date))
+    def add_message(self, *args, **kwargs):
+        if len(args) == 1:
+            self.messages.append(args[0])
+        else:
+            self.messages.append(Message(**kwargs, date=self.date))
 
     """ Cleanup messages """
     def cleanup_messages(self):

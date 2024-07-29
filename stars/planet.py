@@ -65,7 +65,7 @@ class Planet(Defaults):
             if 'star_system' in kwargs:
                 sun = self.star_system.sun()
                 if sun is not None:
-                    self.temperature = round(self.distance * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
+                    self.temperature = round((100 - self.distance) * 0.35 + sun.temperature * 0.65 + randint(-15, 15))
         if 'radiation' in kwargs and kwargs['radiation'] == 'generate':
             self.radiation = randint(0, 100)
             if 'star_system' in kwargs:

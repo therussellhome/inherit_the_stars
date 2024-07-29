@@ -44,11 +44,6 @@ class TechLevel(Defaults):
     """ Calculate cost for an increase in a given field """
     def cost_for_next_level(self, field, race, increase=1):
         cost = 0
-        '''if field == '<LOWEST>':
-            field = TECH_FIELDS[0]
-            for t_field in TECH_FIELDS:
-                if self[t_field] < self[field]:
-                    field = t_field#'''
         for i in range(self[field] + 1, self[field] + 1 + increase):
             cost += race['research_modifier_' + field] * (10 + i ** 3)
         return cost

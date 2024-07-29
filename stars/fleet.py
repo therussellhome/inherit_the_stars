@@ -15,7 +15,8 @@ from .ship import Ship
 
 
 """ Offset of ships from fleet center """
-SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 20000
+FLEET_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 100
+SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 10000
 
 
 """ Default values (default, min, max)  """
@@ -49,6 +50,7 @@ class Fleet(Defaults):
     """ Initialize and register """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.location = self.order.location
         game_engine.register(self)
 
     """ Provide calculated values """
@@ -60,11 +62,6 @@ class Fleet(Defaults):
         # Calculate if not yet calculated
         if name == 'stats':
             self_dict[name] = Ship(from_ships=self.ships)
-        elif name == 'location':
-            if len(self.ships) > 0:
-                self_dict[name] = self.ships[0].location
-            else:
-                self_dict[name] = Location()
         elif name == 'cargo':
             self_dict[name] = Cargo()
             for s in self.ships:
@@ -147,31 +144,28 @@ class Fleet(Defaults):
     """ Update location and apply orbit offset """
     def update_location(self, location):
         # Either offset from ship 0 or orbit the thing being referenced
-        offset = 10
+        offset = 0
         reference = location.reference
-        for ship in self.ships:
-            if ship.is_space_station():
-                reference = ship.location.reference
-                break
         if not reference:
             if len(self.ships) > 0:
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
-            print('Fleet: getting offset')
-            offset_distances = {'Sun': 7000, 'Planet': 700}
-            offset = offset_distances.get(+(location.reference), offset)
-            print('offset:', offset)
+            offset_distances = {'Sun': 3, 'Planet': 1}
+            offset = offset_distances.get(+(reference), offset)
+            location = Location(reference=reference, offset=offset * FLEET_OFFSET)
         # Update all ships
         for s in self.ships:
             if reference == s:
                 s.location = Location(location)
             else:
-                s.location = Location(reference=reference, offset=offset * SHIP_OFFSET)
+                s.location = Location(reference=reference, offset=SHIP_OFFSET)
         self.location = location
+        self.order.location = location
 
     """ Check if the fleet can/ordered to move """
     def read_orders(self):
+        in_system_only = False
         # Fleets with ships under construction cannot move
         if len(self.under_construction) > 0:
             multi_fleet.add(self)
@@ -179,13 +173,17 @@ class Fleet(Defaults):
         # Space stations cannot move, ships with no engines cannot move
         for ship in self.ships:
             if ship.is_space_station():
-                multi_fleet.add(self)
-                return
+                in_system_only = True
             elif len(ship.engines) == 0:
                 multi_fleet.add(self)
                 return
-        self.move_to = self.order.move_calc(self.location)
-        if self.move_to.root_location != self.location.root_location:
+        if len(self.orders) > 0:
+            self.move_to = self.orders[0].move_calc(self.location, in_system_only)
+        else:
+            self.move_to = self.location
+        if self.move_to.root_location == self.location.root_location:
+            multi_fleet.add(self)
+        else:
             self.is_stationary = False
 
     """ Colonize planets per the order """
@@ -243,7 +241,6 @@ class Fleet(Defaults):
     def move(self):
         if self.is_stationary:
             return
-        print('\n * Fleet Move Is Called', end=' $ ')
         # Determine speed
         speed = self.order.speed
         hyperdenial = self.hyperdenial_effect
@@ -286,17 +283,14 @@ class Fleet(Defaults):
                 stop_at = self.location.move(self.move_to, distance)
         # Move the fleet
         if stop_at:
-            print('Fleet:', self.ID, 'Moved', end=' : ')
-            print('origonal position:', self.location.xyz, end=' -> ')
             self.update_location(stop_at)
-            print('new location', self.location.xyz)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
             # Blackhole message
             if hyperdenial[1] > 0.0:
                 pass #TODO blackhole message
         if distance <= 0.0:
-            self.is_stationary - True
+            self.is_stationary = True
         else:
             # Use fuel
             self.fuel -= self._fuel_calc(speed, distance, hyperdenial)
@@ -401,7 +395,7 @@ class Fleet(Defaults):
         (other_cargo, other_max) = self._other_cargo()
         if not other_cargo:
             return
-        short_name = {'titanium': 'load_ti', 'lithium': 'load_li', 'silicon': 'load_si', 'people': 'load_pop'}
+        short_name = {'titanium': 'ti', 'lithium': 'li', 'silicon': 'si', 'people': 'pop'}
         # Shift cargo to meet order
         for ctype in CARGO_TYPES:
             # TODO check loading people on non-owned planet
@@ -414,12 +408,12 @@ class Fleet(Defaults):
                 avail = min(need * -1, other_max - other_cargo.sum())
                 other_cargo[ctype] += avail
                 self.cargo[ctype] -= avail
-        """ # Load dunnage
+        # Load dunnage
         for ctype in CARGO_TYPES:
             if self.order[short_name[ctype] + '_dunnage']:
                 avail = min(self.stats.cargo_max - self.cargo.sum(), other_cargo[ctype])
                 other_cargo[ctype] -= avail
-                self.cargo[ctype] += avail """
+                self.cargo[ctype] += avail
         # cargo is intentionally not redistributed yet
 
     """ Transfers ownership of the fleet to the specified player """
