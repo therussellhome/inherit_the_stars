@@ -240,7 +240,7 @@ class Player(Defaults):
 
     """ Update stats """
     def update_stats(self):
-        self.add_intel(self, self.get_status())
+        self.add_intel(self, self.get_stats())
 
     """ Add ships to the player and put them in a new fleet """
     def add_ships(self, ships, fleet=None):
