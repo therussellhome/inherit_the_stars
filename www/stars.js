@@ -160,7 +160,6 @@ function show_order_sidebar(show=false) {
     } else {
         current_sidebar = null;
         toggle(document.getElementById('sidebar_order'), 'hide', true);
-        show_screen(null);
     }
 }
 

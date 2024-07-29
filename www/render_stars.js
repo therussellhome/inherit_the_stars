@@ -53,36 +53,38 @@ function onSubmit() {
     if(json_map.hasOwnProperty('render_stars')) {
         if(json_map['render_stars'].hasOwnProperty('systems')) {
             if(json_map['render_stars']['systems'].length > 0) {
-                // load materials
-                details = json_map['render_stars']['details'];
-                // colors
-                var deep_space_color = new THREE.Color(json_map['render_stars']['deep_space_color']);
-                var systems_color = new THREE.Color(json_map['render_stars']['systems_color']);
-                var wormholes_color = new THREE.Color(json_map['render_stars']['wormholes_color']);
-                var asteroids_color = new THREE.Color(json_map['render_stars']['asteroids_color']);
-                homeworld_index = json_map['render_stars']['homeworld'];
-                home_system = json_map['render_stars']['home_system'];
-                home_system_index = 0
-                // Add systems, deep space ships, wormholes, and asteroids
-                system_points = add_top_level(json_map['render_stars'], 'systems', systems_color);
-                deep_space_points = add_top_level(json_map['render_stars'], 'deep_space', deep_space_color);
-                wormhole_points = add_top_level(json_map['render_stars'], 'wormholes', wormholes_color);
-                asteroid_points = add_top_level(json_map['render_stars'], 'asteroids', asteroids_color);
-                // Create an in_system object so there will not be errors
-                var geometry = new THREE.BufferGeometry();
-                var positions = new Float32Array( 0, 0, 0 );
-                positions.name = 'in_system positions';
-                geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-                var material = new THREE.PointsMaterial( {
-                    color: new THREE.Color( 0, 1, 0 ),
-                    size: 1,
-                    sizeAttenuation: false
-                } );
-                in_system = new THREE.Points( geometry, material );
-                in_system.name = 'in_system';
-                top_level.add(in_system);
-                scene.add(top_level);
-                console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
+                if( top_level.children.length < 4 ) {
+                    // load materials
+                    details = json_map['render_stars']['details'];
+                    // colors
+                    var deep_space_color = new THREE.Color(json_map['render_stars']['deep_space_color']);
+                    var systems_color = new THREE.Color(json_map['render_stars']['systems_color']);
+                    var wormholes_color = new THREE.Color(json_map['render_stars']['wormholes_color']);
+                    var asteroids_color = new THREE.Color(json_map['render_stars']['asteroids_color']);
+                    homeworld_index = json_map['render_stars']['homeworld'];
+                    home_system = json_map['render_stars']['home_system'];
+                    home_system_index = 0
+                    // Add systems, deep space ships, wormholes, and asteroids
+                    system_points = add_top_level(json_map['render_stars'], 'systems', systems_color);
+                    deep_space_points = add_top_level(json_map['render_stars'], 'deep_space', deep_space_color);
+                    wormhole_points = add_top_level(json_map['render_stars'], 'wormholes', wormholes_color);
+                    asteroid_points = add_top_level(json_map['render_stars'], 'asteroids', asteroids_color);
+                    // Create an in_system object so there will not be errors
+                    var geometry = new THREE.BufferGeometry();
+                    var positions = new Float32Array( 0, 0, 0 );
+                    positions.name = 'in_system positions';
+                    geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+                    var material = new THREE.PointsMaterial( {
+                        color: new THREE.Color( 0, 1, 0 ),
+                        size: 1,
+                        sizeAttenuation: false
+                    } );
+                    in_system = new THREE.Points( geometry, material );
+                    in_system.name = 'in_system';
+                    top_level.add(in_system);
+                    scene.add(top_level);
+                    console.log('system points:', system_points, '\ndeep_space points:', deep_space_points, '\nwormhole points:', wormhole_points, '\nasteroid points:', asteroid_points);
+                }
                 // Zoom to home world
                 select_object(system_points, home_system_index, true);
                 //console.log('in_system:', in_system);
@@ -124,6 +126,7 @@ function add_top_level(render_stars, name, color) {
     var points = new THREE.Points( geometry, material );
     points.name = name;
     top_level.add(points);
+    console.log('tracking adding', top_level.children.length);
     return points;
 }
 
@@ -172,7 +175,7 @@ function onKeyPress(event) {
     // display ship orders
     else if(event.key == "o") {
         for(var i = 0; i < details[selected_id.toString()].length; i++) {
-            item = details[selected_id.toString()][i]
+            var item = details[selected_id.toString()][i]
             if(item.type === 'Ship' && item.team === 'me') {
                 show_screen('fleets');
                 post('fleets', '?ship=' + item.ID);
@@ -348,11 +351,11 @@ function get_system(intersected, index) {
             inner_system.add(point);
         }
     }
-    scene.remove(in_system);
+    top_level.remove(in_system);
     in_system = inner_system;
     in_system.name = 'in_system';
     console.log(in_system);
-    scene.add(in_system);
+    top_level.add(in_system);
 }
 
 // Zoom to the clicked object

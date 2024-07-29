@@ -119,7 +119,7 @@ void main() {
 <div class="sidebar2 hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
 </table></div>
 
-<div class="sidebar2 hide" id="sidebar_orders"><table id="orders_sidebar" style="height: 100%">
+<div class="sidebar2 hide" id="sidebar_order"><table id="orders_sidebar" style="height: 100%">
 </table></div>
 
 <div class="screen overlay_message hide" id="screen_orders_info" style="white-space">
@@ -702,9 +702,10 @@ void main() {
             <td><input id="orders_fuel_trade" type="checkbox" onchange="post('orders')"/></td>
         </tr><tr class="slider_padding_min"></tr>
     </table>
-    <input disabled="true" id="order_last_screen" style="display: none;" onchange="post('orders')"/>
-    <input disabled="true" id="order_fleet_index" style="display: none;" type="number" min="-1" max="10000" onchange="post('orders')"/>
-    <input disabled="true" id="order_index" style="display: none;" type="number" min="-2" max="10000" onchange="post('orders')"/>
+    <input disabled="true" id="order_last_screen" style="display: none;"/>
+    <input disabled="true" id="order_fleet_index" style="display: none;" type="number" min="-1" max="10000"/>
+    <input disabled="true" id="order_index" style="display: none;" type="number" min="-2" max="10000"/>
+    <input disabled="true" id="orders_set_edit" style="display: none;" type="checkbox"/>
 </div>
 
 

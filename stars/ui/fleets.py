@@ -73,10 +73,8 @@ class Fleets(PlayerUI):
         self.fleet_orders.append('<th><i title="Edit">Edit</i></th>'
             + '<th><i title="Description of order">Description</i></th>'
             + '<th><i title="Speed of fleet">Speed</i></th>'
-            + '<th><i title="X Cordinate">X</i></th>'
-            + '<th><i title="Y Cordinate">Y</i></th>'
-            + '<th><i title="Z Cordinate">Z</i></th>'
-            + '<th><i class="button fas fa-plus-circle" title="create order" onclick="show_screen(\'orders\'), post(\'orders\', \'?create_order;fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></th>')
+            + '<th><i title="Location">Destination</i></th>'
+            + '<th><i class="button fas fa-plus-circle" title="create order" onclick="show_screen(\'orders\'), post(\'orders\', \'?fleet_index=' + str(self.fleet_index) + ';create_order;screen=fleets;start\')"></th>')
         #for i in self.player.fleets:
         if len(self.player.fleets) > 0:
             for I in range(len(self.player.fleets[self.fleet_index].orders)):
@@ -87,12 +85,14 @@ class Fleets(PlayerUI):
                 else:
                     shown += str('<td></td>')
                 labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-                shown += str('<td>' + str(labels[order.speed]) + '</td>'
-                            + '<td>' + str(order.location.x) + '</td>'
-                            + '<td>' + str(order.location.y) + '</td>'
-                            + '<td>' + str(order.location.z) + '</td>')
+                shown += str('<td>' + str(labels[order.speed]) + '</td><td>')
+                if order.location.reference:
+                    shown += order.location.reference.ID
+                else:
+                    shown += str(order.location.xyz)
+                shown += '</td>'
                 self.fleet_orders.append('<tr>'
-                    + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\'); show_order_sidebar()"></td>'
+                    + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'
                     + shown + '<td><i class="button far fa-trash-alt" title="Delete Order" onclick="post(\'fleets\', \'?select_' + str(self.fleet_index) + ';delete_order=' + str(I) + '\')"></i></td>'
                     + '</tr>')
         

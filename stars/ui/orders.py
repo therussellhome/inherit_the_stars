@@ -9,7 +9,7 @@ from ..game import Game#finding Game.x through attribute trees
 
 """ Default values (default, min, max)  """
 __defaults = {
-    'order_last_screen': 'fleets',
+    'order_last_screen': 'null',
     'order_fleet_index': (-1, -1, sys.maxsize),
     'order_index': (-2, -2, sys.maxsize),
     'orders_close': [],
@@ -46,40 +46,30 @@ class Orders(PlayerUI):
             elif action == 'create_order':
                 self.order_index = -1
                 self.orders_set_edit = False
+                fleet = self.get_fleet()
+                fleet.orders.append(Order())
             elif action.startswith('fleet_index='):
                 self.order_fleet_index = int(action.split('=')[1])
                 self.orders_set_edit = False
             elif action.startswith('screen='):
                 self.order_last_screen = action.split('=')[1]
             elif action == 'update':
-                fleet = self.player.fleets[self.order_fleet_index]
-                order = fleet.orders[self.order_index]
+                order = self.get_order()
                 self.update(order)
             elif action.startswith('new'):
                 self.orders_set_edit = True
-                fleet.orders.insert(self.orders_index, Order())
+                fleet = self.get_fleet()
+                fleet.orders.insert(self.order_index, Order())
                 self.orders_index += 1
             elif action.startswith('edit'):
                 self.orders_set_edit = True
             elif action.startswith('waypoint='):
                 if self.orders_set_edit:
+                    order = self.get_order(('load' in actions))
                     order.location.reference = Reference(action.split('=')[1])
                 self.orders_set_edit = False
-        if self.order_fleet_index != -1:
-            fleet = self.player.fleets[self.order_fleet_index]
-        else:
-            fleet = Reference('Fleet/')
-        if 'create_order' in actions:
-            # Create a new order object
-            fleet.orders.append(Order())
-        if self.order_index != -2:
-            order = fleet.orders[self.order_index]
-            if 'load' in actions:
-                self.load(order)
-            else:
-                self.update(order)
-        else:
-            order = Reference('Order/')
+        fleet = self.get_fleet()
+        order = self.get_order(('load' in actions))
         # Display options
         for other_player in self.player.get_intel(by_type='Player'):
             if other_player != self.player:
@@ -97,7 +87,7 @@ class Orders(PlayerUI):
         if self.orders_library != self.options_orders_library[0]:
             pass #TODO
         # Topbar
-        self.orders_get_sidebar.append('<i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar()"></i>')
+        self.orders_get_sidebar.append('<i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar(true); post(\'orders\', \'?\')"></i>')
         self.orders_close.append('<i class="button far fa-times-circle"')
         if self.order_last_screen != '':
             self.orders_close[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="post(\'orders\', \'?update\'), show_screen(\'' + str(self.order_last_screen) + '\')'
@@ -105,18 +95,40 @@ class Orders(PlayerUI):
                 self.orders_close[-1] += ', post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
             self.orders_close[-1] += '">Back</i>'
         else:
-            self.orders_close[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'), show_screen(null)">Close</i>'
+            self.orders_close[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'); show_screen(null)">Close</i>'
         """ Sidebar """
         # Close
         self.orders_sidebar.append('<td><i class="button fas fa-times-circle" title="Close" onclick="show_order_sidebar()"></i></td>')
         # Show Orders screen
         self.orders_sidebar.append('<td><img class="button" title="Orders" src="ships.png" onclick="show_screen(\'orders\')"/></td>')
         # Edit Button
-        self.orders_sidebar.append('<td><i class="button fas fa-edit" title="Edit" onclick="post(\'orders\', \'?edit\')"; show_screen(\'orders_info\')"></i></td>')
+        self.orders_sidebar.append('<td><i class="button fas fa-edit" title="Edit" onclick="post(\'orders\', \'?edit\'); show_screen(\'orders_info\')"></i></td>')
         # Add Waypoint
         self.orders_sidebar.append('<td><i class="button fas fa-plus-circle" title="Add Waypoint" onclick="post(\'orders\', \'?new\'); show_screen(\'orders_info\')"></i></td>')
 
+
+    # load the selected fleet
+    def get_fleet(self):
+        if self.order_fleet_index != -1:
+            fleet = self.player.fleets[self.order_fleet_index]
+        else:
+            fleet = Reference('Fleet/')
+        return fleet
                 
+    # load the selected order from the fleet
+    def get_order(self, load=False):
+        fleet = self.get_fleet()
+        if self.order_index != -2:
+            order = fleet.orders[self.order_index]
+            if load:
+                print('load active')
+                self.load(order)
+            else:
+                self.update(order)
+        else:
+            order = Reference('Order/')
+        return order
+
     # Load values from existing order
     def load(self, order):
         for key in Order.defaults:

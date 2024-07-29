@@ -35,7 +35,7 @@ class RenderStars(PlayerUI):
         for (p, i) in self.player.get_intel(by_type='Planet').items():
             if p.ID == self.player.planets[0].ID:
                 self.home_system = i.system_key
-                self.homeworld = len(self.details[i.system_key])
+                self.homeworld = len(self.details[i.system_key]) -1
             planet = self.set_details('Planet', i.color, i, p.ID)
             self.details[i.system_key].append(planet)
         for (a, i) in self.player.get_intel(by_type='Asteroid').items():
