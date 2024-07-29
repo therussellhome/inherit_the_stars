@@ -1,5 +1,5 @@
 from .playerui import PlayerUI
-from .. import planet
+from ..planet import Planet
 import math
 
 """ Default values (default, min, max)  """
