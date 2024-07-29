@@ -88,7 +88,7 @@ class Planets(PlayerUI):
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
-            tmp = planet.Planet()
+            tmp = Planet()
             tmp.gravity = intel.gravity
             tmp.temperature = intel.temperature
             tmp.radiation = intel.radiation
