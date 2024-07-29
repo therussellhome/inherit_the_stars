@@ -619,7 +619,6 @@ void main() {
     <table class="topbar hfill"><tr>
         <td><img title="Orders" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
-        <td class="hfill" id="orders_get_sidebar"></td>
         <td class="hfill" id="orders_close"></td>
     </tr></table>
     <table class="hfill">
@@ -630,15 +629,12 @@ void main() {
             <td>Speed</td>
             <td class="hfill"><div class="onload" id="orders_speed" onload="speed_slider(this, 'orders')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td colspan="2" class="hfill" id="orders_destination"/></td>
+            <td class="" ><i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar(); post('orders')"></i></td>
+            <td class="hfill" id="orders_destination"/></td>
         </tr><tr>
             <td colspan="2" class="hfill"><select id="orders_standoff" class="hfill" onchange="post('orders')"/></td>
         </tr><tr>
-            <td colspan="2"><table class="hfill"><tr>
-                <td style="text-align: left">X <input style="width: 15ex" id="orders_x" type="number" onchange="post('orders')"/> ly</td>
-                <td style="text-align: center">Y <input style="width: 15ex" id="orders_y" type="number" onchange="post('orders')"/> ly</td>
-                <td style="text-align: right">Z <input style="width: 15ex" id="orders_z" type="number" onchange="post('orders')"/> ly</td>
-            </tr></table></td>
+            <td colspan="2"><table class="hfill" id="orders_xyz"></table></td>
         </tr>
     </table><table class="hfill">
         <caption><div class="fa-angle-double-down"> At Destination</div></caption>
@@ -707,6 +703,7 @@ void main() {
     <input disabled="true" id="order_fleet_index" style="display: none;" type="number" min="-1" max="10000"/>
     <input disabled="true" id="order_index" style="display: none;" type="number" min="-2" max="10000"/>
     <input disabled="true" id="orders_set_edit" style="display: none;" type="checkbox"/>
+    <input disabled="true" id="orders_set_deep_space" style="display: none;" type="checkbox"/>
 </div>
 
 

@@ -239,16 +239,12 @@ function onClick(event) {
     raycaster.near = 0;
     raycaster.far = 10;
     var intersects = raycaster.intersectObject( in_system, true );
+    console.log('in_system:', in_system);
     console.log('number of in-system intersects:', intersects.length);
     if(intersects.length > 0) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
         console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object);
         console.log('type: ', intersects[0].object.name);
-        if(intersects[0].object.name.startsWith('Ship/')) {
-            post('orders', '?fleet_index=' + intersects[0].object.name.substring(5));
-            show_order_sidebar();
-            console.log('intersected ship');
-        }
         select_object(intersects[0].object, intersects[0].index, false, false);
     } else {
         raycaster.params.Points.threshold = TERAMETER / 10;

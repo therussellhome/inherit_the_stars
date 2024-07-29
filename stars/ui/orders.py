@@ -15,8 +15,10 @@ __defaults = {
     'orders_close': [],
     'orders_get_sidebar': [],
     'orders_sidebar': [],
+    'orders_xyz': [],
     'orders_info': '',
     'orders_set_edit': False,
+    'orders_set_deep_space': True,
     'orders_destination': '',
     'options_orders_standoff': standoff_options,
     'orders_x': (0.0, -sys.maxsize, sys.maxsize),
@@ -61,13 +63,22 @@ class Orders(PlayerUI):
                 fleet = self.get_fleet()
                 fleet.orders.insert(self.order_index, Order())
                 self.orders_index += 1
+                self.orders_set_deep_space = False
             elif action.startswith('edit'):
                 self.orders_set_edit = True
+                self.orders_set_deep_space = False
             elif action.startswith('waypoint='):
                 if self.orders_set_edit:
                     order = self.get_order(('load' in actions))
                     order.location.reference = Reference(action.split('=')[1])
+                    print(order.location.xyz, order.location.__dict__)
+                    self.orders_x = order.location.xyz[0]
+                    self.orders_y = order.location.xyz[1]
+                    self.orders_z = order.location.xyz[2]
                 self.orders_set_edit = False
+                self.orders_set_deep_space = False
+            elif action.startswith('set_deep_space'):
+                self.orders_set_deep_space = True
         fleet = self.get_fleet()
         order = self.get_order(('load' in actions))
         # Display options
@@ -87,15 +98,23 @@ class Orders(PlayerUI):
         if self.orders_library != self.options_orders_library[0]:
             pass #TODO
         # Topbar
-        self.orders_get_sidebar.append('<i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar(true); post(\'orders\', \'?\')"></i>')
         self.orders_close.append('<i class="button far fa-times-circle"')
         if self.order_last_screen != '':
-            self.orders_close[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="post(\'orders\', \'?update\'), show_screen(\'' + str(self.order_last_screen) + '\')'
+            self.orders_close[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="post(\'orders\', \'?update\'); show_screen(\'' + str(self.order_last_screen) + '\')'
             if self.order_last_screen == 'fleets':
-                self.orders_close[-1] += ', post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
+                self.orders_close[-1] += '; post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
             self.orders_close[-1] += '">Back</i>'
         else:
             self.orders_close[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'); show_screen(null)">Close</i>'
+        """ Destination """
+        disabled = ''
+        if not self.orders_set_deep_space:
+            disabled = ' disabled="true"'
+        self.orders_xyz.append('<td><i class="button fas fa-edit" title="Set Deep Space" onclick="post(\'orders\', \'?set_deep_space\')"></i></td>')
+        self.orders_xyz[-1] += \
+                '<td style="text-align: left">X <input' + disabled + ' style="width: 15ex" id="orders_x" type="number" onchange="post(\'orders\')"/> ly</td>' +\
+                '<td style="text-align: center">Y <input' + disabled + ' style="width: 15ex" id="orders_y" type="number" onchange="post(\'orders\')"/> ly</td>' +\
+                '<td style="text-align: right">Z <input' + disabled + ' style="width: 15ex" id="orders_z" type="number" onchange="post(\'orders\')"/> ly</td>'
         """ Sidebar """
         # Close
         self.orders_sidebar.append('<td><i class="button fas fa-times-circle" title="Close" onclick="show_order_sidebar()"></i></td>')
@@ -121,7 +140,6 @@ class Orders(PlayerUI):
         if self.order_index != -2:
             order = fleet.orders[self.order_index]
             if load:
-                print('load active')
                 self.load(order)
             else:
                 self.update(order)
@@ -131,6 +149,8 @@ class Orders(PlayerUI):
 
     # Load values from existing order
     def load(self, order):
+        if order.location.reference:
+            self.orders_set_deep_space = False
         for key in Order.defaults:
             if key == 'location':
                 if order.location.reference:
