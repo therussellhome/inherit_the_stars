@@ -1,4 +1,5 @@
 from .playerui import PlayerUI
+from .. import planet
 import math
 
 """ Default values (default, min, max)  """
@@ -87,10 +88,12 @@ class Planets(PlayerUI):
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
-            reference.gravity = intel.gravity
-            reference.temperature = intel.temperature
-            reference.radiation = intel.radiation
-            planet['Habitability'] = reference.habitability(self.player.race)
+            tmp = planet.Planet()
+            tmp.gravity = intel.gravity
+            tmp.temperature = intel.temperature
+            tmp.radiation = intel.radiation
+            planet['Habitability'] = tmp.habitability(self.player.race)
+            del tmp
             planet['Gravity'] = intel.gravity
             planet['Temperature'] = intel.temperature
             planet['Radiation'] = intel.radiation
