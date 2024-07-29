@@ -102,6 +102,16 @@ input {
 input.vertical {
     transform: rotate(-90deg);
 }
+#drafts_text {
+    word-break: normal;
+    word-wrap: normal;
+    color: white;
+    background-color: transparent;
+    font-size: 10pt;
+    height: 4em;
+    width: 44em;
+    resize: none;
+}
 select {
     color: white;
     background-color: transparent;
@@ -219,6 +229,10 @@ textarea:disabled {
     width: 100%;
     white-space: nowrap;
 }
+.score_vertical {
+    writing-mode: vertical-rl;
+    text-align: center;
+}
 .vertical {
     writing-mode: sideways-lr;
 }
@@ -251,19 +265,19 @@ textarea:disabled {
     background: black;
 }
 /* titanium */
-#orders_ti .noUi-connect {
+#orders_ti, #orders_colonize_min_ti .noUi-connect {
     background: dodgerblue;
 }
 /* lithium */
-#orders_li .noUi-connect {
+#orders_li, #orders_colonize_min_li .noUi-connect {
     background: lightgreen;
 }
 /* silicon */
-#orders_si .noUi-connect {
+#orders_si, #orders_colonize_min_si .noUi-connect {
     background: orange;
 }
 /* people*/
-#orders_pop .noUi-connect {
+#orders_pop, #orders_colonize_min_people .noUi-connect {
     background: white;
 }
 /* habinability */
@@ -274,7 +288,10 @@ textarea:disabled {
 #orders_fuel, #orders_speed .noUi-connect {
     background: magenta;
 }/* speed - background */
-#orders_ti, #orders_li, #orders_si, #orders_pop, #orders_fuel, #orders_speed .noUi-connects {
+#orders_ti, #orders_li, #orders_si, #orders_pop, #orders_fuel, #orders_depart, #orders_speed .noUi-connects {
+    background: black;
+}
+.noUi-target {
     background: black;
 }/* background - */
 div.fas.fa-random {

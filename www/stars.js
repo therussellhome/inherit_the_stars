@@ -484,19 +484,17 @@ function speed_slider(element, form) {
         start: [-1],
         connect: false,
         step: 1,
-        tooltips: [true],
-        format: {
+        tooltips: [{
             to: function(value) {
                 labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
                 return labels[parseInt(value) + 2];
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
-                labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-                for(var i = 0; i < labels.length; i++) {
-                    if(value == labels[i]) {
-                        return i - 2;
-                    }
-                }
                 return parseInt(value);
             }
         },
@@ -517,8 +515,7 @@ function depart_slider(element, form) {
         start: [0.0],
         connect: false,
         step: 0.01,
-        tooltips: [true],
-        format: {
+        tooltips: [{
             to: function(value) {
                 if(value == 10.0) {
                     return 'never';
@@ -526,13 +523,13 @@ function depart_slider(element, form) {
                     return 'immediately';
                 }
                 return 'after ' + Intl.NumberFormat('en', {maximumFractionDigits: 2}).format(value) + ' years';
+            }
+        }],
+        format: {
+            to: function(value) {
+                return value;
             },
             from: function(value) {
-                if(value == 'never') {
-                    return 10.0;
-                } else if(value == 'immediately') {
-                    return 0.0;
-                }
                 return parseFloat(value);
             }
         },
@@ -1009,6 +1006,83 @@ function fold(div, flip) {
         div.classList.toggle('fa-angle-double-up', true);
         div.classList.toggle('fa-angle-double-down', false);
         toggle(div.parentElement.parentElement, 'collapse', true);
+    }
+}
+
+function scores() {
+    if(current_screen == 'score') {
+        score_chart(json_map['score']['score_chart'], json_map['score']['score_chart_type']);
+    }
+}
+
+// Create a chart for player scores
+function score_chart(data, chart_tracking) {
+    chart = document.getElementById('score_chart');
+    var dates = [];
+    var datasets = [];
+    for(var i=0; i <= data[0].length; i++) {
+        dates.push(data[0][i]);
+    }
+    for(var a=0; a <= data[1].length; a++) {
+        p = data[1][a];
+        datasets.push({label: p, data: data[2][a], borderColor: data[3][a]});
+    }
+    if(charts.hasOwnProperty('score_chart')) {
+        charts['score_chart'].data = {labels: dates, datasets: datasets};
+        charts['score_chart'].options.plugins.tooltip.callbacks = {
+            label: function(context) {
+                var label = context.dataset.label + ' @ ' + dates[context.dataIndex] + ': ' + context.formattedValue;
+                return label;
+            },
+            title: function(context) { return chart_tracking; }
+        };
+        charts['score_chart'].update();
+    } else {
+        charts['score_chart'] = new Chart(chart, {
+            type: 'line',
+            data: { 
+                labels: dates,
+                datasets: datasets
+            },
+            options: { 
+                elements: {point: {pointStyle: false}},
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        position: 'nearest',
+                        titleFontSize: 10,
+                        bodyFontSize: 10,
+                        callbacks: {
+                            label: function(context) {
+                                console.log('score:', context);
+                                var label = context.dataset.label + ' @ ' + dates[context.dataIndex] + ': ' + context.formattedValue;
+                                return label;
+                            },
+                            title: function(context) {
+                                return chart_tracking;
+                            },
+                        }
+                    },
+                },
+                scales: { 
+                    x: {
+                        gridLines: {display: false},
+                        ticks: {color: 'white'}
+                    },
+                    y: {
+                        gridLines: {display: false},
+                        ticks: {
+                            color: 'white',
+                            callback: function(value) {
+                                return value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }
 

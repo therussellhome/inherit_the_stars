@@ -51,7 +51,6 @@ class RenderStars(PlayerUI):
                 self.details[i.system_key] = []
             self.details[i.system_key].append(wormhole)
         for (s, i) in self.player.get_intel(by_type='Ship').items():
-            print(s)
             team = 'other'
             ship = self.set_details('Ship', self.deep_space_color, i, s.ID)
             if s in self.player.ships:

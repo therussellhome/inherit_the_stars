@@ -1,5 +1,6 @@
 __all__ = [
     'battles',
+    'drafts',
     'finance_minister',
     'fleets',
     'foreign_minister',

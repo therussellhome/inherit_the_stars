@@ -241,7 +241,7 @@ function onClick(event) {
         console.log('intersected:', intersects[0].object.name, '[', intersects[0].index, ']');
         console.log('intersects[0]', intersects[0], 'intersects[0].object', intersects[0].object);
         console.log('type: ', intersects[0].object.name);
-        if(intersects[0].object.name.startsWith('Ship:')) {
+        if(intersects[0].object.name.startsWith('Ship/')) {
             post('orders', '?fleet_index=' + intersects[0].object.name.substring(5));
             show_order_sidebar();
             console.log('intersected ship');

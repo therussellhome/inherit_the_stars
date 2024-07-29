@@ -54,12 +54,14 @@ class GameTestCase(unittest.TestCase):
 
     def test_generate_hundreth03(self):
         g = game.Game(races=[race.Race()], hundreth=99)
+        g.players[0].date = '{:01.2f}'.format(float(g.players[0].date) + 0.99)
         g.generate_hundreth()
         self.assertEqual(g.hundreth, 100)
 
     def test_generate_hundreth04(self):
         f0 = fleet.Fleet()
         g = game.Game(races=[race.Race()], hundreth=99)
+        g.players[0].date = '{:01.2f}'.format(float(g.players[0].date) + 0.99)
         g.players[0].fleets.append(f0)
         g.generate_hundreth()
         self.assertEqual(g.hundreth, 100)
