@@ -20,9 +20,14 @@ class Fleets(PlayerUI):
         for action in actions.split(';'):
             if action.startswith('select_'):
                 self.fleet_index = int(action.split('_')[1])
-            if action.startswith('delete_order='):
+            elif action.startswith('delete_order='):
                 to_delete = int(action.split('=')[1])
                 del self.player.fleets[self.fleet_index].orders[to_delete]
+            elif action.startswith('ship='):
+                ref = Reference('Ship/' + action.split('=')[1])
+                for i in range(len(self.player.fleets)):
+                    if ref in self.player.fleets[i].ships:
+                        self.fleet_index = i
         self.fleet_list.append('<th></th>'
             + '<th><i class="no_pad_i" title="Name of the Fleet">Name</i></th>'
             + '<th><i class="no_pad_i" title="X Cordinate">X</i></th>'

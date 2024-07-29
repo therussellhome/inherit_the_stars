@@ -12,7 +12,11 @@ __defaults = {
     'order_last_screen': 'fleets',
     'order_fleet_index': (-1, -1, sys.maxsize),
     'order_index': (-2, -2, sys.maxsize),
-    'topbar': [],
+    'orders_close': [],
+    'orders_get_sidebar': [],
+    'orders_sidebar': [],
+    'orders_info': '',
+    'orders_set_edit': False,
     'orders_destination': '',
     'options_orders_standoff': standoff_options,
     'orders_x': (0.0, -sys.maxsize, sys.maxsize),
@@ -38,16 +42,29 @@ class Orders(PlayerUI):
         for action in actions.split(';'):
             if action.startswith('load='):
                 self.order_index = int(action.split('=')[1])
-            if action == 'create_order':
+                self.orders_set_edit = False
+            elif action == 'create_order':
                 self.order_index = -1
-            if action.startswith('fleet_index='):
+                self.orders_set_edit = False
+            elif action.startswith('fleet_index='):
                 self.order_fleet_index = int(action.split('=')[1])
-            if action.startswith('screen='):
+                self.orders_set_edit = False
+            elif action.startswith('screen='):
                 self.order_last_screen = action.split('=')[1]
-            if action == 'update':
+            elif action == 'update':
                 fleet = self.player.fleets[self.order_fleet_index]
                 order = fleet.orders[self.order_index]
                 self.update(order)
+            elif action.startswith('new'):
+                self.orders_set_edit = True
+                fleet.orders.insert(self.orders_index, Order())
+                self.orders_index += 1
+            elif action.startswith('edit'):
+                self.orders_set_edit = True
+            elif action.startswith('waypoint='):
+                if self.orders_set_edit:
+                    order.location.reference = Reference(action.split('=')[1])
+                self.orders_set_edit = False
         if self.order_fleet_index != -1:
             fleet = self.player.fleets[self.order_fleet_index]
         else:
@@ -80,14 +97,25 @@ class Orders(PlayerUI):
         if self.orders_library != self.options_orders_library[0]:
             pass #TODO
         # Topbar
-        self.topbar.append('<i class="button far fa-times-circle"')
+        self.orders_get_sidebar.append('<i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar()"></i>')
+        self.orders_close.append('<i class="button far fa-times-circle"')
         if self.order_last_screen != '':
-            self.topbar[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="post(\'orders\', \'?update\'), show_screen(\'' + str(self.order_last_screen) + '\')'
+            self.orders_close[-1] += ' title="Return to ' + str(self.order_last_screen) + ' screen" onclick="post(\'orders\', \'?update\'), show_screen(\'' + str(self.order_last_screen) + '\')'
             if self.order_last_screen == 'fleets':
-                self.topbar[-1] += ', post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
-            self.topbar[-1] += '">Back</i>'
+                self.orders_close[-1] += ', post(\'fleets\', \'?select_' + str(self.order_fleet_index) + '\')'
+            self.orders_close[-1] += '">Back</i>'
         else:
-            self.topbar[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'), show_screen(null)">Close</i>'
+            self.orders_close[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'), show_screen(null)">Close</i>'
+        """ Sidebar """
+        # Close
+        self.orders_sidebar.append('<td><i class="button fas fa-times-circle" title="Close" onclick="show_order_sidebar()"></i></td>')
+        # Show Orders screen
+        self.orders_sidebar.append('<td><img class="button" title="Orders" src="ships.png" onclick="show_screen(\'orders\')"/></td>')
+        # Edit Button
+        self.orders_sidebar.append('<td><i class="button fas fa-edit" title="Edit" onclick="post(\'orders\', \'?edit\')"; show_screen(\'orders_info\')"></i></td>')
+        # Add Waypoint
+        self.orders_sidebar.append('<td><i class="button fas fa-plus-circle" title="Add Waypoint" onclick="post(\'orders\', \'?new\'); show_screen(\'orders_info\')"></i></td>')
+
                 
     # Load values from existing order
     def load(self, order):

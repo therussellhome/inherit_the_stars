@@ -174,8 +174,8 @@ function onKeyPress(event) {
         for(var i = 0; i < details[selected_id.toString()].length; i++) {
             item = details[selected_id.toString()][i]
             if(item.type === 'Ship' && item.team === 'me') {
-                show_screen('orders');
-                post('orders', '?ship;' + item.ID);
+                show_screen('fleets');
+                post('fleets', '?ship=' + item.ID);
             }
         }
     }
