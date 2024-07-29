@@ -9,6 +9,7 @@ __all__ = [
     'messages',
     'new_game',
     'orders',
+    'colonize_options',
     'planetaryministers',
     'planets',
     'plans',
