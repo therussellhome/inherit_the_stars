@@ -118,7 +118,7 @@ class Shipyard(PlayerUI):
             if design.components[t] > 1:
                 count = '<div style="color: lightseagreen">x' + str(design.components[t]) + '</div>'
             self.shipyard_design.append('<td class="hfill"><div class="tech tech_template">' + t.ID + '</div></td>' \
-                    + '<td style="text-align: right;">' + count + '<i class="button far fa-trash-alt" title="Add to ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
+                    + '<td style="text-align: right;">' + count + '<i class="button far fa-trash-alt" title="Remove from ship" onclick="post(\'shipyard\', \'?del=' + link + '\')"></i></td>')
 
         # Slots
         self.shipyard_slots_general = str(design.hull().slots_general - design.slots_general) + '/' + str(design.hull().slots_general)

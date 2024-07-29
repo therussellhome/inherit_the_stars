@@ -34,8 +34,8 @@ TRACK_ACCUMULATING = {
                'ships_of_the_wall',
                'facilities',
                'starbases',
-               'score',
-               'score_rank'],
+               'score'],
+               #'score_rank'],
 }
 
 """ Class for the players view of the galaxy """

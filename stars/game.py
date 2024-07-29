@@ -11,6 +11,9 @@ from .location import Location
 from .player import Player
 from .star_system import StarSystem
 from .reference import Reference
+from .intel import TRACK_ACCUMULATING
+
+SCORE_FIELDS = TRACK_ACCUMULATING['Player']
 
 
 """ Default values (default, min, max)  """
@@ -27,7 +30,9 @@ __defaults = {
     'public_player_scores': (30, 0, 200), # years till public player scores
     'victory_after': (50, 10, 200), # minimum years till game can be won
     'victory_conditions': (1, 1, 10), # minimum number of conditions to win
+    'victory_enemies': True,
     'victory_enemies_left': (0, -1, 15), 
+    'victory_score': True,
     'victory_score_number': (1000, -1, 10000), 
     'victory_tech': True,
     'victory_tech_levels': (100, 10, 300), 
@@ -109,6 +114,8 @@ class Game(Defaults):
                     p.add_intel(b, {'location': b.location, 'size': b.radius})
             self._scan([])
             self._call(self.players, 'update_stats')
+            if self.hundreth == 0:
+                self._calculate_score()
                 
     """ Save host and players to file """
     def save(self):
@@ -123,6 +130,76 @@ class Game(Defaults):
         for p in self.players:
             if not p.computer_player:
                 p.update_from_file()
+
+    """ Handle public player scores """
+    def _calculate_score(self):
+        score_balance = {
+            'energy': 0.001,
+            'minerals': 0.001,
+            'tech_levels': 1.0,
+            'planets': 1.0,
+            'ships_unarmed': 0.1,
+            'ships_escort': 0.2,
+            'ships_of_the_wall': 0.5,
+            'facilities': 0.001,
+            'starbases': 1.0,
+            'best': 10
+        }
+        best_by_field = {
+            'energy': [0],
+            'minerals': [0],
+            'tech_levels': [0],
+            'planets': [0],
+            'ships_unarmed': [0],
+            'ships_escort': [0],
+            'ships_of_the_wall': [0],
+            'facilities': [0],
+            'starbases': [0]
+        }
+        data = []
+        scores = {}
+        placing = {}
+        rank = {}
+        self._call(self.players, 'get_stats')
+        for player in self.players:
+            data.append(player.get_intel(reference=player))
+            print(game_engine.to_json(data))
+        """ Get best in the field """
+        for field in SCORE_FIELDS:
+            value = 0
+            if 'score' not in field:
+                for i in range(len(self.players)):
+                    scores[i] = 0
+                    if data[i][field]['{:.2f}'.format(self.hundreth/100 + 3000)] > value:
+                        value = data[i][field]['{:.2f}'.format(self.hundreth/100 + 3000)]
+                        best_by_field[field] = [i]
+                    elif data[i][field]['{:.2f}'.format(self.hundreth/100 + 3000)] == value:
+                        best_by_field[field].append(i)
+        for i in range(len(self.players)):
+            for field in SCORE_FIELDS:
+                if 'score' not in field:
+                    scores[i] += data[i][field]['{:.2f}'.format(self.hundreth/100 + 3000)] * score_balance[field]
+                    if i in best_by_field[field]:
+                        scores[i] += score_balance['best']
+            scores[i] = int(round(scores[i]))
+            if scores[i] not in placing:
+                placing[scores[i]] = []
+            placing[scores[i]].append(i)
+        place = 1
+        for k in sorted(placing.keys(), reverse=True):
+            place = 1 + len(rank.keys())
+            for v in placing[k]:
+                rank[v] = place
+        for i in range(len(self.players)):
+            self.players[i].add_intel(self.players[i], {'score': scores[i], 'score_rank': rank[i]})
+        if self.hundreth / 100 >= self.public_player_scores:
+            for p1 in self.players:
+                for i in range(len(self.players)):
+                    if p1.ID != self.players[i].ID:
+                        report = self.players[i].get_stats()
+                        report['score'] = scores[i]
+                        report['score_rank'] = rank[i]
+                        p1.add_intel(self.players[i], report)
 
     """ Check if all players are ready """
     def is_ready_to_generate(self):
@@ -150,6 +227,14 @@ class Game(Defaults):
                     planets.append(planet)
         return planets
 
+    """ Haddle player to player messages """
+    def mail_carrier(self):
+        for player in self.players:
+            for msg in player.outbox:
+                msg.sender = Reference(player)
+                msg.receiver.add_message(msg)
+            player.outbox = []
+
     """ Generate hundreth """
     def generate_hundreth(self):
         # players in lowest to highest score
@@ -161,8 +246,9 @@ class Game(Defaults):
             self._call(players, 'treaty_negotiations')
             self._call(players, 'treaty_finalization')
             self._call(players, 'cleanup_messages')
+            self.mail_carrier()
         self._call(players, 'next_hundreth')
-        players.sort(key=lambda x: x.get_intel(reference=x).get('rank'), reverse=False)
+        players.sort(key=lambda x: x.get_intel(reference=x).get('score_rank'), reverse=False)
         # planets in lowest to highest population
         planets = self.populated_planets()
         self._call(planets, 'orbit')
@@ -226,6 +312,7 @@ class Game(Defaults):
         if self.hundreth % 100 == 0:
             self._scan(fleets)
             self._call(self.players, 'update_stats')
+            self._calculate_score()
             self._check_for_winner()
 
     """ Call a method on a list of classes """

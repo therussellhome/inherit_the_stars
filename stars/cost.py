@@ -53,7 +53,7 @@ class Cost(Minerals):
     def to_html(self):
         html = ''
         if self.energy > 0:
-            html += '<i class="fa-bolt" title="Energy">' + str(self.energy) + '</i>'
+            html += '<i class="fa-bolt" title="Energy">' + str(round(self.energy)) + '</i>'
         if self.titanium > 0:
             html += '<i class="ti" title="Titanium">' + str(ceil(self.titanium)) + '</i>'
         if self.lithium > 0:

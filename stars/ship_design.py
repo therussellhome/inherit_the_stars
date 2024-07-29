@@ -66,8 +66,8 @@ class ShipDesign(Tech):
         cost = Cost()
         for (t,cnt) in self.components.items():
             modifier = t.miniaturization(self.level)
-            mass += t.mass * modifier
-            cost += t.cost * modifier
+            mass += t.mass * modifier * cnt
+            cost += t.cost * modifier * cnt
         return (mass, cost)
 
     """ Check if design is valid """
@@ -98,10 +98,11 @@ class ShipDesign(Tech):
     """ Clone the design """
     def clone_design(self):
         clone = ShipDesign()
-        clone.ID = self.ID + '-copy'
-        clone.description = self.description
+        clone.ID = str(self.ID) + '-copy'
+        clone.description = str(self.description)
         for c in self.components:
-            clone.components[c] = self.components[c]
+            clone.add_component(c)
+            clone.components[c] += self.components[c] -1
         return clone
 
 

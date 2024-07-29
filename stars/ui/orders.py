@@ -119,7 +119,6 @@ class Orders(PlayerUI):
 
 
 
-
 for key in Order.defaults:
     __defaults['orders_' + key] = Order.defaults[key]
 
