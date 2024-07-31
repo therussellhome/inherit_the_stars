@@ -23,12 +23,16 @@ class Planets(PlayerUI):
         filters = ['My Planets', 'Team planets', 'Neutral Planets', 'Enemy Planets', 'Uninhabited Planets', 'All Planets', 'All Suns']
         for f in filters:
             self.options_planets_filter.append(f)
+        if self.planets_filter == '':
+            self.planets_filter = self.options_planets_filter[0]
 
         # Fields for comparasion
         fields = ['Habitability', 'Capacity', 'Population', 'Max Population', 'Energy Generation', 'Production Capacity', 'Scanner Range', 'Shield Coverage', \
         'Silicon Output', 'Lithium Output', 'Titanium Output', 'Silicon Availability', 'Lithium Availability', 'Titanium Availability']
         for f in fields:
             self.options_planets_field.append(f)
+        if self.planets_field == '':
+            self.planets_field = self.options_planets_field[0]
         
         # Checks to see whether it has to calculate it 
         # It's using cache so it doesn't have to calculate the report over and over again
@@ -37,7 +41,7 @@ class Planets(PlayerUI):
             for (reference, intel) in self.player.get_intel(by_type='Planet').items():
                 planets.append(self.process_intel(reference, intel))
             for (reference, intel) in self.player.get_intel(by_type='Sun').items():
-                planets.append(self.process_intel(reference, intel, 'sun'))
+                planets.append(self.process_intel(reference, intel, 'Sun'))
             # Puts the report in the cache
             self.player.planet_report = planets
         else:
@@ -65,7 +69,7 @@ class Planets(PlayerUI):
         return sorted_planets
 
     """ Common intel processing planet and sun """
-    def process_intel(self, reference, intel, world_type='planet'):
+    def process_intel(self, reference, intel, world_type='Planet'):
         planet = {'name': intel.name, 'details': ''}
         planet['date'] = intel.date
         planet['World Type'] = str(world_type)
@@ -84,19 +88,25 @@ class Planets(PlayerUI):
         planet['Shild Genorators'] = -1.0
         planet['Factories'] = -1.0
         planet['Mines'] = -1.0
-        if reference:
+        if reference and intel.date != self.player.race.start_date:
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
-            tmp = Planet()
-            tmp.gravity = intel.gravity
-            tmp.temperature = intel.temperature
-            tmp.radiation = intel.radiation
-            planet['Habitability'] = tmp.habitability(self.player.race)
-            del tmp
-            planet['Gravity'] = intel.gravity
-            planet['Temperature'] = intel.temperature
-            planet['Radiation'] = intel.radiation
+            if ((world_type == 'Planet' and self.player.race.primary_race_trait != 'Pa\'anuri') or (world_type == 'Sun' and self.player.race.primary_race_trait == 'Pa\'anuri')):
+                tmp = Planet()
+                tmp.gravity = intel.gravity
+                tmp.temperature = intel.temperature
+                tmp.radiation = intel.radiation
+                planet['Habitability'] = tmp.habitability(self.player.race)
+                del tmp
+                planet['Gravity'] = intel.gravity
+                planet['Temperature'] = intel.temperature
+                planet['Radiation'] = intel.radiation
+            else:
+                planet['Habitability'] = -101.0
+                planet['Gravity'] = '?'
+                planet['Temperature'] = '?'
+                planet['Radiation'] = '?'
             pop = reference.on_surface.people
             planet['Population'] = str(pop)
             planet['Max Population'] = reference.maxpop(self.player.race)#store max_pop in intel? 
@@ -110,8 +120,8 @@ class Planets(PlayerUI):
                 if relation == 'me':
                     facility_yj =  round(reference._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
                     pop_yj = reference.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
-                    planet['Energy Generation'] = '<i class="YJ">' + str(round((facility_yj + pop_yj) * 100)) + '</i>'
-                    planet['Production Capacity'] = str(reference.operate_factories() * 100)
+                    planet['Energy Generation'] = round((facility_yj + pop_yj) * 100)
+                    planet['Production Capacity'] = reference.operate_factories() * 100
                     planet['Power Plants'] = reference.power_plants
                     planet['Shild Genorators'] = reference.defenses
                     planet['Factories'] = reference.factories
@@ -144,7 +154,10 @@ class Planets(PlayerUI):
             planet['Lithium Availability'] = getattr(intel, 'Lithium availability', -1.0)
             planet['Silicon Availability'] = getattr(intel, 'Silicon availability', -1.0)
             planet['Titanium Availability'] = getattr(intel, 'Titanium availability', -1.0)
-        planet['details'] += '<tr class="collapse"><td class="collapse">Habitability</td><td class="collapse">' + str(planet['Habitability']) + '</td></tr>'
+            color = 'red'
+            if planet['habitability'] > 0:
+                color = 'green'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Habitability</td><td class="collapse" style="color: ' + color + '">' + str(planet['Habitability']) + '</td></tr>'
         planet['details'] += '<tr class="collapse"><td class="collapse">    Gravity</td><td class="collapse">' + str(planet['Gravity']) + '</td></tr>'
         planet['details'] += '<tr class="collapse"><td class="collapse">    Temperature</td><td class="collapse">' + str(planet['Temperature']) + '</td></tr>'
         planet['details'] += '<tr class="collapse"><td class="collapse">    Radiation</td><td class="collapse">' + str(planet['Radiation']) + '</td></tr>'
@@ -157,7 +170,12 @@ class Planets(PlayerUI):
         #planet['details'] += '<tr class="collapse"><td class="collapse">Shield Coverage</td><td class="collapse">' + str(planet['Shield Coverage']) + '</td></tr>'
         for attr in ['Total Facilities', 'Power Plants', 'Shild Genorators', 'Factories', 'Mines', 'Scanner Range', 'Shield Coverage', 'Energy Generation', 'Production Capacity', 'Silicon Output', 'Lithium Output', 'Titanium Output', 'Silicon On Surface', 'Lithium On Surface', 'Titanium On Surface']:
             if planet[attr] != -1.0:
-                planet['details'] += '<tr class="collapse"><td class="collapse">' + str(attr) + '</td><td class="collapse">' + str(planet[attr]) + '</td></tr>'
+                planet['details'] += '<tr class="collapse"><td class="collapse">' + str(attr) + '</td><td class="collapse">'
+                if attr == 'Energy Generation']:
+                    planet['details'] += '<i class="fa-bolt">' + str(round((facility_yj + pop_yj) * 100)) + '</i>'
+                else:
+                    planet['details'] += str(planet[attr])
+                planet['details'] += '</td></tr>'
             #planet['details'] += '<tr class="collapse"><td class="collapse">Silicon Output</td><td class="collapse">' + str(planet['Silicon Output']) + '</td></tr>'
             #planet['details'] += '<tr class="collapse"><td class="collapse">Titanium Output</td><td class="collapse">' + str(planet['Titanium Output']) + '</td></tr>'
         planet['details'] += '<tr class="collapse"><td class="collapse">Lithium Availability</td><td class="collapse">' + str(planet['Lithium Availability']) + '</td></tr>'

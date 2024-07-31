@@ -6,7 +6,7 @@ __defaults = {
     'colonize_options_min_ti_display': (0, -sys.maxsize, sys.maxsize),
     'colonize_options_min_li_display': (0, -sys.maxsize, sys.maxsize),
     'colonize_options_min_si_display': (0, -sys.maxsize, sys.maxsize),
-    'col_opt_min_hab_display': (0, -sys.maxsize, sys.maxsize),
+    'colonize_options_min_hab_display': (0, -sys.maxsize, sys.maxsize),
     'colonize_options_min_hab': (50, -100, 100),
     'colonize_options_min_ti': (0, 0, 100),
     'colonize_options_min_li': (0, 0, 100),
