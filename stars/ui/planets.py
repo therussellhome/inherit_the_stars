@@ -49,6 +49,7 @@ class Planets(PlayerUI):
         filtered_planets = self.planet_filter(planets, self.planets_filter)
         sorted_planets = self.planet_sort(filtered_planets, self.planets_field)
         for p in sorted_planets:
+            p = self.set_details(p)
             self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + '  $  ' + str(p[self.planets_field]) + '  $  ' + str(p['date']) + '</div></caption>')#'<tr class="collapse"><td class="collapse">' + str(p['name']) + '</td><td class="collapse">' + str(p[self.planets_field]) +'</td><td class="collapse">' + str(p['date']) + '</td></tr>')
             self.planets_report[-1] += '<tr class="collapse"><td class="collapse" colspan="3"><table class="hfill collapse">' + str(p['details']) + '</table></td></tr>'
             self.planets_report[-1] += '</table></td>'
@@ -112,9 +113,9 @@ class Planets(PlayerUI):
             planet['Max Population'] = reference.maxpop(self.player.race)#store max_pop in intel? 
             planet['Capacity'] = pop / planet['Max Population']#getattr(intel, 'Population', '?')
             min_availability = reference.mineral_availability()
-            planet['Silicon Availability'] = round(min_availability.silicon)
-            planet['Lithium Availability'] = round(min_availability.lithium)
-            planet['Titanium Availability'] = round(min_availability.titanium)
+            planet['Silicon Availability'] = round(min_availability.silicon, 2)
+            planet['Lithium Availability'] = round(min_availability.lithium, 2)
+            planet['Titanium Availability'] = round(min_availability.titanium, 2)
             if hasattr(intel, 'Player'):
                 relation = self.player.get_relation(getattr(intel, 'Player'))
                 if relation == 'me':
@@ -154,34 +155,6 @@ class Planets(PlayerUI):
             planet['Lithium Availability'] = getattr(intel, 'Lithium availability', -1.0)
             planet['Silicon Availability'] = getattr(intel, 'Silicon availability', -1.0)
             planet['Titanium Availability'] = getattr(intel, 'Titanium availability', -1.0)
-            color = 'red'
-            if planet['habitability'] > 0:
-                color = 'green'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Habitability</td><td class="collapse" style="color: ' + color + '">' + str(planet['Habitability']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">    Gravity</td><td class="collapse">' + str(planet['Gravity']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">    Temperature</td><td class="collapse">' + str(planet['Temperature']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">    Radiation</td><td class="collapse">' + str(planet['Radiation']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Population</td><td class="collapse">' + str(planet['Population']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Capacity</td><td class="collapse">' + str(planet['Capacity']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Max Population</td><td class="collapse">' + str(planet['Max Population']) + '</td></tr>'
-        #planet['details'] += '<tr class="collapse"><td class="collapse">Energy Generation</td><td class="collapse">' + str(planet['Energy Generation']) + '</td></tr>'
-        #planet['details'] += '<tr class="collapse"><td class="collapse">Production Capacity</td><td class="collapse">' + str(planet['Production Capacity']) + '</td></tr>'
-        #planet['details'] += '<tr class="collapse"><td class="collapse">Scanner Range</td><td class="collapse">' + str(planet['Scanner Range']) + '</td></tr>'
-        #planet['details'] += '<tr class="collapse"><td class="collapse">Shield Coverage</td><td class="collapse">' + str(planet['Shield Coverage']) + '</td></tr>'
-        for attr in ['Total Facilities', 'Power Plants', 'Shild Genorators', 'Factories', 'Mines', 'Scanner Range', 'Shield Coverage', 'Energy Generation', 'Production Capacity', 'Silicon Output', 'Lithium Output', 'Titanium Output', 'Silicon On Surface', 'Lithium On Surface', 'Titanium On Surface']:
-            if planet[attr] != -1.0:
-                planet['details'] += '<tr class="collapse"><td class="collapse">' + str(attr) + '</td><td class="collapse">'
-                if attr == 'Energy Generation']:
-                    planet['details'] += '<i class="fa-bolt">' + str(round((facility_yj + pop_yj) * 100)) + '</i>'
-                else:
-                    planet['details'] += str(planet[attr])
-                planet['details'] += '</td></tr>'
-            #planet['details'] += '<tr class="collapse"><td class="collapse">Silicon Output</td><td class="collapse">' + str(planet['Silicon Output']) + '</td></tr>'
-            #planet['details'] += '<tr class="collapse"><td class="collapse">Titanium Output</td><td class="collapse">' + str(planet['Titanium Output']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Lithium Availability</td><td class="collapse">' + str(planet['Lithium Availability']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Silicon Availability</td><td class="collapse">' + str(planet['Silicon Availability']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Titanium Availability</td><td class="collapse">' + str(planet['Titanium Availability']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Inhabitant</td><td class="collapse">' + str(planet['Inhabitant']) + '</td></tr>'
         if reference ^ 'Planet':
             planet['All Planets'] = True
         else:
@@ -199,5 +172,50 @@ class Planets(PlayerUI):
             elif relation == 'enemy':
                 planet['Enemy Planets'] = True
         return planet
+
+    def set_details(self, planet={}):
+        planet['details'] = ''
+        # Habitability
+        color = 'red'
+        if planet['Habitability'] > self.player.colonize_min_hab and planet['Habitability'] > 0:
+            color = 'limegreen'
+        elif planet['Habitability'] > 0:
+            color = 'lawngreen'
+        elif planet['Habitability'] > -10:
+            color = 'yellow'
+        planet['details'] += '<tr class="collapse"><td class="collapse" style="color:' + color + '">Habitability</td><td class="collapse" style="color: ' + color + '">' + str(planet['Habitability']) + '</td></tr>'
+        for attr in ['Gravity', 'Temperature', 'Radiation']:
+            if planet[attr] != '?':
+                color = 'red'
+                if self.player.race['hab_' + attr.lower() + '_immune']:
+                    color = 'limegreen'
+                elif planet[attr] in range(self.player.race['hab_' + attr.lower()], self.player.race['hab_' + attr.lower() + '_stop']):
+                    color = 'lawngreen'
+                elif planet[attr] in range(self.player.race['hab_' + attr.lower()] - 5, self.player.race['hab_' + attr.lower()]) or planet[attr] in range(self.player.race['hab_' + attr.lower() + '_stop'], self.player.race['hab_' + attr.lower() + '_stop'] + 5):
+                    color = 'yellow'
+                planet['details'] += '<tr class="collapse"><td class="collapse" style="color:' + color + '">' + str(attr) + '</td><td class="collapse" style="color:' + color + '">' + str(planet[attr]) + '</td></tr>'
+
+        planet['details'] += '<tr class="collapse"><td class="collapse">Population</td><td class="collapse">' + str(planet['Population']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Capacity</td><td class="collapse">' + str(planet['Capacity']) + '</td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Max Population</td><td class="collapse">' + str(planet['Max Population']) + '</td></tr>'
+
+        # Your Planets Stats
+        for attr in ['Total Facilities', 'Power Plants', 'Shild Genorators', 'Factories', 'Mines', 'Scanner Range', 'Shield Coverage', 'Energy Generation', 'Production Capacity', 'Titanium Output', 'Lithium Output', 'Silicon Output', 'Titanium On Surface', 'Lithium On Surface', 'Silicon On Surface', 'Titanium Availability', 'Lithium Availability', 'Silicon Availability']:
+            if planet[attr] != -1.0:
+                planet['details'] += '<tr class="collapse"><td class="collapse">' + str(attr) + '</td><td class="collapse"><i class="'
+                if attr == 'Energy Generation':
+                    planet['details'] += 'fa-bolt'
+                elif 'Ti' in attr:
+                    planet['details'] += 'ti'
+                elif 'Li' in attr:
+                    planet['details'] += 'li'
+                elif 'Si' in attr:
+                    planet['details'] += 'si'
+                if 'Availability' in attr:
+                    planet['details'] += ' col'
+                planet['details'] += '">' + str(planet[attr]) + '</i></td></tr>'
+        planet['details'] += '<tr class="collapse"><td class="collapse">Inhabitant</td><td class="collapse">' + str(planet['Inhabitant']) + '</td></tr>'
+        return planet
+
 
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
