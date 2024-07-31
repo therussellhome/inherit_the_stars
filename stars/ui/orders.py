@@ -56,31 +56,33 @@ class Orders(PlayerUI):
             elif action.startswith('screen='):
                 self.order_last_screen = action.split('=')[1]
             elif action == 'update':
-                order = self.get_order()
-                self.update(order)
+                order = self.get_order(False)
             elif action.startswith('new'):
                 self.orders_set_edit = True
                 fleet = self.get_fleet()
                 fleet.orders.insert(self.order_index, Order())
-                self.orders_index += 1
+                self.order_index += 1
                 self.orders_set_deep_space = False
             elif action.startswith('edit'):
                 self.orders_set_edit = True
                 self.orders_set_deep_space = False
             elif action.startswith('waypoint='):
                 if self.orders_set_edit:
-                    order = self.get_order(('load' in actions))
+                    order = self.get_order(True)
                     order.location.reference = Reference(action.split('=')[1])
-                    print(order.location.xyz, order.location.__dict__)
-                    self.orders_x = order.location.xyz[0]
-                    self.orders_y = order.location.xyz[1]
-                    self.orders_z = order.location.xyz[2]
+                    locale = self.player.get_intel(reference=order.location.reference)
+                    print('74', locale)
+                    xyz = locale.location
+                    self.orders_x = xyz[0]
+                    self.orders_y = xyz[1]
+                    self.orders_z = xyz[2]
+                    self.update(order)
                 self.orders_set_edit = False
                 self.orders_set_deep_space = False
             elif action.startswith('set_deep_space'):
                 self.orders_set_deep_space = True
         fleet = self.get_fleet()
-        order = self.get_order(('load' in actions))
+        order = self.get_order(True)
         # Display options
         for other_player in self.player.get_intel(by_type='Player'):
             if other_player != self.player:
@@ -140,7 +142,7 @@ class Orders(PlayerUI):
         if self.order_index != -2:
             order = fleet.orders[self.order_index]
             if load:
-                self.load(order)
+                self.load(order, load)
             else:
                 self.update(order)
         else:
@@ -148,20 +150,25 @@ class Orders(PlayerUI):
         return order
 
     # Load values from existing order
-    def load(self, order):
-        if order.location.reference:
-            self.orders_set_deep_space = False
+    def load(self, order, load=False):
         for key in Order.defaults:
             if key == 'location':
                 if order.location.reference:
+                    if load:
+                        self.orders_set_deep_space = False
                     self.orders_destination = self.player.get_name(order.location.reference)
-                    if order.location.reference != order.location.root_reference:
-                        self.orders_destination += '<br/> at ' + self.player.get_name(order.location.root_reference)
+                    xyz = self.player.get_intel(reference=order.location.reference).location
+                    root_reference = self.player.get_intel(reference=order.location.reference).reference_root
+                    if root_reference and order.location.reference != root_reference:
+                        print(root_reference)
+                        print(root_reference.__dict__)
+                        self.orders_destination += '<br/> at ' + self.player.get_name(root_reference)
                 else:
                     self.orders_destination = 'Deep Space'
-                self.orders_x = order.location.x
-                self.orders_y = order.location.y
-                self.orders_z = order.location.z
+                    xyz = order.location.xyz
+                self.orders_x = xyz[0]
+                self.orders_y = xyz[1]
+                self.orders_z = xyz[2]
             else:
                 self['orders_' + key] = order[key]
 
@@ -169,13 +176,19 @@ class Orders(PlayerUI):
     def update(self, order):
         for key in Order.defaults:
             if key == 'location':
-                if self.orders_x != round(order.location.x, 2) \
-                        or self.orders_y != round(order.location.y, 2) \
-                        or self.orders_z != round(order.location.z, 2):
+                if order.location.reference:
+                    xyz = self.player.get_intel(reference=order.location.reference).location
+                else:
+                    xyz = order.location.xyz
+                if round(self.orders_x, 8) != round(xyz[0], 8) \
+                        or round(self.orders_y, 8) != round(xyz[1], 8) \
+                        or round(self.orders_z, 8) != round(xyz[2], 8):
                     self.orders_destination = 'Deep Space'
                     order.location = Location(self.orders_x, self.orders_y, self.orders_z)
             else:
                 order[key] = self['orders_' + key]
+        self.load(order)
+
 
 
 

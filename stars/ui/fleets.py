@@ -1,4 +1,5 @@
 from .playerui import PlayerUI
+from ..reference import Reference
 import sys
 
 """ Default values (default, min, max)  """
@@ -41,6 +42,8 @@ class Fleets(PlayerUI):
         for i in range(len(self.player.fleets)):
             fleet = self.player.fleets[i]
             intel = self.player.get_intel(reference=fleet)
+            if not intel:
+                continue
             if intel.name == fleet.ID:
                 intel.name = 'Fleet #' + str(i+1)
             self.fleet_list.append('<tr>'
@@ -63,6 +66,8 @@ class Fleets(PlayerUI):
         if len(self.player.fleets) > 0:
             for ship in self.player.fleets[self.fleet_index].ships:
                 intel = self.player.get_intel(reference=ship)
+                if not intel:
+                    continue
                 self.ships.append('<tr>'
                     + '<td>' + str(ship.description) + '</td>'
                     + '<td>' + str(ship.fuel) + '</td>'
@@ -89,7 +94,10 @@ class Fleets(PlayerUI):
                 if order.location.reference:
                     shown += order.location.reference.ID
                 else:
-                    shown += str(order.location.xyz)
+                    xyz = order.location.xyz
+                    shown += '( ' + str(round(xyz[0], 5)) + ', '
+                    shown += str(round(xyz[1], 5)) + ', '
+                    shown += str(round(xyz[2], 5)) + ' )'
                 shown += '</td>'
                 self.fleet_orders.append('<tr>'
                     + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'

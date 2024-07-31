@@ -273,11 +273,12 @@ function onClick(event) {
 // Refocus on the clicked object
 function select_object(obj, index=true, flyto=true, is_out_system=true) {
     console.log('selecting object:', obj)
+    var name = obj.name
     if(index !== true){
         selected_position = new THREE.Vector3( obj.geometry.attributes.position.array[ index * 3 ], obj.geometry.attributes.position.array[ index * 3 + 1 ], obj.geometry.attributes.position.array[ index * 3 + 2 ] );
     }
     if(is_out_system){
-        get_system(obj, index);
+        name = get_system(obj, index);
     }
     if(flyto && selected_position) {
         var z_offset = TERAMETER;
@@ -287,7 +288,7 @@ function select_object(obj, index=true, flyto=true, is_out_system=true) {
         camera_flyto.set(selected_position.x, selected_position.y, selected_position.z + z_offset);
         camera.up = new THREE.Vector3(0, 1, 0);
     }
-    capture_selected = obj.name
+    capture_selected = name;
 }
 
 // Gets all the objects in a system or at a point
@@ -352,6 +353,7 @@ function get_system(intersected, index) {
     in_system.name = 'in_system';
     console.log(in_system);
     top_level.add(in_system);
+    return (system_data[0].type + '/' + system_data[0].ID);
 }
 
 // Zoom to the clicked object
