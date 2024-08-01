@@ -49,7 +49,7 @@ class Planets(PlayerUI):
         filtered_planets = self.planet_filter(planets, self.planets_filter)
         sorted_planets = self.planet_sort(filtered_planets, self.planets_field)
         for p in sorted_planets:
-            p = self.set_details(p)
+            p = self.get_details(p)
             self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + '  $  ' + str(p[self.planets_field]) + '  $  ' + str(p['date']) + '</div></caption>')#'<tr class="collapse"><td class="collapse">' + str(p['name']) + '</td><td class="collapse">' + str(p[self.planets_field]) +'</td><td class="collapse">' + str(p['date']) + '</td></tr>')
             self.planets_report[-1] += '<tr class="collapse"><td class="collapse" colspan="3"><table class="hfill collapse">' + str(p['details']) + '</table></td></tr>'
             self.planets_report[-1] += '</table></td>'
@@ -86,7 +86,7 @@ class Planets(PlayerUI):
         planet['Shield Coverage'] = -1.0
         planet['Total Facilities'] = -1.0
         planet['Power Plants'] = -1.0
-        planet['Shild Genorators'] = -1.0
+        planet['Shield Genorators'] = -1.0
         planet['Factories'] = -1.0
         planet['Mines'] = -1.0
         if reference and intel.date != self.player.race.start_date:
@@ -124,7 +124,7 @@ class Planets(PlayerUI):
                     planet['Energy Generation'] = round((facility_yj + pop_yj) * 100)
                     planet['Production Capacity'] = reference.operate_factories() * 100
                     planet['Power Plants'] = reference.power_plants
-                    planet['Shild Genorators'] = reference.defenses
+                    planet['Shield Genorators'] = reference.defenses
                     planet['Factories'] = reference.factories
                     planet['Mines'] = reference.mineral_extractors
                     num_people = reference.on_surface.people * self.player.race.pop_per_kt()
@@ -173,49 +173,93 @@ class Planets(PlayerUI):
                 planet['Enemy Planets'] = True
         return planet
 
-    def set_details(self, planet={}):
+    def get_details(self, planet={}):
         planet['details'] = ''
         # Habitability
-        color = 'red'
-        if planet['Habitability'] > self.player.colonize_min_hab and planet['Habitability'] > 0:
-            color = 'limegreen'
-        elif planet['Habitability'] > 0:
-            color = 'lawngreen'
-        elif planet['Habitability'] > -10:
-            color = 'yellow'
-        planet['details'] += '<tr class="collapse"><td class="collapse" style="color:' + color + '">Habitability</td><td class="collapse" style="color: ' + color + '">' + str(planet['Habitability']) + '</td></tr>'
-        for attr in ['Gravity', 'Temperature', 'Radiation']:
-            if planet[attr] != '?':
-                color = 'red'
-                if self.player.race['hab_' + attr.lower() + '_immune']:
-                    color = 'limegreen'
-                elif planet[attr] in range(self.player.race['hab_' + attr.lower()], self.player.race['hab_' + attr.lower() + '_stop']):
-                    color = 'lawngreen'
-                elif planet[attr] in range(self.player.race['hab_' + attr.lower()] - 5, self.player.race['hab_' + attr.lower()]) or planet[attr] in range(self.player.race['hab_' + attr.lower() + '_stop'], self.player.race['hab_' + attr.lower() + '_stop'] + 5):
-                    color = 'yellow'
-                planet['details'] += '<tr class="collapse"><td class="collapse" style="color:' + color + '">' + str(attr) + '</td><td class="collapse" style="color:' + color + '">' + str(planet[attr]) + '</td></tr>'
-
-        planet['details'] += '<tr class="collapse"><td class="collapse">Population</td><td class="collapse">' + str(planet['Population']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Capacity</td><td class="collapse">' + str(planet['Capacity']) + '</td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Max Population</td><td class="collapse">' + str(planet['Max Population']) + '</td></tr>'
-
-        # Your Planets Stats
-        for attr in ['Total Facilities', 'Power Plants', 'Shild Genorators', 'Factories', 'Mines', 'Scanner Range', 'Shield Coverage', 'Energy Generation', 'Production Capacity', 'Titanium Output', 'Lithium Output', 'Silicon Output', 'Titanium On Surface', 'Lithium On Surface', 'Silicon On Surface', 'Titanium Availability', 'Lithium Availability', 'Silicon Availability']:
+        for attr in ['Habitability', 'Gravity', 'Temperature', 'Radiation']:
+            self.set_detail(planet, attr)
+        # People
+        for attr in ['Population', 'Capacity', 'Max Population']:
+            self.set_detail(planet, attr)
+        # facilities and output
+        for attr in ['Total Facilities', 'Power Plants', 'Shield Genorators', 'Factories', 'Mines', 'Scanner Range', 'Shield Coverage', 'Energy Generation', 'Production Capacity']:
             if planet[attr] != -1.0:
-                planet['details'] += '<tr class="collapse"><td class="collapse">' + str(attr) + '</td><td class="collapse"><i class="'
-                if attr == 'Energy Generation':
-                    planet['details'] += 'fa-bolt'
-                elif 'Ti' in attr:
-                    planet['details'] += 'ti'
-                elif 'Li' in attr:
-                    planet['details'] += 'li'
-                elif 'Si' in attr:
-                    planet['details'] += 'si'
-                if 'Availability' in attr:
-                    planet['details'] += ' col'
-                planet['details'] += '">' + str(planet[attr]) + '</i></td></tr>'
-        planet['details'] += '<tr class="collapse"><td class="collapse">Inhabitant</td><td class="collapse">' + str(planet['Inhabitant']) + '</td></tr>'
+                self.set_detail(planet, attr)
+        # Minerals
+        for attr in ['Titanium Availability', 'Titanium Output', 'Titanium On Surface', 'Lithium Availability', 'Lithium Output', 'Lithium On Surface', 'Silicon Availability', 'Silicon Output', 'Silicon On Surface']:
+            if planet[attr] != -1.0:
+                self.set_detail(planet, attr)
+
+        self.set_detail(planet, 'Inhabitant')
         return planet
+
+    def set_color(self, attr, value=None):
+        color = ''
+        if attr == 'Inhabitant':
+            if 'me' in value:
+                color = 'springgreen'
+            elif 'team' in value:
+                color = 'deepskyblue'
+            elif 'enemy' in value:
+                color = 'crimson'
+        elif attr == 'Habitability':
+            if value > self.player.colonize_min_hab and value > 0:
+                color = 'limegreen'
+            elif value > 0:
+                color = 'lime'
+            elif value > -10:
+                color = 'yellow'
+            else:
+                color = 'red'
+        elif value and type(value) is int:
+            if self.player.race['hab_' + attr.lower() + '_immune']:
+                color = 'limegreen'
+            elif value in range(self.player.race['hab_' + attr.lower()], self.player.race['hab_' + attr.lower() + '_stop']):
+                color = 'lime'
+            elif value in range(self.player.race['hab_' + attr.lower()] - 5, self.player.race['hab_' + attr.lower()]) or value in range(self.player.race['hab_' + attr.lower() + '_stop'], self.player.race['hab_' + attr.lower() + '_stop'] + 5):
+                color = 'yellow'
+            else:
+                color = 'red'
+        elif attr == 'Mines' or 'Ti' in attr or 'Li' in attr or 'Si' in attr:
+            color = 'tan'
+        elif 'Production' in attr or 'Factories' in attr:
+            color = 'orchid'
+        elif 'Shield' in attr:
+            color = 'lightskyblue'
+        elif 'Power' in attr or 'Energy' in attr:
+            color = 'cyan'
+        if 'Scan' in attr:
+            color = 'pink'
+        if color != '':
+            color = '" style="color: ' + color
+        return color
+
+    def set_class(self, attr):
+        iclass = ''
+        if attr == 'Energy Generation':
+            iclass = 'fa-bolt'
+        elif 'Ti' in attr:
+            iclass = 'ti'
+        elif 'Li' in attr:
+            iclass = 'li'
+        elif 'Si' in attr:
+            iclass = 'si'
+        if 'Availability' in attr:
+            iclass += ' col'
+        return iclass
+
+    def set_detail(self, planet, attr):
+        value = planet[attr]
+        if attr in ['Habitability', 'Gravity', 'Temperature', 'Radiation', 'Inhabitant']:
+            color = self.set_color(attr, value)
+        else:
+            color = self.set_color(attr)
+        iclass = self.set_class(attr)
+        if 'i' in iclass:
+            color1 = ''
+        else:
+            color1 = color
+        planet['details'] += '<tr class="collapse"><td class="collapse' + color + '">' + str(attr) + '</td><td class="collapse"><i class="' + iclass + color1 + '">' + str(value) + '</i></td></tr>'
 
 
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
