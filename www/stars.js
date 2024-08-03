@@ -160,7 +160,6 @@ function show_order_sidebar(show=false) {
     } else {
         current_sidebar = null;
         toggle(document.getElementById('sidebar_order'), 'hide', true);
-        show_screen(null);
     }
 }
 
@@ -1349,4 +1348,9 @@ function engine_chart(chart, data, element_id=null) {
             charts[element_id] = jschart;
         }
     }
+}
+
+function assign_waypoint(place) {
+    post('orders', '?waypoint=' + place);
+    show_screen('orders');
 }

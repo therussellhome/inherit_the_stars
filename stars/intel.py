@@ -1,5 +1,6 @@
 import copy
 from .defaults import Defaults
+from .reference import Reference
 
 
 """ Default values (default, min, max)  """
@@ -47,6 +48,7 @@ class Intel(Defaults):
         # Special handling for locations to remove relative and reduce memory size
         if 'location' in report:
             report['location_root'] = report['location'].root_location.xyz
+            report['reference_root'] = Reference(reference=report['location'].root_reference)
             report['system_key'] = '{:.20f},{:.20f},{:.20f}'.format(*(report['location'].root_location.xyz))
             report['location'] = report['location'].xyz
         self.date = date

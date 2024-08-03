@@ -26,40 +26,44 @@ class RenderStars(PlayerUI):
             return
         # Copy all suns
         for (s, i) in self.player.get_intel(by_type='StarSystem').items():
-            system = self.set_details('StarSystem', self.systems_color, i)
+            system = self.set_details('StarSystem', self.systems_color, i, s.ID)
             self.systems.append({'location': i.location, 'system_key': i.system_key})
             self.details[i.system_key] = [system]
         for (s, i) in self.player.get_intel(by_type='Sun').items():
-            sun = self.set_details('Sun', i.color, i)
+            sun = self.set_details('Sun', i.color, i, s.ID)
             self.details[i.system_key].append(sun)
         for (p, i) in self.player.get_intel(by_type='Planet').items():
             if p.ID == self.player.planets[0].ID:
                 self.home_system = i.system_key
-                self.homeworld = len(self.details[i.system_key])
-            planet = self.set_details('Planet', i.color, i)
+                self.homeworld = len(self.details[i.system_key]) -1
+            planet = self.set_details('Planet', i.color, i, p.ID)
             self.details[i.system_key].append(planet)
         for (a, i) in self.player.get_intel(by_type='Asteroid').items():
-            asteroid = self.set_details('Asteroid', self.asteroids_color, i)
+            asteroid = self.set_details('Asteroid', self.asteroids_color, i, a.ID)
             self.asteroids.append({'location': i.location, 'system_key': i.system_key})
             if i.system_key not in self.details:
                 self.details[i.system_key] = []
             self.details[i.system_key].append(asteroid)
         for (w, i) in self.player.get_intel(by_type='Wormhole').items():
-            wormhole = self.set_details('Wormhole', self.wormholes_color, i)
+            wormhole = self.set_details('Wormhole', self.wormholes_color, i, w.ID)
             self.wormholes.append({'location': i.location, 'system_key': i.system_key})
             if i.system_key not in self.details:
                 self.details[i.system_key] = []
             self.details[i.system_key].append(wormhole)
         for (s, i) in self.player.get_intel(by_type='Ship').items():
-            ship = self.set_details('Ship', self.deep_space_color, i)
+            team = 'other'
+            ship = self.set_details('Ship', self.deep_space_color, i, s.ID)
+            if s in self.player.ships:
+                team = 'me'
             if i.system_key not in self.details:
                 self.deep_space.append({'location': i.location, 'system_key': i.system_key})
                 self.details[i.system_key] = []
             self.details[i.system_key].append(ship)
+            self.details[i.system_key][-1]['team'] = team
 
-    def set_details(self, _type, _color, i):
+    def set_details(self, _type, _color, i, ID):
         intel_obj = copy.copy(i)
-        obj_dict = {'type': _type, 'color': _color}
+        obj_dict = {'type': _type, 'color': _color, 'ID': ID}
         key_list = ['system_key', 'location_root', 'location', 'size']
         if hasattr(i, 'location_root_history'):
             key_list.append('location_root_history')
