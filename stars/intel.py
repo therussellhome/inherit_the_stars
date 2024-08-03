@@ -41,6 +41,10 @@ TRACK_ACCUMULATING = {
 
 """ Class for the players view of the galaxy """
 class Intel(Defaults):
+    """ Initialize """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     """ Add a report with specal handling for location to lock to an x, y, z """
     def add_report(self, reference, date, report):
         if self.name == '':
@@ -48,7 +52,8 @@ class Intel(Defaults):
         # Special handling for locations to remove relative and reduce memory size
         if 'location' in report:
             report['location_root'] = report['location'].root_location.xyz
-            report['reference_root'] = Reference(reference=report['location'].root_reference)
+            if report['location'].reference:
+                report['reference_root'] = Reference(report['location'].root_reference)
             report['system_key'] = '{:.20f},{:.20f},{:.20f}'.format(*(report['location'].root_location.xyz))
             report['location'] = report['location'].xyz
         self.date = date

@@ -36,6 +36,7 @@ class Location(Defaults):
             kwargs['x'] = args[0].x
             kwargs['y'] = args[0].y
             kwargs['z'] = args[0].z
+            kwargs['reference'] = args[0].reference
         elif len(args) == 3:
             kwargs['x'] = args[0]
             kwargs['y'] = args[1]

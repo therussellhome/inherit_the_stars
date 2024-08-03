@@ -51,6 +51,29 @@ class Order(Defaults):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         game_engine.register(self)
+        print(kwargs)
+
+    def __getattribute__(self, name, check=None):
+        if name == 'location' and (check == None or check == True):
+            loc = self.__getattribute__(name, False).__dict__
+            if check == None:
+                print('getting location:', end=' ')
+            if loc.reference:
+                print(loc.reference.ID)
+            else:
+                print(loc.xyz)
+        return super().__getattribute__(name)
+
+    def __setattr__(self, name, value):
+        if name == 'location':
+            print('old location:', end=' ')
+            self.__getattribute__(name, True)
+            print('seting location:', end=' ')
+            if value.reference:
+                print(value.reference.ID)
+            else:
+                print(value.xyz)
+        return super().__setattr__(name, value)
 
     """ Calculate where to move to """
     def move_calc(self, fleet_location, in_system_only=False):

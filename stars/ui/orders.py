@@ -71,7 +71,9 @@ class Orders(PlayerUI):
                     order = self.get_order(True)
                     order.location.reference = Reference(action.split('=')[1])
                     locale = self.player.get_intel(reference=order.location.reference)
-                    print('74', locale)
+                    print('74:', action.split('=')[1], '=>', locale)
+                    if locale:
+                        print(locale.__dict__)
                     xyz = locale.location
                     self.orders_x = xyz[0]
                     self.orders_y = xyz[1]
@@ -158,11 +160,13 @@ class Orders(PlayerUI):
                         self.orders_set_deep_space = False
                     self.orders_destination = self.player.get_name(order.location.reference)
                     xyz = self.player.get_intel(reference=order.location.reference).location
-                    root_reference = self.player.get_intel(reference=order.location.reference).reference_root
-                    if root_reference and order.location.reference != root_reference:
+                    tmp_intel = self.player.get_intel(reference=order.location.reference)
+                    if hasattr(tmp_intel, 'reference_root'):
+                        root_reference = tmp_intel.reference_root
                         print(root_reference)
-                        print(root_reference.__dict__)
                         self.orders_destination += '<br/> at ' + self.player.get_name(root_reference)
+                    elif +order.location.reference == 'StarSystem':
+                        self.orders_destination = 'The ' + self.orders_destination + ' System'
                 else:
                     self.orders_destination = 'Deep Space'
                     xyz = order.location.xyz

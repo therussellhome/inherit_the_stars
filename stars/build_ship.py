@@ -57,6 +57,7 @@ class BuildShip(BuildQueue):
                             self.planet.player.add_ships(self.ship, f)
                             f - Reference(self)
                             f.order = Order(location=Location(reference=self.planet))
+                            print(f.order.location.reference.ID)
                             break
                     else:
                         self.planet.player.add_ships(self.ship)

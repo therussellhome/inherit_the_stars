@@ -31,9 +31,10 @@ class Fleets(PlayerUI):
                         self.fleet_index = i
         self.fleet_list.append('<th></th>'
             + '<th><i class="no_pad_i" title="Name of the Fleet">Name</i></th>'
-            + '<th><i class="no_pad_i" title="X Cordinate">X</i></th>'
-            + '<th><i class="no_pad_i" title="Y Cordinate">Y</i></th>'
-            + '<th><i class="no_pad_i" title="Z Cordinate">Z</i></th>'
+            + '<th><i title="Location">Location</i></th>'
+            #+ '<th><i class="no_pad_i" title="X Cordinate">X</i></th>'
+            #+ '<th><i class="no_pad_i" title="Y Cordinate">Y</i></th>'
+            #+ '<th><i class="no_pad_i" title="Z Cordinate">Z</i></th>'
             + '<th><i class="fa-free-code-camp no_pad_i" title="Fuel">Fuel</i></th>'
             + '<th><i class="no_pad_i" title="KT of People in fleet"></i>People</th>'
             + '<th><i class="ti no_pad_i" title="Titanium">in </i></th>'
@@ -46,12 +47,19 @@ class Fleets(PlayerUI):
                 continue
             if intel.name == fleet.ID:
                 intel.name = 'Fleet #' + str(i+1)
+            xyz = fleet.order.location.xyz
+            if fleet.order.location.reference:
+                shown = order.location.reference.ID
+            else:
+                shown = '( ' + str(round(xyz[0], 5)) + ', ' + str(round(xyz[1], 5)) + ', ' + str(round(xyz[2], 5)) + ' )'
+            title = '( ' + str(xyz[0]) + ', ' + str(xyz[1]) + ', ' + str(xyz[2]) + ' )'
             self.fleet_list.append('<tr>'
                 + '<td><i class="button fas fa-eye" title="Select Fleet" onclick="post(\'fleets\', \'?select_' + str(i) + '\')"></i></td>'
                 + '<td><i class="no_pad_i" title="' + str(intel.name) + '">' + '{:.8}'.format(intel.name) + '</i></td>'
-                + '<td><i class="no_pad_i" title="' + str(intel.location[0]) + '">' + '{:.5}'.format(intel.location[0]) + '</i></td>'
-                + '<td><i class="no_pad_i" title="' + str(intel.location[1]) + '">' + '{:.5}'.format(intel.location[1]) + '</i></td>'
-                + '<td><i class="no_pad_i" title="' + str(intel.location[2]) + '">' + '{:.5}'.format(intel.location[2]) + '</i></td>'
+                + '<td><i class="no_pad_i" title="' + title + '">' + shown + '</i></td>'
+                #+ '<td><i class="no_pad_i" title="' + str(intel.location[0]) + '">' + '{:.5}'.format(intel.location[0]) + '</i></td>'
+                #+ '<td><i class="no_pad_i" title="' + str(intel.location[1]) + '">' + '{:.5}'.format(intel.location[1]) + '</i></td>'
+                #+ '<td><i class="no_pad_i" title="' + str(intel.location[2]) + '">' + '{:.5}'.format(intel.location[2]) + '</i></td>'
                 + '<td>' + str(fleet.fuel) + '</td>'
                 + '<td>' + str(fleet.cargo.people) + '</td>'
                 + '<td>' + str(fleet.cargo.titanium) + '</td>'

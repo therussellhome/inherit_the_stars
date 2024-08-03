@@ -178,10 +178,10 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         if len(self.orders) > 0:
-            self.move_to = self.orders[0].move_calc(self.location, in_system_only)
+            self.move_to = self.orders[0].move_calc(self.order.location, in_system_only)
         else:
-            self.move_to = self.location
-        if self.move_to.root_location == self.location.root_location:
+            self.move_to = self.order.location
+        if self.move_to.root_location == self.order.location.root_location:
             multi_fleet.add(self)
         else:
             self.is_stationary = False
