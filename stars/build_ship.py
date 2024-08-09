@@ -57,9 +57,12 @@ class BuildShip(BuildQueue):
                             self.planet.player.add_ships(self.ship, f)
                             f - Reference(self)
                             f.order = Order(location=Location(reference=self.planet))
-                            print(f.order.location.reference.ID)
+                            print('BuildShip[ new_fleet_location ]:', end=' ')
+                            f.order.location.get_display('place')
                             break
                     else:
+                        #self.ship.location = Location(reference=self.planet)
+                        print('BuildShip adding ships to player')
                         self.planet.player.add_ships(self.ship)
                 self.ship.description = self.buships.ship_design.ID
                 self.ship.add_component(self.to_build.pop(0), False)

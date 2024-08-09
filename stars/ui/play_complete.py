@@ -17,6 +17,8 @@ class PlayComplete(PlayerUI):
             return
         if action == 'refresh':
             self.player_ready = not self.player.ready_to_generate
+        elif action == 'save':
+            self.player.save()
         elif action != 'reset':
             self.player.ready_to_generate = True
             self.player.save()

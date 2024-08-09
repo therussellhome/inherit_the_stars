@@ -69,20 +69,27 @@ class Orders(PlayerUI):
             elif action.startswith('waypoint='):
                 if self.orders_set_edit:
                     order = self.get_order(True)
+                    print('Orders.set_waypoint[ old_location ]:', end=' ')
+                    order.location.get_display('all')
                     order.location.reference = Reference(action.split('=')[1])
                     locale = self.player.get_intel(reference=order.location.reference)
-                    print('74:', action.split('=')[1], '=>', locale)
+                    print('76:', action.split('=')[1], '=>', locale)
                     if locale:
                         print(locale.__dict__)
-                    xyz = locale.location
+                        xyz = locale.location
+                    else:
+                        xyz = order.location.xyz
                     self.orders_x = xyz[0]
                     self.orders_y = xyz[1]
                     self.orders_z = xyz[2]
                     self.update(order)
+                    print('Orders.set_waypoint[ new_location ]:', end=' ')
+                    order.location.get_display('all')
                 self.orders_set_edit = False
                 self.orders_set_deep_space = False
             elif action.startswith('set_deep_space'):
                 self.orders_set_deep_space = True
+                print('92:', 'Setting Deep Space')
         fleet = self.get_fleet()
         order = self.get_order(True)
         # Display options
@@ -93,11 +100,11 @@ class Orders(PlayerUI):
         self.orders_x = min(self.player.game.x, max(self.player.game.x * -1.0, self.orders_x))
         self.orders_y = min(self.player.game.y, max(self.player.game.y * -1.0, self.orders_y))
         self.orders_z = min(self.player.game.z, max(self.player.game.z * -1.0, self.orders_z))
-        self.orders_ti_display = self.orders_ti * fleet.stats.cargo_max
-        self.orders_li_display = self.orders_li * fleet.stats.cargo_max
-        self.orders_si_display = self.orders_si * fleet.stats.cargo_max
-        self.orders_pop_display = self.orders_pop * fleet.stats.cargo_max
-        self.orders_fuel_display = self.orders_fuel * fleet.stats.fuel_max
+        self.orders_ti_display = self.orders_ti / 100 * fleet.stats.cargo_max
+        self.orders_li_display = self.orders_li / 100 * fleet.stats.cargo_max
+        self.orders_si_display = self.orders_si / 100 * fleet.stats.cargo_max
+        self.orders_pop_display = self.orders_pop / 100 * fleet.stats.cargo_max
+        self.orders_fuel_display = self.orders_fuel / 100 * fleet.stats.fuel_max
         # Load settings from orders library
         if self.orders_library != self.options_orders_library[0]:
             pass #TODO
@@ -111,14 +118,15 @@ class Orders(PlayerUI):
         else:
             self.orders_close[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'); show_screen(null)">Close</i>'
         """ Destination """
-        disabled = ''
+        disabled = ' '
         if not self.orders_set_deep_space:
-            disabled = ' disabled="true"'
+            print('123:', 'No Setting Deep Space')
+            disabled += 'disabled="true" '
         self.orders_xyz.append('<td><i class="button fas fa-edit" title="Set Deep Space" onclick="post(\'orders\', \'?set_deep_space\')"></i></td>')
         self.orders_xyz[-1] += \
-                '<td style="text-align: left">X <input' + disabled + ' style="width: 15ex" id="orders_x" type="number" onchange="post(\'orders\')"/> ly</td>' +\
-                '<td style="text-align: center">Y <input' + disabled + ' style="width: 15ex" id="orders_y" type="number" onchange="post(\'orders\')"/> ly</td>' +\
-                '<td style="text-align: right">Z <input' + disabled + ' style="width: 15ex" id="orders_z" type="number" onchange="post(\'orders\')"/> ly</td>'
+                '<td style="text-align: left">X <input' + disabled + 'style="width: 15ex" id="orders_x" type="number" onchange="post(\'orders\', \'?update\')"/> ly</td>' +\
+                '<td style="text-align: center">Y <input' + disabled + 'style="width: 15ex" id="orders_y" type="number" onchange="post(\'orders\', \'?update\')"/> ly</td>' +\
+                '<td style="text-align: right">Z <input' + disabled + 'style="width: 15ex" id="orders_z" type="number" onchange="post(\'orders\', \'?update\')"/> ly</td>'
         """ Sidebar """
         # Close
         self.orders_sidebar.append('<td><i class="button fas fa-times-circle" title="Close" onclick="show_order_sidebar()"></i></td>')
@@ -163,7 +171,7 @@ class Orders(PlayerUI):
                     tmp_intel = self.player.get_intel(reference=order.location.reference)
                     if hasattr(tmp_intel, 'reference_root'):
                         root_reference = tmp_intel.reference_root
-                        print(root_reference)
+                        #print(+root_reference, -root_reference, sep='/')
                         self.orders_destination += '<br/> at ' + self.player.get_name(root_reference)
                     elif +order.location.reference == 'StarSystem':
                         self.orders_destination = 'The ' + self.orders_destination + ' System'
@@ -189,6 +197,10 @@ class Orders(PlayerUI):
                         or round(self.orders_z, 8) != round(xyz[2], 8):
                     self.orders_destination = 'Deep Space'
                     order.location = Location(self.orders_x, self.orders_y, self.orders_z)
+                elif not order.location.reference:
+                    order.location.x = self.orders_x
+                    order.location.y = self.orders_y
+                    order.location.z = self.orders_z
             else:
                 order[key] = self['orders_' + key]
         self.load(order)

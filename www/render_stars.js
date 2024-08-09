@@ -174,12 +174,9 @@ function onKeyPress(event) {
     }
     // display ship orders
     else if(event.key == "o") {
-        for(var i = 0; i < details[selected_id.toString()].length; i++) {
-            var item = details[selected_id.toString()][i]
-            if(item.type === 'Ship' && item.team === 'me') {
-                show_screen('fleets');
-                post('fleets', '?ship=' + item.ID);
-            }
+        if(capture_selected.startsWith('Ship')) {
+            show_screen('fleets');
+            post('fleets', '?ship=' + capture_selected);
         }
     }
     // add waypoint
@@ -293,7 +290,7 @@ function select_object(obj, index=true, flyto=true, is_out_system=true) {
 
 // Gets all the objects in a system or at a point
 function get_system(intersected, index) {
-    if(intersected === true || intersected.name === 'in_system'){
+    if(intersected === true || intersected.name === 'in_system' || intersected.parent.name === 'in_system'){
         return
     }
     var inner_system = new THREE.Group();

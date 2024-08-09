@@ -51,44 +51,48 @@ class Order(Defaults):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         game_engine.register(self)
-        print(kwargs)
+        print('order.__init__', kwargs)
 
-    def __getattribute__(self, name, check=None):
+    def __getattribute__(self, name, check=False):
         if name == 'location' and (check == None or check == True):
-            loc = self.__getattribute__(name, False).__dict__
+            loc = super().__getattribute__(name)
             if check == None:
-                print('getting location:', end=' ')
-            if loc.reference:
-                print(loc.reference.ID)
-            else:
-                print(loc.xyz)
+                print('get Order location:', end=' ')
+            loc.get_display('pos,ref')
         return super().__getattribute__(name)
 
     def __setattr__(self, name, value):
         if name == 'location':
-            print('old location:', end=' ')
-            self.__getattribute__(name, True)
-            print('seting location:', end=' ')
-            if value.reference:
-                print(value.reference.ID)
-            else:
-                print(value.xyz)
+            print('old Order location:', end=' ')
+            loc = self.__getattribute__(name, True)
+            print('set Order location:', end=' ')
+            value.get_display('pos,ref')
+            print('Change in Terrameters:', (loc - value) / stars_math.TERAMETER_2_LIGHTYEAR)
         return super().__setattr__(name, value)
 
     """ Calculate where to move to """
     def move_calc(self, fleet_location, in_system_only=False):
+        print('Order.move_calc[ fleet_location ]:', end=' ')
+        fleet_location.get_display('pos,ref')
         # In-system moves allowed
         if fleet_location.root_location == self.location.root_location:
+            print('in-system move:', end=' ')
+            self.location.get_display('pos,ref')
             return self.location
         # Intentionally stopped or not allowed to move outside of system
         if self.speed == 0 or in_system_only:
+            print('No move')
             return fleet_location
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
         if self.standoff == 'No Standoff':
-            print('Order sent a location')
+            print('no-standoff move:', end=' ')
+            self.location.get_display('pos,ref')
             return self.location
-        return fleet_location.move(self.location, standoff=self._standoff(fleet_location))
+        location = fleet_location.move(self.location, standoff=self._standoff(fleet_location))
+        print('standard move:', end=' ')
+        location.get_display('pos,ref')
+        return location
 
     """ Calculates the standoff distance for the fleet """
     def _standoff(self, fleet_location):

@@ -50,7 +50,6 @@ class Fleet(Defaults):
     """ Initialize and register """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.location = self.order.location
         game_engine.register(self)
 
     """ Provide calculated values """
@@ -72,6 +71,9 @@ class Fleet(Defaults):
                 self_dict[name] += s.fuel
         elif name == 'initiative':
             self_dict[name] = max(self.ships, key=lambda x: x.initiative).initiative
+        elif name == 'location':
+            print('Setting Fleet location to self.order.location')
+            self_dict[name] = self.order.location
         return super().__getattribute__(name)
 
     """ Adds ships to the fleet """
@@ -135,7 +137,7 @@ class Fleet(Defaults):
 
     """ Update cache """
     def next_hundreth(self):
-        self.move_to = self.location
+        self.move_to = self.order.location
         self.is_stationary = True
         self.order_complete = True
         self.hyperdenial_effect = [0.0, 0.0]
@@ -143,6 +145,8 @@ class Fleet(Defaults):
 
     """ Update location and apply orbit offset """
     def update_location(self, location):
+        print('Fleet.update_location[ old_location ]', end=' ')
+        self.order.location.get_display('pos,ref')
         # Either offset from ship 0 or orbit the thing being referenced
         offset = 0
         reference = location.reference
@@ -154,13 +158,18 @@ class Fleet(Defaults):
             offset_distances = {'Sun': 3, 'Planet': 1}
             offset = offset_distances.get(+(reference), offset)
             location = Location(reference=reference, offset=offset * FLEET_OFFSET)
+            if len(self.ships) > 0:
+                reference = Reference(self.ships[0])
         # Update all ships
         for s in self.ships:
             if reference == s:
                 s.location = Location(location)
             else:
                 s.location = Location(reference=reference, offset=SHIP_OFFSET)
-        self.location = location
+        print('Fleet.update_location[ location ]', end=' ')
+        location.get_display('pos,ref')
+        if location.xyz != self.order.location.xyz:
+            print('Fleet Changed Location')
         self.order.location = location
 
     """ Check if the fleet can/ordered to move """
@@ -178,7 +187,10 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         if len(self.orders) > 0:
+            print('Fleet Name:', self.player.get_name(self))
             self.move_to = self.orders[0].move_calc(self.order.location, in_system_only)
+            print('Set self.move_to', end=': ')
+            self.move_to.get_display('place')
         else:
             self.move_to = self.order.location
         if self.move_to.root_location == self.order.location.root_location:
@@ -199,10 +211,10 @@ class Fleet(Defaults):
         colonizers.sort(key=lambda x: x.commissioning, reverse=True)
         # Check for planets meeting the criteria
         planets = []
-        if self.location.in_system:
+        if self.order.location.in_system:
             max_terraform = self.player.max_terraform()
             hab_terraform = (max_terraform, max_terraform, max_terraform)
-            for planet in self.location.root_reference.planets:
+            for planet in self.order.location.root_reference.planets:
                 if planet.is_colonized():
                     continue
                 elif planet.habitability(self.player.race, hab_terraform) >= self.player.colonize_min_hab:
@@ -225,7 +237,7 @@ class Fleet(Defaults):
     def activate_hyperdenial(self):
         # Not scheduled to move
         if self.is_stationary:
-            self.stats.hyperdenial.activate(self.player, self.location.root_location)
+            self.stats.hyperdenial.activate(self.player, self.order.location.root_location)
 
     """ Hyperdenials affecting me """
     def in_hyperdenial(self, effect, other_player, blackhole=False):
@@ -239,11 +251,16 @@ class Fleet(Defaults):
 
     """ Does all the moving calculations and then moves the ships """
     def move(self):
+        print('\n * * *  Fleet Move  * * *\n')
+        print('Starting Fleet Location', end=': ')
+        self.order.location.get_display('place')
+        print('is_stationary: ', self.is_stationary)
         if self.is_stationary:
             return
         # Determine speed
-        speed = self.order.speed
+        speed = self.orders[0].speed
         hyperdenial = self.hyperdenial_effect
+        print('Hyperdenials:', hyperdenial)
         stop_at = None
         distance = 0.0
         # Manual stargate or auto stargate
@@ -251,7 +268,7 @@ class Fleet(Defaults):
         if (speed == -2 or speed == -1) and (start and end):
             # TODO pay for stargateing
             stop_at = end.location
-            distance = self.location - stop_at
+            distance = self.order.location - stop_at
             for ship in self.ships:
                 ship.gate(distance, start.stats.stargate.strength)
         # Manual stargate but no gate or ship would be destroyed
@@ -259,8 +276,9 @@ class Fleet(Defaults):
             pass
         # Auto speed
         elif speed == -1:
+            print('Auto', end=': ')
             # initial speed
-            distance = self.location - self.move_to
+            distance = self.order.location - self.move_to
             if distance < 1:
                 speed = math.ceil(math.sqrt(distance * 100.0))
             else:
@@ -268,21 +286,26 @@ class Fleet(Defaults):
                 distance = 1
             # reduce speed until safe
             while speed > 0:
-                stop_at = self.location.move(self.move_to, distance)
+                stop_at = self.order.location.move(self.move_to, distance)
                 if self._fuel_calc(speed, distance, hyperdenial) <= self.fuel and self._damage_check(speed, hyperdenial) == 0:
                     break
                 speed -= 1
                 distance = (speed ** 2) / 100
+            print(speed)
         # Manual speed
         else:
-            distance = min(self.location - self.move_to, (speed ** 2) / 100)
-            stop_at = self.location.move(self.move_to, distance)
+            print('Manual', end=': ')
+            distance = min(self.order.location - self.move_to, (speed ** 2) / 100)
+            stop_at = self.order.location.move(self.move_to, distance)
             if self._fuel_calc(speed, distance, hyperdenial) > self.fuel:
                 speed = 1
-                distance = min(self.location - self.move_to, (speed ** 2) / 100)
-                stop_at = self.location.move(self.move_to, distance)
+                distance = min(self.order.location - self.move_to, (speed ** 2) / 100)
+                stop_at = self.order.location.move(self.move_to, distance)
+            print(speed)
         # Move the fleet
         if stop_at:
+            print('Moving to', end=': ')
+            stop_at.get_display('place')
             self.update_location(stop_at)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
@@ -301,37 +324,40 @@ class Fleet(Defaults):
                     self.fuel += engine.siphon_calc(distance)
                     ship.take_damage(0, engine.damage_calc(speed, mass_per_engine, distance, hyperdenial))
             self.fuel_distribution() # Do now in case of ships dying in battle
-        if self.location.root_location != self.move_to.root_location:
+        if self.order.location.root_location != self.move_to.root_location:
             self.order_complete = False
         multi_fleet.add(self)
+        print('Ending Fleet Location', end=': ')
+        self.order.location.get_display('place')
+        print('\n * * *  End Move  * * *\n')
 
     """ Post combat, move inside the system """
     def move_in_system(self):
-        if self.move_to.root_location == self.location.root_location:
+        if self.move_to.root_location == self.order.location.root_location:
             self.update_location(self.move_to)
 
     """ Orbital mineral extraction """
     def orbital_extraction(self):
-        if not self.is_stationary or self.stats.extraction_rate == 0 or not self.location.reference ^ 'Planet' or self.location.reference.is_colonized():
+        if not self.is_stationary or self.stats.extraction_rate == 0 or not self.order.location.reference ^ 'Planet' or self.order.location.reference.is_colonized():
             return
         for ship in self.ships:
             for (component, qty) in ship.components.items():
                 if component.extraction_rate > 0:
                     cargo_space = self.stats.cargo_max - self.cargo.sum()
-                    self.cargo += self.location.reference.extract_minerals(component, qty, cargo_space)
+                    self.cargo += self.order.location.reference.extract_minerals(component, qty, cargo_space)
         # cargo is intentionally not redistributed yet
 
     """ Lay mines """
     def lay_mines(self):
-        if not self.is_stationary or self.stats.mines_laid == 0 or not self.location.in_system:
+        if not self.is_stationary or self.stats.mines_laid == 0 or not self.order.location.in_system:
             return
-        self.location.root_reference.lay_mines(int(self.stats.mines_laid / 100), self.player)
+        self.order.location.root_reference.lay_mines(int(self.stats.mines_laid / 100), self.player)
 
     """ Check that there is a planet that is colonized by someone other than you, then tell all ships that can bomb to bomb it """
     def bomb(self):
-        if not self.is_stationary or len(self.stats.bombs) == 0 or not self.location.reference ^ 'Planet' or not self.location.reference.is_colonized():
+        if not self.is_stationary or len(self.stats.bombs) == 0 or not self.order.location.reference ^ 'Planet' or not self.order.location.reference.is_colonized():
             return
-        planet = self.location.reference
+        planet = self.order.location.reference
         if self.player.get_relation(planet.player) != 'enemy':
             return
         for b in self.stats.bombs:
@@ -343,7 +369,7 @@ class Fleet(Defaults):
             return
         enemy = []
         neutral = []
-        for f in multi_fleet.get(self.location):
+        for f in multi_fleet.get(self.order.location):
             relation = self.player.get_relation(f.player)
             if relation == 'enemy':
                 enemy.append(f)
@@ -377,8 +403,8 @@ class Fleet(Defaults):
         if not self.is_stationary or not self.order.scrap:
             return
         if self.cargo.people > 0:
-            if self.location.reference ^ 'Planet' and self.location.reference.player == self.player:
-                self.location.reference.on_surface.people += self.cargo.people
+            if self.order.location.reference ^ 'Planet' and self.order.location.reference.player == self.player:
+                self.order.location.reference.on_surface.people += self.cargo.people
             else:
                 #TODO error message
                 # Cancel scrap order
@@ -430,7 +456,7 @@ class Fleet(Defaults):
 
     """ Merges the fleet with the target fleet """
     def merge(self): # TODO Test
-        f = self.location.reference
+        f = self.order.location.reference
         if not self.order.merge or not f ^ 'Fleet' or f != self.order.location.reference or f.player != self.player:
             return
         ~f + self.ships
@@ -440,22 +466,22 @@ class Fleet(Defaults):
     """ Perform anticloak scanning """
     def scan_anticloak(self):
         if self.stats.scanner.anti_cloak > 0:
-            scan.anticloak(self.player, self.location, self.stats.scanner.anti_cloak)
+            scan.anticloak(self.player, self.order.location, self.stats.scanner.anti_cloak)
 
     """ Perform hyperdenial scanning """
     def scan_hyperdenial(self):
         if self.stats.hyperdenial.radius > 0:
-            scan.hyperdenial(self.player, self.location, self.stats.hyperdenial.radius)
+            scan.hyperdenial(self.player, self.order.location, self.stats.hyperdenial.radius)
            
     """ Perform penetrating scanning """
     def scan_penetrating(self):
         if self.stats.scanner.penetrating > 0:
-            scan.penetrating(self.player, self.location, self.stats.scanner.penetrating)
+            scan.penetrating(self.player, self.order.location, self.stats.scanner.penetrating)
 
     """ Perform normal scanning """
     def scan_normal(self):
         if self.stats.scanner.normal > 0:
-            scan.normal(self.player, self.location, self.stats.scanner.normal)
+            scan.normal(self.player, self.order.location, self.stats.scanner.normal)
 
     """ Create a report about itself """
     def scan_self(self):
@@ -464,12 +490,12 @@ class Fleet(Defaults):
 
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):
-        distance = self.move_to - self.location
+        distance = self.move_to - self.order.location
         gate_needed = max(self.ships, key=lambda x: x.total_mass).total_mass + distance
         start_gates = []
         end_gates = []
         # Find stargates that allow transit
-        for fleet in multi_fleet.get(self.location):
+        for fleet in multi_fleet.get(self.order.location):
             if fleet.stats.stargate.strength > 0:
                 cost = self.player.get_treaty(fleet.player).buy_gate
                 if cost >= 0:
@@ -496,12 +522,12 @@ class Fleet(Defaults):
 
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
-        if self.location.reference ^ 'Fleet':
-            if self.location.reference.player == self.player:
-                return (self.location.reference.cargo, self.location.reference.stats.cargo_max)
-        elif self.location.reference ^ 'Planet' or self.location.reference ^ 'Sun':
-            if self.location.reference.player == self.player:
-                return (self.location.reference.on_surface, sys.maxsize)
+        if self.order.location.reference ^ 'Fleet':
+            if self.order.location.reference.player == self.player:
+                return (self.order.location.reference.cargo, self.order.location.reference.stats.cargo_max)
+        elif self.order.location.reference ^ 'Planet' or self.order.location.reference ^ 'Sun':
+            if self.order.location.reference.player == self.player:
+                return (self.order.location.reference.on_surface, sys.maxsize)
         return (None, 0)
 
     """ Calculates fuel usage for fleet """

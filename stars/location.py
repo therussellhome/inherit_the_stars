@@ -63,7 +63,7 @@ class Location(Defaults):
         if self.orbit_speed > 0:
             self.orbit_lon += self.orbit_speed
             if self.orbit_lon > 360:
-                self.orbit_lon - 360
+                self.orbit_lon %= 360
             # Force recalc of xyz
             self.__dict__['xyz'] = None
 
@@ -84,16 +84,21 @@ class Location(Defaults):
                     move_distance = standoff - distance
             else:
                 move_distance = distance - standoff
-        if distance == 0:
+        if distance == 0 and standoff == 0:
+            return target
+        if move_distance == 0:
             return self
         if not away:
             f = min(1, move_distance / distance)
         else:
             f = -1 * move_distance / distance
-        return Location(
+        location =  Location(
             x = self.xyz[0] - (self.xyz[0] - target.xyz[0]) * f,
             y = self.xyz[1] - (self.xyz[1] - target.xyz[1]) * f,
             z = self.xyz[2] - (self.xyz[2] - target.xyz[2]) * f)
+        if standoff == 0.0:
+            location.reference = Reference(self.reference)
+        return location
 
     """ Comparison allowing for close enough """
     def __eq__(self, other):
@@ -102,6 +107,38 @@ class Location(Defaults):
                 return True
         return False
 
+    """ Displays the stats of the location better than printing .__dict__ """
+    def get_display(self, types=None):
+        if types == None or types == 'all':
+            self.get_display('pos,ref,orbit-sys')
+            return
+        info = {}
+        if 'pos' in types:
+            info['x'] = self.__dict__['x']
+            info['y'] = self.__dict__['y']
+            info['z'] = self.__dict__['z']
+        if 'place' in types or 'pos' in types:
+            info['xyz'] = self.xyz
+        if 'place' in types or 'ref' in types:
+            info['reference'] = self.reference.__reference__
+        if 'ref' in types:
+            info['ref_xyz'] = self.ref_xyz
+            info['relative_xyz'] = self.relative_xyz
+        if 'root' in types or 'ref' in types:
+            if self.root_reference != None:
+                info['root_reference'] = self.root_reference.__reference__
+            if self.root_location != None:
+                info['root_location'] = self.root_location.xyz
+        if 'orbit' in types:
+            info['orbit_speed'] = self.orbit_speed
+            info['orbit_lon'] = self.orbit_lon
+        if 'sys' in types:
+            info['in_system'] = self.in_system
+            info['is_system'] = self.is_system
+        if 'orbit' in types or 'sys' in types:
+            info['offset'] = self.offset
+        print(info)
+        
     """ Returns the cardinal direction of itself reletive to another location object """
     def get_cardinal_direction(self, other):
         distance = self - other
