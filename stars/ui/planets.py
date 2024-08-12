@@ -247,15 +247,8 @@ class Planets(PlayerUI):
 
     def set_detail(self, planet, attr):
         value = planet[attr]
-        if attr in ['Habitability', 'Gravity', 'Temperature', 'Radiation', 'Inhabitant']:
-            color = self.set_color(attr, value)
-        else:
-            color = self.set_color(attr)
-        iclass = self.set_class(attr)
-        if 'i' in iclass:
-            color1 = ''
-        else:
-            color1 = color
+        icon = self.set_icon(attr, planet[attr])
+        value = self.set_format(attr, str(planet[attr]))
         border = ''
         if attr in ['Population', 'Power Plants']:
             border = ' border-top: 1px solid silver;'
