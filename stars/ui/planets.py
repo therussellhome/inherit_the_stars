@@ -72,7 +72,7 @@ class Planets(PlayerUI):
     """ Common intel processing planet and sun """
     def process_intel(self, reference, intel, world_type='Planet'):
         planet = {'name': intel.name, 'details': ''}
-        planet['Last Seen'] = self.player.date - intel.date
+        planet['Last Seen'] = float(self.player.date) - float(intel.date)
         planet['World Type'] = str(world_type)
         planet['Energy Generation'] = -1.0
         planet['Production Capacity'] = -1.0
@@ -108,27 +108,29 @@ class Planets(PlayerUI):
                 planet['Gravity'] = '?'
                 planet['Temperature'] = '?'
                 planet['Radiation'] = '?'
-            pop = reference.on_surface.people
-            planet['Population'] = str(pop)
+            popkt = self.player.race.pop_per_kt()
+            if hasattr(intel, 'Population'):
+                pop = intel['Population'] * popkt
+            else:
+                pop = reference.on_surface.people * popkt
+            planet['Population'] = pop
             planet['Max Population'] = reference.maxpop(self.player.race)#store max_pop in intel? 
-            planet['Capacity'] = pop / planet['Max Population']#getattr(intel, 'Population', '?')
+            planet['Capacity'] = round(pop / planet['Max Population'], 4)
             min_availability = reference.mineral_availability()
-            planet['Silicon Availability'] = round(min_availability.silicon, 2)
-            planet['Lithium Availability'] = round(min_availability.lithium, 2)
-            planet['Titanium Availability'] = round(min_availability.titanium, 2)
+            planet['Silicon Availability'] = round(min_availability.silicon, 3) * 10
+            planet['Lithium Availability'] = round(min_availability.lithium, 3) * 10
+            planet['Titanium Availability'] = round(min_availability.titanium, 3) * 10
             if hasattr(intel, 'Player'):
                 relation = self.player.get_relation(getattr(intel, 'Player'))
                 if relation == 'me':
                     facility_yj =  round(reference._operate('power_plants') * (1 + .05 * self.player.tech_level.propulsion))
-                    pop_yj = reference.on_surface.people * self.player.race.pop_per_kt() * self.player.race.energy_per_10k_colonists / 10000 / 100
+                    pop_yj = pop * self.player.race.energy_per_10k_colonists / 10000 / 100
                     planet['Energy Generation'] = round((facility_yj + pop_yj) * 100)
                     planet['Production Capacity'] = reference.operate_factories() * 100
                     planet['Power Plants'] = reference.power_plants
                     planet['Shield Genorators'] = reference.defenses
                     planet['Factories'] = reference.factories
                     planet['Mines'] = reference.mineral_extractors
-                    num_people = reference.on_surface.people * self.player.race.pop_per_kt()
-                    planet['Population'] += ' / ' +str(round(num_people))
                     operate = reference._operate('mineral_extractors')
                     planet['Silicon Output'] = round(operate * min_availability.silicon)
                     planet['Lithium Output'] = round(operate * min_availability.lithium)
@@ -137,7 +139,7 @@ class Planets(PlayerUI):
                     planet['Lithium On Surface'] = round(reference.on_surface.lithium)
                     planet['Titanium On Surface'] = round(reference.on_surface.titanium)
                     planet['Shield Coverage'] = str(reference.raise_shields())
-                    planet['Scanner Range'] = str(round((self.player.race.pop_per_kt() * pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0))) + ' / ' + str(round((reference.player.race.pop_per_kt() * pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0))
+                    planet['Scanner Range'] = str(round((pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0))) + ' / ' + str(round((pop * 3.0 / 4.0 / math.pi * (self.player.tech_level.electronics + 1.0) / 3000.0) ** (1.0 / 3.0) * 10.0))
                 else:
                     planet['Total Facilities'] = reference.power_plants + reference.defenses + reference.factories + reference.mineral_extractors
 
@@ -175,7 +177,7 @@ class Planets(PlayerUI):
 
     def get_details(self, planet={}):
         planet['details'] = ''
-        self.set_detail(planet, 'Date')
+        self.set_detail(planet, 'Last Seen')
         # Habitability
         for attr in ['Habitability', 'Gravity', 'Temperature', 'Radiation']:
             self.set_detail(planet, attr)
@@ -207,7 +209,7 @@ class Planets(PlayerUI):
             else:
                 return '🔴'
         # Grav, Temp, Rad
-        elif attr in ['Gravity', 'Temperature', 'Radiation]:
+        elif attr in ['Gravity', 'Temperature', 'Radiation']:
             if self.player.race['hab_' + attr.lower() + '_immune']:
                 return '🔵'
             elif value in range(self.player.race['hab_' + attr.lower()], self.player.race['hab_' + attr.lower() + '_stop']):
@@ -225,12 +227,23 @@ class Planets(PlayerUI):
                 return '🟡'
             else:
                 return '🔴'
+        elif 'Availability' in attr:
+            cl = self.player['colonize_min_' + attr[:2].lower()]
+            print(attr, cl, value)
+            if value > cl +5 :
+                return '🔵'
+            elif value > cl:
+                return '🟢'
+            elif value > cl -5:
+                return '🟡'
+            else:
+                return '🔴'
         return ''
 
     def set_format(self, attr, value):
         iclass = None
         if attr == 'Last Seen':
-            return value + ' years ago'
+            return '<i>' + value + ' years ago</i>'
         if attr == 'Energy Generation':
             iclass = 'fa-bolt'
         elif 'Ti' in attr:
@@ -239,11 +252,13 @@ class Planets(PlayerUI):
             iclass = 'li'
         elif 'Si' in attr:
             iclass = 'si'
+        elif attr == 'Capacity':
+            iclass = 'col'
         if 'Availability' in attr:
             iclass += ' col'
         if iclass:
             return '<i class="' + iclass + '">' + value + '</i>'
-        return value
+        return '<i>' + value + '</i>'
 
     def set_detail(self, planet, attr):
         value = planet[attr]
