@@ -50,7 +50,7 @@ class Planets(PlayerUI):
         sorted_planets = self.planet_sort(filtered_planets, self.planets_field)
         for p in sorted_planets:
             p = self.get_details(p)
-            self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')">' + str(p['name']) + '  $  ' + str(p[self.planets_field]) + '  $  ' + str(p['date']) + '</div></caption>')#'<tr class="collapse"><td class="collapse">' + str(p['name']) + '</td><td class="collapse">' + str(p[self.planets_field]) +'</td><td class="collapse">' + str(p['date']) + '</td></tr>')
+            self.planets_report.append('<td colspan="3"><table class="hfill collapse"><caption class="collapse" style="margin: 0;"><div class="fa-angle-double-down collapse" onclick="toggle(this.parentElement.parentElement, \'collapse\')"> ' + str(p['name']) + ' <span style="float: right;">' + str(p[self.planets_field]) + '</span></div></caption>')
             self.planets_report[-1] += '<tr class="collapse"><td class="collapse" colspan="3"><table class="hfill collapse">' + str(p['details']) + '</table></td></tr>'
             self.planets_report[-1] += '</table></td>'
             
@@ -72,7 +72,7 @@ class Planets(PlayerUI):
     """ Common intel processing planet and sun """
     def process_intel(self, reference, intel, world_type='Planet'):
         planet = {'name': intel.name, 'details': ''}
-        planet['date'] = intel.date
+        planet['Last Seen'] = self.player.date - intel.date
         planet['World Type'] = str(world_type)
         planet['Energy Generation'] = -1.0
         planet['Production Capacity'] = -1.0
@@ -89,7 +89,7 @@ class Planets(PlayerUI):
         planet['Shield Genorators'] = -1.0
         planet['Factories'] = -1.0
         planet['Mines'] = -1.0
-        if reference and intel.date != self.player.race.start_date:
+        if reference:
             planet['Inhabitant'] = str(getattr(intel, 'Player', 'uninhabited')) 
             if hasattr(intel, 'Player'):
                 planet['Inhabitant'] += '(' + str(self.player.get_relation(getattr(intel, 'Player'))) + ')'
@@ -175,6 +175,7 @@ class Planets(PlayerUI):
 
     def get_details(self, planet={}):
         planet['details'] = ''
+        self.set_detail(planet, 'Date')
         # Habitability
         for attr in ['Habitability', 'Gravity', 'Temperature', 'Radiation']:
             self.set_detail(planet, attr)
@@ -193,49 +194,43 @@ class Planets(PlayerUI):
         self.set_detail(planet, 'Inhabitant')
         return planet
 
-    def set_color(self, attr, value=None):
-        color = ''
+    def set_icon(self, attr, value=None):
         if attr == 'Inhabitant':
-            if 'me' in value:
-                color = 'springgreen'
-            elif 'team' in value:
-                color = 'deepskyblue'
-            elif 'enemy' in value:
-                color = 'crimson'
+            return {'(me)': '😀', '(team)': '🫡', '(neutral)': '🤔', '(enemy)': '😡'}.get(value.replace('.*(', '('), '')
         elif attr == 'Habitability':
             if value > self.player.colonize_min_hab and value > 0:
-                color = 'limegreen'
+                return '🔵'
             elif value > 0:
-                color = 'lime'
+                return '🟢'
             elif value > -10:
-                color = 'yellow'
+                return '🟡'
             else:
-                color = 'red'
-        elif value and type(value) is int:
+                return '🔴'
+        # Grav, Temp, Rad
+        elif attr in ['Gravity', 'Temperature', 'Radiation]:
             if self.player.race['hab_' + attr.lower() + '_immune']:
-                color = 'limegreen'
+                return '🔵'
             elif value in range(self.player.race['hab_' + attr.lower()], self.player.race['hab_' + attr.lower() + '_stop']):
-                color = 'lime'
+                return '🟢'
             elif value in range(self.player.race['hab_' + attr.lower()] - 5, self.player.race['hab_' + attr.lower()]) or value in range(self.player.race['hab_' + attr.lower() + '_stop'], self.player.race['hab_' + attr.lower() + '_stop'] + 5):
-                color = 'yellow'
+                return '🟡'
             else:
-                color = 'red'
-        elif attr == 'Mines' or 'Ti' in attr or 'Li' in attr or 'Si' in attr:
-            color = 'tan'
-        elif 'Production' in attr or 'Factories' in attr:
-            color = 'orchid'
-        elif 'Shield' in attr:
-            color = 'lightskyblue'
-        elif 'Power' in attr or 'Energy' in attr:
-            color = 'cyan'
-        if 'Scan' in attr:
-            color = 'pink'
-        if color != '':
-            color = '" style="color: ' + color
-        return color
+                return '🔴'
+        elif attr == 'Last Seen':
+            if value == 0.0:
+                return '🔵'
+            elif value < 1:
+                return '🟢'
+            elif value < 5:
+                return '🟡'
+            else:
+                return '🔴'
+        return ''
 
-    def set_class(self, attr):
-        iclass = ''
+    def set_format(self, attr, value):
+        iclass = None
+        if attr == 'Last Seen':
+            return value + ' years ago'
         if attr == 'Energy Generation':
             iclass = 'fa-bolt'
         elif 'Ti' in attr:
@@ -246,7 +241,9 @@ class Planets(PlayerUI):
             iclass = 'si'
         if 'Availability' in attr:
             iclass += ' col'
-        return iclass
+        if iclass:
+            return '<i class="' + iclass + '">' + value + '</i>'
+        return value
 
     def set_detail(self, planet, attr):
         value = planet[attr]
@@ -259,7 +256,10 @@ class Planets(PlayerUI):
             color1 = ''
         else:
             color1 = color
-        planet['details'] += '<tr class="collapse"><td class="collapse' + color + '">' + str(attr) + '</td><td class="collapse"><i class="' + iclass + color1 + '">' + str(value) + '</i></td></tr>'
+        border = ''
+        if attr in ['Population', 'Power Plants']:
+            border = ' border-top: 1px solid silver;'
+        planet['details'] += '<tr class="collapse"><td class="collapse" style="' + border + '">' + attr + '</td><td class="collapse" style="text-align: right; width: 100%;' + border + '">' + value + '</td><td style="' + border + '">' + icon + '</td></tr>'
 
 
 Planets.set_defaults(Planets, __defaults, sparse_json=False)
