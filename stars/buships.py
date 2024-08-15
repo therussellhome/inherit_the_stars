@@ -31,6 +31,8 @@ class BuShips(Defaults):
         if 'ship' not in kwargs and self.planet and self.planet.player: 
             # Force the creation of a fleet for the player to interact with
             self.ship.location = Location(reference=self.planet)
+            print('Ship Location', end=': ')
+            self.ship.location.get_display('place')
             self.planet.player.add_ships(self)
         if 'cost' not in kwargs and self.ship_design:
             self.cost = self.ship_design.cost

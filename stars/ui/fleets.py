@@ -48,9 +48,12 @@ class Fleets(PlayerUI):
             if intel.name == fleet.ID:
                 intel.name = 'Fleet #' + str(i+1)
             if fleet.location.reference:
-                location_intel = self.player.get_intel(reference=fleet.location.reference)
-                shown = location_intel.name
-                xyz = location_intel.location
+                if +fleet.location.reference == 'Intel':
+                    location_intel = fleet.location.reference
+                else:
+                    location_intel = self.player.get_intel(fleet.location.reference)
+                shown = self.player.get_name(location_intel)
+                xyz = location_intel.xyz
                 if fleet.location.reference.location.reference:
                     print('FleetScreen[ second-degree_reference ]:', end=' ')
                     fleet.location.reference.location.get_display('root,sys')
@@ -109,11 +112,12 @@ class Fleets(PlayerUI):
                 shown += str('<td>' + str(labels[order.speed]) + '</td>')
                 print('Fleet,orders[', I, ']:', end=' ')
                 order.location.get_display('place')
+                xyz = order.location.xyz
                 if order.location.reference:
+                    if +order.location.reference == 'Intel':
+                        xyz = order.location.reference.xyz
                     loc = self.player.get_name(order.location.reference)
-                    xyz = self.player.get_intel(reference=order.location.reference).location
                 else:
-                    xyz = order.location.xyz
                     loc = '( ' + str(round(xyz[0], 5)) + ', ' + str(round(xyz[1], 5)) + ', ' + str(round(xyz[2], 5)) + ' )'
                 title = '( ' + str(xyz[0]) + ', ' + str(xyz[1]) + ', ' + str(xyz[2]) + ' )'
                 shown += '<td title="' + title + '">' + loc + '</td>'

@@ -71,14 +71,12 @@ class Orders(PlayerUI):
                     order = self.get_order(True)
                     print('Orders.set_waypoint[ old_location ]:', end=' ')
                     order.location.get_display('all')
-                    order.location.reference = Reference(action.split('=')[1])
-                    locale = self.player.get_intel(reference=order.location.reference)
+                    locale = self.player.get_intel(reference=Reference(action.split('=')[1]))
                     print('76:', action.split('=')[1], '=>', locale)
                     if locale:
                         print(locale.__dict__)
-                        xyz = locale.location
-                    else:
-                        xyz = order.location.xyz
+                        order.location = Location(reference=locale)
+                    xyz = order.location.xyz
                     self.orders_x = xyz[0]
                     self.orders_y = xyz[1]
                     self.orders_z = xyz[2]
@@ -120,7 +118,6 @@ class Orders(PlayerUI):
         """ Destination """
         disabled = ' '
         if not self.orders_set_deep_space:
-            print('123:', 'No Setting Deep Space')
             disabled += 'disabled="true" '
         self.orders_xyz.append('<td><i class="button fas fa-edit" title="Set Deep Space" onclick="post(\'orders\', \'?set_deep_space\')"></i></td>')
         self.orders_xyz[-1] += \
@@ -166,14 +163,12 @@ class Orders(PlayerUI):
                 if order.location.reference:
                     if load:
                         self.orders_set_deep_space = False
-                    self.orders_destination = self.player.get_name(order.location.reference)
-                    xyz = self.player.get_intel(reference=order.location.reference).location
-                    tmp_intel = self.player.get_intel(reference=order.location.reference)
-                    if hasattr(tmp_intel, 'reference_root'):
-                        root_reference = tmp_intel.reference_root
-                        #print(+root_reference, -root_reference, sep='/')
+                    self.orders_destination = order.location.reference.name
+                    xyz = order.location.reference.location.xyz
+                    if hasattr(order.location.reference, 'reference_root'):
+                        root_reference = order.location.reference.reference_root
                         self.orders_destination += '<br/> at ' + self.player.get_name(root_reference)
-                    elif +order.location.reference == 'StarSystem':
+                    elif order.location.reference.type == 'StarSystem':
                         self.orders_destination = 'The ' + self.orders_destination + ' System'
                 else:
                     self.orders_destination = 'Deep Space'
@@ -188,19 +183,12 @@ class Orders(PlayerUI):
     def update(self, order):
         for key in Order.defaults:
             if key == 'location':
-                if order.location.reference:
-                    xyz = self.player.get_intel(reference=order.location.reference).location
-                else:
-                    xyz = order.location.xyz
+                xyz = order.location.xyz
                 if round(self.orders_x, 8) != round(xyz[0], 8) \
                         or round(self.orders_y, 8) != round(xyz[1], 8) \
                         or round(self.orders_z, 8) != round(xyz[2], 8):
                     self.orders_destination = 'Deep Space'
                     order.location = Location(self.orders_x, self.orders_y, self.orders_z)
-                elif not order.location.reference:
-                    order.location.x = self.orders_x
-                    order.location.y = self.orders_y
-                    order.location.z = self.orders_z
             else:
                 order[key] = self['orders_' + key]
         self.load(order)

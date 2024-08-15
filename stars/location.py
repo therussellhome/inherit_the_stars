@@ -104,12 +104,13 @@ class Location(Defaults):
     def __eq__(self, other):
         if isinstance(other, Location):
             if self - other < stars_math.TERAMETER_2_LIGHTYEAR / 1000:
-                return True
+                if +self.reference == +other.reference and -self.reference == -other.reference:
+                    return True
         return False
 
     """ Displays the stats of the location better than printing .__dict__ """
     def get_display(self, types=None):
-        if types == None or types == 'all':
+        if types == 'all':
             self.get_display('pos,ref,orbit-sys')
             return
         info = {}
@@ -118,16 +119,42 @@ class Location(Defaults):
             info['y'] = self.__dict__['y']
             info['z'] = self.__dict__['z']
         if 'place' in types or 'pos' in types:
-            info['xyz'] = self.xyz
+            if +self.reference == 'Intel':
+                info['type'] = 'Intel'
+                if hasattr(self.reference, 'xyz'):
+                    info['xyz'] = self.reference.xyz
+                else:
+                    info['type'] += ' No xyz'
+            else:
+                info['xyz'] = self.xyz
         if 'place' in types or 'ref' in types:
-            info['reference'] = self.reference.__reference__
+            if +self.reference == 'Intel':
+                info['type'] = 'Intel'
+                if hasattr(self.reference, 'reference'):
+                    info['reference'] = self.reference.reference.__reference__
+                else:
+                    info['type'] += ' No reference'
+            else:
+                info['reference'] = self.reference.__reference__
         if 'ref' in types:
             info['ref_xyz'] = self.ref_xyz
             info['relative_xyz'] = self.relative_xyz
         if 'root' in types or 'ref' in types:
-            if self.root_reference != None:
+            if +self.reference == 'Intel':
+                info['type'] = 'Intel'
+                if hasattr(self.reference, 'reference_root'):
+                    info['root_reference'] = self.reference.reference_root.__reference__
+                else:
+                    info['type'] += ' No reference_root'
+            elif self.root_reference != None:
                 info['root_reference'] = self.root_reference.__reference__
-            if self.root_location != None:
+            if +self.reference == 'Intel':
+                info['type'] = 'Intel'
+                if hasattr(self.reference, 'location_root'):
+                    info['root_location'] = self.reference.location_root
+                else:
+                    info['type'] += ' No location_root'
+            elif self.root_location != None:
                 info['root_location'] = self.root_location.xyz
         if 'orbit' in types:
             info['orbit_speed'] = self.orbit_speed
@@ -182,6 +209,8 @@ class Location(Defaults):
             return super().__getattribute__(name)
         # Check if reference has changed
         if self_dict['reference']:
+            if -self_dict['reference'] == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
+                print(self_dict['reference'].Print())
             # convert/reconert to absolute
             ref_xyz = self_dict['reference'].location.xyz
             if self_dict['xyz'] is None or self_dict['ref_xyz'] is None or self_dict['ref_xyz'] != ref_xyz or self_dict['root_reference'] is None:

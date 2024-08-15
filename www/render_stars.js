@@ -107,6 +107,7 @@ function add_top_level(render_stars, name, color) {
         if(name === 'systems' && home_system === group[i].system_key){
             home_system_index = i;
             console.log('home system index set to:', i);
+            console.log('positions?', group[i])
         }
         ids[i] = system_keys.push(group[i].system_key) -1;
         //selection_ids.push(group[i].ID);

@@ -1,11 +1,15 @@
 import copy
+from . import game_engine
 from .defaults import Defaults
 from .reference import Reference
+from .location import Location
 
 
 """ Default values (default, min, max)  """
 __defaults = {
+    'ID': '@UUID',
     'name': '',
+    'type': '',
     'date': '',
 }
 
@@ -44,18 +48,42 @@ class Intel(Defaults):
     """ Initialize """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        game_engine.register(self)
+        if self.ID == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
+            self.Print()
+
+    def Print(self):
+        print('Intel obj:', self.__dict__)
+
+    """ Provide calculated values """
+    def __getattribute__(self, name):
+        if name == 'location':
+            if self.ID == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
+                self.Print()
+            if hasattr(self, 'reference'):
+                return Location(reference=self['reference'])
+            elif hasattr(self, 'xyz'):
+                return Location(self.xyz[0], self.xyz[1], self.xyz[2])
+            else:
+                print('Fail to get Intel.location!!')
+                return Location()
+        return super().__getattribute__(name)
 
     """ Add a report with specal handling for location to lock to an x, y, z """
     def add_report(self, reference, date, report):
+        if self.type == '':
+            self.type = +reference
         if self.name == '':
             self.name = reference.ID
         # Special handling for locations to remove relative and reduce memory size
         if 'location' in report:
             report['location_root'] = report['location'].root_location.xyz
+            report['xyz'] = report['location'].xyz
             if report['location'].reference:
                 report['reference_root'] = Reference(report['location'].root_reference)
+            report['reference'] = reference
             report['system_key'] = '{:.20f},{:.20f},{:.20f}'.format(*(report['location'].root_location.xyz))
-            report['location'] = report['location'].xyz
+            del report['location']
         self.date = date
         for key in report:
             # Capture historical when the date changes

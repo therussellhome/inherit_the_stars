@@ -29,6 +29,8 @@ class Reference(game_engine.BaseClass):
             reference = args[0] + '/' + args[1]
         object.__setattr__(self, '__reference__', reference)
         object.__setattr__(self, '__cache__', cache)
+        if -self == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
+            print('Reference:', game_engine.get(reference, create_new=False))
 
     """ Override the subscript operator """
     def __getitem__(self, name):

@@ -153,6 +153,8 @@ def load_inspect(save_type, name):
     __registry_block = True
     objs = load(save_type, name)
     __registry_block = False
+    print('object(s?):\n', objs)
+    print('\n * * * End Load * * *\n')
     return objs
 
 
@@ -160,13 +162,17 @@ def load_inspect(save_type, name):
 def load(save_type, name):
     objs = []
     file_name = __user_dir / save_type / name
+    print('\n * * * Load Start * * *\n\n:', 'Filename =', file_name)
     if not file_name.exists():
         file_name = __game_dir / save_type / name
+        print('Get Game File:', file_name)
     if file_name.is_dir():
+        print('Filename is a directory')
         for fname in file_name.iterdir():
             with open(fname, 'r') as f:
                 objs.append(from_json(f.read(), str(fname)))
     else:
+        print('opening file')
         with open(file_name, 'r') as f:
             objs.append(from_json(f.read(), str(file_name)))
     if len(objs) == 1:
@@ -235,6 +241,13 @@ def __decode(o):
             decoded[__decode(k)] = __decode(v)
         # It's a class
         if '__class__' in o:
+            print(decoded['__class__'], end='')
+            if 'ID' in o:
+                print(':', decoded['ID'], end='')
+                if decoded['__class__'] == 'Intel' and decoded['ID'] == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
+                    print()
+                    print(o, end='')
+            print()
             del decoded['__class__']
             return __new(o['__class__'], decoded, **decoded)
         else:
