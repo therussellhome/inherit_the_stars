@@ -251,10 +251,6 @@ class Player(Defaults):
                 location = ships[0].ship.location
             else:
                 location = ships[0].location
-            print('Player.add_ships[ location ]:', location.__dict__, end=' ')
-            if location.reference:
-                print('[ reference ]:', location.reference.ID, end='')
-            print()
             fleet = Fleet(player=Reference(self), order=Order(location=location))
             self.fleets.append(fleet)
         for s in ships:

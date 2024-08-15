@@ -49,6 +49,8 @@ __defaults = {
 class Order(Defaults):
     """ Initialize and register """
     def __init__(self, *args, **kwargs):
+        if 'location' in kwargs:
+            kwargs['location'] = Location(kwargs['location'])
         super().__init__(*args, **kwargs)
         game_engine.register(self)
         print('order.__init__', kwargs)
@@ -78,21 +80,21 @@ class Order(Defaults):
         if fleet_location.root_location == self.location.root_location:
             print('in-system move:', end=' ')
             self.location.get_display('pos,ref')
-            return self.location
+            return Location(self.location)
         # Intentionally stopped or not allowed to move outside of system
         if self.speed == 0 or in_system_only:
             print('No move')
-            return fleet_location
+            return Location(fleet_location)
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
         if self.standoff == 'No Standoff':
             print('no-standoff move:', end=' ')
             self.location.get_display('pos,ref')
-            return self.location
-        location = fleet_location.move(self.location, standoff=self._standoff(fleet_location))
+            return Location(self.location)
         print('standard move:', end=' ')
+        location = fleet_location.move(self.location, standoff=self._standoff(fleet_location))
         location.get_display('pos,ref')
-        return location
+        return Location(location)
 
     """ Calculates the standoff distance for the fleet """
     def _standoff(self, fleet_location):

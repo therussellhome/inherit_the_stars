@@ -49,8 +49,6 @@ class Intel(Defaults):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         game_engine.register(self)
-        if self.ID == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
-            self.Print()
 
     def Print(self):
         print('Intel obj:', self.__dict__)
@@ -58,8 +56,6 @@ class Intel(Defaults):
     """ Provide calculated values """
     def __getattribute__(self, name):
         if name == 'location':
-            if self.ID == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
-                self.Print()
             if hasattr(self, 'reference'):
                 return Location(reference=self['reference'])
             elif hasattr(self, 'xyz'):

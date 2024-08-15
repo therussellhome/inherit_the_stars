@@ -56,6 +56,13 @@ class Location(Defaults):
             del kwargs['new_orbit']
         if 'reference' in kwargs:
             kwargs['reference'] = Reference(kwargs['reference'])
+            if kwargs['reference'] and 'offset' not in kwargs:
+                if 'x' in kwargs:
+                    del kwargs['x']
+                if 'y' in kwargs:
+                    del kwargs['y']
+                if 'z' in kwargs:
+                    del kwargs['z']
         super().__init__(*args, **kwargs)
     
     """ Orbit """
@@ -85,8 +92,10 @@ class Location(Defaults):
             else:
                 move_distance = distance - standoff
         if distance == 0 and standoff == 0:
+            print('(distance = 0)', end=' ')
             return target
         if move_distance == 0:
+            print('(move_distance = 0)', end=' ')
             return self
         if not away:
             f = min(1, move_distance / distance)
@@ -96,8 +105,9 @@ class Location(Defaults):
             x = self.xyz[0] - (self.xyz[0] - target.xyz[0]) * f,
             y = self.xyz[1] - (self.xyz[1] - target.xyz[1]) * f,
             z = self.xyz[2] - (self.xyz[2] - target.xyz[2]) * f)
-        if standoff == 0.0:
-            location.reference = Reference(self.reference)
+        #if standoff == 0.0:
+        #    location.reference = Reference(self.reference)
+        print('(main move)', end=' ')
         return location
 
     """ Comparison allowing for close enough """
@@ -114,13 +124,14 @@ class Location(Defaults):
             self.get_display('pos,ref,orbit-sys')
             return
         info = {}
+        if +self.reference == 'Intel':
+            info['type'] = 'Intel'
         if 'pos' in types:
             info['x'] = self.__dict__['x']
             info['y'] = self.__dict__['y']
             info['z'] = self.__dict__['z']
         if 'place' in types or 'pos' in types:
             if +self.reference == 'Intel':
-                info['type'] = 'Intel'
                 if hasattr(self.reference, 'xyz'):
                     info['xyz'] = self.reference.xyz
                 else:
@@ -129,7 +140,6 @@ class Location(Defaults):
                 info['xyz'] = self.xyz
         if 'place' in types or 'ref' in types:
             if +self.reference == 'Intel':
-                info['type'] = 'Intel'
                 if hasattr(self.reference, 'reference'):
                     info['reference'] = self.reference.reference.__reference__
                 else:
@@ -141,7 +151,6 @@ class Location(Defaults):
             info['relative_xyz'] = self.relative_xyz
         if 'root' in types or 'ref' in types:
             if +self.reference == 'Intel':
-                info['type'] = 'Intel'
                 if hasattr(self.reference, 'reference_root'):
                     info['root_reference'] = self.reference.reference_root.__reference__
                 else:
@@ -149,7 +158,6 @@ class Location(Defaults):
             elif self.root_reference != None:
                 info['root_reference'] = self.root_reference.__reference__
             if +self.reference == 'Intel':
-                info['type'] = 'Intel'
                 if hasattr(self.reference, 'location_root'):
                     info['root_location'] = self.reference.location_root
                 else:
@@ -162,7 +170,7 @@ class Location(Defaults):
         if 'sys' in types:
             info['in_system'] = self.in_system
             info['is_system'] = self.is_system
-        if 'orbit' in types or 'sys' in types:
+        if types != 'root':
             info['offset'] = self.offset
         print(info)
         
@@ -209,8 +217,6 @@ class Location(Defaults):
             return super().__getattribute__(name)
         # Check if reference has changed
         if self_dict['reference']:
-            if -self_dict['reference'] == '0c3e2e62-9e82-4e81-8a12-781b39a5d255':
-                print(self_dict['reference'].Print())
             # convert/reconert to absolute
             ref_xyz = self_dict['reference'].location.xyz
             if self_dict['xyz'] is None or self_dict['ref_xyz'] is None or self_dict['ref_xyz'] != ref_xyz or self_dict['root_reference'] is None:
