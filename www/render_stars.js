@@ -107,6 +107,7 @@ function add_top_level(render_stars, name, color) {
         if(name === 'systems' && home_system === group[i].system_key){
             home_system_index = i;
             console.log('home system index set to:', i);
+            console.log('positions?', group[i])
         }
         ids[i] = system_keys.push(group[i].system_key) -1;
         //selection_ids.push(group[i].ID);
@@ -174,12 +175,9 @@ function onKeyPress(event) {
     }
     // display ship orders
     else if(event.key == "o") {
-        for(var i = 0; i < details[selected_id.toString()].length; i++) {
-            var item = details[selected_id.toString()][i]
-            if(item.type === 'Ship' && item.team === 'me') {
-                show_screen('fleets');
-                post('fleets', '?ship=' + item.ID);
-            }
+        if(capture_selected.startsWith('Fleet')) {
+            show_screen('fleets');
+            post('fleets', '?fleet=' + capture_selected);
         }
     }
     // add waypoint
@@ -293,7 +291,7 @@ function select_object(obj, index=true, flyto=true, is_out_system=true) {
 
 // Gets all the objects in a system or at a point
 function get_system(intersected, index) {
-    if(intersected === true || intersected.name === 'in_system'){
+    if(intersected === true || intersected.name === 'in_system' || intersected.parent.name === 'in_system'){
         return
     }
     var inner_system = new THREE.Group();
@@ -344,7 +342,11 @@ function get_system(intersected, index) {
         } );
         if (system_data[i].type !== 'StarSystem') {
             var point = new THREE.Points( geometry, material );
-            point.name = system_data[i].type + '/' + system_data[i].ID;
+            if(system_data[i].type === 'Ship' && system_data[i].team === 'me') {
+                point.name = system_data[i].fleet;
+            } else {
+                point.name = system_data[i].type + '/' + system_data[i].ID;
+            }
             inner_system.add(point);
         }
     }

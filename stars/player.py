@@ -309,6 +309,8 @@ class Player(Defaults):
     
     """ Get the local name for something """
     def get_name(self, obj):
+        if isinstance(obj, Intel) or (isinstance(obj, Reference) and +obj == 'Intel'):
+            return obj.name
         intel = self.get_intel(reference=obj)
         if intel:
             return intel.name

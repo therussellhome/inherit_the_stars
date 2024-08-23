@@ -69,18 +69,25 @@ class Orders(PlayerUI):
             elif action.startswith('waypoint='):
                 if self.orders_set_edit:
                     order = self.get_order(True)
-                    order.location.reference = Reference(action.split('=')[1])
-                    locale = self.player.get_intel(reference=order.location.reference)
-                    print('74', locale)
-                    xyz = locale.location
+                    print('Orders.set_waypoint[ old_location ]:', end=' ')
+                    order.location.get_display('all')
+                    locale = self.player.get_intel(reference=Reference(action.split('=')[1]))
+                    print('76:', action.split('=')[1], '=>', locale)
+                    if locale:
+                        print(locale.__dict__)
+                        order.location = Location(reference=locale)
+                    xyz = order.location.xyz
                     self.orders_x = xyz[0]
                     self.orders_y = xyz[1]
                     self.orders_z = xyz[2]
                     self.update(order)
+                    print('Orders.set_waypoint[ new_location ]:', end=' ')
+                    order.location.get_display('all')
                 self.orders_set_edit = False
                 self.orders_set_deep_space = False
             elif action.startswith('set_deep_space'):
                 self.orders_set_deep_space = True
+                print('92:', 'Setting Deep Space')
         fleet = self.get_fleet()
         order = self.get_order(True)
         # Display options
@@ -91,11 +98,11 @@ class Orders(PlayerUI):
         self.orders_x = min(self.player.game.x, max(self.player.game.x * -1.0, self.orders_x))
         self.orders_y = min(self.player.game.y, max(self.player.game.y * -1.0, self.orders_y))
         self.orders_z = min(self.player.game.z, max(self.player.game.z * -1.0, self.orders_z))
-        self.orders_ti_display = self.orders_ti * fleet.stats.cargo_max
-        self.orders_li_display = self.orders_li * fleet.stats.cargo_max
-        self.orders_si_display = self.orders_si * fleet.stats.cargo_max
-        self.orders_pop_display = self.orders_pop * fleet.stats.cargo_max
-        self.orders_fuel_display = self.orders_fuel * fleet.stats.fuel_max
+        self.orders_ti_display = self.orders_ti / 100 * fleet.stats.cargo_max
+        self.orders_li_display = self.orders_li / 100 * fleet.stats.cargo_max
+        self.orders_si_display = self.orders_si / 100 * fleet.stats.cargo_max
+        self.orders_pop_display = self.orders_pop / 100 * fleet.stats.cargo_max
+        self.orders_fuel_display = self.orders_fuel / 100 * fleet.stats.fuel_max
         # Load settings from orders library
         if self.orders_library != self.options_orders_library[0]:
             pass #TODO
@@ -109,14 +116,14 @@ class Orders(PlayerUI):
         else:
             self.orders_close[-1] += ' title="Close Orders screen" onclick="post(\'orders\', \'?update\'); show_screen(null)">Close</i>'
         """ Destination """
-        disabled = ''
+        disabled = ' '
         if not self.orders_set_deep_space:
-            disabled = ' disabled="true"'
+            disabled += 'disabled="true" '
         self.orders_xyz.append('<td><i class="button fas fa-edit" title="Set Deep Space" onclick="post(\'orders\', \'?set_deep_space\')"></i></td>')
         self.orders_xyz[-1] += \
-                '<td style="text-align: left">X <input' + disabled + ' style="width: 15ex" id="orders_x" type="number" onchange="post(\'orders\')"/> ly</td>' +\
-                '<td style="text-align: center">Y <input' + disabled + ' style="width: 15ex" id="orders_y" type="number" onchange="post(\'orders\')"/> ly</td>' +\
-                '<td style="text-align: right">Z <input' + disabled + ' style="width: 15ex" id="orders_z" type="number" onchange="post(\'orders\')"/> ly</td>'
+                '<td style="text-align: left">X <input' + disabled + 'style="width: 15ex" id="orders_x" type="number" onchange="post(\'orders\', \'?update\')"/> ly</td>' +\
+                '<td style="text-align: center">Y <input' + disabled + 'style="width: 15ex" id="orders_y" type="number" onchange="post(\'orders\', \'?update\')"/> ly</td>' +\
+                '<td style="text-align: right">Z <input' + disabled + 'style="width: 15ex" id="orders_z" type="number" onchange="post(\'orders\', \'?update\')"/> ly</td>'
         """ Sidebar """
         # Close
         self.orders_sidebar.append('<td><i class="button fas fa-times-circle" title="Close" onclick="show_order_sidebar()"></i></td>')
@@ -156,13 +163,13 @@ class Orders(PlayerUI):
                 if order.location.reference:
                     if load:
                         self.orders_set_deep_space = False
-                    self.orders_destination = self.player.get_name(order.location.reference)
-                    xyz = self.player.get_intel(reference=order.location.reference).location
-                    root_reference = self.player.get_intel(reference=order.location.reference).reference_root
-                    if root_reference and order.location.reference != root_reference:
-                        print(root_reference)
-                        print(root_reference.__dict__)
+                    self.orders_destination = order.location.reference.name
+                    xyz = order.location.reference.location.xyz
+                    if hasattr(order.location.reference, 'reference_root'):
+                        root_reference = order.location.reference.reference_root
                         self.orders_destination += '<br/> at ' + self.player.get_name(root_reference)
+                    elif order.location.reference.type == 'StarSystem':
+                        self.orders_destination = 'The ' + self.orders_destination + ' System'
                 else:
                     self.orders_destination = 'Deep Space'
                     xyz = order.location.xyz
@@ -176,10 +183,7 @@ class Orders(PlayerUI):
     def update(self, order):
         for key in Order.defaults:
             if key == 'location':
-                if order.location.reference:
-                    xyz = self.player.get_intel(reference=order.location.reference).location
-                else:
-                    xyz = order.location.xyz
+                xyz = order.location.xyz
                 if round(self.orders_x, 8) != round(xyz[0], 8) \
                         or round(self.orders_y, 8) != round(xyz[1], 8) \
                         or round(self.orders_z, 8) != round(xyz[2], 8):

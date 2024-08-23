@@ -49,23 +49,52 @@ __defaults = {
 class Order(Defaults):
     """ Initialize and register """
     def __init__(self, *args, **kwargs):
+        if 'location' in kwargs:
+            kwargs['location'] = Location(kwargs['location'])
         super().__init__(*args, **kwargs)
         game_engine.register(self)
+        print('order.__init__', kwargs)
+
+    def __getattribute__(self, name, check=False):
+        if name == 'location' and (check == None or check == True):
+            loc = super().__getattribute__(name)
+        #    if check == None:
+        #        print('get Order location:', end=' ')
+            loc.get_display('pos,ref')
+        return super().__getattribute__(name)
+
+    def __setattr__(self, name, value):
+        if name == 'location':
+            print('old Order location:', end=' ')
+            loc = self.__getattribute__(name, True)
+            print('set Order location:', end=' ')
+            value.get_display('pos,ref')
+            print('Change in Terrameters:', (loc - value) / stars_math.TERAMETER_2_LIGHTYEAR)
+        return super().__setattr__(name, value)
 
     """ Calculate where to move to """
     def move_calc(self, fleet_location, in_system_only=False):
+        #print('Order.move_calc[ fleet_location ]:', end=' ')
+        #fleet_location.get_display('pos,ref')
         # In-system moves allowed
         if fleet_location.root_location == self.location.root_location:
-            return self.location
+        #    print('in-system move:', end=' ')
+        #    self.location.get_display('pos,ref')
+            return Location(self.location)
         # Intentionally stopped or not allowed to move outside of system
         if self.speed == 0 or in_system_only:
-            return fleet_location
+        #    print('No move')
+            return Location(fleet_location)
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
         if self.standoff == 'No Standoff':
-            print('Order sent a location')
-            return self.location
-        return fleet_location.move(self.location, standoff=self._standoff(fleet_location))
+        #    print('no-standoff move:', end=' ')
+        #    self.location.get_display('pos,ref')
+            return Location(self.location)
+        #print('standard move:', end=' ')
+        location = fleet_location.move(self.location, standoff=self._standoff(fleet_location))
+        #location.get_display('pos,ref')
+        return Location(location)
 
     """ Calculates the standoff distance for the fleet """
     def _standoff(self, fleet_location):

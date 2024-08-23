@@ -475,7 +475,7 @@ function planetary_slider(element, form, min, max, step) {
 }
 
 // Create a slider
-function speed_slider(element, form) {
+function speed_slider(element, form, tag='') {
     if(element.hasOwnProperty('noUiSlider')) {
         return;
     }
@@ -502,11 +502,12 @@ function speed_slider(element, form) {
             'max': 10
         }
     });
-    element.noUiSlider.on('change', function() { post(form) });
+    if(tag.startsWith('?')) { element.noUiSlider.on('change', function() { post(form, tag) }); }
+    else { element.noUiSlider.on('change', function() { post(form) }); }
 }
 
 // Create a slider
-function depart_slider(element, form) {
+function depart_slider(element, form, tag='') {
     if(element.hasOwnProperty('noUiSlider')) {
         return;
     }
@@ -537,11 +538,12 @@ function depart_slider(element, form) {
             'max': 10.0
         }
     });
-    element.noUiSlider.on('change', function() { post(form) });
+    if(tag.startsWith('?')) { element.noUiSlider.on('change', function() { post(form, tag) }); }
+    else { element.noUiSlider.on('change', function() { post(form) }); }
 }
 
 // Create a slider
-function slider(element, form, min, max, step, fractiondigits, units) {
+function slider(element, form, min, max, step, fractiondigits, units, tag='') {
     if(element.hasOwnProperty('noUiSlider')) {
         return;
     }
@@ -579,7 +581,8 @@ function slider(element, form, min, max, step, fractiondigits, units) {
     if(tooltips == false) {
         element.noUiSlider.tooltips = [false];
     }
-    element.noUiSlider.on('change', function() { post(form) });
+    if(tag.startsWith('?')) { element.noUiSlider.on('change', function() { post(form, tag) }); }
+    else { element.noUiSlider.on('change', function() { post(form) }); }
 }
 
 // Create a slider

@@ -24,16 +24,17 @@ class Fleets(PlayerUI):
             elif action.startswith('delete_order='):
                 to_delete = int(action.split('=')[1])
                 del self.player.fleets[self.fleet_index].orders[to_delete]
-            elif action.startswith('ship='):
-                ref = Reference('Ship/' + action.split('=')[1])
+            elif action.startswith('fleet='):
+                ref = action.split('=')[1]
+                if 'Fleet/' not in ref:
+                    ref = 'Fleet/' + ref
+                ref = Reference(ref)
                 for i in range(len(self.player.fleets)):
-                    if ref in self.player.fleets[i].ships:
+                    if ref == self.player.fleets[i]:
                         self.fleet_index = i
         self.fleet_list.append('<th></th>'
             + '<th><i class="no_pad_i" title="Name of the Fleet">Name</i></th>'
-            + '<th><i class="no_pad_i" title="X Cordinate">X</i></th>'
-            + '<th><i class="no_pad_i" title="Y Cordinate">Y</i></th>'
-            + '<th><i class="no_pad_i" title="Z Cordinate">Z</i></th>'
+            + '<th><i title="Location">Location</i></th>'
             + '<th><i class="fa-free-code-camp no_pad_i" title="Fuel">Fuel</i></th>'
             + '<th><i class="no_pad_i" title="KT of People in fleet"></i>People</th>'
             + '<th><i class="ti no_pad_i" title="Titanium">in </i></th>'
@@ -44,14 +45,32 @@ class Fleets(PlayerUI):
             intel = self.player.get_intel(reference=fleet)
             if not intel:
                 continue
-            if intel.name == fleet.ID:
-                intel.name = 'Fleet #' + str(i+1)
+            if intel.name == fleet.ID or intel.name.startswith('Fleet #'):
+                self.player.add_intel(fleet, {'name': 'Fleet #' + str(i+1)})
+            if fleet.location.reference:
+                if +fleet.location.reference == 'Intel':
+                    location_intel = fleet.location.reference
+                else:
+                    location_intel = self.player.get_intel(fleet.location.reference)
+                shown = self.player.get_name(location_intel)
+                xyz = location_intel.xyz
+                if fleet.location.reference.location.reference:
+                    print('FleetScreen[ second-degree_reference ]:', end=' ')
+                    fleet.location.reference.location.get_display('root,sys')
+                print('FleetScreen[ second-degree_location ]:', end=' ')
+                fleet.location.reference.location.get_display('place,pos')
+            else:
+                xyz = fleet.location.xyz
+                shown = '(' + str(round(xyz[0], 4)) + ', ' + str(round(xyz[1], 4)) + ', ' + str(round(xyz[2], 4)) + ')'
+            title = '( ' + str(xyz[0]) + ', ' + str(xyz[1]) + ', ' + str(xyz[2]) + ' )'
+            print('FleetsScreen[ title location ]:', title, end='; ')
+            fleet.location.get_display('sys')
+            print('FleetsScreen[ actual location ]:', xyz, end='; ')
+            fleet.location.get_display('place,pos')
             self.fleet_list.append('<tr>'
                 + '<td><i class="button fas fa-eye" title="Select Fleet" onclick="post(\'fleets\', \'?select_' + str(i) + '\')"></i></td>'
                 + '<td><i class="no_pad_i" title="' + str(intel.name) + '">' + '{:.8}'.format(intel.name) + '</i></td>'
-                + '<td><i class="no_pad_i" title="' + str(intel.location[0]) + '">' + '{:.5}'.format(intel.location[0]) + '</i></td>'
-                + '<td><i class="no_pad_i" title="' + str(intel.location[1]) + '">' + '{:.5}'.format(intel.location[1]) + '</i></td>'
-                + '<td><i class="no_pad_i" title="' + str(intel.location[2]) + '">' + '{:.5}'.format(intel.location[2]) + '</i></td>'
+                + '<td><i class="no_pad_i" title="' + title + '">' + shown + '</i></td>'
                 + '<td>' + str(fleet.fuel) + '</td>'
                 + '<td>' + str(fleet.cargo.people) + '</td>'
                 + '<td>' + str(fleet.cargo.titanium) + '</td>'
@@ -59,7 +78,7 @@ class Fleets(PlayerUI):
                 + '<td>' + str(fleet.cargo.silicon) + '</td>' + '</tr>')
         self.ships.append('<th><i title="Name of Ship Design">Ship Design</i></th>'
             + '<th><i class="fa-free-code-camp" title="Fuel">Fuel</i></th>'
-            + '<th><i title="KT of People in fleet"></i>People</th>'
+            + '<th><i title="KT of People in ship"></i>People</th>'
             + '<th><i class="ti" title="Titanium">in </i></th>'
             + '<th><i class="li" title="Lithium">in </i></th>'
             + '<th><i class="si" title="Silicon">in </i></th>')
@@ -90,15 +109,18 @@ class Fleets(PlayerUI):
                 else:
                     shown += str('<td></td>')
                 labels = ['stargate', 'auto', 'stopped', 'alef', 'bet', 'gimel', 'dalet', 'he', 'waw', 'zayin', 'chet', 'tet', 'yod'];
-                shown += str('<td>' + str(labels[order.speed]) + '</td><td>')
+                shown += str('<td>' + str(labels[order.speed]) + '</td>')
+                print('Fleet,orders[', I, ']:', end=' ')
+                order.location.get_display('place')
+                xyz = order.location.xyz
                 if order.location.reference:
-                    shown += order.location.reference.ID
+                    if +order.location.reference == 'Intel':
+                        xyz = order.location.reference.xyz
+                    loc = self.player.get_name(order.location.reference)
                 else:
-                    xyz = order.location.xyz
-                    shown += '( ' + str(round(xyz[0], 5)) + ', '
-                    shown += str(round(xyz[1], 5)) + ', '
-                    shown += str(round(xyz[2], 5)) + ' )'
-                shown += '</td>'
+                    loc = '( ' + str(round(xyz[0], 5)) + ', ' + str(round(xyz[1], 5)) + ', ' + str(round(xyz[2], 5)) + ' )'
+                title = '( ' + str(xyz[0]) + ', ' + str(xyz[1]) + ', ' + str(xyz[2]) + ' )'
+                shown += '<td title="' + title + '">' + loc + '</td>'
                 self.fleet_orders.append('<tr>'
                     + '<td><i class="button fas fa-edit" title="Select order" onclick="show_screen(\'orders\'), post(\'orders\', \'?load=' + str(I) + ';fleet_index=' + str(self.fleet_index) + ';screen=fleets;start\')"></td>'
                     + shown + '<td><i class="button far fa-trash-alt" title="Delete Order" onclick="post(\'fleets\', \'?select_' + str(self.fleet_index) + ';delete_order=' + str(I) + '\')"></i></td>'

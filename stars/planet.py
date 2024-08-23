@@ -11,7 +11,6 @@ from .cost import Cost
 from .defaults import Defaults
 from .facility import Facility, FACILITY_TYPES
 from .location import Location
-from .location import Location
 from .minerals import Minerals, MINERAL_TYPES
 from .reference import Reference
 from .tech import Tech
@@ -34,7 +33,6 @@ __defaults = {
     'on_surface': Cargo(),
     'player': Reference('Player'),
     'homeworld': False,
-    'location': Location(),
     'star_system': Reference('StarSystem'),
     # facilities where the key matches from the facility class
     'power_plants': (0, 0, sys.maxsize),
@@ -81,11 +79,13 @@ class Planet(Defaults):
                 self.init_minerals(1)
         if 'location' not in kwargs:
             distance_ly = self.distance / 100 * stars_math.TERAMETER_2_LIGHTYEAR
-            self.location = Location(reference=self.star_system, offset=distance_ly, lat=0)
-        if 'orbit_speed' not in kwargs:
-            self.orbit_speed = uniform(0.01, 1.0)
-        if 'age' not in kwargs:
-            self.age = randint(0, 3000)
+            self.location = Location(reference=self.star_system, offset=distance_ly, orbit_speed=uniform(0.01, 1.0))
+            self.location.orbit_lon = (randint(0, 3000) * self.location.orbit_speed) % 360
+        #TODO Unused code
+        #if 'orbit_speed' not in kwargs:
+        #    self.orbit_speed = uniform(0.01, 1.0)
+        #if 'age' not in kwargs:
+        #    self.age = randint(0, 3000)
         game_engine.register(self)
 
     """ Create remaining minerals with a minimum value 1-99 """

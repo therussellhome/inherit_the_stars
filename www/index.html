@@ -626,7 +626,7 @@ void main() {
             <td class="hfill" style="padding-right: 9px;"><input class="hfill" id="orders_description" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Speed</td>
-            <td class="hfill"><div class="onload" id="orders_speed" onload="speed_slider(this, 'orders')"/></td>
+            <td class="hfill"><div class="onload" id="orders_speed" onload="speed_slider(this, 'orders', '?update')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td class="" ><i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar(); post('orders')"></i></td>
             <td class="hfill" id="orders_destination"/></td>
@@ -642,7 +642,7 @@ void main() {
             <td class="hfill"><select id="orders_library" class="hfill" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Depart</td>
-            <td class="hfill"><div class="onload" id="orders_depart" onload="depart_slider(this, 'orders')"/></td>
+            <td class="hfill"><div class="onload" id="orders_depart" onload="depart_slider(this, 'orders', '?update')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Transfer To</td>
             <td class="hfill"><select id="orders_transfer_to" class="hfill" onchange="post('orders', '?update')"/></td>
@@ -654,7 +654,7 @@ void main() {
             <td><input id="orders_lay_mines" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Auto Colonize</td>
-            <td><input id="orders_colonize" type="checkbox" onchange="post('orders', '?update')"/></td>
+            <td><input id="orders_auto_colonize" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Merge Fleets</td>
             <td><input id="orders_merge" type="checkbox" onchange="post('orders', '?update')"/></td>
@@ -672,27 +672,27 @@ void main() {
             <td>Dunnage</td>
             <td>Trade</td>
         </tr><tr>
-            <td class="hfill"><div class="onload" id="orders_ti" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
+            <td class="hfill"><div class="onload" id="orders_ti" onload="slider(this, 'orders', 0, 100, 1, 0, '%', '?update')"/></td>
             <td><i class="ti" id="orders_ti_display" style="text-align: center; min-width: 5em"/></td>
             <td><input id="orders_ti_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
             <td><input id="orders_ti_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr><tr>
-            <td class="hfill"><div class="onload" id="orders_li" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
+            <td class="hfill"><div class="onload" id="orders_li" onload="slider(this, 'orders', 0, 100, 1, 0, '%', '?update')"/></td>
             <td><i class="li" id="orders_li_display" style="text-align: center; min-width: 5em"/></td>
             <td><input id="orders_li_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
             <td><input id="orders_li_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr><tr>
-            <td class="hfill"><div class="onload" id="orders_si" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
+            <td class="hfill"><div class="onload" id="orders_si" onload="slider(this, 'orders', 0, 100, 1, 0, '%', '?update')"/></td>
             <td><i class="si" id="orders_si_display" style="text-align: center; min-width: 5em"/></td>
             <td><input id="orders_si_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
             <td><input id="orders_si_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr><tr>
-           <td class="hfill"><div class="onload" id="orders_pop" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
+           <td class="hfill"><div class="onload" id="orders_pop" onload="slider(this, 'orders', 0, 100, 1, 0, '%', '?update')"/></td>
             <td><i class="pop" id="orders_pop_display" style="text-align: center; min-width: 5em"/></td>
             <td><input id="orders_pop_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
             <td></td>
         </tr><tr class="slider_padding_min"></tr><tr>
-            <td class="hfill"><div class="onload" id="orders_fuel" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
+            <td class="hfill"><div class="onload" id="orders_fuel" onload="slider(this, 'orders', 0, 100, 1, 0, '%', '?update')"/></td>
             <td><i class="fa-free-code-camp" id="orders_fuel_display" style="text-align: center; min-width: 5em"/></td>
             <td></td>
             <td><input id="orders_fuel_trade" type="checkbox" onchange="post('orders', '?update')"/></td>

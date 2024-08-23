@@ -13,7 +13,7 @@ from .cargo import Cargo
 __defaults = {
     'ID': '@UUID',
     'planets': [],
-    'location': Location(),
+    'location': Location(is_system=True),
     'minefield': (0, 0, sys.maxsize),
     'minefield_owner': Reference('Player'),
 }
@@ -28,6 +28,7 @@ class StarSystem(Defaults):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         game_engine.register(self)
+        self.location.is_system = True
 
     """ create planets """
     def create_system(self, race=None, num_planets=-1):
