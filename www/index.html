@@ -119,8 +119,12 @@ void main() {
 <div class="sidebar2 hide" id="sidebar_planetary"><table id="planetary_sidebar" style="height: 100%">
 </table></div>
 
-<div class="sidebar2 hide" id="sidebar_order"><table id="order_sidebar" style="height: 100%">
+<div class="sidebar2 hide" id="sidebar_order"><table id="orders_sidebar" style="height: 100%">
 </table></div>
+
+<div class="screen overlay_message hide" id="screen_orders_info" style="white-space">
+        <div style="font-size: 200%" onclick="show_screen(null)">Press 'W' when you have selected the desired waypoint</div>
+</div>
 
 <div class="screen overlay_message" id="screen_home" style="white-space: nowrap">
     <div style="font-size: 600%">INHERIT THE</div>
@@ -614,55 +618,52 @@ void main() {
     <table class="topbar hfill"><tr>
         <td><img title="Orders" src="ships.png"/></td>
         <td class="hfill" style="font-size: 200%">Waypoints</td>
-        <td class="hfill" id="topbar"></td>
+        <td class="hfill" id="orders_close"></td>
     </tr></table>
     <table class="hfill">
         <tr>
             <td>Note</td>
-            <td class="hfill" style="padding-right: 9px;"><input class="hfill" id="orders_description" onchange="post('orders')"/></td>
+            <td class="hfill" style="padding-right: 9px;"><input class="hfill" id="orders_description" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Speed</td>
             <td class="hfill"><div class="onload" id="orders_speed" onload="speed_slider(this, 'orders')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
-            <td colspan="2" class="hfill" id="orders_destination"/></td>
+            <td class="" ><i class="button fas fa-edit" title="Order Sdiebar" onclick="show_order_sidebar(); post('orders')"></i></td>
+            <td class="hfill" id="orders_destination"/></td>
         </tr><tr>
-            <td colspan="2" class="hfill"><select id="orders_standoff" class="hfill" onchange="post('orders')"/></td>
+            <td colspan="2" class="hfill"><select id="orders_standoff" class="hfill" onchange="post('orders', '?update')"/></td>
         </tr><tr>
-            <td colspan="2"><table class="hfill"><tr>
-                <td style="text-align: left">X <input style="width: 15ex" id="orders_x" type="number" onchange="post('orders')"/> ly</td>
-                <td style="text-align: center">Y <input style="width: 15ex" id="orders_y" type="number" onchange="post('orders')"/> ly</td>
-                <td style="text-align: right">Z <input style="width: 15ex" id="orders_z" type="number" onchange="post('orders')"/> ly</td>
-            </tr></table></td>
+            <td colspan="2"><table class="hfill" id="orders_xyz"></table></td>
         </tr>
     </table><table class="hfill">
         <caption><div class="fa-angle-double-down"> At Destination</div></caption>
         <tr>
             <td>Orders Library</td>
-            <td class="hfill"><select id="orders_library" class="hfill" onchange="post('orders')"/></td>
+            <td class="hfill"><select id="orders_library" class="hfill" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Depart</td>
             <td class="hfill"><div class="onload" id="orders_depart" onload="depart_slider(this, 'orders')"/></td>
         </tr><tr class="slider_padding"></tr><tr>
             <td>Transfer To</td>
-            <td class="hfill"><select id="orders_transfer_to" class="hfill" onchange="post('orders')"/></td>
+            <td class="hfill"><select id="orders_transfer_to" class="hfill" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Hyperdenial</td>
-            <td><input id="orders_hyperdenial" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_hyperdenial" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Lay Minefield</td>
-            <td><input id="orders_lay_mines" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_lay_mines" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Auto Colonize</td>
-            <td><input id="orders_colonize" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_colonize" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Merge Fleets</td>
-            <td><input id="orders_merge" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_merge" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Scrap Fleet</td>
-            <td><input id="orders_scrap" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_scrap" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr>
             <td>Patrol</td>
-            <td><input id="orders_patrol" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_patrol" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr>
     </table><table class="hfill">
         <caption><div class="fa-angle-double-down"> Cargo Master</div></caption>
@@ -673,33 +674,35 @@ void main() {
         </tr><tr>
             <td class="hfill"><div class="onload" id="orders_ti" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
             <td><i class="ti" id="orders_ti_display" style="text-align: center; min-width: 5em"/></td>
-            <td><input id="orders_ti_dunnage" type="checkbox" onchange="post('orders')"/></td>
-            <td><input id="orders_ti_trade" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_ti_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
+            <td><input id="orders_ti_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr><tr>
             <td class="hfill"><div class="onload" id="orders_li" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
             <td><i class="li" id="orders_li_display" style="text-align: center; min-width: 5em"/></td>
-            <td><input id="orders_li_dunnage" type="checkbox" onchange="post('orders')"/></td>
-            <td><input id="orders_li_trade" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_li_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
+            <td><input id="orders_li_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr><tr>
             <td class="hfill"><div class="onload" id="orders_si" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
             <td><i class="si" id="orders_si_display" style="text-align: center; min-width: 5em"/></td>
-            <td><input id="orders_si_dunnage" type="checkbox" onchange="post('orders')"/></td>
-            <td><input id="orders_si_trade" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_si_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
+            <td><input id="orders_si_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr><tr>
            <td class="hfill"><div class="onload" id="orders_pop" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
-            <td id="orders_pop_display" style="text-align: center; min-width: 5em"></td>
-            <td><input id="orders_pop_dunnage" type="checkbox" onchange="post('orders')"/></td>
+            <td><i class="pop" id="orders_pop_display" style="text-align: center; min-width: 5em"/></td>
+            <td><input id="orders_pop_dunnage" type="checkbox" onchange="post('orders', '?update')"/></td>
             <td></td>
         </tr><tr class="slider_padding_min"></tr><tr>
             <td class="hfill"><div class="onload" id="orders_fuel" onload="slider(this, 'orders', 0, 100, 1, 0, '%')"/></td>
-            <td><i class="fuel" id="orders_fuel_display" style="text-align: center; min-width: 5em"/></i></td>
+            <td><i class="fa-free-code-camp" id="orders_fuel_display" style="text-align: center; min-width: 5em"/></td>
             <td></td>
-            <td><input id="orders_fuel_trade" type="checkbox" onchange="post('orders')"/></td>
+            <td><input id="orders_fuel_trade" type="checkbox" onchange="post('orders', '?update')"/></td>
         </tr><tr class="slider_padding_min"></tr>
     </table>
-    <input disabled="true" id="order_last_screen" style="display: none;" onchange="post('orders')"/>
-    <input disabled="true" id="order_fleet_index" style="display: none;" type="number" min="-1" max="10000" onchange="post('orders')"/>
-    <input disabled="true" id="order_index" style="display: none;" type="number" min="-2" max="10000" onchange="post('orders')"/>
+    <input disabled="true" id="order_last_screen" style="display: none;"/>
+    <input disabled="true" id="order_fleet_index" style="display: none;" type="number" min="-1" max="10000"/>
+    <input disabled="true" id="order_index" style="display: none;" type="number" min="-2" max="10000"/>
+    <input disabled="true" id="orders_set_edit" style="display: none;" type="checkbox"/>
+    <input disabled="true" id="orders_set_deep_space" style="display: none;" type="checkbox"/>
 </div>
 
 
@@ -1008,6 +1011,30 @@ void main() {
 
 
 <div class="screen hide onreset" id="screen_settings" style="width: 600px" onreset="post('settings', '?reset')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Settings" src="settings.png"/></td>
+        <td class="hfill" style="font-size: 200%">Settings</td> 
+        <td><i class="button far fa-times-circle" title="Close Screen" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td>Titanium Consentration</td>
+            <td class="hfill"><div class="onload" id="settings_min_ti" onload="slider(this, 'settings', 0, 100, 1, 0, null)"/></td>
+            <td><i class="ti col" id="settings_min_ti_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Lithium Consentration</td>
+            <td class="hfill"><div class="onload" id="settings_min_li" onload="slider(this, 'settings', 0, 100, 1, 0, null)"/></td>
+            <td><i class="li col" id="settings_min_li_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Silicon Consentration</td>
+            <td class="hfill"><div class="onload" id="settings_min_si" onload="slider(this, 'settings', 0, 100, 1, 0, null)"/></td>
+            <td><i class="si col" id="settings_min_si_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Habitability</td>
+            <td class="hfill"><div class="onload" id="settings_min_hab" onload="slider(this, 'settings', -100, 100, 1, 0, '%')"/></td>
+            <td><i class="hab col" id="settings_min_hab_display" style="text-align: center; min-width: 5em"/></td>
+        </tr>
+    </table>    
 </div>
 
 

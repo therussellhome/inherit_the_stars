@@ -385,6 +385,14 @@ i.fa-free-code-camp.vertical:after {
     border-left: 1px solid magenta;
 }
 
+i.ti.col:after, i.li.col:after, i.si.col:after, i.col:after {
+    content: '%';
+}
+
+i.hab.col:before {
+    content: 'Hab ';
+}
+
 i.ti:after, i.li:after, i.si:after, i.pop:after, i.fa-weight-hanging:after, i.fa-luggage-cart:after {
     content: 'kT';
 }
