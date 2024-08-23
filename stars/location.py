@@ -219,7 +219,7 @@ class Location(Defaults):
         if self_dict['reference']:
             # convert/reconert to absolute
             ref_xyz = self_dict['reference'].location.xyz
-            if self_dict['xyz'] is None or self_dict['ref_xyz'] is None or self_dict['ref_xyz'] != ref_xyz or self_dict['root_reference'] is None:
+            if self_dict['xyz'] is None or self_dict['ref_xyz'] is None or self_dict['ref_xyz'] != ref_xyz:
                 self_dict['ref_xyz'] = ref_xyz
                 self_dict['root_location'] = self_dict['reference'].location.root_location
                 self_dict['root_reference'] = self_dict['reference'].location.root_reference

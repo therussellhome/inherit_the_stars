@@ -86,7 +86,6 @@ void main() {
 <div class="submenu hide" id="submenu_ministers" onmouseleave="show_menu(null)">
     <img class="button" id="button_finance_minister" title="Finance Minister" src="/finance_minister.png" onclick="show_screen('finance_minister')"/>
     <img class="button" id="button_planetary_ministers" title="Planetary Minister" src="/planetary_minister.png" onclick="show_planetary()"/>
-    <img class="button" id="button_colonize_options" title="Colonizing Options" src="/texture-planet.png" onclick="show_screen('colonize_options')"/>
     <img class="button" id="button_research_minister" title="Research Minister" src="/research_minister.png" onclick="show_screen('research_minister')"/>
     <img class="button" id="button_foreign_minister" title="Foreign Minister" src="/foreign_minister.png" onclick="show_screen('foreign_minister')"/>
 </div>
@@ -813,34 +812,6 @@ void main() {
 </div>
 
 
-<div class="screen hide onreset" id="screen_colonize_options" style="width: 600px" onreset="post('colonize_options', '?reset')">
-    <table class="topbar hfill"><tr>
-        <td><img title="Colonizing Options" src="/texture-planet.png"/></td>
-        <td class="hfill" style="font-size: 200%">Colonizing Options</td> 
-        <td><i class="button far fa-times-circle" title="Close Screen" onclick="show_screen(null)"></i></td>
-    </tr></table>
-    <table class="hfill">
-        <tr>
-            <td>Titanium Consentration</td>
-            <td class="hfill"><div class="onload" id="colonize_options_min_ti" onload="slider(this, 'colonize_options', 0, 100, 1, 0, null)"/></td>
-            <td><i class="ti col" id="colonize_options_min_ti_display" style="text-align: center; min-width: 5em"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>Lithium Consentration</td>
-            <td class="hfill"><div class="onload" id="colonize_options_min_li" onload="slider(this, 'colonize_options', 0, 100, 1, 0, null)"/></td>
-            <td><i class="li col" id="colonize_options_min_li_display" style="text-align: center; min-width: 5em"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>Silicon Consentration</td>
-            <td class="hfill"><div class="onload" id="colonize_options_min_si" onload="slider(this, 'colonize_options', 0, 100, 1, 0, null)"/></td>
-            <td><i class="si col" id="colonize_options_min_si_display" style="text-align: center; min-width: 5em"/></td>
-        </tr><tr class="slider_padding"></tr><tr>
-            <td>Habitability</td>
-            <td class="hfill"><div class="onload" id="colonize_options_min_hab" onload="slider(this, 'colonize_options', -100, 100, 1, 0, '%')"/></td>
-            <td><i class="hab col" id="colonize_options_min_hab_display" style="text-align: center; min-width: 5em"/></td>
-        </tr>
-    </table>    
-</div>
-
-
 <div class="screen hide onreset onsubmit_research_minister" id="screen_research_minister" style="width: 600px" onreset="post('research_minister', '?reset')" onsubmit="tech_post()">
     <table class="topbar hfill"><tr>
         <td><img title="Research Minister" src="research_minister.png"/></td>
@@ -1040,6 +1011,30 @@ void main() {
 
 
 <div class="screen hide onreset" id="screen_settings" style="width: 600px" onreset="post('settings', '?reset')">
+    <table class="topbar hfill"><tr>
+        <td><img title="Settings" src="settings.png"/></td>
+        <td class="hfill" style="font-size: 200%">Settings</td> 
+        <td><i class="button far fa-times-circle" title="Close Screen" onclick="show_screen(null)"></i></td>
+    </tr></table>
+    <table class="hfill">
+        <tr>
+            <td>Titanium Consentration</td>
+            <td class="hfill"><div class="onload" id="settings_min_ti" onload="slider(this, 'settings', 0, 100, 1, 0, null)"/></td>
+            <td><i class="ti col" id="settings_min_ti_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Lithium Consentration</td>
+            <td class="hfill"><div class="onload" id="settings_min_li" onload="slider(this, 'settings', 0, 100, 1, 0, null)"/></td>
+            <td><i class="li col" id="settings_min_li_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Silicon Consentration</td>
+            <td class="hfill"><div class="onload" id="settings_min_si" onload="slider(this, 'settings', 0, 100, 1, 0, null)"/></td>
+            <td><i class="si col" id="settings_min_si_display" style="text-align: center; min-width: 5em"/></td>
+        </tr><tr class="slider_padding"></tr><tr>
+            <td>Habitability</td>
+            <td class="hfill"><div class="onload" id="settings_min_hab" onload="slider(this, 'settings', -100, 100, 1, 0, '%')"/></td>
+            <td><i class="hab col" id="settings_min_hab_display" style="text-align: center; min-width: 5em"/></td>
+        </tr>
+    </table>    
 </div>
 
 

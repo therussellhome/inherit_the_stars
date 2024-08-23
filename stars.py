@@ -23,7 +23,6 @@ _handlers = {
     '/messages': messages.Messages,
     '/new_game': new_game.NewGame,
     '/orders': orders.Orders,
-    '/colonize_options': colonize_options.ColonizeOptions,
     '/planetary_minister': planetaryministers.PlanetaryMinisters,
     '/planets': planets.Planets,
     '/plans': plans.Plans,
