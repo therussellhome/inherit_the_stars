@@ -24,13 +24,13 @@ class Fleets(PlayerUI):
             elif action.startswith('delete_order='):
                 to_delete = int(action.split('=')[1])
                 del self.player.fleets[self.fleet_index].orders[to_delete]
-            elif action.startswith('ship='):
+            elif action.startswith('fleet='):
                 ref = action.split('=')[1]
-                if 'Ship/' not in ref:
-                    ref = 'Ship/' + ref
+                if 'Fleet/' not in ref:
+                    ref = 'Fleet/' + ref
                 ref = Reference(ref)
                 for i in range(len(self.player.fleets)):
-                    if ref in self.player.fleets[i].ships:
+                    if ref == self.player.fleets[i]:
                         self.fleet_index = i
         self.fleet_list.append('<th></th>'
             + '<th><i class="no_pad_i" title="Name of the Fleet">Name</i></th>'
@@ -45,8 +45,8 @@ class Fleets(PlayerUI):
             intel = self.player.get_intel(reference=fleet)
             if not intel:
                 continue
-            if intel.name == fleet.ID:
-                intel.name = 'Fleet #' + str(i+1)
+            if intel.name == fleet.ID or intel.name.startswith('Fleet #'):
+                self.player.add_intel(fleet, {'name': 'Fleet #' + str(i+1)})
             if fleet.location.reference:
                 if +fleet.location.reference == 'Intel':
                     location_intel = fleet.location.reference

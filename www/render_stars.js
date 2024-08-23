@@ -175,9 +175,9 @@ function onKeyPress(event) {
     }
     // display ship orders
     else if(event.key == "o") {
-        if(capture_selected.startsWith('Ship')) {
+        if(capture_selected.startsWith('Fleet')) {
             show_screen('fleets');
-            post('fleets', '?ship=' + capture_selected);
+            post('fleets', '?fleet=' + capture_selected);
         }
     }
     // add waypoint
@@ -342,7 +342,11 @@ function get_system(intersected, index) {
         } );
         if (system_data[i].type !== 'StarSystem') {
             var point = new THREE.Points( geometry, material );
-            point.name = system_data[i].type + '/' + system_data[i].ID;
+            if(system_data[i].type === 'Ship' && system_data[i].team === 'me') {
+                point.name = system_data[i].fleet;
+            } else {
+                point.name = system_data[i].type + '/' + system_data[i].ID;
+            }
             inner_system.add(point);
         }
     }

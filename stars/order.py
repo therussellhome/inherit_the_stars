@@ -58,8 +58,8 @@ class Order(Defaults):
     def __getattribute__(self, name, check=False):
         if name == 'location' and (check == None or check == True):
             loc = super().__getattribute__(name)
-            if check == None:
-                print('get Order location:', end=' ')
+        #    if check == None:
+        #        print('get Order location:', end=' ')
             loc.get_display('pos,ref')
         return super().__getattribute__(name)
 
@@ -74,26 +74,26 @@ class Order(Defaults):
 
     """ Calculate where to move to """
     def move_calc(self, fleet_location, in_system_only=False):
-        print('Order.move_calc[ fleet_location ]:', end=' ')
-        fleet_location.get_display('pos,ref')
+        #print('Order.move_calc[ fleet_location ]:', end=' ')
+        #fleet_location.get_display('pos,ref')
         # In-system moves allowed
         if fleet_location.root_location == self.location.root_location:
-            print('in-system move:', end=' ')
-            self.location.get_display('pos,ref')
+        #    print('in-system move:', end=' ')
+        #    self.location.get_display('pos,ref')
             return Location(self.location)
         # Intentionally stopped or not allowed to move outside of system
         if self.speed == 0 or in_system_only:
-            print('No move')
+        #    print('No move')
             return Location(fleet_location)
         if self.patrol:
             pass # TODO select nearest enemy to pursue and change the location
         if self.standoff == 'No Standoff':
-            print('no-standoff move:', end=' ')
-            self.location.get_display('pos,ref')
+        #    print('no-standoff move:', end=' ')
+        #    self.location.get_display('pos,ref')
             return Location(self.location)
-        print('standard move:', end=' ')
+        #print('standard move:', end=' ')
         location = fleet_location.move(self.location, standoff=self._standoff(fleet_location))
-        location.get_display('pos,ref')
+        #location.get_display('pos,ref')
         return Location(location)
 
     """ Calculates the standoff distance for the fleet """

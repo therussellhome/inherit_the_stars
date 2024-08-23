@@ -15,8 +15,8 @@ from .ship import Ship
 
 
 """ Offset of ships from fleet center """
-FLEET_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 100
-SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 10000
+FLEET_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 40
+SHIP_OFFSET = stars_math.TERAMETER_2_LIGHTYEAR / 200
 
 
 """ Default values (default, min, max)  """
@@ -145,8 +145,8 @@ class Fleet(Defaults):
 
     """ Update location and apply orbit offset """
     def update_location(self, location):
-        print('Fleet.update_location[ old_location ]', end=' ')
-        self.order.location.get_display('pos,ref')
+        #print('Fleet.update_location[ old_location ]', end=' ')
+        #self.order.location.get_display('pos,ref')
         # Either offset from ship 0 or orbit the thing being referenced
         offset = 0
         reference = location.reference
@@ -155,8 +155,11 @@ class Fleet(Defaults):
                 reference = Reference(self.ships[0])
         else:
             # Distance in km from the point or heavenly body being centerd on
-            offset_distances = {'Sun': 3, 'Planet': 1}
-            offset = offset_distances.get(+(reference), offset)
+            rtype = +reference
+            if rtype == 'Intel':
+                rtype = +(reference.reference)
+            offset_distances = {'Sun': 15, 'Planet': 1}
+            offset = offset_distances.get(rtype, offset)
             location = Location(reference=reference, offset=offset * FLEET_OFFSET)
             if len(self.ships) > 0:
                 reference = Reference(self.ships[0])
@@ -166,10 +169,10 @@ class Fleet(Defaults):
                 s.location = Location(location)
             else:
                 s.location = Location(reference=reference, offset=SHIP_OFFSET)
-        print('Fleet.update_location[ location ]', end=' ')
-        location.get_display('pos,ref')
-        if location.xyz != self.order.location.xyz:
-            print('Fleet Changed Location')
+        #print('Fleet.update_location[ location ]', end=' ')
+        #location.get_display('pos,ref')
+        #if location.xyz != self.order.location.xyz:
+        #    print('Fleet Changed Location')
         self.order.location = location
 
     """ Check if the fleet can/ordered to move """
@@ -187,10 +190,18 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         if len(self.orders) > 0:
-            print('Fleet Name:', self.player.get_name(self))
-            self.move_to = self.orders[0].move_calc(self.order.location, in_system_only)
-            print('Set self.move_to', end=': ')
-            self.move_to.get_display('place')
+            print('depart:', self.orders[0].depart)
+            if self.order.location == self.orders[0].location and self.orders[0].depart == 0.0:
+                print('Order pop')
+                self.order = self.orders.pop(0)
+        if len(self.orders) > 0:
+            if self.orders[0].depart == 0.0:
+                print('Fleet Name:', self.player.get_name(self))
+                self.move_to = self.orders[0].move_calc(self.order.location, in_system_only)
+                print('Set self.move_to', end=': ')
+                self.move_to.get_display('place')
+            elif self.orders[0].depart < 10.0:
+                self.orders[0].depart -= 0.01
         else:
             self.move_to = self.order.location
         if self.move_to.root_location == self.order.location.root_location:
@@ -251,16 +262,16 @@ class Fleet(Defaults):
 
     """ Does all the moving calculations and then moves the ships """
     def move(self):
-        print('\n * * *  Fleet Move  * * *\n')
-        print('Starting Fleet Location', end=': ')
-        self.order.location.get_display('place')
-        print('is_stationary: ', self.is_stationary)
+        #print('\n * * *  Fleet Move  * * *\n')
+        #print('Starting Fleet Location', end=': ')
+        #self.order.location.get_display('place')
+        #print('is_stationary: ', self.is_stationary)
         if self.is_stationary:
             return
         # Determine speed
         speed = self.orders[0].speed
         hyperdenial = self.hyperdenial_effect
-        print('Hyperdenials:', hyperdenial)
+        #print('Hyperdenials:', hyperdenial)
         stop_at = None
         distance = 0.0
         # Manual stargate or auto stargate
@@ -276,7 +287,7 @@ class Fleet(Defaults):
             pass
         # Auto speed
         elif speed == -1:
-            print('Auto', end=': ')
+        #    print('Auto', end=': ')
             # initial speed
             distance = self.order.location - self.move_to
             if distance < 1:
@@ -291,21 +302,21 @@ class Fleet(Defaults):
                     break
                 speed -= 1
                 distance = (speed ** 2) / 100
-            print(speed)
+        #    print(speed)
         # Manual speed
         else:
-            print('Manual', end=': ')
+        #    print('Manual', end=': ')
             distance = min(self.order.location - self.move_to, (speed ** 2) / 100)
             stop_at = self.order.location.move(self.move_to, distance)
-            if self._fuel_calc(speed, distance, hyperdenial) > self.fuel:
+            if self._fuel_calc(speed, distance, hyperdenial) > self.fuel and speed != 0:
                 speed = 1
                 distance = min(self.order.location - self.move_to, (speed ** 2) / 100)
                 stop_at = self.order.location.move(self.move_to, distance)
-            print(speed)
+        #    print(speed)
         # Move the fleet
         if stop_at:
-            print('Moving to', end=': ')
-            stop_at.get_display('place')
+        #    print('Moving to', end=': ')
+        #    stop_at.get_display('place')
             self.update_location(stop_at)
             # Moved in a hyperdenial field
             scan.hyperdenial(self, self.hyperdenial_players)
@@ -327,9 +338,9 @@ class Fleet(Defaults):
         if self.order.location.root_location != self.move_to.root_location:
             self.order_complete = False
         multi_fleet.add(self)
-        print('Ending Fleet Location', end=': ')
-        self.order.location.get_display('place')
-        print('\n * * *  End Move  * * *\n')
+        #print('Ending Fleet Location', end=': ')
+        #self.order.location.get_display('place')
+        #print('\n * * *  End Move  * * *\n')
 
     """ Post combat, move inside the system """
     def move_in_system(self):
@@ -456,12 +467,25 @@ class Fleet(Defaults):
 
     """ Merges the fleet with the target fleet """
     def merge(self): # TODO Test
+        is_intel = False
         f = self.order.location.reference
-        if not self.order.merge or not f ^ 'Fleet' or f != self.order.location.reference or f.player != self.player:
+        if +f == 'Intel':
+            is_intel = True
+            f = f.reference
+        if not self.order.merge:
+        if not f ^ 'Fleet':
+        if (f != self.order.location.reference and not is_intel):
+        if (is_intel and f != self.order.location.reference.reference):
+        if f.player != self.player:
+        if not self.order.merge or not f ^ 'Fleet' or (f != self.order.location.reference and not is_intel) or (is_intel and f != self.order.location.reference.reference) or f.player != self.player:
             return
         ~f + self.ships
         ~f + self.under_construction
+        self - self.ships
+        self - self.under_construction
         self.player.remove_ships(self)
+        del self.player.intel[Reference(self)]
+        print('merge sucess')
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):
@@ -487,6 +511,7 @@ class Fleet(Defaults):
     def scan_self(self):
         for ship in self.ships:
             self.player.add_intel(self, ship.scan_report('self'))
+        scan.penetrating(self.player, self.order.location, FLEET_OFFSET) 
 
     """ find the stargates to use """
     def _stargate_find(self, allow_damage):

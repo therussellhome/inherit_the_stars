@@ -53,13 +53,24 @@ class RenderStars(PlayerUI):
         for (s, i) in self.player.get_intel(by_type='Ship').items():
             team = 'other'
             ship = self.set_details('Ship', self.deep_space_color, i, s.ID)
-            if s in self.player.ships:
-                team = 'me'
+            for s1 in self.player.ships:
+                if s == s1:
+                    team = 'me'
             if i.system_key not in self.details:
                 self.deep_space.append({'location': i.xyz, 'system_key': i.system_key})
                 self.details[i.system_key] = []
             self.details[i.system_key].append(ship)
             self.details[i.system_key][-1]['team'] = team
+            if team == 'me':
+                for f in self.player.fleets:
+                    for s1 in f.ships:
+                        if s == s1:
+                            self.details[i.system_key][-1]['fleet'] = 'Fleet/' + f.ID
+                            break
+                    for s1 in f.under_construction:
+                        if s == s1:
+                            self.details[i.system_key][-1]['fleet'] = 'Fleet/' + f.ID
+                            break
 
     def set_details(self, _type, _color, i, ID):
         intel_obj = copy.copy(i)
