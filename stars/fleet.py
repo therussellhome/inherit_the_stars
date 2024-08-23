@@ -191,7 +191,7 @@ class Fleet(Defaults):
                 return
         if len(self.orders) > 0:
             print('depart:', self.orders[0].depart)
-            if self.order.location == self.orders[0].location and self.orders[0].depart == 0.0:
+            if (self.order.location == self.orders[0].location or (self.order.location.reference == self.orders[0].location.reference)) and self.orders[0].depart == 0.0:
                 print('Order pop')
                 self.order = self.orders.pop(0)
         if len(self.orders) > 0:
@@ -241,6 +241,7 @@ class Fleet(Defaults):
                 return
             if p.colonize(self.player):
                 p.on_surface += colonizers[-1].cargo
+                colonizers[-1].location = Location(reference=p)
                 colonizers[-1].scrap()
                 self -= colonizers.pop()
 
@@ -472,11 +473,6 @@ class Fleet(Defaults):
         if +f == 'Intel':
             is_intel = True
             f = f.reference
-        if not self.order.merge:
-        if not f ^ 'Fleet':
-        if (f != self.order.location.reference and not is_intel):
-        if (is_intel and f != self.order.location.reference.reference):
-        if f.player != self.player:
         if not self.order.merge or not f ^ 'Fleet' or (f != self.order.location.reference and not is_intel) or (is_intel and f != self.order.location.reference.reference) or f.player != self.player:
             return
         ~f + self.ships
@@ -547,12 +543,15 @@ class Fleet(Defaults):
 
     """ Cargo of unload/load fleet/planet """
     def _other_cargo(self):
-        if self.order.location.reference ^ 'Fleet':
-            if self.order.location.reference.player == self.player:
-                return (self.order.location.reference.cargo, self.order.location.reference.stats.cargo_max)
-        elif self.order.location.reference ^ 'Planet' or self.order.location.reference ^ 'Sun':
-            if self.order.location.reference.player == self.player:
-                return (self.order.location.reference.on_surface, sys.maxsize)
+        reference = self.order.location.reference
+        if reference ^ 'Intel':
+            reference = reference.reference
+        if reference ^ 'Fleet':
+            if reference.player == self.player:
+                return (reference.cargo, reference.stats.cargo_max)
+        elif reference ^ 'Planet' or reference ^ 'Sun':
+            if reference.player == self.player:
+                return (reference.on_surface, sys.maxsize)
         return (None, 0)
 
     """ Calculates fuel usage for fleet """
