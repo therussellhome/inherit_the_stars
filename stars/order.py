@@ -53,6 +53,8 @@ class Order(Defaults):
             kwargs['location'] = Location(kwargs['location'])
         super().__init__(*args, **kwargs)
         game_engine.register(self)
+
+    '''
         print('order.__init__', kwargs)
 
     def __getattribute__(self, name, check=False):
@@ -71,6 +73,7 @@ class Order(Defaults):
             value.get_display('pos,ref')
             print('Change in Terrameters:', (loc - value) / stars_math.TERAMETER_2_LIGHTYEAR)
         return super().__setattr__(name, value)
+    '''
 
     """ Calculate where to move to """
     def move_calc(self, fleet_location, in_system_only=False):

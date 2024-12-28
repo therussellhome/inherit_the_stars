@@ -72,7 +72,7 @@ class Fleet(Defaults):
         elif name == 'initiative':
             self_dict[name] = max(self.ships, key=lambda x: x.initiative).initiative
         elif name == 'location':
-            print('Setting Fleet location to self.order.location')
+            #print('Setting Fleet location to self.order.location')
             self_dict[name] = self.order.location
         return super().__getattribute__(name)
 
@@ -190,15 +190,15 @@ class Fleet(Defaults):
                 multi_fleet.add(self)
                 return
         if len(self.orders) > 0:
-            print('depart:', self.orders[0].depart)
+            #print('depart:', self.orders[0].depart)
             if (self.order.location == self.orders[0].location or (self.order.location.reference == self.orders[0].location.reference)) and self.orders[0].depart == 0.0:
-                print('Order pop')
+                #print('Order pop')
                 self.order = self.orders.pop(0)
         if len(self.orders) > 0:
             if self.orders[0].depart == 0.0:
-                print('Fleet Name:', self.player.get_name(self))
+                #print('Fleet Name:', self.player.get_name(self))
                 self.move_to = self.orders[0].move_calc(self.order.location, in_system_only)
-                print('Set self.move_to', end=': ')
+                #print('Set self.move_to', end=': ')
                 self.move_to.get_display('place')
             elif self.orders[0].depart < 10.0:
                 self.orders[0].depart -= 0.01
@@ -481,7 +481,7 @@ class Fleet(Defaults):
         self - self.under_construction
         self.player.remove_ships(self)
         del self.player.intel[Reference(self)]
-        print('merge sucess')
+        #print('merge sucess')
     
     """ Perform anticloak scanning """
     def scan_anticloak(self):

@@ -170,7 +170,7 @@ class Player(Defaults):
     def get_minister(self, planet):
         planet_ref = Reference(planet)
         if planet_ref in self.planetary_minister_map:
-            return self.planetary_minister_map[Reference(planet)]
+            return self.planetary_minister_map[planet_ref]
         else:
             for minister in self.ministers:
                 if hasattr(minister, 'new_colony_minister'):

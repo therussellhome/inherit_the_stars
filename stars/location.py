@@ -92,10 +92,10 @@ class Location(Defaults):
             else:
                 move_distance = distance - standoff
         if distance == 0 and standoff == 0:
-            print('(distance = 0)', end=' ')
+            #print('(distance = 0)', end=' ')
             return target
         if move_distance == 0:
-            print('(move_distance = 0)', end=' ')
+            #print('(move_distance = 0)', end=' ')
             return self
         if not away:
             f = min(1, move_distance / distance)
@@ -107,7 +107,7 @@ class Location(Defaults):
             z = self.xyz[2] - (self.xyz[2] - target.xyz[2]) * f)
         #if standoff == 0.0:
         #    location.reference = Reference(self.reference)
-        print('(main move)', end=' ')
+        #print('(main move)', end=' ')
         return location
 
     """ Comparison allowing for close enough """

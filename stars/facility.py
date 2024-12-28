@@ -32,15 +32,18 @@ _facility_names = {
 class Facility(BuildQueue):
     """ Store the cost to build the facility """
     def __init__(self, *args, **kwargs):
+        print('adding a facility to build queue')
         global _facility_costs
         super().__init__(*args, **kwargs)
         self.cost = _facility_costs[self.facility_type]
 
     """ Check if we are completed """
     def build(self, spend=Cost()):
+        print('facility running build')
         remaining = super().build(spend)
         if remaining.is_zero():
             self.planet[self.facility_type] += 1
+        print(remaining.__dict__)
         return remaining
 
 

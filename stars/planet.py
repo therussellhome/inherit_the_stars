@@ -293,8 +293,11 @@ class Planet(Defaults):
     
     """ Build an item """
     def build(self, item, from_queue=True):
+        print(self.ID, 'build')
+        print(self.player.energy, self.on_surface.__dict__)
         self.production_blocked = False
         in_progress = item.build()
+        print('300 current_item:', in_progress.__dict__)
         while not in_progress.is_zero():
             spend = Cost()
             spend.energy = self.player.spend(item.__class__.__name__, in_progress.energy)
@@ -303,24 +306,32 @@ class Planet(Defaults):
                 self.production -= use_p
                 self.on_surface[m] -= use_p
                 spend[m] = use_p
+            print('subtotal:', spend.__dict__)
             for m in MINERAL_TYPES:
                 if spend[m] < in_progress[m] and item.baryogenesis:
                     spend_e = self.player.spend('Baryogenesis', min(self.production / 2, in_progress[m] - spend[m]) * self.player.race.cost_of_baryogenesis)
                     baryogenesis_minerals = spend_e / self.player.race.cost_of_baryogenesis
                     self.production -= baryogenesis_minerals * 2
                     spend[m] += baryogenesis_minerals
+            print('final spending:', spend.__dict__)
             # Apply build effort
             in_progress = item.build(spend)
+            print('319 current_item:', in_progress.__dict__)
             # Blocked
             if spend.is_zero():
                 if not from_queue:
                     self.player.build_queue.append(item)
                 self.production_blocked = True
+                print('blocked')
                 return False
+        print('sucess')
         return True
 
     """ Add planetary facilities / capabilities """
     def build_planetary(self):
+        print(self.ID, 'build_planetary')
+        print(self.player.energy, self.on_surface.__dict__)
+        #self.production_blocked = False
         minister = self.player.get_minister(self)
         keep_going = True
         while keep_going and not self.production_blocked:
@@ -336,8 +347,11 @@ class Planet(Defaults):
                     worst_hab = hab
                     worst_hab_from_center = hab_from_center
             if worst_hab:
-                keep_going = self.build(Terraform(hab=worst_hab, planet=Reference(self)))
+                print('terraforming')
+                print('type:', worst_hab, 'stat:', worst_hab_from_center)
+                keep_going = self.build(Terraform(hab=worst_hab, planet=Reference(self)), from_queue=False)
             else:
+                print('build facility')
                 # Build facility
                 worst_facility = None
                 worst_facility_percent = 1.0
@@ -347,8 +361,9 @@ class Planet(Defaults):
                     if operate / ideal < worst_facility_percent:
                         worst_facility = facility
                         worst_facility_percent = operate / ideal
+                print('type:', worst_facility, 'rating:', worst_facility_percent)
                 if worst_facility:
-                    keep_going = self.build(Facility(facility_type=worst_facility, planet=Reference(self), baryogenesis=minister.allow_baryogenesis))
+                    keep_going = self.build(Facility(facility_type=worst_facility, planet=Reference(self), baryogenesis=minister.allow_baryogenesis), from_queue=False)
                 else:
                     keep_going = False
 

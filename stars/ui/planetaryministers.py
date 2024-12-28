@@ -45,13 +45,12 @@ class PlanetaryMinisters(PlayerUI):
         if self.planetary_new_col_minister == '':
             for minister in self.player.ministers:
                 if hasattr(minister, 'new_colony_minister'):
-        #            print(minister.__dict__)
                     if minister.new_colony_minister:
-                        self.planetary_new_col_minister = minister.name
+                        self.planetary_new_col_minister = minister.ID
         for minister in self.player.ministers:
             if hasattr(minister, 'new_colony_minister'):
                 minister.new_colony_minister = False
-                if minister.name == self.planetary_new_col_minister:
+                if minister.ID == self.planetary_new_col_minister:
                     minister.new_colony_minister = True
         """ save """
         self.planetary_power_plants = self.planetary_facility_types[0]
@@ -65,13 +64,19 @@ class PlanetaryMinisters(PlayerUI):
         for planet in self.player.planets:
             planet = Reference(planet)
             if hasattr(self, 'planetary_' + planet.ID + '_minister'):
+                print('loaded minister')
                 self.player.planetary_minister_map[planet] = Reference('PlanetaryMinister/' + self['planetary_' + planet.ID + '_minister'])
-            if planet in self.player.planetary_minister_map:
+            elif planet in self.player.planetary_minister_map:
+                print('getting minister')
                 self.player.planetary_minister_map[planet] = Reference(self.player.get_minister(planet))
+            else:
+                print('new Colony')
+                self.player.planetary_minister_map[planet] = Reference('PlanetaryMinister/' + self.planetary_new_col_minister)
         """ set display values """
         for minister in self.player.ministers:
             if hasattr(minister, 'new_colony_minister'):
-                self.options_planetary_new_col_minister.append(minister.name)
+                self.options_planetary_new_col_minister.append(minister.ID)
+                #TODO change options handling for <select> to enable displaying name and returning ID as shown in lines 88-91
         self.planetary_power = str(self.planetary_power_plants) + ' %'
         self.planetary_factory = str(self.planetary_factories) + ' %'
         self.planetary_mine = str(self.planetary_mineral_extractors) + ' %'
